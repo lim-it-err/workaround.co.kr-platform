@@ -63,4 +63,4 @@ Spring should not accumulate heavy business logic. It should remain the gateway,
 
 ## Working Rule
 
-Before changing this repository, read `AGENTS.md` and the relevant documents under `docs/`. If implementation and documentation disagree, finish the work by making them agree.
+Before changing this repository, read `AGENTS.md`, the relevant documents under `docs/`, and the relevant history entries under `docs/history/`. If implementation and documentation disagree, finish the work by making them agree.
