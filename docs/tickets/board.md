@@ -6,6 +6,7 @@
 - `TKT-002` `P0` `v0.1.0` Spring Boot gateway scaffold and platform APIs
 - `TKT-003` `P1` `v0.1.0` Worker flow, sample service connectivity, and local test loop
 - `TKT-004` `P1` `v0.2.0` RTX5070 offload and external inference runtime contract
+- `TKT-005` `P0` `v0.2.0` Localhost:7000 integrated preview
 
 ## Need Review
 
