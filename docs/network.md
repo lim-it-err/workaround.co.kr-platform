@@ -13,6 +13,16 @@ The MVP stack should use Docker Compose for local development. The expected loca
 
 The external RTX5070 Ollama server is not part of the default compose stack.
 
+## Local Ports
+
+The v0.1.0 scaffold uses these local ports:
+
+- `frontend`: `http://localhost:5173`
+- `gateway`: `http://localhost:8080`
+- `sample-python-service`: `http://localhost:8001`
+- `sample-spring-service`: `http://localhost:8002`
+- `ion2-worker`: worker CLI, no direct HTTP port
+
 ## HTTP First
 
 Service-to-service communication should use HTTP first. This keeps sub-services language independent and easy to replace.
