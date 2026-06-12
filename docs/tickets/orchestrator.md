@@ -10,6 +10,7 @@ The orchestrator coordinates work. The orchestrator does not primarily write app
 - Create, refine, prioritize, and version tickets.
 - Keep `docs/tickets/board.md` in sync with ticket state.
 - Keep architecture, process, and role docs accurate.
+- Watch `docs/tickets/need_review/` and confirm when a worker has completed a job handoff.
 - Review worker output in `need_review`.
 - Run validation tests before a ticket is considered done.
 - Move tickets from `need_review` to `finish` if validation passes.
@@ -25,11 +26,12 @@ The orchestrator coordinates work. The orchestrator does not primarily write app
 ## Review Workflow
 
 1. Read the ticket and worker report.
-2. Check the worker branch name and changed scope.
-3. Run tests or review test evidence.
-4. Verify docs, API behavior, and acceptance criteria.
-5. Update the ticket with review notes.
-6. Move the ticket to `finish` or back to `backlog`.
+2. Check `docs/tickets/need_review/` to confirm the worker completed the handoff.
+3. Check the worker branch name and changed scope.
+4. Run tests or review test evidence.
+5. Verify docs, API behavior, and acceptance criteria.
+6. Update the ticket with review notes.
+7. Move the ticket to `finish` or back to `backlog`.
 
 ## Required Ticket Fields
 
