@@ -59,6 +59,7 @@ Spring should not accumulate heavy business logic. It should remain the gateway,
 - [Service Policy](docs/service-policy.md)
 - [Ollama Policy](docs/ollama-policy.md)
 - [Frontend UX](docs/frontend-ux.md)
+- [History](docs/history/README.md)
 
 ## Working Rule
 
