@@ -38,9 +38,9 @@ A typed job ticket should include:
 }
 ```
 
-## Status Values
+## Runtime Status Values
 
-Supported MVP statuses:
+Supported MVP runtime statuses:
 
 - `queued`
 - `running`
@@ -50,6 +50,23 @@ Supported MVP statuses:
 - `waiting_llm`
 - `cancelled`
 
+## Repository Ticket Lifecycle
+
+Repository work tickets live under `docs/tickets/` and use these states:
+
+- `backlog`
+- `need_review`
+- `finish`
+
+State rules:
+
+- Orchestrator creates and prioritizes tickets in `backlog`.
+- Workers pick tickets from `backlog`, implement code on a branch, test the work, and move the ticket to `need_review`.
+- Orchestrator reviews and tests tickets in `need_review`.
+- If validation passes, orchestrator moves the ticket to `finish`.
+- If validation fails, orchestrator moves the ticket back to `backlog` with retry notes.
+- The user merges, not the orchestrator and not the worker.
+
 ## Worker Behavior
 
 - Workers subscribe through Redis Streams consumer groups.
@@ -58,6 +75,8 @@ Supported MVP statuses:
 - Tickets below `maxAttempts` may become `retrying`.
 - Tickets beyond `maxAttempts` become `failed`.
 - LLM jobs should become `waiting_llm` when Ollama is unavailable rather than failing immediately.
+- Workers must read docs and history before starting meaningful work.
+- Workers must record completed work in history after finishing.
 
 ## Gateway API Contract
 
