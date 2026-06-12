@@ -11,13 +11,20 @@ Codex is the docs-first project manager for this repository.
 
 ## Required Reading Before Work
 
+Every agent must do these two things before starting work:
+
+1. Read the relevant docs.
+2. Read the relevant history entries.
+
 Before changing code, structure, APIs, environment variables, Docker behavior, or operating policy, read:
 
 1. `README.md`
 2. `docs/architecture.md`
 3. `docs/ticket-policy.md`
 4. `docs/service-policy.md`
-5. Any subsystem document related to the task, such as `docs/ollama-policy.md`, `docs/network.md`, or `docs/frontend-ux.md`.
+5. `docs/history/README.md`
+6. The latest relevant history file under `docs/history/`
+7. Any subsystem document related to the task, such as `docs/ollama-policy.md`, `docs/network.md`, or `docs/frontend-ux.md`
 
 ## Documentation Rules
 
@@ -25,8 +32,18 @@ Before changing code, structure, APIs, environment variables, Docker behavior, o
 - If the ticket schema, worker behavior, service contract, env vars, Docker execution, routing, or health checks change, update docs before finishing.
 - Keep `README.md` as the short orientation page.
 - Keep detailed policies under `docs/`.
+- Keep dated work logs under `docs/history/`.
 - Do not leave implementation and documentation in conflict.
 - If a change introduces a new service, include its own `README.md`, `Dockerfile`, and `/health` endpoint contract.
+
+## Worker History Rule
+
+Every worker and every agent must record what it did in history.
+
+- Before work: read the relevant history.
+- After work: write or update the dated history file under `docs/history/`.
+- The default file naming rule is `docs/history/YYYY-MM-DD.md`.
+- History entries should summarize what changed, why it changed, and any follow-up constraints or risks.
 
 ## Architecture Guardrails
 
@@ -40,4 +57,4 @@ Before changing code, structure, APIs, environment variables, Docker behavior, o
 
 ## Done Means Documented
 
-A task is not done until the docs that describe the changed behavior are accurate.
+A task is not done until the docs and history that describe the changed behavior are accurate.
