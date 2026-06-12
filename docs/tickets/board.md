@@ -2,16 +2,15 @@
 
 ## Backlog
 
-- `TKT-001` `P1` `v0.1.0` Frontend station splash and control room POC
-- `TKT-002` `P1` `v0.1.0` Spring Boot gateway scaffold and platform APIs
-- `TKT-003` `P2` `v0.1.0` Worker flow, sample service connectivity, and local test loop
 - `TKT-004` `P2` `v0.2.0` RTX5070 offload and external inference runtime contract
 - `TKT-005` `P1` `v0.2.0` Localhost:7000 integrated preview
 - `TKT-006` `P1` `v0.2.0` Infrastructure bootstrap and single worker runtime
 
 ## Need Review
 
-- None
+- `TKT-001` `P1` `v0.1.0` Frontend station splash and control room POC
+- `TKT-002` `P1` `v0.1.0` Spring Boot gateway scaffold and platform APIs
+- `TKT-003` `P2` `v0.1.0` Worker flow, sample service connectivity, and local test loop
 
 ## Finish
 
