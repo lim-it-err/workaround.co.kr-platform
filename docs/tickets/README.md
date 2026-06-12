@@ -8,6 +8,16 @@ This folder is the coordination layer for orchestrators and workers.
 - `docs/tickets/need_review/`: worker-complete items waiting for orchestrator review and test
 - `docs/tickets/finish/`: reviewed items that passed orchestrator validation and are ready for user merge decisions
 
+## Priority Scale
+
+The repository uses `P1` through `P5`.
+
+- `P1`: highest priority
+- `P2`: high priority
+- `P3`: normal priority
+- `P4`: low priority
+- `P5`: lowest priority
+
 ## Required Flow
 
 1. Orchestrator creates or updates a ticket in `backlog`.
