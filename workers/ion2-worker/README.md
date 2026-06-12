@@ -9,5 +9,7 @@ Placeholder for the first ticket subscriber worker.
 - Update ticket status.
 - Handle retries.
 - Check external Ollama health for LLM jobs.
+- Read docs and history before starting work.
+- Record completed work in the dated history file after finishing.
 
 LLM jobs should degrade gracefully when the RTX5070 Ollama server is unavailable.
