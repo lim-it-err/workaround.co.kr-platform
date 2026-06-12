@@ -22,9 +22,11 @@ Before changing code, structure, APIs, environment variables, Docker behavior, o
 2. `docs/architecture.md`
 3. `docs/ticket-policy.md`
 4. `docs/service-policy.md`
-5. `docs/history/README.md`
-6. The latest relevant history file under `docs/history/`
-7. Any subsystem document related to the task, such as `docs/ollama-policy.md`, `docs/network.md`, or `docs/frontend-ux.md`
+5. `docs/tickets/README.md`
+6. `docs/tickets/board.md`
+7. `docs/history/README.md`
+8. The latest relevant history file under `docs/history/`
+9. Any subsystem document related to the task, such as `docs/ollama-policy.md`, `docs/network.md`, or `docs/frontend-ux.md`
 
 ## Documentation Rules
 
@@ -33,6 +35,7 @@ Before changing code, structure, APIs, environment variables, Docker behavior, o
 - Keep `README.md` as the short orientation page.
 - Keep detailed policies under `docs/`.
 - Keep dated work logs under `docs/history/`.
+- Keep workflow tickets under `docs/tickets/`.
 - Do not leave implementation and documentation in conflict.
 - If a change introduces a new service, include its own `README.md`, `Dockerfile`, and `/health` endpoint contract.
 
