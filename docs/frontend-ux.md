@@ -22,6 +22,24 @@ Suggested accent families:
 
 The lower area of the screen should include a horizontal route line. Services appear as stations. The user can scroll horizontally from left to right to explore available services.
 
+## Startup Sequence
+
+The first stage should behave like an arriving station board.
+
+- Show a departure-board style splash screen.
+- Include a small flap/ticker strip with short game-joke style messages.
+- Auto-transition to the main page after 10 seconds.
+- Keep the transition smooth and obvious.
+
+## Main Shell
+
+The main page should feel like a station control room rather than a marketing landing page.
+
+- Use a 2x2 service grid or similar compact control surface.
+- Mark heavy resource services with a node target such as `rtx5070` or another worker node.
+- Make the lower horizontal area a train track with a moving train marker instead of a generic scroll footer.
+- Keep service status visible without deep navigation.
+
 ## MVP Screens
 
 The MVP frontend should include:
