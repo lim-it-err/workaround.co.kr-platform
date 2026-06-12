@@ -48,7 +48,6 @@ The MVP frontend should include:
 - Platform health overview.
 - Ollama availability state.
 - Recent ticket list.
-- Ticket creation panel for development use.
 - Entry points into sample services.
 
 ## UX Guardrails
