@@ -89,3 +89,5 @@ GET /api/tickets/{ticketId}
 ```
 
 Mutating ticket APIs require `X-Platform-Key` during development.
+
+The v0.1.0 local scaffold may also expose `claim`, `complete`, and `fail` helper endpoints so the worker can prove the end-to-end loop before Redis Streams is introduced.
