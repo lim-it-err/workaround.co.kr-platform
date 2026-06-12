@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: workaround-gateway
+
+app:
+  platform:
+    api-key: ${PLATFORM_API_KEY:dev-key}
+  ollama:
+    base-url: ${OLLAMA_BASE_URL:http://rtx5070-host:11434}
