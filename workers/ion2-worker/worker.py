@@ -1,7 +1,6 @@
 import json
 import os
 import time
-import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -135,9 +134,7 @@ def main():
     config = WorkerConfig()
     client = WorkerClient(config)
     try:
-        summaries = client.run_forever()
-        if config.once:
-            print(json.dumps(summaries, indent=2, ensure_ascii=False))
+        client.run_forever()
     except KeyboardInterrupt:
         print("worker stopped")
 
