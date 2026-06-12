@@ -182,7 +182,7 @@ final class PlatformStore {
     String serviceId = normalizeText(request.serviceId(), "sample-python-service");
     String summary = normalizeText(request.summary(), type);
     int priority = request.priority() == null ? 5 : request.priority();
-    Map<String, Object> payload = request.payload() == null ? Map.of() : Map.copyOf(request.payload());
+    Map<String, Object> payload = request.payload() == null ? Map.of() : new LinkedHashMap<>(request.payload());
 
     Ticket ticket = new Ticket(
         UUID.randomUUID().toString(),
