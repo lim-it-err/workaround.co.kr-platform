@@ -7,37 +7,25 @@ const activeTicker = ref(0)
 const services = ref([])
 const tickets = ref([])
 const health = ref(null)
+const selectedServiceId = ref('elevator-service')
+const elevatorState = ref(null)
+const elevatorBusy = ref(false)
+const elevatorNotice = ref('')
 
 const fallbackServices = [
   {
-    id: 'contact-sync',
-    name: 'Contact Sync',
-    description: 'Small reminder and contact workflows that should stay on an Ion2 node.',
-    routePrefix: '/api/services/contact-sync',
+    id: 'elevator-service',
+    name: 'Elevator Service',
+    description: 'A small elevator simulator station for the v0.3.0 preview loop.',
+    routePrefix: '/api/services/elevator-service',
     node: 'ion2',
     loadProfile: 'light'
   },
   {
-    id: 'llm-draft-assist',
-    name: 'LLM Draft Assist',
-    description: 'Model-assisted drafting and prompt-heavy work that belongs near RTX5070.',
-    routePrefix: '/api/services/llm-draft-assist',
-    node: 'rtx5070',
-    loadProfile: 'heavy'
-  },
-  {
-    id: 'media-queue',
-    name: 'Media Queue',
-    description: 'Encode and transform work that should not block the main app node.',
-    routePrefix: '/api/services/media-queue',
-    node: 'rtx5070',
-    loadProfile: 'heavy'
-  },
-  {
-    id: 'platform-metrics',
-    name: 'Platform Metrics',
-    description: 'Health, audit, and ticket visibility that should stay lean.',
-    routePrefix: '/api/services/platform-metrics',
+    id: 'sample-spring-service',
+    name: 'Sample Spring Service',
+    description: 'The companion Spring service that proves the gateway can coordinate more than one service.',
+    routePrefix: '/api/services/sample-spring-service',
     node: 'ion2',
     loadProfile: 'light'
   }
@@ -82,6 +70,10 @@ const splashClock = computed(() => {
 })
 
 const activeFlap = computed(() => tickerLines[activeTicker.value])
+const selectedService = computed(() => services.value.find((service) => service.id === selectedServiceId.value) ?? services.value[0])
+const elevatorFloors = computed(() => elevatorState.value?.targetFloors ?? [1, 3, 5, 7, 9])
+const elevatorRoute = computed(() => services.value.find((service) => service.id === 'elevator-service')?.routePrefix ?? '/api/services/elevator-service')
+const elevatorQueue = computed(() => elevatorState.value?.queue ?? [])
 
 let splashTimer
 let tickerTimer
@@ -148,10 +140,123 @@ async function loadHealth() {
   }
 }
 
+async function loadElevatorState() {
+  try {
+    const response = await fetch(`${elevatorRoute.value}/api/state`)
+    if (!response.ok) throw new Error('elevator state fetch failed')
+    elevatorState.value = await response.json()
+  } catch {
+    elevatorState.value = {
+      service: 'elevator-service',
+      currentFloor: 7,
+      targetFloors: [1, 3, 5, 7, 9],
+      mode: 'local-mock',
+      direction: 'idle',
+      queue: [],
+      lastCommand: 'fallback'
+    }
+  }
+}
+
+function setMockDirection(state) {
+  const queue = state.queue ?? []
+  if (!queue.length) {
+    return 'idle'
+  }
+  if (queue[0] > state.currentFloor) {
+    return 'up'
+  }
+  if (queue[0] < state.currentFloor) {
+    return 'down'
+  }
+  return 'idle'
+}
+
+function updateMockState(command, floor) {
+  const base = elevatorState.value ?? {
+    service: 'elevator-service',
+    currentFloor: 7,
+    targetFloors: [1, 3, 5, 7, 9],
+    queue: []
+  }
+  const next = {
+    ...base,
+    mode: 'local-mock',
+    queue: [...(base.queue ?? [])],
+    lastCommand: command
+  }
+
+  if (command === 'call' && floor !== next.currentFloor && !next.queue.includes(floor)) {
+    next.queue.push(floor)
+    next.lastCommand = `mock-call:${floor}`
+  }
+
+  if (command === 'step' && next.queue.length) {
+    const target = next.queue[0]
+    if (target > next.currentFloor) next.currentFloor += 1
+    if (target < next.currentFloor) next.currentFloor -= 1
+    if (target === next.currentFloor) {
+      next.queue.shift()
+      next.lastCommand = `mock-arrived:${target}`
+    } else {
+      next.lastCommand = 'mock-step'
+    }
+  }
+
+  if (command === 'reset') {
+    next.currentFloor = 7
+    next.queue = []
+    next.lastCommand = 'mock-reset'
+  }
+
+  next.direction = setMockDirection(next)
+  elevatorState.value = next
+}
+
+async function sendElevatorCommand(path, payload, fallbackCommand, floor) {
+  elevatorBusy.value = true
+  elevatorNotice.value = ''
+  try {
+    const response = await fetch(`${elevatorRoute.value}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload ?? {})
+    })
+    if (!response.ok) throw new Error('elevator command failed')
+    elevatorState.value = await response.json()
+    elevatorNotice.value = 'service command accepted'
+  } catch {
+    updateMockState(fallbackCommand, floor)
+    elevatorNotice.value = 'gateway/service unavailable, updated local mock state'
+  } finally {
+    elevatorBusy.value = false
+  }
+}
+
+function callElevator(floor) {
+  sendElevatorCommand('/api/call', { floor }, 'call', floor)
+}
+
+function stepElevator() {
+  sendElevatorCommand('/api/step', {}, 'step')
+}
+
+function resetElevator() {
+  sendElevatorCommand('/api/reset', {}, 'reset')
+}
+
 async function boot() {
   loading.value = true
   await Promise.all([loadServices(), loadTickets(), loadHealth()])
+  await loadElevatorState()
   loading.value = false
+}
+
+function openService(service) {
+  selectedServiceId.value = service.id
+  if (service.id === 'elevator-service') {
+    loadElevatorState()
+  }
 }
 
 onMounted(() => {
@@ -233,9 +338,55 @@ const railStations = computed(() => services.value.map((service, index) => ({
             <p>{{ service.description }}</p>
             <footer>
               <span class="tile-profile">{{ service.loadProfile }}</span>
-              <button type="button">Open station</button>
+              <button type="button" @click="openService(service)">Open station</button>
             </footer>
           </article>
+        </section>
+
+        <section class="elevator-panel" :class="{ active: selectedService?.id === 'elevator-service' }">
+          <div class="elevator-copy">
+            <p class="eyebrow">v0.3.0 simulator station</p>
+            <h3>Elevator dispatch loop</h3>
+            <p>
+              {{ elevatorState?.service || 'elevator-service' }} is visible inside the same preview shell.
+              Mode: {{ elevatorState?.mode || 'simulated' }}.
+            </p>
+          </div>
+          <div class="elevator-shaft" aria-label="Elevator simulator state">
+            <div
+              v-for="floor in elevatorFloors"
+              :key="floor"
+              class="floor-stop"
+              :class="{ current: floor === elevatorState?.currentFloor }"
+            >
+              <span>{{ floor }}F</span>
+              <strong v-if="floor === elevatorState?.currentFloor">현재 위치</strong>
+            </div>
+          </div>
+          <div class="elevator-status">
+            <span>route {{ elevatorRoute }}/api/state</span>
+            <span>floor {{ elevatorState?.currentFloor ?? 'unknown' }}</span>
+            <span>direction {{ elevatorState?.direction || 'idle' }}</span>
+            <span>queue {{ elevatorQueue.length ? elevatorQueue.join('F, ') + 'F' : 'empty' }}</span>
+            <span>last {{ elevatorState?.lastCommand || 'none' }}</span>
+            <div class="elevator-controls" aria-label="Elevator simulator controls">
+              <button
+                v-for="floor in elevatorFloors"
+                :key="`call-${floor}`"
+                type="button"
+                :disabled="elevatorBusy"
+                @click="callElevator(floor)"
+              >
+                Call {{ floor }}F
+              </button>
+            </div>
+            <div class="elevator-actions">
+              <button type="button" :disabled="elevatorBusy" @click="stepElevator">Step</button>
+              <button type="button" :disabled="elevatorBusy" @click="resetElevator">Reset</button>
+            </div>
+            <button type="button" @click="loadElevatorState">Refresh state</button>
+            <small v-if="elevatorNotice">{{ elevatorNotice }}</small>
+          </div>
         </section>
 
         <section class="ticket-panel">

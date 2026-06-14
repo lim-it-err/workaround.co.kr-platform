@@ -1,0 +1,67 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  elevator-service:
+    build:
+      context: ../services/elevator-service
+    environment:
+      PORT: 8003
+      SERVICE_NAME: elevator-service
+      CURRENT_FLOOR: 7
+    ports:
+      - "8003:8003"
+
+  sample-spring-service:
+    build:
+      context: ../services/sample-spring-service
+    environment:
+      SERVER_PORT: 8002
+      SERVICE_NAME: sample-spring-service
+    ports:
+      - "8002:8002"
+
+  gateway:
+    build:
+      context: ../gateway
+    depends_on:
+      redis:
+        condition: service_healthy
+      elevator-service:
+        condition: service_started
+      sample-spring-service:
+        condition: service_started
+    environment:
+      PLATFORM_API_KEY: ${PLATFORM_API_KEY:-dev-key}
+      ELEVATOR_SERVICE_URL: http://elevator-service:8003
+      SAMPLE_SPRING_SERVICE_URL: http://sample-spring-service:8002
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+    ports:
+      - "8080:8080"
+
+  ion2-worker:
+    build:
+      context: ../workers/ion2-worker
+    depends_on:
+      gateway:
+        condition: service_started
+      elevator-service:
+        condition: service_started
+      sample-spring-service:
+        condition: service_started
+    environment:
+      PLATFORM_API_KEY: ${PLATFORM_API_KEY:-dev-key}
+      GATEWAY_BASE_URL: http://gateway:8080
+      ELEVATOR_SERVICE_URL: http://elevator-service:8003
+      SAMPLE_SPRING_SERVICE_URL: http://sample-spring-service:8002
+      WORKER_POLL_INTERVAL_SECONDS: 5
