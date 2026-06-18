@@ -1,25 +1,70 @@
-# Ticket Board
+﻿문서 상태: 작성완료
+
+# 티켓 보드
 
 ## Backlog
 
-- `TKT-001` `P1` `v0.1.0` Frontend station splash and control room POC
-- `TKT-002` `P1` `v0.1.0` Spring Boot gateway scaffold and platform APIs
-- `TKT-003` `P2` `v0.1.0` Worker flow, sample service connectivity, and local test loop
-- `TKT-004` `P2` `v0.2.0` RTX5070 offload and external inference runtime contract
-- `TKT-005` `P1` `v0.2.0` Localhost:7000 integrated preview
-- `TKT-006` `P1` `v0.2.0` Infrastructure bootstrap and single worker runtime
+- `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
+- `TKT-012` `P1` `v0.2.1` `v0.2.1 진행 시 가능` 테스트 코드 확장과 커버리지 측정 기반
+- `TKT-011` `P2` `v0.3.0` `진행 가능` 엘리베이터 시뮬레이터 통합 프리뷰 연결
+- `TKT-021` `P2` `v0.3.0` `진행 가능` 23층 다중 엘리베이터 dispatch loop
+- `TKT-035` `P1` `v0.3.0` `진행 가능` 엘리베이터 실시간 수요 분포와 연속 이동 루프
+- `TKT-024` `P1` `v0.5.0` `v0.5.0 진행 시 가능` 다양한 시뮬 포털 탭과 택시/엘리베이터 진입 라우팅
+- `TKT-025` `P1` `v0.5.0` `v0.5.0 진행 시 가능` 택시 시뮬레이터 코어
+- `TKT-042` `P1` `v0.5.0` `v0.5.0 진행 시 가능` Work Manager worker 할당 가시화와 우선순위 반응 실행
+- `TKT-043` `P2` `v0.5.0` `v0.5.0 진행 시 가능` Work Manager DB 저장소 전환과 감사 로그
+- `TKT-026` `P2` `v0.5.1` `v0.5.1 진행 시 가능` 택시 시뮬레이터 피드백/자동 학습 루프
+- `TKT-028` `P1` `v0.6.0` `v0.6.0 진행 시 가능` Flash Game 공간과 Ruffle 기반 SWF 플레이어 통합
+- `TKT-029` `P1` `v0.6.0` `v0.6.0 진행 시 가능` Flash Game 카탈로그와 합법 반입 기준
+
+## Started
+
+- `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
 
-- None
 
-## Finish
+## Finished
 
-- None
+- `TKT-001` `P1` `v0.1.0` 프런트엔드 역 안내판 스플래시 및 관제실 POC
+- `TKT-002` `P1` `v0.1.0` Spring Boot 게이트웨이 스캐폴드 및 플랫폼 API
+- `TKT-003` `P2` `v0.1.0` 워커 흐름, 샘플 서비스 연결, 로컬 테스트 루프
+- `TKT-005` `P1` `v0.2.0` `localhost:7000` 통합 프리뷰 결과물
+- `TKT-013` `P3` `chore` 문서 한국어 통일과 티켓 흐름 정규화
+- `TKT-015` `P2` `infra` GitHub Releases / Actions 릴리스 자동화 기준선
+- `TKT-016` `P2` `v0.1.3` 샘플 Python 서비스 정리와 엘리베이터 서비스 준비
+- `TKT-017` `P1` `chore` 로드맵 결정 질문 수집과 1차 목표 확정
+- `TKT-019` `P1` `v0.1.2` `진행 가능` 로컬 빌드/PR 도구 가용성 preflight
+- `TKT-020` `P1` `v0.1.4` `진행 가능` 게이트웨이 티켓 기본 serviceId 샘플 Python 잔여값 제거
+- `TKT-022` `P1` `chore` `진행 가능` `need_review` 코드 묶음 PR 패키징과 원격 base 정렬
+- `TKT-023` `P2` `v0.3.0` `진행 가능` 지하철 플랩 행선기 스타일 첫 화면 디자인 강화
+- `TKT-027` `P1` `infra` `진행 가능` 오케스트레이터 `need_review` heartbeat 자동화 구현
+- `TKT-038` `P1` `infra` `진행 가능` 오케스트레이터 heartbeat 작업 스케줄러 등록
+- `TKT-007` `P1` `infra` `진행 가능` RTX5070 호스트 Docker 및 GPU 런타임
+- `TKT-004` `P2` `infra` `진행 가능` RTX5070 오프로드 및 외부 추론 런타임 계약
+- `TKT-008` `P2` `infra` `진행 가능` RTX5070 Ollama GPU 모델 서빙
+- `TKT-006` `P1` `infra` `진행 가능` 인프라 부트스트랩과 단일 워커 런타임
+- `TKT-014` `P1` `infra` `진행 가능` workaround.co.kr / workaround.kr 1차 공개 웹사이트 호스팅
+- `TKT-030` `P1` `infra` `진행 가능` 정식 Node/npm 툴체인 설치 기준선 정리
+- `TKT-009` `P2` `infra` `진행 가능` 워커-Ollama 헬스 및 degraded 실행 흐름
+- `TKT-037` `P1` `v0.4.0` `진행 가능` PR 버전 표기와 one-version-one-feature 가드
+- `TKT-041` `P1` `v0.4.0` `진행 가능` Main page 라우팅, 기능별 페이지, 다크모드
+- `TKT-031` `P1` `v0.4.0` `진행 가능` Work Manager 메뉴와 Jira 스타일 티켓 보드
+- `TKT-032` `P1` `v0.4.0` `진행 가능` Work Manager 티켓 이동과 command 브리지
+- `TKT-033` `P1` `v0.4.0` `진행 가능` command 비밀번호 게이트와 secret 해시 처리
+- `TKT-034` `P2` `v0.4.0` `진행 가능` Work Manager 활동 로그와 사용자-AI 대화 피드
+- `TKT-039` `P1` `v0.4.0` `진행 가능` Work Manager `Backlog/Ready` 분리와 상세 패널
+- `TKT-040` `P2` `v0.4.0` `진행 가능` Work Manager 메타데이터 편집과 목표 버전 헤더
+- `TKT-036` `P1` `v0.4.0` `진행 가능` Work Manager 테스트, GitHub Actions, 커버리지 게이트
+- `TKT-046` `P2` `v0.4.0` `진행 가능` 플랩 안내 방송 문구 확장과 랜덤 로테이션
+- `TKT-044` `P1` `chore` `진행 가능` 문서 인코딩 복구와 UTF-8 BOM 정규화
+- `TKT-045` `P1` `chore` `진행 가능` 문서 인코딩 가드레일과 체크 도구 추가
+- `TKT-047` `P1` `chore` `진행 가능` 로컬 `main` 브랜치 뒤처짐과 dirty worktree 정렬
 
-## Board Rules
+## 보드 규칙
 
-- Keep this file updated whenever a ticket moves between folders.
-- Use this file as the quick status board for the whole project.
-- The detailed source of truth remains the individual ticket files.
-- `P1` is the highest priority and `P5` is the lowest priority.
+- 티켓이 상태를 옮길 때마다 이 파일을 함께 갱신한다.
+- 이 파일은 전체 현황을 빠르게 보는 판이며, 세부 내용의 원문은 각 티켓 파일이다.
+- `P1` 이 가장 높고 `P5` 가 가장 낮다.
+- `진행 가능`, `진행 불가`, `vX.Y.Z 진행 시 가능` 은 worker 시작 판단용 오케스트레이터 판정이다.
+- `Ready` 는 현재 저장소 파일 수명주기와 분리된 Work Manager 표시/전이 설계 항목으로 먼저 도입하며, 실제 파일 기반 상태 확장은 관련 구현 티켓에서 함께 닫는다.

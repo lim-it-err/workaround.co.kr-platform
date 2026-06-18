@@ -1,60 +1,134 @@
-# Frontend UX Direction
+﻿문서 상태: 작성완료
 
-## Concept
+# 프런트엔드 UX 방향
 
-The frontend is a Vue service portal with a Seoul subway inspired interaction model. Small personal services should feel like stations on a growing platform map.
+## 개념
 
-## Visual Direction
+프런트엔드는 서울 지하철 감각을 참고한 Vue 기반 서비스 포털이다. 여러 개의 작은 개인 서비스가 노선도 위의 역처럼 보이도록 설계한다.
+이 문서는 제품 차원의 UX 방향 요약이며, 실제 디자인 기준선과 리뷰 대화는 `design/` 아래 문서를 우선 기준으로 삼는다.
 
-Use Seoul subway color references as accents, not as a single-color theme. The interface should feel useful, calm, and expandable.
+## 역할 분리
 
-Suggested accent families:
+- 디자이너는 `design/` 아래에서 현재 UI/UX 진단, 개선 규칙, 사용자 질문, review 로그를 관리한다.
+- 오케스트레이터는 `design/` 문서를 읽고 이를 구현 가능한 티켓과 개발 handoff 로 바꾼다.
+- 구현이 디자인 기준과 어긋나면 먼저 `design/orchestrator_review/` 에 이슈를 append 하고, 합의 뒤 구현 티켓을 갱신한다.
 
-- Line 1 blue
-- Line 2 green
-- Line 3 orange
-- Line 4 sky blue
-- Line 5 purple
-- Line 7 olive green
-- Line 9 gold
+## 시각 방향
 
-## Navigation Pattern
+서울 지하철 노선 색을 보조 색으로 활용하되, 화면 전체를 한 가지 색으로 밀어붙이지 않는다. 차분하고 실용적이며 확장 가능한 느낌을 유지한다.
 
-The lower area of the screen should include a horizontal route line. Services appear as stations. The user can scroll horizontally from left to right to explore available services.
+핵심은 "지하철 느낌"을 배경 장식으로만 쓰지 않는 것이다. 메인 허브는 환승 홀처럼, 기능 페이지는 승강장처럼, CTA 는 출구/진입 표식처럼 읽혀야 한다.
 
-## Startup Sequence
+추천 색 계열:
 
-The first stage should behave like an arriving station board.
+- 1호선 파랑
+- 2호선 초록
+- 3호선 주황
+- 4호선 하늘색
+- 5호선 보라
+- 7호선 올리브
+- 9호선 금색
 
-- Show a departure-board style splash screen.
-- Include a small flap/ticker strip with short game-joke style messages.
-- Auto-transition to the main page after 10 seconds.
-- Keep the transition smooth and obvious.
+## 내비게이션 패턴
 
-## Main Shell
+화면 하단에는 가로 노선 형태의 route line을 둔다. 서비스는 각 station처럼 보이게 한다.
 
-The main page should feel like a station control room rather than a marketing landing page.
+- 첫 POC에서는 서비스 수가 적으므로 고정 route map처럼 보여도 된다.
+- 서비스 수가 늘어나면 generic footer가 아니라 가로 탐색이 가능한 구간으로 확장한다.
+- 현재 위치, 환승 가능 기능, 메인 허브 복귀 경로는 실제 역 안내판처럼 반복적으로 노출한다.
 
-- Use a 2x2 service grid or similar compact control surface.
-- Mark heavy resource services with a node target such as `rtx5070` or another worker node.
-- Make the lower horizontal area a train track with a moving train marker instead of a generic scroll footer.
-- Keep service status visible without deep navigation.
+## 시작 시퀀스
 
-## MVP Screens
+첫 화면은 지하철 도착 안내판처럼 동작해야 한다.
 
-The MVP frontend should include:
+- 역 안내판 스타일의 splash 화면을 보여준다.
+- 예전 지하철 플랩 행선기처럼 행선, 장면, 승강장, 다음 열차 정보를 문자 타일로 보여준다.
+- 안내 방송 문구는 개발자 농담보다 사람의 생활, 사회적 감각, 도시적 배려를 먼저 느끼게 한다.
+- 안내 방송 문구는 생활 유머, 도시 행정 감각, 가벼운 자기풍자를 섞되, 같은 문구가 바로 반복되지 않게 랜덤 로테이션한다.
+- 시작 순간에는 플랩 문자 타일이 줄줄이 넘어가는 cascade 애니메이션을 보여준다.
+- 10초 후 메인 화면으로 자동 전환한다.
+- 전환은 부드럽고 분명해야 한다.
+- 단, 검수 전용 경로 `http://localhost:7000/test` 에서는 스플래시를 건너뛰고 바로 검수 가능한 화면으로 들어간다.
 
-- Service map / station navigation.
-- Platform health overview.
-- Ollama availability state.
-- Recent ticket list.
-- Ticket creation panel for development use.
-- Entry points into sample services.
+## 테스트 경로
 
-## UX Guardrails
+- 사용자 기본 흐름 확인은 `http://localhost:7000/` 을 기준으로 본다.
+- 오케스트레이터와 디자이너의 UI 검수 기본 경로는 `http://localhost:7000/test` 로 둔다.
+- `/test` 는 스플래시를 건너뛰고, 현재 검수 중인 페이지와 빠른 이동 버튼, 체크포인트를 함께 보여주는 검수 전용 진입점이다.
+- `/test` 의 검수 더미는 사용자 기본 경로 `/` 의 실제 API 연결 화면을 덮어쓰지 않는다.
+- `/test` 기본 첫 화면은 `junction` 으로 둔다.
+- 특정 화면만 바로 보고 싶으면 아래 쿼리 경로를 사용한다.
+  - `http://localhost:7000/test?view=junction`
+  - `http://localhost:7000/test?view=elevator`
+  - `http://localhost:7000/test?view=work`
+  - `http://localhost:7000/test?view=runtime`
+- 앞으로 디자인/구현 검수 문서에서 "테스트 경로"라고 쓰면 기본적으로 `/test` 를 뜻한다.
 
-- Do not make a marketing landing page as the first screen.
-- Prioritize the actual service portal experience.
-- Keep the UI ready for many small services.
-- Avoid making the screen depend on Ollama availability.
-- Service status should be visible without requiring deep navigation.
+## 메인 셸
+
+메인 화면은 마케팅 랜딩 페이지가 아니라, 지하철 중앙 환승 홀처럼 각 기능 페이지로 갈라지는 라우터 허브여야 한다.
+
+- 메인 화면에서는 실제 Elevator 상세 보드나 Work Manager 상세 보드를 직접 노출하지 않는다.
+- 2x2 또는 그에 준하는 노선 카드 표면을 사용해, 사용자가 한 단계 더 들어가 각 기능 페이지로 이동하게 한다.
+- 무거운 리소스를 쓰는 서비스는 `rtx5070` 같은 노드 타깃을 카드 요약 수준으로만 표기한다.
+- 프런트는 가능하면 gateway `GET /api/runtime` descriptor 를 읽되, 메인 화면에서는 상세 표보다 간단한 운행 상태 요약처럼 보여 준다.
+- 기본 포털 경로 `/` 는 메인 허브, Elevator, Work Manager, Runtime 모두 실제 gateway/service 상태를 읽는 화면으로 유지한다.
+- 하단 가로 영역은 generic scroll footer 대신 train track과 moving train marker를 사용한다.
+- 스플래시 다음 첫 화면은 `Main page` 로 두고, 여기서 Work Manager, Elevator Station, 후속 시뮬레이터로 라우팅한다.
+- 기능별 페이지에 들어간 뒤에는 명확한 `Main page 로 돌아가기` 동선을 둔다.
+- 메인 페이지는 "설명 + 선택 + 이동"까지만 맡고, 실제 조작은 각 기능 페이지가 맡는다.
+- `v0.3.0` 엘리베이터 station 은 23층 row 와 4대 shaft 를 동시에 보여주고, hall call 배정과 최근 도착 이력을 한눈에 드러낸다.
+- `v0.4.0` Work Manager 는 같은 포털 안의 별도 기능 페이지로 들어오며, Jira 스타일 컬럼 보드와 오른쪽 운영 패널을 같이 보여준다.
+- 엘리베이터 station 은 사용자가 수요 분포를 실시간으로 키우거나 줄일 수 있어야 하고, 화면 속 car 이동은 step 버튼보다 자동 운행에 가까운 연속 흐름으로 느껴져야 한다.
+- 엘리베이터 station 은 호출 건수보다 "층별 대기 인원", "car 별 탑승 인원", "목적층을 가진 승객 흐름"이 보이는 쪽을 우선한다.
+- 수동 추가 UI 는 `상행 1명 추가`, `하행 1명 추가`처럼 사람 수 단위로 동작해야 하며, 정원 20명 제한 때문에 남는 대기 인원도 시각적으로 드러나야 한다.
+- Work Manager 보드는 `Backlog`, `Ready`, `Started`, `Need Review`, `Finished` 의 5개 흐름으로 읽히게 한다.
+- 사용자가 직접 움직이는 기본 드래그 전이는 `Backlog -> Ready` 로 제한하고, `Ready -> Started` 와 `Need Review -> Finished` 는 시스템/에이전트 소유 구간처럼 보여준다.
+- 티켓 카드를 누르면 상세 패널이 열리고, 여기서 대상 버전, 우선순위, 진행 판정, 선행 조건, 의존성, 작업자 산출물, 검토 메모, `PR 준비 메모`, Notes 를 함께 읽는 흐름을 둔다.
+- Work Manager 상단에는 목표 버전 바와 로드맵 요약을 두어 현재 어느 버전 라인을 보는지 먼저 읽히게 한다.
+- 전체 포털은 일관된 토큰 체계를 가진 라이트/다크 2모드로 설계하고, 첫 구현부터 다크모드를 지원한다.
+
+## v0.3.0 엘리베이터 라이브 트래픽 UX
+
+- 엘리베이터 station 은 더 이상 추상적 hall call 중심 화면으로만 읽히지 않는다.
+- 사용자는 `한산`, `보통`, `혼잡` 프리셋과 강도 슬라이더로 건물 수요를 즉시 조절할 수 있어야 한다.
+- 수동 버튼은 `상행 1명 추가`, `하행 1명 추가` 개념으로 읽혀야 하며, 한 번 누를 때마다 승객 1명이 생성된다.
+- 승객은 항상 출발층과 목적층을 가진다.
+- 층별 셀에서는 호출 건수보다 `현재 대기 인원`, `주요 목적층`, `배정 car` 가 먼저 읽혀야 한다.
+- car 카드에서는 `현재 적재 인원`, `정원 20명`, `차내 주요 목적층`, `연속 위치(position)` 를 함께 보여준다.
+- 자동 운행이 기본이며 `step` 버튼은 디버그 보조 제어로만 읽혀야 한다.
+- 부드러운 연속 이동 표현은 메인 shaft 전체를 바꾸지 못하더라도, 적어도 car overview 카드 안에서는 층 사이 위치가 끊기지 않고 보이도록 유지한다.
+- 최근 도착 이력은 `출발 방향 -> 목적층 -> 배정 car` 순으로 읽히게 유지한다.
+
+## MVP 화면
+
+MVP 프런트엔드는 아래 요소를 포함한다.
+
+- 메인 환승 허브
+- 서비스 맵 / 역 탐색
+- 플랫폼 헬스 요약
+- Ollama 가용성 요약
+- 런타임 타깃 요약
+- 샘플 서비스 진입점
+- 23층 다중 엘리베이터 dispatch board
+- Work Manager 운영 보드와 티켓 상세 패널
+
+## Work Manager UX 메모
+
+- `Work Manager` 는 별도 관리자 앱이 아니라 같은 포털 안의 운영 트랙이다.
+- 첫 버전은 `Backlog`, `Ready`, `Started`, `Need Review`, `Finished` 5컬럼 흐름과 티켓 상세 보기, command 슬롯, activity feed, 목표 버전 헤더까지를 우선 완성한다.
+- activity feed 는 `사용자 요청`, `오케스트레이터 판단`, `티켓 발부`, `리뷰`, `후속 메모` 같은 타입 배지가 보이는 짧은 운영 카드 흐름으로 보여준다.
+- `Ready` 컬럼에는 worker 대기 상태를, `Need Review` 컬럼에는 PM/orchestrator 검토 상태를 읽을 수 있는 보조 문구를 둔다.
+- 실제 티켓 이동 저장과 preset command 실행은 gateway 의 보호된 Work Manager API 로 연결하고, UI 에서는 인증 상태와 최근 실행 이력이 명확히 보여야 한다.
+- 대상 버전, 우선순위, 의존성 편집은 detail panel 안에서 보이되, 저장은 command gate 가 열린 뒤에만 허용한다.
+- 우선순위 편집은 먼저 파일 기반 메타데이터 갱신으로 시작하고, 이 값이 실제 worker 선점 순서까지 즉시 바꾸는 자동 반응은 후속 버전으로 분리한다.
+
+개발용 티켓 생성 패널은 첫 셸과 상태 뷰가 안정화된 뒤의 후속 작업으로 둔다.
+
+## UX 가드레일
+
+- 첫 화면을 마케팅 랜딩 페이지로 만들지 않는다.
+- 실제 서비스 포털 경험을 우선한다.
+- 많은 수의 작은 서비스를 담을 수 있는 구조를 유지한다.
+- Ollama 가용성에 화면 전체가 의존하면 안 된다.
+- 서비스 상태는 깊은 탐색 없이 보여야 한다.

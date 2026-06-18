@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>workaround.co.kr</title>
+    <meta
+      name="description"
+      content="작은 서비스와 실험적인 시뮬레이터를 모아 운영하는 workaround.co.kr 플랫폼 소개 페이지"
+    />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">workaround.co.kr</p>
+        <h1>작은 서비스와 시뮬레이터를 천천히, 그러나 실제로 운영합니다.</h1>
+        <p class="lead">
+          이 페이지는 공개 진입점입니다. 내부 통합 프리뷰는 별도로 유지하고,
+          공개 웹사이트는 플랫폼 소개와 운영 원칙을 명확하게 전달하는 데 집중합니다.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://workaround.co.kr">대표 도메인 보기</a>
+          <a class="button secondary" href="https://workaround.kr">보조 도메인 정책</a>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>현재 방향</h2>
+          <p>
+            공개 사이트는 `workaround.co.kr` 를 대표 도메인으로 사용하고,
+            `workaround.kr` 은 이 주소로 리다이렉트합니다.
+          </p>
+        </article>
+        <article class="card">
+          <h2>배포 원칙</h2>
+          <p>
+            첫 공개 배포는 사용자가 가진 서버 위 Docker 기반으로 운영하고,
+            TLS 와 도메인 정책은 reverse proxy 계층에서 관리합니다.
+          </p>
+        </article>
+        <article class="card">
+          <h2>플랫폼 성격</h2>
+          <p>
+            내부에서는 gateway, worker, 시뮬레이터, 외부 Ollama 런타임이 느슨하게
+            연결되고, 공개 페이지는 이 구조를 한 문장으로 소개하는 역할에 머뭅니다.
+          </p>
+        </article>
+      </section>
+
+      <section class="timeline">
+        <div class="timeline-header">
+          <p class="eyebrow">Tracks</p>
+          <h2>지금 저장소 안에서 진행 중인 축</h2>
+        </div>
+        <div class="timeline-list">
+          <article>
+            <span>01</span>
+            <div>
+              <h3>Infra</h3>
+              <p>워커, Redis Streams, RTX5070 Ollama, 공개 호스팅 기준선을 정리합니다.</p>
+            </div>
+          </article>
+          <article>
+            <span>02</span>
+            <div>
+              <h3>v0.3.0</h3>
+              <p>23층 다중 엘리베이터 dispatch 와 시뮬레이터 미리보기를 다듬습니다.</p>
+            </div>
+          </article>
+          <article>
+            <span>03</span>
+            <div>
+              <h3>Next</h3>
+              <p>택시 시뮬레이터와 Flash Game 공간은 다음 minor 이후 별도 트랙으로 이어집니다.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="footer-note">
+        <p>
+          이 공개 페이지는 소개용 정적 서비스입니다. 내부 운영 프리뷰와 오케스트레이션
+          문서는 별도 저장소 구조와 도메인 정책으로 관리됩니다.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

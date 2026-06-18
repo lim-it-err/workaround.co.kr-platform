@@ -1,48 +1,51 @@
-# Service Policy
+﻿# 서비스 정책
 
-## Principle
+## 원칙
 
-Sub-services are independent projects. They may use any language as long as they follow the platform contract.
+서브서비스는 독립 프로젝트다. 플랫폼 계약만 지키면 언어는 자유롭게 선택할 수 있다.
 
-Spring Boot is used for the gateway and may also be used for sub-services, but sub-services should not depend on gateway internals.
+Spring Boot는 게이트웨이에 사용하고, 필요하면 서브서비스에도 사용할 수 있다. 다만 서브서비스는 게이트웨이 내부 구현에 의존하면 안 된다.
 
-## Required Service Contract
+서브서비스의 기본 배포 단위는 Docker다. 로컬 개발 편의 때문에 컨테이너 없이 돌리는 경우가 있더라도, 최종 계약은 `Dockerfile` 과 컨테이너 실행 경로를 포함해야 한다.
 
-Every service under `services/` must provide:
+## 필수 서비스 계약
 
-- Its own `README.md`.
-- Its own `Dockerfile`.
-- A `/health` endpoint.
-- HTTP API documentation for exposed endpoints.
-- Environment variable documentation.
+`services/` 아래의 모든 서비스는 아래 요소를 제공해야 한다.
 
-## Independence
+- 자체 `README.md`
+- 자체 `Dockerfile`
+- `/health` 엔드포인트
+- 노출 API의 HTTP 문서
+- 환경 변수 문서
 
-A service should be buildable and runnable on its own. It should not require the frontend or gateway to start for basic local testing.
+## 독립성
 
-## Communication
+서비스는 혼자서도 빌드와 실행이 가능해야 한다. 기본적인 로컬 테스트를 위해 프런트엔드나 게이트웨이 기동을 강제하면 안 된다.
 
-Use HTTP first for service communication. Avoid direct shared database coupling between services during MVP unless a future document explicitly defines that contract.
+## 통신
 
-## Gateway Registration
+서비스 간 통신은 HTTP를 기본으로 한다. MVP 단계에서는 직접적인 공유 DB 결합을 피한다. 예외가 필요하면 별도 문서로 계약을 정의한다.
 
-A service added to the platform should document:
+## 게이트웨이 등록 정보
 
-- Service id.
-- Internal compose hostname.
-- Health endpoint.
-- Gateway route prefix.
-- Required environment variables.
+플랫폼에 서비스를 추가할 때는 아래 정보를 함께 문서화한다.
 
-## LLM Access
+- 서비스 ID
+- compose 내부 hostname
+- 헬스 엔드포인트
+- 게이트웨이 route prefix
+- 필요한 환경 변수
 
-Services should not directly depend on Ollama. LLM work should go through the worker/ticket path or a gateway policy endpoint so the platform can handle RTX5070 downtime gracefully.
+## LLM 접근 규칙
 
-## Initial Samples
+서비스는 Ollama에 직접 의존하면 안 된다. LLM 작업은 워커/티켓 경로 또는 게이트웨이 정책 엔드포인트를 통해 처리해야 하며, 그래야 RTX5070 다운타임을 플랫폼이 흡수할 수 있다.
 
-MVP sample services:
+## 초기 예시 서비스
 
-- `services/sample-python-service/`
-- `services/sample-spring-service/`
+초기 MVP 예시 서비스 또는 후속 서비스 계약 후보는 아래처럼 잡을 수 있다.
 
-These samples should demonstrate language independence and Docker isolation rather than real business features.
+- `services/elevator-service/`
+
+이 예시는 실제 비즈니스 기능보다 언어 독립성과 Docker 격리를 증명하는 것이 목적이다. 엘리베이터 시뮬레이터 본 구현은 `v0.3.0` 후보로 둔다.
+
+`sample-python-service` 는 필수 기준이 아니며, `v0.1.3` 준비 슬라이스에서 필수 경로에서 제거하거나 후속 서비스 계약 후보로 대체하는 쪽을 기본으로 본다.

@@ -1,22 +1,33 @@
-# Agent Instructions
+﻿# 에이전트 작업 지침
 
-Codex is the docs-first project manager for this repository.
+이 저장소에서 Codex의 기본 역할은 문서 중심 프로젝트 매니저이자 오케스트레이터다.
+UI/UX 작업을 수행할 때는 별도의 디자이너 역할을 함께 맡아, 구현 전 디자인 기준과 검토 문서를 먼저 정리한다.
 
-## Role
+## 역할
 
-- Keep platform structure, policies, and decisions clear.
-- Write implementation-ready tickets for services, workers, infrastructure, and UI work.
-- Maintain documentation as part of every meaningful change.
-- Treat docs as the source of coordination between Codex, gateway APIs, workers, and future implementation agents.
+- 플랫폼 구조, 정책, 결정 사항을 명확하게 유지한다.
+- 서비스, 워커, 인프라, UI 작업을 위한 구현 가능한 티켓을 작성한다.
+- 의미 있는 변경이 생기면 문서와 히스토리를 함께 최신 상태로 유지한다.
+- 문서를 Codex, 게이트웨이 API, 워커, 앞으로 추가될 구현 에이전트 사이의 공통 기준으로 다룬다.
+- Codex가 잠시 직접 인프라 작업을 하더라도, 해당 작업이 끝나면 즉시 오케스트레이터 역할로 돌아온다.
+- 무리인 것, 현재 바로 할 수 없는 것, 다시 검토가 필요한 것, 사용자 결정이 필요한 것은 숨기지 않고 즉시 사용자에게 알리고 문서와 티켓에 기록한다.
 
-## Required Reading Before Work
+## 역할 분리
 
-Every agent must do these two things before starting work:
+- 오케스트레이터는 개발 관련 구조, 티켓, 구현 handoff, 검토 흐름을 담당한다.
+- 디자이너는 관련 문서와 히스토리를 읽고, 이를 기준으로 현재 UI/UX를 진단하고 개선 규칙을 만든다.
+- 디자이너의 산출물은 `design/` 아래에 두고, 오케스트레이터는 해당 문서를 읽어 UI/UX 구현 티켓과 개발 범위를 정리한다.
+- UI/UX 변경이 필요한 작업은 가능하면 먼저 디자인 검토 문서를 남기고, 이후 오케스트레이터가 구현 티켓으로 연결한다.
+- 오케스트레이터와 디자이너의 진행 중 소통은 `design/orchestrator_review/` 아래 append 형식 문서로 남기고, 합의가 끝난 문서는 `design/review_done/` 으로 이동한다.
 
-1. Read the relevant docs.
-2. Read the relevant history entries.
+## 작업 전 필수 읽기
 
-Before changing code, structure, APIs, environment variables, Docker behavior, or operating policy, read:
+모든 에이전트는 작업을 시작하기 전에 아래 두 가지를 반드시 수행한다.
+
+1. 관련 문서를 읽는다.
+2. 관련 히스토리를 읽는다.
+
+코드, 구조, API, 환경 변수, Docker 실행 방식, 운영 정책을 바꾸기 전에는 아래 문서를 먼저 읽는다.
 
 1. `README.md`
 2. `docs/architecture.md`
@@ -25,39 +36,66 @@ Before changing code, structure, APIs, environment variables, Docker behavior, o
 5. `docs/tickets/README.md`
 6. `docs/tickets/board.md`
 7. `docs/history/README.md`
-8. The latest relevant history file under `docs/history/`
-9. Any subsystem document related to the task, such as `docs/ollama-policy.md`, `docs/network.md`, or `docs/frontend-ux.md`
+8. `docs/history/` 아래의 최신 관련 히스토리 파일
+9. `docs/version-policy.md`, `docs/release-automation.md`, `docs/roadmap.md`, `docs/steering.md`
+10. `docs/feature-definition.md`
+11. `docs/ollama-policy.md`, `docs/network.md`, `docs/frontend-ux.md` 같은 관련 서브시스템 문서
+12. UI/UX 작업일 때 `design/README.md`, 관련 `design/*.md`, 최신 `design/orchestrator_review/*`
 
-## Documentation Rules
+## 문서 규칙
 
-- If API behavior changes, update the relevant docs in the same change.
-- If the ticket schema, worker behavior, service contract, env vars, Docker execution, routing, or health checks change, update docs before finishing.
-- Keep `README.md` as the short orientation page.
-- Keep detailed policies under `docs/`.
-- Keep dated work logs under `docs/history/`.
-- Keep workflow tickets under `docs/tickets/`.
-- Do not leave implementation and documentation in conflict.
-- If a change introduces a new service, include its own `README.md`, `Dockerfile`, and `/health` endpoint contract.
+- 모든 문서는 기본적으로 한국어로 작성한다.
+- `docs/`, `design/`, 루트 `README.md`, `AGENTS.md` 같은 운영 문서는 기본적으로 `UTF-8 with BOM` 으로 저장한다.
+- PowerShell 로 문서를 읽거나 쓸 때는 기본 인코딩에 기대지 말고 `-Encoding UTF8` 을 명시한다.
+- Python, Node, PowerShell 스크립트로 문서를 다룰 때도 인코딩을 명시하고, UTF-8 텍스트를 시스템 기본 ANSI 로 다시 저장하지 않는다.
+- `docs/` 와 `design/` 아래 문서를 수정하기 시작할 때는 먼저 해당 문서에 `문서 상태: 수정중` 을 표시한다.
+- 문서 수정이 끝났고 다른 작업자가 읽어도 되는 상태가 되면 `문서 상태: 작성완료` 로 바꾼다.
+- 티켓 문서는 메타데이터 안에 `문서 상태` 필드를 둔다.
+- 워커, 오케스트레이터, 디자이너는 다른 작업자가 `수정중` 으로 표시해 둔 문서를 가져와 기준 문서처럼 사용하지 않는다.
+- API 동작이 바뀌면 같은 변경 안에서 관련 문서를 함께 갱신한다.
+- 티켓 스키마, 워커 동작, 서비스 계약, 환경 변수, Docker 실행 방식, 라우팅, 헬스체크가 바뀌면 종료 전에 문서를 갱신한다.
+- `README.md`는 짧은 안내 문서로 유지한다.
+- 상세 정책은 `docs/` 아래에 둔다.
+- UI/UX 기준 문서와 디자인 검토 문서는 `design/` 아래에 둔다.
+- 날짜별 작업 기록은 `docs/history/` 아래에 둔다.
+- 워크플로 티켓은 `docs/tickets/` 아래에 둔다.
+- 구현과 문서가 어긋난 상태로 작업을 끝내지 않는다.
+- 새 서비스를 추가하면 해당 서비스 안에 `README.md`, `Dockerfile`, `/health` 계약을 포함한다.
+- 문서 일괄 정리, 언어 통일, 대규모 문서 구조 정리는 기본적으로 `chore` 티켓으로 관리한다.
+- UI/UX 구현이 디자인 기준에서 벗어나면 오케스트레이터는 먼저 `design/` 문서를 갱신하거나 디자이너 검토를 다시 열어 기준을 맞춘다.
+- `v0.4.0` 과 `v0.5.0` 범위 기능 작업은 `docs/feature-definition.md` 의 페이지 책임과 기능 경계를 기준으로 삼는다.
 
-## Worker History Rule
+## GitHub 문서 공개 규칙
 
-Every worker and every agent must record what it did in history.
+- `docs/` 아래 문서는 기본적으로 GitHub에 올리지 않는다.
+- 예외적으로 `docs/releases.md`는 공개 기준 문서로 사용할 수 있다.
+- 티켓 문서와 히스토리 문서는 로컬 운영 문서로 취급한다.
 
-- Before work: read the relevant history.
-- After work: write or update the dated history file under `docs/history/`.
-- The default file naming rule is `docs/history/YYYY-MM-DD.md`.
-- History entries should summarize what changed, why it changed, and any follow-up constraints or risks.
+## 히스토리 기록 규칙
 
-## Architecture Guardrails
+모든 워커와 모든 에이전트는 자신이 한 일을 히스토리에 기록해야 한다.
 
-- `frontend/` is the Vue final user-facing UI.
-- `gateway/` is Spring Boot and should remain an API Gateway, router, ticket issuer, auth layer, and health aggregator.
-- Business logic belongs in independent sub-services under `services/`.
-- Workers subscribe to typed tickets and execute jobs.
-- Redis Streams is the default ticket queue.
-- LLM work should go through the worker or gateway policy path. Services should not directly depend on Ollama.
-- External RTX5070 Ollama can be unavailable, especially during gaming, so health checks and graceful degradation are required.
+- 작업 전: 관련 히스토리를 읽는다.
+- 작업 후: `docs/history/` 아래 날짜 파일을 작성하거나 갱신한다.
+- 기본 파일명 규칙은 `docs/history/YYYY-MM-DD.md` 이다.
+- 히스토리에는 무엇을 바꿨는지, 왜 바꿨는지, 후속 제약이나 위험이 무엇인지 요약한다.
 
-## Done Means Documented
+## 아키텍처 가드레일
 
-A task is not done until the docs and history that describe the changed behavior are accurate.
+- `frontend/` 는 Vue 기반 최종 사용자 UI다.
+- `design/` 은 디자이너가 관리하는 UI/UX 기준선, 감사 기록, 오케스트레이터 협업 문서 위치다.
+- `gateway/` 는 Spring Boot 기반 게이트웨이이며 API 라우터, 티켓 발행기, 인증 계층, 헬스 집계 역할에 집중한다.
+- 비즈니스 로직은 `services/` 아래 독립 서브서비스에 둔다.
+- 워커는 정형화된 티켓을 구독하고 작업을 수행한다.
+- Redis Streams를 기본 티켓 큐로 사용한다.
+- LLM 작업은 워커 또는 게이트웨이 정책 경로를 통해 처리한다. 서비스가 Ollama에 직접 의존하면 안 된다.
+- 외부 RTX5070 Ollama는 게임 등으로 내려갈 수 있으므로 헬스체크와 점진적 저하 처리가 필요하다.
+
+## 완료의 기준
+
+작업은 바뀐 동작을 설명하는 문서와 히스토리가 정확해졌을 때 비로소 완료다.
+
+추가 기준:
+
+- 워커는 `docs/tickets/` 아래 티켓을 집기 전에 티켓 메타데이터의 `문서 상태: 작성완료` 를 먼저 확인한다.
+- `문서 상태: 수정중` 인 티켓은 작성 중인 티켓으로 보고 착수하지 않는다.

@@ -1,0 +1,20 @@
+{
+	email {$PUBLIC_SITE_EMAIL}
+}
+
+{$PUBLIC_SITE_DOMAIN} {
+	encode gzip zstd
+	reverse_proxy public-site:8010
+}
+
+www.{$PUBLIC_SITE_DOMAIN} {
+	redir https://{$PUBLIC_SITE_DOMAIN}{uri} permanent
+}
+
+{$PUBLIC_SITE_ALIAS_DOMAIN} {
+	redir https://{$PUBLIC_SITE_DOMAIN}{uri} permanent
+}
+
+www.{$PUBLIC_SITE_ALIAS_DOMAIN} {
+	redir https://{$PUBLIC_SITE_DOMAIN}{uri} permanent
+}

@@ -1,17 +1,30 @@
-# History
+﻿문서 상태: 작성완료
 
-This folder records dated work logs for the platform.
+# 히스토리
 
-## Layout
+이 폴더는 플랫폼의 날짜별 작업 기록을 담는다.
+
+## 구조
 
 - `docs/history/YYYY-MM-DD.md`
+- 인프라성 변경은 같은 날짜라도 `docs/history/YYYY-MM-DD-infra.md` 처럼 별도 파일로 남긴다.
 
-## Rules
+## 규칙
 
-- Every agent must read the relevant history entries before starting work.
-- Every agent must append or create a dated history entry after finishing meaningful work.
-- Workers follow the same rule as Codex and any other execution agent.
+- 모든 에이전트는 작업 전 관련 히스토리를 읽어야 한다.
+- 모든 에이전트는 의미 있는 작업을 마친 뒤 날짜별 히스토리를 추가하거나 갱신해야 한다.
+- 히스토리 문서를 수정하기 시작할 때는 먼저 `문서 상태: 수정중` 으로 표시하고, handoff 가능한 시점에 `문서 상태: 작성완료` 로 되돌린다.
+- 다른 작업자가 `수정중` 으로 잠가 둔 히스토리 문서는 최종 기준 기록처럼 가져와 이어 쓰지 않는다.
+- 워커도 Codex와 동일한 규칙을 따른다.
 
-## Latest Entries
+## 최신 항목
 
+- [2026-06-18](2026-06-18.md)
+- [2026-06-16](2026-06-16.md)
+- [2026-06-15 인프라](2026-06-15-infra.md)
+- [2026-06-15](2026-06-15.md)
+- [2026-06-14 인프라](2026-06-14-infra.md)
+- [2026-06-14](2026-06-14.md)
 - [2026-06-13](2026-06-13.md)
+- [2026-06-13 인프라](2026-06-13-infra.md)
+

@@ -1,0 +1,43 @@
+services:
+  public-site:
+    build:
+      context: ../../services/public-site
+    environment:
+      PORT: 8010
+      SERVICE_NAME: public-site
+      CANONICAL_DOMAIN: ${PUBLIC_SITE_DOMAIN}
+      ALIAS_DOMAIN: ${PUBLIC_SITE_ALIAS_DOMAIN}
+    expose:
+      - "8010"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/health', timeout=3).read()"
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  caddy:
+    image: caddy:2.9-alpine
+    depends_on:
+      public-site:
+        condition: service_healthy
+    environment:
+      PUBLIC_SITE_DOMAIN: ${PUBLIC_SITE_DOMAIN}
+      PUBLIC_SITE_ALIAS_DOMAIN: ${PUBLIC_SITE_ALIAS_DOMAIN}
+      PUBLIC_SITE_EMAIL: ${PUBLIC_SITE_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
