@@ -8,5 +8,7 @@ spring:
 app:
   platform:
     api-key: ${PLATFORM_API_KEY:dev-key}
+    elevator-service-url: ${ELEVATOR_SERVICE_URL:http://localhost:8003}
+    sample-spring-service-url: ${SAMPLE_SPRING_SERVICE_URL:http://localhost:8002}
   ollama:
     base-url: ${OLLAMA_BASE_URL:http://rtx5070-host:11434}
