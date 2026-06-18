@@ -76,6 +76,8 @@ Spring은 무거운 비즈니스 로직을 쌓는 곳이 아니라, 게이트웨
 - 로컬 게이트웨이 커버리지 HTML 리포트: `gateway/target/site/jacoco/index.html`
 - GitHub Actions 커버리지 산출물: `gateway-jacoco-report` artifact
 
+`tools/start-local-preview.ps1` 는 `frontend:7000`, `gateway:8080`, `elevator-service:8003` 를 함께 올린다. 엘리베이터 서비스는 로컬 Python 실행을 먼저 시도하고, 실패하면 Docker container fallback 으로 `8003` 을 복구한다.
+
 ## 로컬 Node / npm 기준
 
 - 프런트엔드의 정식 로컬 기준선은 Windows x64 `Node.js 22 LTS` 와 함께 설치되는 `npm`, `npx` 가 PATH 에 잡힌 상태다.

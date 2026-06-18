@@ -6,6 +6,7 @@ $frontendScript = Join-Path $repoRoot 'tools\run-frontend-dev.ps1'
 $gatewayJar = Join-Path $repoRoot 'gateway\target\gateway-0.0.1-SNAPSHOT.jar'
 $javaExe = Join-Path $repoRoot 'tools\runtime\jdk-21\bin\java.exe'
 $elevatorApp = Join-Path $repoRoot 'services\elevator-service\app.py'
+$dockerExe = 'C:\Users\user\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe'
 $python = Get-Command python -ErrorAction SilentlyContinue
 $pythonCandidates = @(
   'C:\Program Files\LibreOffice\program\python.exe',
@@ -97,6 +98,31 @@ function Wait-HttpReady {
   }
 }
 
+function Start-ElevatorContainer {
+  param([string]$ServiceDirectory)
+
+  if (-not (Test-Path $dockerExe)) {
+    return $null
+  }
+
+  & $dockerExe rm -f workaround-elevator-service 2>$null | Out-Null
+  & $dockerExe build -t workaround-elevator-service:local $ServiceDirectory | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    throw "Failed to build workaround-elevator-service:local"
+  }
+
+  $containerId = (& $dockerExe run -d --name workaround-elevator-service -p 8003:8003 workaround-elevator-service:local).Trim()
+  if (-not $containerId) {
+    throw "Failed to start workaround-elevator-service container"
+  }
+
+  return [pscustomobject]@{
+    Name = 'elevator-8003'
+    Action = 'started-docker'
+    Id = $containerId
+  }
+}
+
 if (-not (Test-Path $javaExe)) {
   throw "Java runtime not found: $javaExe"
 }
@@ -120,19 +146,39 @@ if (-not $python) {
   }
 }
 
-if (-not $python) {
-  throw "python executable not found on PATH or known fallback locations."
+if (-not $python -and -not (Test-Path $dockerExe)) {
+  throw "Neither a local python runtime nor Docker Desktop docker.exe is available for elevator-service."
 }
 
 $results = @()
-$results += Start-ManagedProcess -Name 'elevator-8003' -Command $python.Source -Arguments 'app.py' -WorkingDirectory (Join-Path $repoRoot 'services\elevator-service')
+$elevatorWorkingDirectory = Join-Path $repoRoot 'services\elevator-service'
 $results += Start-ManagedProcess -Name 'gateway-8080' -Command $javaExe -Arguments "-jar `"$gatewayJar`"" -WorkingDirectory $repoRoot
 $results += Start-ManagedProcess -Name 'frontend-7000' -Command 'powershell.exe' -Arguments "-NoProfile -ExecutionPolicy Bypass -File `"$frontendScript`"" -WorkingDirectory $repoRoot
 
+$elevatorResult = $null
+if ($python) {
+  $elevatorCommand = "& '$($python.Source)' 'app.py'"
+  $elevatorResult = Start-ManagedProcess -Name 'elevator-8003' -Command 'powershell.exe' -Arguments "-NoProfile -Command Set-Location '$elevatorWorkingDirectory'; $elevatorCommand" -WorkingDirectory $repoRoot
+}
+
+$elevatorHealth = Wait-HttpReady -Name 'elevator-8003' -Url 'http://127.0.0.1:8003/health' -TimeoutSeconds 12
+if (-not $elevatorHealth.Ready -and (Test-Path $dockerExe)) {
+  $localElevator = Get-ManagedProcess -PidPath (Join-Path $stateDir 'elevator-8003.pid')
+  if ($localElevator) {
+    Stop-Process -Id $localElevator.Id -Force -ErrorAction SilentlyContinue
+  }
+  $elevatorResult = Start-ElevatorContainer -ServiceDirectory $elevatorWorkingDirectory
+  $elevatorHealth = Wait-HttpReady -Name 'elevator-8003' -Url 'http://127.0.0.1:8003/health' -TimeoutSeconds 30
+}
+
 $health = @()
-$health += Wait-HttpReady -Name 'elevator-8003' -Url 'http://127.0.0.1:8003/health'
+$health += $elevatorHealth
 $health += Wait-HttpReady -Name 'gateway-8080' -Url 'http://127.0.0.1:8080/api/health'
 $health += Wait-HttpReady -Name 'frontend-7000' -Url 'http://127.0.0.1:7000'
+
+if ($elevatorResult) {
+  $results += $elevatorResult
+}
 
 [pscustomobject]@{
   processes = $results

@@ -51,6 +51,7 @@ powershell -ExecutionPolicy Bypass -File .\tools\start-local-preview.ps1
 ```
 
 - `tools/start-local-preview.ps1` 는 `frontend:7000`, `gateway:8080`, `elevator-service:8003` 를 한 번에 띄우고 readiness 를 확인한다.
+- 엘리베이터 서비스는 로컬 Python 실행을 먼저 시도하고, 필요하면 Docker fallback 으로 `8003` 을 올린다.
 - 중지는 `powershell -ExecutionPolicy Bypass -File .\tools\stop-local-preview.ps1` 를 사용한다.
 
 ## fallback 메모
