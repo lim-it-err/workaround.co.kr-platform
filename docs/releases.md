@@ -58,8 +58,8 @@
 - `v0.4.0`: Work Manager 메뉴, `Backlog/Ready` 보드 흐름, 상세 패널, Main page 분리 라우팅, 다크모드, command 게이트와 테스트/CI/커버리지/PR 버전 가드까지 갖추는 운영 후보
 - `v0.5.0`: 택시 시뮬레이터 포털과 시뮬레이션 코어를 묶는 다음 단계 후보
 - `v0.5.1`: 택시 시뮬레이터의 피드백 반영과 자동 학습 루프 후속 후보
-- `v0.6.0`: Blog District 허브, 공개 아카이브, 글 상세, Writing Studio 를 묶는 블로그 후보
-- `v0.7.0`: 블로그 이미지 업로드와 Flash Game 공간(SWF 플레이어/카탈로그)을 붙이는 확장 후보
+- `v0.6.0`: Blog District 허브, 공개 아카이브, 글 상세, Writing Studio, 이미지 업로드를 묶는 블로그 후보
+- `v0.7.0`: Flash Game 공간(SWF 플레이어/카탈로그)을 붙이는 아케이드 후보
 - `infra`: 워커, Docker, GPU 런타임, Ollama 서빙 기반을 준비하는 인프라 트랙
 - `chore`: 문서 언어와 티켓 흐름을 정리하는 공통 정비 트랙
 
