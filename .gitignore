@@ -1,0 +1,31 @@
+# Node / frontend generated files
+frontend/node_modules/
+frontend/dist/
+
+# Local toolchain / runtime caches
+tools/downloads/
+tools/runtime/
+tools/local-node/
+
+# Java / Python generated files
+gateway/target/
+services/**/__pycache__/
+*.pyc
+
+# Local preview runtime artifacts
+tmp/
+.codex-preview/
+
+# Local Codex verification artifacts
+.codex-vite-7000.log
+.codex-vite-7000.err.log
+.codex-vite-7000.pid
+.codex-gateway-8080.log
+.codex-gateway-8080.err.log
+.codex-gateway-8080.pid
+.codex-elevator-8003.log
+.codex-elevator-8003.err.log
+.codex-elevator-8003.pid
+
+# Gateway runtime data (work manager file store)
+gateway/data/

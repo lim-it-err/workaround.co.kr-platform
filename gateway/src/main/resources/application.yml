@@ -10,5 +10,10 @@ app:
     api-key: ${PLATFORM_API_KEY:dev-key}
     elevator-service-url: ${ELEVATOR_SERVICE_URL:http://localhost:8003}
     sample-spring-service-url: ${SAMPLE_SPRING_SERVICE_URL:http://localhost:8002}
+  work-manager:
+    password-sha256: ${WORK_MANAGER_PASSWORD_SHA256:9d77b517528af09a35b95ce19b7d96bc0f4ee00bd886c787814c6c0123ad75a4}
+    session-ttl-minutes: ${WORK_MANAGER_SESSION_TTL_MINUTES:30}
+    max-failed-attempts: ${WORK_MANAGER_MAX_FAILED_ATTEMPTS:5}
+    lock-minutes: ${WORK_MANAGER_LOCK_MINUTES:5}
   ollama:
     base-url: ${OLLAMA_BASE_URL:http://rtx5070-host:11434}

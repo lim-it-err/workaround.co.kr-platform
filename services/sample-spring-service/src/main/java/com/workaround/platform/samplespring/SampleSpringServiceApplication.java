@@ -39,15 +39,11 @@ class SampleSpringController {
 
   @GetMapping("/api/ping")
   Map<String, Object> ping() {
-    return Map.of(
-        "message", "spring sample is ready",
-        "service", serviceName);
+    return Map.of("message", "spring sample is ready", "service", serviceName);
   }
 
   @GetMapping("/api/echo")
   Map<String, Object> echo(@RequestParam(defaultValue = "hello") String message) {
-    return Map.of(
-        "message", message,
-        "service", serviceName);
+    return Map.of("message", message, "service", serviceName);
   }
 }

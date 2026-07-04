@@ -1,3 +1,7 @@
-# Need Review
+﻿# Need Review
 
-Worker-complete tickets waiting for orchestrator validation live here.
+워커 handoff가 끝났고 오케스트레이터 검토를 기다리는 티켓이 이 폴더에 있다.
+
+## 현재 티켓
+
+- 없음

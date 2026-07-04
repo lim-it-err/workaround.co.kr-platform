@@ -1,40 +1,82 @@
-# Worker Role
+﻿문서 상태: 작성완료
 
-## Purpose
+# 워커 역할
 
-Workers primarily implement code changes from tickets.
+## 목적
 
-## Responsibilities
+워커는 티켓에 적힌 구현 작업을 수행하는 실행자다.
 
-- Read docs before starting.
-- Read the relevant history before starting.
-- Pick a ticket from `docs/tickets/backlog/`.
-- Create a branch for the work.
-- Implement the requested change.
-- Run relevant tests.
-- Update the ticket with branch name, test result, and work report.
-- Move the ticket from `backlog` to `need_review`.
-- Record completed work in `docs/history/YYYY-MM-DD.md`.
+워커 노드는 오케스트레이터보다 더 제한적인 모델로 동작할 수 있으며, 사람이나 오케스트레이터의 실시간 관여 없이 작업할 수 있다. 따라서 워커는 넓은 추론보다 티켓에 적힌 절차를 우선한다.
 
-## Branch Rule
+## 책임
 
-Use a branch name like:
+- 작업 전 관련 문서를 읽는다.
+- 작업 전 관련 히스토리를 읽는다.
+- 운영 문서(`docs/`, `design/`, `README.md`, `AGENTS.md`)를 건드릴 때는 `UTF-8 with BOM` 저장 기준을 지킨다.
+- PowerShell, Python, Node 로 문서를 읽고 쓸 때는 인코딩을 명시하고, 기본 ANSI 인코딩으로 다시 저장하지 않는다.
+- `VERSION`, `docs/releases.md`, `docs/version-policy.md` 를 확인해 개발 상한을 넘지 않는다.
+- `v0.4.0` 과 `v0.5.0` 범위 작업은 `docs/feature-definition.md` 를 먼저 읽고 페이지 책임과 기능 경계를 확인한다.
+- `docs/tickets/backlog/` 에서 티켓을 집는다.
+- 티켓 메타데이터의 `문서 상태` 를 먼저 확인한다.
+- `문서 상태` 가 `작성완료` 가 아니면 시작하지 않는다.
+- 티켓 메타데이터의 `진행 판정` 을 확인한다.
+- `진행 판정` 이 `진행 가능` 이 아니면 시작하지 않는다. `vX.Y.Z 진행 시 가능` 은 해당 버전 라인이 열렸다는 문서/보드 근거가 있을 때만 시작한다.
+- 티켓의 `작업 내용` 과 `질문/결정 기록` 을 먼저 읽고, 결정된 범위 안에서 작업한다.
+- 티켓의 `선행 조건` 을 확인하고, 충족되지 않았으면 시작하지 않는다.
+- 티켓에 적힌 순서와 범위를 우선하고, 큰 방향을 임의로 재해석하지 않는다.
+- 티켓 구현이 `docs/feature-definition.md` 와 충돌하면 임의로 확장하거나 축소하지 않고 Notes 또는 review 메모로 올린다.
+- 작업을 시작할 때 티켓을 `started` 로 옮긴다.
+- 작업용 브랜치를 만든다.
+- 구현을 수행한다.
+- 관련 테스트를 실행한다.
+- 필요하면 review용 브랜치를 push 한다.
+- 티켓에 브랜치명, 테스트 결과, 작업 보고서를 적는다.
+- 티켓을 `started` 에서 `need_review` 로 옮긴다.
+- 작업 완료 후 `docs/history/YYYY-MM-DD.md` 에 기록을 남긴다.
+- 결과가 이상하거나 판단이 애매하면 `need_review` 에서 멈추고 `orchestrator` 의 검토를 기다린다.
+
+## 브랜치 규칙
+
+브랜치 이름은 아래 형태를 기본으로 한다.
 
 ```text
 codex/tkt-001-short-name
 ```
 
-## Worker Output
+## 워커 결과물
 
-Each worker must return:
+각 워커는 최소한 아래 정보를 남겨야 한다.
 
-- branch name
-- short implementation summary
-- test summary
-- open risks or follow-up notes
+- 브랜치명
+- push된 브랜치 정보
+- 구현 요약
+- 테스트 요약
+- 열린 위험 또는 후속 메모
+- 다른 티켓으로 넘길 Notes
 
-## Non-Responsibilities
+필요하면 오케스트레이터가 PR 본문에 재사용할 수 있도록 PR 초안 메모를 handoff에 포함할 수 있다.
 
-- Do not merge to main.
-- Do not mark a ticket `finish`.
-- Do not skip docs or history reading.
+## 제한된 모델 가드레일
+
+- 티켓에 없는 큰 구조 변경은 하지 않는다.
+- `진행 판정` 이 `진행 불가` 또는 아직 열리지 않은 `vX.Y.Z 진행 시 가능` 인 티켓은 시작하지 않는다.
+- 다른 작업자가 `수정중` 으로 잠가 둔 티켓이나 기준 문서는 착수 근거로 쓰지 않는다.
+- 선행 조건이 충족되지 않은 티켓은 시작하지 않는다.
+- 여러 선택지가 있으면 티켓의 기본 선택을 따른다.
+- 기본 선택이 없고 선택이 위험하면 작업을 작게 멈추고 Notes에 질문을 남긴다.
+- 파일 삭제, 서비스 제거, 공개 배포 같은 되돌리기 어려운 작업은 티켓에 명시된 경우에만 수행한다.
+- 애매한 요구사항을 스스로 확장하지 말고, 구현 가능한 최소 범위를 먼저 완성한다.
+- 테스트를 실행할 수 없으면 실행하지 못한 이유와 필요한 도구를 정확히 남긴다.
+
+## PR 규칙
+
+- 워커는 PR을 만들지 않는다.
+- 워커는 review 가능한 브랜치와 handoff 메모까지만 준비한다.
+- PR 생성과 갱신은 오케스트레이터 책임이다.
+
+## 비책임 범위
+
+- `main` 에 merge 하지 않는다.
+- 티켓을 `finished` 로 바꾸지 않는다.
+- 문서/히스토리 읽기를 생략하지 않는다.
+- 다른 사람이 만든 변경을 임의로 되돌리지 않는다.

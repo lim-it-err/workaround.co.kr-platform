@@ -14,6 +14,11 @@ Spring Boot 기반 API 게이트웨이, 라우터, 티켓 발행기, 개발용 �
 ## 현재 API 표면
 
 - `GET /api/health`
+- `GET /api/runtime`
+- `GET /api/work-manager/board`
+- `POST /api/work-manager/auth`
+- `POST /api/work-manager/tickets/{ticketId}/transition`
+- `POST /api/work-manager/commands`
 - `GET /api/services`
 - `GET /api/services/{serviceId}/**`
 - `POST /api/services/{serviceId}/**`
@@ -23,6 +28,7 @@ Spring Boot 기반 API 게이트웨이, 라우터, 티켓 발행기, 개발용 �
 - `POST /api/tickets/{ticketId}/claim`
 - `POST /api/tickets/{ticketId}/complete`
 - `POST /api/tickets/{ticketId}/fail`
+- `POST /api/tickets/{ticketId}/waiting-llm`
 
 ## 로컬 포트
 
@@ -37,5 +43,21 @@ Spring Boot 기반 API 게이트웨이, 라우터, 티켓 발행기, 개발용 �
 ## 참고
 
 - 현재 `v0.1.0` 스캐폴드는 첫 워커 루프 검토를 위해 최소한의 인메모리 티켓 저장소를 사용한다.
+- `waiting-llm` 경로는 워커가 Ollama unavailable / degraded 상태를 감지했을 때 LLM 의존 티켓을 즉시 실패시키지 않고 다시 볼 수 있는 상태로 남기기 위한 최소 계약이다.
+- `GET /api/runtime` 는 `ion2` / `rtx5070` 노드 타깃, offload 규칙, Ollama 상태 표현, 티켓 생성 예시를 한 번에 보여주는 런타임 descriptor 다.
+- `GET /api/work-manager/board` 는 `docs/tickets/board.md` 와 해당 티켓 본문을 읽어 Work Manager 컬럼 보드, 티켓 상세 요약, activity feed seed 를 돌려주는 조회 API 다.
+- `POST /api/work-manager/auth` 는 공유 비밀번호를 서버측 SHA-256 해시와 비교해 짧은 Work Manager 세션 토큰을 발급한다.
+- `POST /api/work-manager/tickets/{ticketId}/transition` 는 보호된 Work Manager 티켓 이동을 처리하고, `backlog -> started`, `started -> need_review`, `need_review -> finished` 전이만 허용한다.
+- `POST /api/work-manager/commands` 는 preset action + note 를 worker/orchestrator 경로용 플랫폼 티켓으로 브리지하고 최근 command history 를 남긴다.
 - 컨테이너 빌드 경로는 `gateway/Dockerfile` 에 있다.
 - Compose 로컬 실행에서는 샘플 서비스 주소로 `localhost` 대신 컨테이너 호스트명을 사용한다.
+
+## Work Manager 보호 설정
+
+- 조회 전용 Work Manager 보드와 activity feed 는 공개다.
+- 티켓 이동과 preset command 실행은 `X-Work-Manager-Token` 이 있어야 한다.
+- 기본 공유 비밀번호의 평문은 코드에 두지 않고, `WORK_MANAGER_PASSWORD_SHA256` 환경 변수 기본값으로 SHA-256 해시만 둔다.
+- 세션 TTL 과 실패 잠금은 아래 환경 변수로 조절한다.
+  - `WORK_MANAGER_SESSION_TTL_MINUTES`
+  - `WORK_MANAGER_MAX_FAILED_ATTEMPTS`
+  - `WORK_MANAGER_LOCK_MINUTES`

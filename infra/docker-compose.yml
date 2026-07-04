@@ -18,7 +18,9 @@ services:
     environment:
       PORT: 8003
       SERVICE_NAME: elevator-service
-      CURRENT_FLOOR: 7
+      MIN_FLOOR: 1
+      MAX_FLOOR: 23
+      ELEVATOR_COUNT: 4
     ports:
       - "8003:8003"
 
@@ -53,6 +55,8 @@ services:
     build:
       context: ../workers/ion2-worker
     depends_on:
+      redis:
+        condition: service_healthy
       gateway:
         condition: service_started
       elevator-service:
@@ -64,4 +68,12 @@ services:
       GATEWAY_BASE_URL: http://gateway:8080
       ELEVATOR_SERVICE_URL: http://elevator-service:8003
       SAMPLE_SPRING_SERVICE_URL: http://sample-spring-service:8002
+      WORKER_RUNTIME_MODE: ${WORKER_RUNTIME_MODE:-gateway-polling}
       WORKER_POLL_INTERVAL_SECONDS: 5
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_STREAM_KEY: ${REDIS_STREAM_KEY:-platform:tickets}
+      REDIS_RESULTS_STREAM_KEY: ${REDIS_RESULTS_STREAM_KEY:-platform:tickets:results}
+      REDIS_CONSUMER_GROUP: ${REDIS_CONSUMER_GROUP:-platform-workers}
+      REDIS_CONSUMER_NAME: ${REDIS_CONSUMER_NAME:-ion2-worker}
+      REDIS_READ_BLOCK_MS: ${REDIS_READ_BLOCK_MS:-1000}

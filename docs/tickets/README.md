@@ -1,37 +1,136 @@
-# Ticket System
+﻿문서 상태: 작성완료
 
-This folder is the coordination layer for orchestrators and workers.
+# 티켓 시스템
 
-## Folders
+이 폴더는 오케스트레이터와 워커가 협업하는 기준 문서다.
 
-- `docs/tickets/backlog/`: ready-to-pick work items
-- `docs/tickets/need_review/`: worker-complete items waiting for orchestrator review and test
-- `docs/tickets/finish/`: reviewed items that passed orchestrator validation and are ready for user merge decisions
+문서 인코딩 기준:
 
-## Priority Scale
+- `docs/`, `design/`, 루트 `README.md`, `AGENTS.md` 같은 운영 문서는 `UTF-8 with BOM` 으로 저장한다.
+- PowerShell, Python, Node 로 문서를 읽고 쓸 때는 인코딩을 명시하고, 기본 ANSI 인코딩으로 다시 저장하지 않는다.
+- 저장 기준 점검은 `powershell -NoProfile -ExecutionPolicy Bypass -File tools/check-docs-encoding.ps1` 로 실행한다.
+- 실패 예시:
+  - `[FAIL] missing UTF-8 BOM :: .\docs\tickets\board.md`
+  - `[FAIL] invalid UTF-8 byte sequence :: .\design\ui-ux-rules.md`
 
-The repository uses `P1` through `P5`.
+## 폴더
 
-- `P1`: highest priority
-- `P2`: high priority
-- `P3`: normal priority
-- `P4`: low priority
-- `P5`: lowest priority
+- `docs/tickets/backlog/`: 아직 시작하지 않은 작업
+- `docs/tickets/started/`: 워커가 착수한 작업
+- `docs/tickets/need_review/`: 워커 handoff가 끝나 오케스트레이터 검토를 기다리는 작업
+- `docs/tickets/finished/`: 오케스트레이터 검토를 통과했고 PR 생성 대상이 되는 작업
 
-## Required Flow
+참고:
 
-1. Orchestrator creates or updates a ticket in `backlog`.
-2. A worker reads docs, reads history, creates a branch, implements the ticket, tests the work, and writes a work report.
-3. The worker moves the ticket from `backlog` to `need_review` and records the branch and report in the ticket.
-4. The orchestrator watches `need_review`, confirms the worker handoff, reviews the worker result, runs validation tests, and updates docs if needed.
-5. If the result is good, the orchestrator moves the ticket to `finish`.
-6. If the result is not good, the orchestrator moves the ticket back to `backlog` with a clear retry note.
-7. The user decides whether to merge.
+- 현재 저장소의 파일 수명주기는 위 4단계를 기준으로 유지한다.
+- `v0.4.0` Work Manager 화면에서는 여기에 `Ready` 표시 단계를 추가해 `Backlog -> Ready -> Started -> Need Review -> Finished` 흐름으로 보여줄 수 있다.
 
-## Universal Rules
+## 우선순위
 
-- Every agent reads the relevant docs before starting.
-- Every agent reads the relevant history before starting.
-- Every agent records its completed work in `docs/history/YYYY-MM-DD.md`.
-- Orchestrators manage docs and ticket state.
-- Workers primarily change code and return branch plus report.
+저장소는 `P1` 부터 `P5` 까지 사용한다.
+
+- `P1`: 가장 중요
+- `P2`: 높음
+- `P3`: 보통
+- `P4`: 낮음
+- `P5`: 가장 낮음
+
+## 티켓 형식
+
+기본 티켓은 아래 순서로 읽으면 된다.
+
+1. 메타데이터
+   - 이 안에 `문서 상태` 를 둔다.
+2. 목표
+3. 작업 내용
+4. 범위
+5. 완료 기준
+6. 선행 조건
+7. 필요 시 `의존성`
+8. 질문/결정 기록
+9. 선행 읽기
+10. 작업자 산출물
+11. 검토 메모
+12. 필요 시 `PR 준비 메모`
+13. 필요 시 `Notes`
+
+`Notes` 는 다른 티켓이나 다른 작업자에게 짧게 남기는 전달 메모다.
+
+`PR 준비 메모` 는 오케스트레이터가 PR 을 만들거나 갱신할 때 재사용할 제목, 본문 초안, 검증 체크리스트, 미검증 항목을 적는 곳이다. PR 을 바로 열 수 없더라도 `need_review` 티켓에는 가능한 한 이 정보를 남긴다.
+
+`작업 내용` 은 worker가 실제로 수행할 구체 작업 목록이다. 목표가 열려 있더라도 작업 내용은 파일, 설정, 실행 절차, 검증 방향을 최대한 좁혀 적는다.
+
+`질문/결정 기록` 은 오케스트레이터와 사용자가 미리 주고받은 질문과 답을 남기는 곳이다. worker가 같은 질문을 다시 하지 않도록, 결정된 내용과 아직 열린 질문을 분리해서 적는다.
+
+`선행 조건` 은 이 티켓을 시작하기 전에 끝나야 하는 티켓, 결정, 외부 준비 상태를 적는 곳이다. 선행 조건이 없으면 `없음` 이라고 적는다.
+
+`의존성` 은 Work Manager 같은 운영 화면에서 직접 읽고 수정할 수 있는 선택 섹션이다. 첫 버전에서는 자유 텍스트 또는 티켓 ID 목록으로 두고, 섹션이 없으면 UI 는 `선행 조건` 값을 fallback 으로 읽을 수 있다.
+
+`진행 판정` 은 worker가 티켓을 집어도 되는지 빠르게 판단하기 위한 오케스트레이터의 명시 게이트다.
+
+- `진행 가능`: 선행 조건을 확인한 뒤 바로 시작할 수 있다.
+- `진행 불가`: 지금은 시작하지 않는다. 이유와 해제 조건은 `선행 조건`, `질문/결정 기록`, `Notes` 를 따른다.
+- `vX.Y.Z 진행 시 가능`: 해당 버전 라인이 오케스트레이터에 의해 열렸을 때만 시작한다. 예: `v0.2.2 진행 시 가능`, `v0.3.2 진행 시 가능`.
+
+`진행 판정`, `대상 버전`, `선행 조건` 이 서로 다르게 읽히면 worker는 더 보수적인 해석을 따른다. 예를 들어 `대상 버전` 이 `v0.3.2` 라도 `진행 판정` 이 `v0.3.2 진행 시 가능` 이면 `v0.3.0` 릴리스 라인이 열린 뒤 오케스트레이터가 허용하기 전까지 시작하지 않는다.
+
+`문서 상태` 규칙:
+
+- `작성완료`: 다른 작업자가 기준 문서로 읽고 착수할 수 있다.
+- `수정중`: 누군가 문서를 쓰는 중이므로 다른 작업자는 이 문서를 가져와 착수하지 않는다.
+- worker 는 티켓을 시작하기 전에 `문서 상태: 작성완료` 를 먼저 확인한다.
+- 티켓이 `backlog` 에 있어도 `문서 상태: 작성완료` 가 아니면 아직 시작 가능한 작업 지시서가 아니라고 본다.
+- 누군가 같은 티켓을 `수정중` 으로 잡고 있으면 다른 작업자는 그 티켓 문서를 복사하거나 이어 쓰지 않는다.
+
+워커는 오케스트레이터보다 제한적인 모델일 수 있으므로, 티켓은 가능한 한 추론을 덜 요구하는 실행 지시서처럼 작성한다.
+
+- 작업 대상 파일과 디렉터리를 적는다.
+- 기본 선택지를 적는다.
+- 하지 말아야 할 일을 적는다.
+- 위험한 작업은 승인 조건을 적는다.
+- 검증 명령이나 수동 확인 방법을 적는다.
+
+## 타깃 버전 규칙
+
+티켓은 아래 트랙 중 하나를 사용한다.
+
+- `v0.1.2`, `v0.2.0`, `v0.2.1` 같은 릴리즈 버전
+- `infra` 같은 인프라 트랙
+
+참고:
+
+- `chore` 는 릴리즈 트랙이 아니라 작업 유형이다.
+- `v0.2.0-branchA` 같은 버전 문자열은 쓰지 않는다.
+- 병렬 작업은 `권장 브랜치`, `TKT 번호`, `선행 조건`, `Notes` 로 구분한다.
+- 큰 minor 릴리스의 준비 작업은 `v0.1.x` 같은 patch 슬라이스로 나누고, minor 릴리스 티켓은 최종 통합 게이트에 집중한다.
+- 워커는 티켓을 시작하기 전에 `docs/releases.md` 를 읽고 해당 버전의 목표를 이해해야 한다.
+- 워커는 `docs/version-policy.md` 를 읽고 현재 개발 상한을 확인해야 한다.
+- `v0.4.0` 과 `v0.5.0` 티켓은 `docs/feature-definition.md` 를 선행 읽기에 포함하는 것을 기본으로 한다.
+- `VERSION` 파일은 최신 배포 완료 버전만 의미하며, 다음 작업 범위를 자동으로 허용하지 않는다.
+- worker는 최신 배포 완료 버전의 다음 minor까지 열려 있는 티켓을 선택할 수 있다.
+- 단, 티켓의 `진행 판정` 이 `진행 가능` 이고 `선행 조건` 이 충족된 경우에만 시작한다.
+
+## 기본 흐름
+
+1. 오케스트레이터가 티켓을 `backlog` 에 만든다.
+2. 워커는 작업 시작 시 티켓을 `started` 로 옮긴다.
+3. 워커는 구현과 테스트를 수행하고 작업 보고서를 정리한다.
+4. 워커는 필요하면 브랜치를 push 하되 PR은 만들지 않는다.
+5. 워커는 티켓을 `need_review` 로 옮기고 브랜치, 테스트 결과, handoff 메모를 남긴다.
+6. 오케스트레이터는 `need_review` 를 검토하고, 브랜치 상태와 테스트 근거를 확인한다.
+7. 결과가 좋으면 오케스트레이터가 티켓을 `finished` 로 옮기고 PR을 생성하거나 갱신한다.
+8. 결과가 좋지 않으면 오케스트레이터가 티켓을 `backlog` 로 되돌리고 재작업 메모를 남긴다.
+9. 최종 merge는 사용자가 수행한다.
+
+## 공통 규칙
+
+- 모든 에이전트는 작업 전 관련 문서를 읽는다.
+- 모든 에이전트는 작업 전 관련 히스토리를 읽는다.
+- 모든 에이전트는 작업 후 `docs/history/YYYY-MM-DD.md` 에 기록을 남긴다.
+- 오케스트레이터는 문서와 티켓 상태를 관리한다.
+- 오케스트레이터는 worker가 바로 작업할 수 있도록 티켓의 `작업 내용` 과 `질문/결정 기록` 을 계속 보강한다.
+- 워커는 주로 코드와 구현 결과를 만든다.
+- 워커는 문서를 수정할 수 있지만 최종 문서 구조 정리는 오케스트레이터 책임이다.
+- 워커, 오케스트레이터, 디자이너는 문서를 수정할 때 먼저 `수정중` 으로 잠그고, 끝난 뒤 `작성완료` 로 되돌린다.
+- 워커는 `작성완료` 상태인 티켓만 시작하고, 오케스트레이터는 worker 에게 넘길 티켓을 반드시 `작성완료` 로 마감한다.
+- 문서 일괄 정리, 언어 통일, 대규모 정비는 `chore` 티켓으로 다룬다.
