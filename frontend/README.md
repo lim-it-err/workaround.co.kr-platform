@@ -19,6 +19,8 @@
 - 테스트 경로에서는 스플래시를 건너뛰고 검수용 안내 패널이 먼저 보인다.
 - `/test` 의 검수 더미는 `/` 기본 경로의 실제 API 연결 포털을 대체하지 않는다.
 - 필요하면 `http://localhost:7000/test?view=junction`, `?view=elevator`, `?view=work`, `?view=runtime` 처럼 특정 화면으로 바로 진입한다.
+- `v0.5.0` 가상 시안은 기존 `/test` 와 섞지 않고 `http://localhost:7000/test/v0-5-0/junction` 아래에 둔다.
+- `v0.5.0` 프로토타입 하위 경로는 `taxi`, `ops`, `signals` 로 분리한다.
 - `/api` 요청은 로컬 게이트웨이 `http://localhost:8080` 으로 프록시한다.
 
 ## 정식 Node / npm 기준선

@@ -11,28 +11,31 @@ SERVICE_NAME = os.getenv("SERVICE_NAME", "elevator-service")
 PORT = int(os.getenv("PORT", "8003"))
 MIN_FLOOR = int(os.getenv("MIN_FLOOR", "1"))
 MAX_FLOOR = int(os.getenv("MAX_FLOOR", "23"))
-ELEVATOR_COUNT = int(os.getenv("ELEVATOR_COUNT", "4"))
+DEFAULT_ELEVATOR_COUNT = int(os.getenv("ELEVATOR_COUNT", "4"))
 ELEVATOR_CAPACITY = int(os.getenv("ELEVATOR_CAPACITY", "20"))
 AUTO_STEP_SECONDS = float(os.getenv("AUTO_STEP_SECONDS", "0.35"))
-MOVE_STEP_PER_TICK = float(os.getenv("MOVE_STEP_PER_TICK", "0.25"))
+MOVE_STEP_PER_TICK = float(os.getenv("MOVE_STEP_PER_TICK", "0.18"))
 BOARDING_DWELL_TICKS = int(os.getenv("BOARDING_DWELL_TICKS", "2"))
 STATE_LOCK = Lock()
 RNG = random.Random()
 
 DEMAND_PRESETS = {
+    "commute": {"label": "출근", "multiplier": 1.25},
+    "lunch": {"label": "식사", "multiplier": 1.05},
+    "evening": {"label": "저녁", "multiplier": 1.15},
     "quiet": {"label": "한산", "multiplier": 0.55},
     "normal": {"label": "보통", "multiplier": 1.0},
     "busy": {"label": "혼잡", "multiplier": 1.7},
 }
 
 
-def build_start_floors():
-    if ELEVATOR_COUNT <= 1:
+def build_start_floors(elevator_count):
+    if elevator_count <= 1:
         return [MIN_FLOOR]
     span = MAX_FLOOR - MIN_FLOOR
     floors = []
-    for index in range(ELEVATOR_COUNT):
-        ratio = index / (ELEVATOR_COUNT - 1)
+    for index in range(elevator_count):
+        ratio = index / (elevator_count - 1)
         floor = round(MIN_FLOOR + (span * ratio))
         if floor not in floors:
             floors.append(floor)
@@ -42,9 +45,6 @@ def build_start_floors():
             candidate += 1
         floors.append(candidate)
     return floors
-
-
-START_FLOORS = build_start_floors()
 
 
 def now_monotonic():
@@ -90,16 +90,22 @@ def build_elevator(index, start_floor):
     }
 
 
-def initial_state():
+def initial_state(elevator_count=DEFAULT_ELEVATOR_COUNT):
+    start_floors = build_start_floors(elevator_count)
     return {
         "tick": 0,
         "mode": "live-traffic-loop",
+        "config": {
+            "elevatorCount": elevator_count,
+            "capacity": ELEVATOR_CAPACITY,
+            "moveStepPerTick": MOVE_STEP_PER_TICK,
+        },
         "building": {
             "minFloor": MIN_FLOOR,
             "maxFloor": MAX_FLOOR,
             "totalFloors": (MAX_FLOOR - MIN_FLOOR) + 1,
         },
-        "elevators": [build_elevator(index, floor) for index, floor in enumerate(START_FLOORS)],
+        "elevators": [build_elevator(index, floor) for index, floor in enumerate(start_floors)],
         "waitingPassengers": [],
         "completedPassengers": [],
         "hallCalls": [],
@@ -107,8 +113,8 @@ def initial_state():
         "lastCommand": "boot",
         "sequence": {"passenger": 0},
         "demand": {
-            "preset": "normal",
-            "presetLabel": DEMAND_PRESETS["normal"]["label"],
+            "preset": "commute",
+            "presetLabel": DEMAND_PRESETS["commute"]["label"],
             "intensity": 55,
             "autoMode": True,
             "pendingSpawnBudget": 0.0,
@@ -396,7 +402,7 @@ def summarize_state():
     idle = sum(1 for elevator in STATE["elevators"] if elevator["status"] == "idle")
     onboard = sum(len(elevator["passengers"]) for elevator in STATE["elevators"])
     waiting = len(STATE["waitingPassengers"])
-    load_ratio = onboard / max(ELEVATOR_COUNT * ELEVATOR_CAPACITY, 1)
+    load_ratio = onboard / max(len(STATE["elevators"]) * ELEVATOR_CAPACITY, 1)
     return {
         "activeHallCalls": len(active_calls),
         "movingElevators": moving,
@@ -417,6 +423,7 @@ def snapshot():
         "service": SERVICE_NAME,
         "mode": STATE["mode"],
         "tick": STATE["tick"],
+        "config": dict(STATE["config"]),
         "building": dict(STATE["building"]),
         "floors": list(range(MAX_FLOOR, MIN_FLOOR - 1, -1)),
         "elevators": [
@@ -440,8 +447,46 @@ def snapshot():
 
 
 def pick_auto_passenger_trip():
+    preset = STATE["demand"]["preset"]
     intensity_ratio = STATE["demand"]["intensity"] / 100
     roll = RNG.random()
+
+    if preset == "commute":
+        if roll < 0.68 + (intensity_ratio * 0.12):
+            origin = MIN_FLOOR
+            destination = RNG.randint(MIN_FLOOR + 1, MAX_FLOOR)
+            return origin, destination
+        if roll < 0.88:
+            origin = RNG.randint(MIN_FLOOR + 2, MAX_FLOOR)
+            destination = MIN_FLOOR
+            return origin, destination
+
+    if preset == "lunch":
+        lunch_origins = [floor for floor in (2, 3) if MIN_FLOOR <= floor <= MAX_FLOOR]
+        if roll < 0.62 + (intensity_ratio * 0.1):
+            origin = RNG.choice(lunch_origins)
+            destination = MIN_FLOOR if RNG.random() < 0.55 else RNG.randint(origin + 1, MAX_FLOOR)
+            if destination == origin:
+                destination = MIN_FLOOR
+            return origin, destination
+        if roll < 0.82:
+            origin = MIN_FLOOR
+            destination = RNG.choice(lunch_origins)
+            return origin, destination
+
+    if preset == "evening":
+        gym_floor = clamp(4, MIN_FLOOR, MAX_FLOOR)
+        if roll < 0.6 + (intensity_ratio * 0.1):
+            origin = gym_floor
+            destination = MIN_FLOOR if RNG.random() < 0.7 else RNG.randint(MIN_FLOOR + 1, MAX_FLOOR)
+            if destination == origin:
+                destination = MIN_FLOOR
+            return origin, destination
+        if roll < 0.82:
+            origin = MIN_FLOOR
+            destination = gym_floor
+            return origin, destination
+
     if roll < 0.38 + (intensity_ratio * 0.16):
         origin = RNG.randint(MIN_FLOOR, min(MIN_FLOOR + 3, MAX_FLOOR - 1))
         destination = RNG.randint(max(origin + 1, 5), MAX_FLOOR)
@@ -600,10 +645,34 @@ def update_demand(preset=None, intensity=None, auto_mode=None):
 
 
 def reset_state():
-    fresh_state = initial_state()
+    configured_count = STATE.get("config", {}).get("elevatorCount", DEFAULT_ELEVATOR_COUNT)
+    fresh_state = initial_state(configured_count)
     STATE.clear()
     STATE.update(fresh_state)
     return snapshot()
+
+
+def configure_elevators(elevator_count):
+    try:
+        parsed = int(elevator_count)
+    except (TypeError, ValueError):
+        return False, {"error": "elevatorCount must be an integer"}
+
+    normalized_count = clamp(parsed, 2, 6)
+    preserved_demand = dict(STATE["demand"])
+    fresh_state = initial_state(normalized_count)
+    fresh_state["demand"].update(
+        {
+            "preset": preserved_demand["preset"],
+            "presetLabel": preserved_demand["presetLabel"],
+            "intensity": preserved_demand["intensity"],
+            "autoMode": preserved_demand["autoMode"],
+        }
+    )
+    fresh_state["lastCommand"] = f"config:elevatorCount:{normalized_count}"
+    STATE.clear()
+    STATE.update(fresh_state)
+    return True, snapshot()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -695,6 +764,12 @@ class Handler(BaseHTTPRequestHandler):
                     intensity=body.get("intensity"),
                     auto_mode=body.get("autoMode"),
                 )
+            self._send_json(200 if ok else 400, payload)
+            return
+        if parsed.path == "/api/config":
+            with STATE_LOCK:
+                sync_state()
+                ok, payload = configure_elevators(body.get("elevatorCount"))
             self._send_json(200 if ok else 400, payload)
             return
         if parsed.path == "/api/step":

@@ -26,3 +26,6 @@ tmp/
 .codex-elevator-8003.log
 .codex-elevator-8003.err.log
 .codex-elevator-8003.pid
+
+# Gateway runtime data (work manager file store)
+gateway/data/

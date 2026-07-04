@@ -1,5 +1,7 @@
 package com.workaround.platform.gateway;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -235,11 +237,14 @@ final class PlatformStore {
   private final ConcurrentHashMap<String, WorkManagerAuthAttempt> workManagerAuthAttempts = new ConcurrentHashMap<>();
   private final List<WorkManagerCommandRun> workManagerCommandHistory = new ArrayList<>();
   private final List<Map<String, Object>> workManagerDynamicFeed = new ArrayList<>();
+  private final List<Map<String, Object>> workManagerAuditLog = new ArrayList<>();
   private final List<ServiceDescriptor> services = new ArrayList<>();
   private final HttpClient client = HttpClient.newBuilder()
       .connectTimeout(Duration.ofSeconds(2))
       .build();
   private final Path repoRoot = locateRepoRoot();
+  private final Path workManagerStorePath;
+  private final ObjectMapper objectMapper = new ObjectMapper();
   private final String workManagerPasswordHash;
   private final Duration workManagerSessionTtl;
   private final int workManagerMaxFailedAttempts;
@@ -256,6 +261,7 @@ final class PlatformStore {
     this.workManagerSessionTtl = Duration.ofMinutes(Math.max(1, workManagerSessionTtlMinutes));
     this.workManagerMaxFailedAttempts = Math.max(1, workManagerMaxFailedAttempts);
     this.workManagerLockDuration = Duration.ofMinutes(Math.max(1, workManagerLockMinutes));
+    this.workManagerStorePath = repoRoot == null ? null : repoRoot.resolve("gateway").resolve("data").resolve("work-manager-store.json");
 
     services.add(new ServiceDescriptor(
         "elevator-service",
@@ -286,10 +292,68 @@ final class PlatformStore {
         "heavy"));
 
     seedTickets();
+    loadPersistedWorkManagerState();
   }
 
   List<ServiceDescriptor> services() {
     return List.copyOf(services);
+  }
+
+  private synchronized void loadPersistedWorkManagerState() {
+    if (workManagerStorePath == null || !Files.exists(workManagerStorePath)) {
+      return;
+    }
+
+    try {
+      Map<String, Object> payload = objectMapper.readValue(
+          Files.readString(workManagerStorePath, StandardCharsets.UTF_8),
+          new TypeReference<>() {});
+
+      workManagerCommandHistory.clear();
+      for (Map<String, Object> item : readMapList(payload.get("commandHistory"))) {
+        workManagerCommandHistory.add(new WorkManagerCommandRun(
+            String.valueOf(item.getOrDefault("id", "")),
+            String.valueOf(item.getOrDefault("action", "")),
+            String.valueOf(item.getOrDefault("label", "")),
+            String.valueOf(item.getOrDefault("note", "")),
+            String.valueOf(item.getOrDefault("status", "")),
+            String.valueOf(item.getOrDefault("actor", "")),
+            String.valueOf(item.getOrDefault("createdAt", "")),
+            String.valueOf(item.getOrDefault("relatedTicketId", "")),
+            String.valueOf(item.getOrDefault("workerTicketId", "")),
+            String.valueOf(item.getOrDefault("message", ""))));
+      }
+
+      workManagerDynamicFeed.clear();
+      workManagerDynamicFeed.addAll(readMapList(payload.get("activityFeed")));
+
+      workManagerAuditLog.clear();
+      workManagerAuditLog.addAll(readMapList(payload.get("auditLog")));
+    } catch (Exception ignored) {
+      workManagerCommandHistory.clear();
+      workManagerDynamicFeed.clear();
+      workManagerAuditLog.clear();
+    }
+  }
+
+  private synchronized void persistWorkManagerState() {
+    if (workManagerStorePath == null) {
+      return;
+    }
+
+    try {
+      Files.createDirectories(workManagerStorePath.getParent());
+      Map<String, Object> payload = new LinkedHashMap<>();
+      payload.put("savedAt", Instant.now().toString());
+      payload.put("mode", "file-backed");
+      payload.put("targetDatabase", "embedded-h2");
+      payload.put("commandHistory", workManagerCommandHistory());
+      payload.put("activityFeed", List.copyOf(workManagerDynamicFeed));
+      payload.put("auditLog", List.copyOf(workManagerAuditLog));
+      objectMapper.writerWithDefaultPrettyPrinter().writeValue(workManagerStorePath.toFile(), payload);
+    } catch (Exception ignored) {
+      // Keep the board readable even when audit persistence fails.
+    }
   }
 
   ResponseEntity<String> proxyService(String method, String serviceId, String requestUri, String queryString, String body) {
@@ -446,6 +510,11 @@ final class PlatformStore {
         "Protected ticket moves and preset commands are available until the session expires.",
         token,
         List.of());
+    recordWorkManagerAudit(
+        "auth",
+        "gateway",
+        "",
+        Map.of("remoteAddress", normalizedRemoteAddress, "expiresAt", expiresAt.toString()));
 
     Map<String, Object> response = new LinkedHashMap<>();
     response.put("token", token);
@@ -517,6 +586,15 @@ final class PlatformStore {
         summary,
         workerTicket == null ? "" : workerTicket.id(),
         List.of(ticketId));
+    recordWorkManagerAudit(
+        "status_transition",
+        actor,
+        ticketId,
+        Map.of(
+            "fromStatus", currentStatus,
+            "toStatus", targetStatus,
+            "workerTicketId", workerTicket == null ? "" : workerTicket.id(),
+            "ticketPath", normalizeRelativePath(updatedTicketPath)));
 
     Map<String, Object> response = new LinkedHashMap<>();
     response.put("message", workerTicket == null
@@ -583,6 +661,15 @@ final class PlatformStore {
         summary,
         "",
         List.of(ticketId));
+    recordWorkManagerAudit(
+        "metadata_update",
+        actor,
+        ticketId,
+        Map.of(
+            "targetVersion", nextTargetVersion,
+            "priority", nextPriority,
+            "dependencies", nextDependencies,
+            "ticketPath", normalizeRelativePath(updatedTicketPath)));
 
     Map<String, Object> response = new LinkedHashMap<>();
     response.put("message", changes.isEmpty()
@@ -645,6 +732,14 @@ final class PlatformStore {
             : note,
         workerTicket.id(),
         relatedTicketId.isBlank() ? List.of() : List.of(relatedTicketId));
+    recordWorkManagerAudit(
+        "command_run",
+        actor,
+        relatedTicketId,
+        Map.of(
+            "action", preset.action(),
+            "workerTicketId", workerTicket.id(),
+            "commandId", commandRun.id()));
 
     Map<String, Object> response = new LinkedHashMap<>();
     response.put("message", preset.label() + " was queued");
@@ -813,6 +908,9 @@ final class PlatformStore {
       response.put("activityFeed", workManagerActivityFeed(ticketsByStatus));
       response.put("commandHistory", workManagerCommandHistory());
       response.put("columns", columns);
+      response.put("workerSummary", workManagerWorkerSummary(ticketsByStatus));
+      response.put("priorityPolicy", workManagerPriorityPolicy(ticketsByStatus));
+      response.put("persistence", workManagerPersistenceSummary());
       response.put("actions", workManagerActionDescriptor(false));
       return response;
     } catch (Exception ex) {
@@ -862,6 +960,8 @@ final class PlatformStore {
     response.put("status", status);
     response.put("progressDecision", progressDecision);
     response.put("path", ticketPath == null ? "" : normalizeRelativePath(ticketPath));
+    response.put("assignedWorker", "started".equals(status) ? "ion2-worker" : "");
+    response.put("ownershipState", "started".equals(status) ? "worker-owned" : "queue-visible");
     response.put("dependencies", sections.getOrDefault("\uC758\uC874\uC131", prerequisites));
     response.put("prPreparationMemo", sections.getOrDefault("PR \uC900\uBE44 \uBA54\uBAA8", ""));
     response.put("goal", sections.getOrDefault("목표", ""));
@@ -1603,6 +1703,7 @@ final class PlatformStore {
     while (workManagerDynamicFeed.size() > WORK_MANAGER_HISTORY_LIMIT) {
       workManagerDynamicFeed.remove(workManagerDynamicFeed.size() - 1);
     }
+    persistWorkManagerState();
   }
 
   private synchronized void recordWorkManagerCommand(WorkManagerCommandRun commandRun) {
@@ -1610,12 +1711,84 @@ final class PlatformStore {
     while (workManagerCommandHistory.size() > WORK_MANAGER_HISTORY_LIMIT) {
       workManagerCommandHistory.remove(workManagerCommandHistory.size() - 1);
     }
+    persistWorkManagerState();
   }
 
   private synchronized List<Map<String, Object>> workManagerCommandHistory() {
     return workManagerCommandHistory.stream()
         .map(WorkManagerCommandRun::toMap)
         .toList();
+  }
+
+  private List<Map<String, Object>> workManagerWorkerSummary(Map<String, List<Map<String, Object>>> ticketsByStatus) {
+    List<Map<String, Object>> startedTickets = ticketsByStatus.getOrDefault("started", List.of());
+    List<Map<String, Object>> reviewTickets = ticketsByStatus.getOrDefault("need_review", List.of());
+    return List.of(
+        Map.of(
+            "workerId", "ion2-worker",
+            "status", startedTickets.isEmpty() ? "idle" : "active",
+            "currentTicketIds", startedTickets.stream().map(ticket -> String.valueOf(ticket.get("id"))).toList(),
+            "focus", startedTickets.isEmpty() ? "Ready pick 대기" : "Started lane ownership"),
+        Map.of(
+            "workerId", "orchestrator",
+            "status", reviewTickets.isEmpty() ? "watching" : "reviewing",
+            "currentTicketIds", reviewTickets.stream().map(ticket -> String.valueOf(ticket.get("id"))).limit(4).toList(),
+            "focus", "Need Review / release gate"));
+  }
+
+  private Map<String, Object> workManagerPriorityPolicy(Map<String, List<Map<String, Object>>> ticketsByStatus) {
+    List<Map<String, Object>> candidates = new ArrayList<>();
+    candidates.addAll(ticketsByStatus.getOrDefault("backlog", List.of()));
+    candidates.sort(Comparator
+        .comparing((Map<String, Object> ticket) -> prioritySortValue(String.valueOf(ticket.get("priority"))))
+        .thenComparing(ticket -> String.valueOf(ticket.get("id"))));
+
+    Map<String, Object> response = new LinkedHashMap<>();
+    response.put("queueSource", "docs/tickets/board.md backlog");
+    response.put("executionOwner", "worker");
+    response.put("automaticRange", List.of("priority sort hint", "started ownership visibility", "audit logging"));
+    response.put("manualRange", List.of("actual worker pickup", "need_review approval", "release gate decision"));
+    response.put("nextCandidates", candidates.stream()
+        .limit(4)
+        .map(ticket -> ticket.get("id") + " " + ticket.get("priority"))
+        .toList());
+    return response;
+  }
+
+  private Map<String, Object> workManagerPersistenceSummary() {
+    String lastAuditAt = workManagerAuditLog.isEmpty()
+        ? ""
+        : String.valueOf(workManagerAuditLog.get(0).getOrDefault("timestamp", ""));
+    Map<String, Object> response = new LinkedHashMap<>();
+    response.put("mode", workManagerStorePath == null ? "memory-fallback" : "file-backed");
+    response.put("filePath", workManagerStorePath == null ? "gateway/data/work-manager-store.json" : normalizeRelativePath(workManagerStorePath));
+    response.put("auditEventCount", workManagerAuditLog.size());
+    response.put("lastAuditAt", lastAuditAt);
+    response.put("targetDatabase", "embedded-h2");
+    response.put("targetSchema", List.of(
+        "ticket_state_events(ticket_id, from_status, to_status, actor, created_at)",
+        "ticket_metadata_changes(ticket_id, priority, target_version, dependencies, created_at)",
+        "command_runs(command_id, action, worker_ticket_id, actor, created_at)"));
+    return response;
+  }
+
+  private synchronized void recordWorkManagerAudit(
+      String eventType,
+      String actor,
+      String ticketId,
+      Map<String, Object> payload) {
+    Map<String, Object> event = new LinkedHashMap<>();
+    event.put("id", "audit-" + UUID.randomUUID().toString().substring(0, 8));
+    event.put("type", eventType);
+    event.put("actor", actor);
+    event.put("ticketId", ticketId);
+    event.put("timestamp", Instant.now().toString());
+    event.put("payload", payload);
+    workManagerAuditLog.add(0, event);
+    while (workManagerAuditLog.size() > WORK_MANAGER_FEED_LIMIT) {
+      workManagerAuditLog.remove(workManagerAuditLog.size() - 1);
+    }
+    persistWorkManagerState();
   }
 
   private Map<String, Object> workManagerActionDescriptor(boolean previewOnly) {
@@ -1723,6 +1896,28 @@ final class PlatformStore {
     return value;
   }
 
+  private int prioritySortValue(String priority) {
+    if (priority == null || !priority.matches("P[1-5]")) {
+      return 9;
+    }
+    return Integer.parseInt(priority.substring(1));
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<Map<String, Object>> readMapList(Object value) {
+    if (!(value instanceof List<?> list)) {
+      return List.of();
+    }
+
+    List<Map<String, Object>> normalized = new ArrayList<>();
+    for (Object item : list) {
+      if (item instanceof Map<?, ?> map) {
+        normalized.add(new LinkedHashMap<>((Map<String, Object>) map));
+      }
+    }
+    return normalized;
+  }
+
   private Map<String, Object> fallbackWorkManagerBoard(String reason) {
     List<Map<String, Object>> backlog = List.of();
 
@@ -1753,6 +1948,17 @@ final class PlatformStore {
         "finished", List.of())));
     response.put("commandHistory", workManagerCommandHistory());
     response.put("columns", columns);
+    response.put("workerSummary", workManagerWorkerSummary(Map.of(
+        "backlog", backlog,
+        "started", started,
+        "need_review", needReview,
+        "finished", List.of())));
+    response.put("priorityPolicy", workManagerPriorityPolicy(Map.of(
+        "backlog", backlog,
+        "started", started,
+        "need_review", needReview,
+        "finished", List.of())));
+    response.put("persistence", workManagerPersistenceSummary());
     response.put("actions", workManagerActionDescriptor(true));
     return response;
   }

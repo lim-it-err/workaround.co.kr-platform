@@ -22,6 +22,8 @@ class PlatformStoreWorkManagerTest {
 
     Map<String, Object> board = store.workManagerBoard();
     Map<String, Object> actions = castMap(board.get("actions"));
+    Map<String, Object> persistence = castMap(board.get("persistence"));
+    List<Map<String, Object>> workerSummary = castList(board.get("workerSummary"));
     List<Map<String, Object>> commandPresets = castList(actions.get("commandPresets"));
 
     assertThat(actions)
@@ -29,6 +31,11 @@ class PlatformStoreWorkManagerTest {
         .containsEntry("commandBridgeReady", true)
         .containsEntry("commandGateReady", true)
         .containsEntry("tokenHeader", "X-Work-Manager-Token");
+    assertThat(persistence)
+        .containsEntry("targetDatabase", "embedded-h2");
+    assertThat(workerSummary)
+        .extracting(item -> item.get("workerId"))
+        .contains("ion2-worker", "orchestrator");
     assertThat(commandPresets)
         .extracting(preset -> preset.get("action"))
         .containsExactly("resume_worker", "summarize_blockers", "prepare_review_handoff");
@@ -54,12 +61,14 @@ class PlatformStoreWorkManagerTest {
     Map<String, Object> commandRun = castMap(commandResponse.get("commandRun"));
     Map<String, Object> board = castMap(commandResponse.get("board"));
     List<Map<String, Object>> commandHistory = castList(board.get("commandHistory"));
+    Map<String, Object> persistence = castMap(board.get("persistence"));
     List<PlatformTicket> tickets = store.tickets();
 
     assertThat(commandRun.get("action")).isEqualTo("summarize_blockers");
     assertThat(commandRun.get("status")).isEqualTo("queued");
     assertThat(commandRun.get("workerTicketId")).isNotNull();
     assertThat(commandHistory).isNotEmpty();
+    assertThat(((Number) persistence.get("auditEventCount")).intValue()).isGreaterThan(0);
     assertThat(tickets)
         .extracting(PlatformTicket::type)
         .contains("job.work-manager.summarize-blockers");

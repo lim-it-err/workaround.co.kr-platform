@@ -29,8 +29,13 @@
 - `questions-2026-06-14.md`: 사용자 확인 질문
 - `main-page-router-concept-2026-06-15.md`: 메인 페이지 라우터형 시안 문서
 - `seoul-subway-ui-ux-system-2026-06-15.md`: 서울지하철 레퍼런스 기반 UI/UX 시스템 문서
+- `v0.5.0-prototype-route-2026-06-21.md`: `/test/v0-5-0` 기준 가상 화면과 모바일 설계 문서
+- `blog-district-ui-system-2026-06-26.md`: 블로그 허브, 공개 읽기, Writing Studio, 상태 badge 기준 문서
+- `orchestrator_review/2026-06-26-blog-writing-space-brief.md`: 블로그 공간과 글쓰기 스튜디오를 위한 디자이너 브리프
+- `orchestrator_review/2026-06-26-blog-district-design-handoff.md`: 블로그 디자인 산출물과 티켓 매핑 handoff 문서
 - `orchestrator_review/`: 진행 중 review 대화
 - `orchestrator_review/2026-06-15-dummy-prototype-handoff.md`: 더미 프로토타입과 구현 슬라이스 handoff 문서
+- `orchestrator_review/2026-06-21-v0.5.0-prototype-handoff.md`: `v0.5.0` 프로토타입 레일 handoff 문서
 - `review_done/`: 종료된 review 기록
 
 ## 운영 규칙
@@ -43,6 +48,7 @@
 6. 세부 툴은 자유롭게 확장할 수 있다. 다만 현재 저장소 기준 공식 산출물은 Markdown 문서로 남긴다.
 7. `design/` 아래 문서를 수정하기 시작할 때는 먼저 `문서 상태: 수정중` 을 표시하고, 끝나면 `문서 상태: 작성완료` 로 바꾼다.
 8. 다른 작업자가 `수정중` 으로 잡아 둔 디자인 문서는 기준선으로 가져와 확정하지 않는다.
+9. 가상 디자인 화면은 실사용 경로와 분리한다. 기본 검수는 `/test`, 다음 버전 프로토타입은 `/test/v0-5-0` 아래에 둔다.
 
 ## 검수 방식
 
@@ -59,5 +65,7 @@
 
 - 기본 기준선: Markdown 문서
 - 1차 검수: 실제 브라우저 탐색, 반응형 뷰포트 확인, 스크롤/전환 확인
+- 가상 시안: `frontend/src/App.vue`, `frontend/src/styles.css` 의 `/test` 또는 `/test/v0-5-0` 프로토타입
 - 빠른 보조 기록: 스크린샷, annotated image, 와이어프레임 문서
 - 고정밀 시안이 필요할 때: Figma 링크를 별도 문서에 추가 가능
+
