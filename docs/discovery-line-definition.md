@@ -32,11 +32,11 @@
 | --- | --- | --- |
 | depth 0: 간단 설명 | 미리 생성(정적 JSON) | 0 |
 | depth 1: 3선택지 각 설명 | 미리 생성(정적 JSON) | 0 |
-| depth 2~3: 더 파고든 설명 | **Claude API 온디맨드** + 캐싱 | 실제 파고들 때만 |
+| depth 2~3: 더 파고든 설명 | **로컬 Ollama 온디맨드** + 캐싱 | 실제 파고들 때만 (무료) |
 
 - 정적 데이터 규모: 100 주제 × (1 간단설명 + 3선택지) = **400 조각**. 이 정도는 프런트 번들 또는 서버 정적 파일로 충분히 관리된다.
-- depth 2~3 는 사용자가 실제로 그 방향을 눌렀을 때만 gateway 경유로 Claude API 를 호출한다. 하루 몇 번 수준이라 비용이 작다.
-- 같은 노드(주제+경로)를 다시 열면 캐시(서버 파일 또는 localStorage)에서 준다. 두 번째부터 토큰 0.
+- depth 2~3 는 사용자가 실제로 그 방향을 눌렀을 때만 gateway 경유로 로컬 Ollama(RTX5070)를 호출한다. 로컬이라 사실상 무료다.
+- 같은 노드(주제+경로)를 다시 열면 캐시(서버 파일 또는 localStorage)에서 준다. 두 번째부터 연산 0.
 
 ## 데이터 스키마 (정적)
 
@@ -58,8 +58,8 @@
 
 ## 게이트웨이 API (depth 2~3용)
 
-- `POST /api/discovery/expand` — body `{ topicId, path: ["deeper", ...] }` → 캐시 히트면 저장분, 아니면 Claude API 호출 후 캐시하고 반환.
-- LLM 경로는 `docs/agent-runtime.md`/`ollama-policy.md` 원칙을 따른다. 기본은 Claude API(외부), 대체로 로컬 Ollama 가능. 키/시크릿은 서버 환경변수로만 둔다.
+- `POST /api/discovery/expand` — body `{ topicId, path: ["deeper", ...] }` → 캐시 히트면 저장분, 아니면 로컬 Ollama 호출 후 캐시하고 반환.
+- LLM 경로는 `docs/agent-runtime.md`/`ollama-policy.md` 원칙을 따른다. 제공자는 로컬 Ollama(RTX5070)로 확정. 시크릿은 서버 환경변수로만 둔다.
 
 ## 범위
 
@@ -68,8 +68,8 @@
 
 ## 열린 질문
 
-- depth 2~3 LLM 제공자: Claude API(외부, 유료) vs 로컬 Ollama(RTX5070) vs 둘 다(우선순위/폴백)? 기본안: Claude API 우선, Ollama 폴백.
-- 100 주제 카테고리 분포: 과학/역사/일상/기술/예술 등 균형? 기본안: 5~6개 카테고리 균등.
+- depth 2~3 LLM 제공자: **로컬 Ollama(RTX5070) 확정**(2026-07-05 사용자). 실제 구동/모델은 `TKT-068`.
+- 100 주제 카테고리 분포: 과학/역사/일상/기술/예술/심리 6개 카테고리 균등.
 - 대상 버전: 기본안 `v0.8.0`.
 
 ## 선행 읽기
