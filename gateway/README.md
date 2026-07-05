@@ -56,8 +56,11 @@ Spring Boot 기반 API 게이트웨이, 라우터, 티켓 발행기, 개발용 �
 
 - 조회 전용 Work Manager 보드와 activity feed 는 공개다.
 - 티켓 이동과 preset command 실행은 `X-Work-Manager-Token` 이 있어야 한다.
-- 기본 공유 비밀번호의 평문은 코드에 두지 않고, `WORK_MANAGER_PASSWORD_SHA256` 환경 변수 기본값으로 SHA-256 해시만 둔다.
+- activity feed 의 `runId` 와 파일 저장소(`gateway/data/work-manager-store.json`)에는 세션 토큰을 남기지 않는다.
+- `X-Forwarded-For` 는 `WORK_MANAGER_TRUSTED_PROXIES` 에 등록한 프록시에서 온 요청일 때만 신뢰한다. 기본값은 미설정이며, 이 경우 `request.getRemoteAddr()` 기준 잠금을 사용한다.
+- 기본 내장 해시는 deny-by-default 용도이므로 로컬/배포 환경에서는 `WORK_MANAGER_PASSWORD_SHA256` 를 명시적으로 설정한다.
 - 세션 TTL 과 실패 잠금은 아래 환경 변수로 조절한다.
   - `WORK_MANAGER_SESSION_TTL_MINUTES`
   - `WORK_MANAGER_MAX_FAILED_ATTEMPTS`
   - `WORK_MANAGER_LOCK_MINUTES`
+  - `WORK_MANAGER_TRUSTED_PROXIES`
