@@ -8,6 +8,8 @@
 
 워커 노드는 오케스트레이터보다 더 제한적인 모델로 동작할 수 있으며, 사람이나 오케스트레이터의 실시간 관여 없이 작업할 수 있다. 따라서 워커는 넓은 추론보다 티켓에 적힌 절차를 우선한다.
 
+워커는 사람이 직접 실행하거나, Codex heartbeat automation(`codex-ready-worker-watch`, 10분 주기)으로 자동 실행될 수 있다. 두 경우 모두 아래 책임과 규칙을 동일하게 따른다. heartbeat 운영 절차는 `docs/discord-claude-codex-bridge.md` 를 따른다.
+
 ## 책임
 
 - 작업 전 관련 문서를 읽는다.
@@ -16,7 +18,7 @@
 - PowerShell, Python, Node 로 문서를 읽고 쓸 때는 인코딩을 명시하고, 기본 ANSI 인코딩으로 다시 저장하지 않는다.
 - `VERSION`, `docs/releases.md`, `docs/version-policy.md` 를 확인해 개발 상한을 넘지 않는다.
 - `v0.4.0` 과 `v0.5.0` 범위 작업은 `docs/feature-definition.md` 를 먼저 읽고 페이지 책임과 기능 경계를 확인한다.
-- `docs/tickets/backlog/` 에서 티켓을 집는다.
+- `docs/tickets/ready/` 에서 티켓을 집는다. `backlog` 나 `inbox` 에서 직접 집지 않는다.
 - 티켓 메타데이터의 `문서 상태` 를 먼저 확인한다.
 - `문서 상태` 가 `작성완료` 가 아니면 시작하지 않는다.
 - 티켓 메타데이터의 `진행 판정` 을 확인한다.

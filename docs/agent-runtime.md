@@ -50,6 +50,24 @@ Ollama가 unavailable / degraded 이면 워커는 LLM 티켓을 바로 실패시
 
 게이트웨이는 `GET /api/runtime` 로 이 계약을 프런트엔드나 운영 화면이 읽을 수 있게 노출한다.
 
+## Discord-Claude-Codex 브리지
+
+원격에서 작업을 시작할 때는 Discord를 사용자 입력 채널로 쓰고, Claude Code를 PM/디자인/티켓 초안 작성자로 둘 수 있다. 이 경우 Claude는 코드 구현자가 아니라 upstream 오케스트레이터로 취급한다.
+
+기본 흐름:
+
+```text
+Discord -> Claude Code Channel -> docs/tickets/inbox/claude -> Codex timer -> backlog/ready -> Codex worker
+```
+
+규칙:
+
+- Claude는 Discord 요청을 코드 변경으로 바로 실행하지 않고 `docs/tickets/inbox/claude/` 에 티켓 초안을 만든다.
+- Codex timer는 inbox 티켓을 검토한 뒤 정식 TKT 번호, board, history를 정리한다.
+- Codex worker는 현재 저장소 티켓 수명주기와 문서 읽기 규칙을 따른다.
+- Redis는 v0에서 필수가 아니며, 여러 worker와 실시간 상태 UI가 필요해질 때 도입한다.
+- 상세 설계는 `docs/discord-claude-codex-bridge.md` 를 따른다.
+
 ## 로컬 개발 툴체인 메모
 
 - Codex 번들 런타임은 worker 가 현재 세션에서 재현과 smoke 검증을 이어가기 위한 보조 런타임이다.

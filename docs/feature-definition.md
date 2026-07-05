@@ -206,7 +206,8 @@
 
 행동 기준:
 
-- 사용자가 직접 드래그하는 기본 전이는 `Backlog -> Ready`
+- 이 5레인은 `docs/tickets/` 의 5개 폴더(`backlog/ready/started/need_review/finished`)와 1:1로 대응한다.
+- 사용자가 직접 드래그하는 기본 전이는 `Backlog -> Ready` 이며, 오케스트레이터가 실제 파일 이동으로 확정한다.
 - `Ready -> Started` 는 worker 소유 구간
 - `Need Review -> Finished` 는 orchestrator/PM 소유 구간
 - command 입력은 freeform 이 아니라 `preset action + memo`

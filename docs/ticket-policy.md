@@ -56,12 +56,18 @@ MVP 런타임 상태는 아래 값을 지원한다.
 
 저장소 작업 티켓은 `docs/tickets/` 아래에서 아래 상태를 사용한다.
 
+- `inbox` (외부 인입 초안, 수명주기 이전 단계)
 - `backlog`
+- `ready`
 - `started`
 - `need_review`
 - `finished`
 
-`v0.4.0` Work Manager UI 에서는 이 저장소 수명주기 위에 `Backlog`, `Ready`, `Started`, `Need Review`, `Finished` 라는 표시 흐름을 얹을 수 있다. 여기서 `Ready` 는 우선 표시 모델과 사용자 드래그 흐름(`Backlog -> Ready`)으로 먼저 도입하고, 실제 파일 기반 상태 확장 여부는 관련 구현 티켓에서 함께 닫는다.
+`inbox` 는 Discord/Claude 등 외부 도구가 만든 티켓 초안을 받는 이전 단계이며 worker는 여기서 직접 착수하지 않는다. 자세한 흐름은 `docs/discord-claude-codex-bridge.md` 와 `docs/tickets/inbox/README.md` 를 따른다.
+
+`backlog` 는 전 버전의 모든 티켓을 담는 창고이고, `ready` 는 오케스트레이터가 착수 승인한 티켓만 모으는 착수 대기열이다. worker(heartbeat 포함)는 `ready` 에서만 티켓을 집는다. 자세한 승격/착수 규칙은 `docs/tickets/ready/README.md` 를 따른다.
+
+`v0.4.0` Work Manager UI 의 `Backlog / Ready / Started / Need Review / Finished` 5레인은 이제 이 파일 폴더 5단계와 1:1로 대응한다. Work Manager UI 에서 사용자가 `Backlog -> Ready` 로 드래그해 승격을 제안하면 오케스트레이터가 파일 이동으로 확정한다.
 
 ## 문서 잠금 규칙
 
@@ -80,12 +86,13 @@ MVP 런타임 상태는 아래 값을 지원한다.
 
 상태 규칙:
 
-- 오케스트레이터는 티켓을 `backlog` 에 만든다.
-- 워커는 작업을 시작할 때 반드시 티켓을 `started` 로 옮긴다.
+- 오케스트레이터는 티켓을 `backlog` 에 만든다. 미래 버전 티켓도 미리 만들어 둔다.
+- 오케스트레이터는 착수 조건(`문서 상태: 작성완료`, `진행 판정: 진행 가능`, 선행 조건 충족, 개발 상한 범위)을 확인하고 티켓을 `backlog -> ready` 로 승격한다.
+- 워커는 `ready` 에서 티켓을 집어 작업을 시작할 때 반드시 티켓을 `started` 로 옮긴다.
 - 워커는 구현과 테스트를 마치면 티켓을 `need_review` 로 옮기고 브랜치, 테스트 결과, 작업 보고서를 남긴다.
 - 오케스트레이터는 `need_review` 티켓을 검토하고 테스트한다.
 - 검토가 통과되면 오케스트레이터가 티켓을 `finished` 로 옮긴다.
-- 검토가 실패하면 오케스트레이터가 티켓을 `backlog` 로 되돌리고 재작업 메모를 남긴다.
+- 검토가 실패하면 오케스트레이터가 티켓을 `backlog` 로 되돌리고 재작업 메모를 남긴다. 재작업이 정리되면 다시 `ready` 로 승격한다.
 - GitHub PR 생성은 오케스트레이터 책임이다.
 - 최종 merge는 사용자만 수행한다.
 
@@ -97,7 +104,7 @@ Work Manager 운영 경로는 별도의 저장소 티켓 수명주기를 직접 
 
 - `GET /api/work-manager/board` 는 공개 조회 경로로 둘 수 있다.
 - `POST /api/work-manager/auth` 는 공유 비밀번호를 server-side SHA-256 해시와 비교해 짧은 세션 토큰을 발급한다.
-- `POST /api/work-manager/tickets/{ticketId}/transition` 는 `backlog -> started`, `started -> need_review`, `need_review -> finished` 허용 전이만 처리한다.
+- `POST /api/work-manager/tickets/{ticketId}/transition` 의 목표 전이 매트릭스는 `backlog -> ready`, `ready -> started`, `started -> need_review`, `need_review -> finished` 순방향과 검토 반려용 `need_review -> backlog` 다. (게이트웨이 코드의 현재 전이 매트릭스를 이 정책에 맞추는 작업은 Work Manager 수정 티켓에서 닫는다.)
 - `POST /api/work-manager/commands` 는 freeform 대신 preset action + note 조합만 받아 worker/orchestrator 브리지 티켓을 만든다.
 - 실행성 Work Manager 액션은 `X-Work-Manager-Token` 이 있어야 하고, 조회 전용 보드와 activity feed 는 토큰 없이 볼 수 있다.
 
