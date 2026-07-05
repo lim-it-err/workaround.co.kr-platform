@@ -1,0 +1,194 @@
+[
+  {
+    "id": "w01",
+    "name": "풀바디 카베르네 소비뇽",
+    "region": "나파 밸리",
+    "note": "블랙커런트와 오크 향, 단단한 탄닌의 묵직한 레드",
+    "profile": { "sweetness": -1, "body": 2, "acidity": 0, "fruitiness": 0, "roast": 2, "bitterness": 2, "adventurous": -1 },
+    "why": "묵직하고 쌉쌀한 힘을 고른 당신에게, 오크 숙성 카베르네의 견고한 무게감이 어울립니다."
+  },
+  {
+    "id": "w02",
+    "name": "오크 숙성 샤르도네",
+    "region": "캘리포니아",
+    "note": "버터와 바닐라, 토스트 향이 감도는 풀바디 화이트",
+    "profile": { "sweetness": 0, "body": 2, "acidity": -1, "fruitiness": 0, "roast": 2, "bitterness": 0, "adventurous": -1 },
+    "why": "부드러우면서 묵직한 화이트를 원하는 당신에게, 오크 숙성 샤르도네의 크리미한 질감이 어울립니다."
+  },
+  {
+    "id": "w03",
+    "name": "상큼한 소비뇽 블랑",
+    "region": "말버러",
+    "note": "라임과 풀향이 톡 쏘는 상큼하고 가벼운 화이트",
+    "profile": { "sweetness": -1, "body": -1, "acidity": 2, "fruitiness": 2, "roast": -2, "bitterness": -1, "adventurous": 0 },
+    "why": "톡 쏘는 산미와 과일향을 고른 당신에게, 갓 짜낸 듯한 소비뇽 블랑의 청량함이 어울립니다."
+  },
+  {
+    "id": "w04",
+    "name": "라이트바디 피노 누아",
+    "region": "부르고뉴",
+    "note": "체리와 장미, 흙내음이 어우러진 우아한 라이트 레드",
+    "profile": { "sweetness": -1, "body": -1, "acidity": 1, "fruitiness": 1, "roast": 1, "bitterness": 0, "adventurous": 0 },
+    "why": "가벼우면서도 섬세한 결을 좋아하는 당신에게, 피노 누아의 우아한 균형이 어울립니다."
+  },
+  {
+    "id": "w05",
+    "name": "스위트 리슬링",
+    "region": "모젤",
+    "note": "복숭아와 꿀, 산뜻한 산미가 균형을 이룬 달콤한 화이트",
+    "profile": { "sweetness": 2, "body": -1, "acidity": 2, "fruitiness": 2, "roast": -1, "bitterness": -2, "adventurous": 0 },
+    "why": "달콤하면서도 상큼한 맛을 고른 당신에게, 모젤 리슬링의 꿀 같은 과일향이 어울립니다."
+  },
+  {
+    "id": "w06",
+    "name": "드라이 리슬링",
+    "region": "알자스",
+    "note": "청사과와 라임, 미네랄이 또렷한 드라이 화이트",
+    "profile": { "sweetness": -1, "body": 0, "acidity": 2, "fruitiness": 1, "roast": -1, "bitterness": -1, "adventurous": 0 },
+    "why": "산뜻하고 드라이한 결을 좋아하는 당신에게, 알자스 리슬링의 또렷한 산미가 어울립니다."
+  },
+  {
+    "id": "w07",
+    "name": "프로세코",
+    "region": "베네토",
+    "note": "사과와 배, 가벼운 거품이 상쾌한 스파클링",
+    "profile": { "sweetness": 1, "body": -2, "acidity": 2, "fruitiness": 1, "roast": -2, "bitterness": -1, "adventurous": 0 },
+    "why": "가볍고 상쾌한 기포를 고른 당신에게, 프로세코의 산뜻한 과일 거품이 어울립니다."
+  },
+  {
+    "id": "w08",
+    "name": "브뤼 샴페인",
+    "region": "샹파뉴",
+    "note": "브리오슈와 시트러스, 섬세한 기포의 드라이 스파클링",
+    "profile": { "sweetness": -1, "body": 0, "acidity": 2, "fruitiness": 0, "roast": 1, "bitterness": 0, "adventurous": 0 },
+    "why": "드라이하면서 섬세한 복합미를 원하는 당신에게, 샴페인의 토스티한 기포가 어울립니다."
+  },
+  {
+    "id": "w09",
+    "name": "묵직한 쉬라즈",
+    "region": "바로사 밸리",
+    "note": "블랙베리와 후추, 스모키함이 진한 풀바디 레드",
+    "profile": { "sweetness": 0, "body": 2, "acidity": 0, "fruitiness": 1, "roast": 1, "bitterness": 1, "adventurous": 0 },
+    "why": "진하고 스파이시한 힘을 고른 당신에게, 바로사 쉬라즈의 농밀한 무게감이 어울립니다."
+  },
+  {
+    "id": "w10",
+    "name": "말벡",
+    "region": "멘도사",
+    "note": "잘 익은 자두와 바이올렛, 부드러운 탄닌의 레드",
+    "profile": { "sweetness": 0, "body": 1, "acidity": -1, "fruitiness": 2, "roast": 1, "bitterness": 0, "adventurous": 0 },
+    "why": "과일향 가득한 부드러운 레드를 원하는 당신에게, 말벡의 잘 익은 자두향이 어울립니다."
+  },
+  {
+    "id": "w11",
+    "name": "키안티",
+    "region": "토스카나",
+    "note": "체리와 말린 허브, 짭짤한 산미의 미디엄 레드",
+    "profile": { "sweetness": -1, "body": 1, "acidity": 2, "fruitiness": 0, "roast": 0, "bitterness": 1, "adventurous": 0 },
+    "why": "음식과 어울리는 새콤한 레드를 좋아하는 당신에게, 키안티의 짭짤한 산미가 어울립니다."
+  },
+  {
+    "id": "w12",
+    "name": "보졸레 누보",
+    "region": "보졸레",
+    "note": "딸기와 바나나향이 팡팡 터지는 가볍고 어린 레드",
+    "profile": { "sweetness": 0, "body": -2, "acidity": 1, "fruitiness": 2, "roast": -2, "bitterness": -1, "adventurous": 0 },
+    "why": "가볍고 과일향 넘치는 레드를 고른 당신에게, 갓 담근 보졸레의 발랄함이 어울립니다."
+  },
+  {
+    "id": "w13",
+    "name": "포트 와인",
+    "region": "도루",
+    "note": "말린 무화과와 초콜릿, 진하게 응축된 주정강화 스위트",
+    "profile": { "sweetness": 2, "body": 2, "acidity": -1, "fruitiness": 1, "roast": 2, "bitterness": 1, "adventurous": 1 },
+    "why": "묵직하고 달콤한 여운을 고른 당신에게, 포트의 응축된 초콜릿빛 단맛이 어울립니다."
+  },
+  {
+    "id": "w14",
+    "name": "소테른 귀부 와인",
+    "region": "보르도",
+    "note": "살구와 꿀, 오크가 감도는 농밀한 디저트 화이트",
+    "profile": { "sweetness": 2, "body": 1, "acidity": 1, "fruitiness": 1, "roast": 1, "bitterness": 0, "adventurous": 1 },
+    "why": "달콤하면서도 산미로 균형 잡힌 맛을 원하는 당신에게, 소테른의 꿀빛 농밀함이 어울립니다."
+  },
+  {
+    "id": "w15",
+    "name": "드라이 로제",
+    "region": "프로방스",
+    "note": "딸기와 감귤, 산뜻하게 마른 핑크빛 로제",
+    "profile": { "sweetness": -1, "body": -1, "acidity": 1, "fruitiness": 1, "roast": -1, "bitterness": -1, "adventurous": 0 },
+    "why": "가볍고 드라이한 과일향을 좋아하는 당신에게, 프로방스 로제의 산뜻함이 어울립니다."
+  },
+  {
+    "id": "w16",
+    "name": "피노 그리지오",
+    "region": "이탈리아",
+    "note": "레몬과 배, 깔끔하고 담백한 데일리 화이트",
+    "profile": { "sweetness": -1, "body": -1, "acidity": 1, "fruitiness": 0, "roast": -2, "bitterness": -1, "adventurous": -2 },
+    "why": "부담 없이 익숙하고 깔끔한 한 잔을 고른 당신에게, 피노 그리지오의 담백함이 어울립니다."
+  },
+  {
+    "id": "w17",
+    "name": "게뷔르츠트라미너",
+    "region": "알자스",
+    "note": "리치와 장미, 이국적 향이 진한 아로마틱 화이트",
+    "profile": { "sweetness": 1, "body": 1, "acidity": -2, "fruitiness": 2, "roast": -1, "bitterness": 0, "adventurous": 1 },
+    "why": "화려하고 이국적인 향을 고른 당신에게, 게뷔르츠트라미너의 리치빛 아로마가 어울립니다."
+  },
+  {
+    "id": "w18",
+    "name": "내추럴 오렌지 와인",
+    "region": "조지아",
+    "note": "말린 살구와 홍차, 거친 질감의 스킨컨택 화이트",
+    "profile": { "sweetness": -1, "body": 1, "acidity": 1, "fruitiness": -1, "roast": 0, "bitterness": 2, "adventurous": 2 },
+    "why": "낯설고 개성 강한 맛을 고른 당신에게, 오렌지 와인의 거칠고 독특한 질감이 어울립니다."
+  },
+  {
+    "id": "w19",
+    "name": "아마로네",
+    "region": "발폴리첼라",
+    "note": "건포도와 다크체리, 오크가 응축된 농밀한 풀바디 레드",
+    "profile": { "sweetness": 1, "body": 2, "acidity": 0, "fruitiness": 1, "roast": 2, "bitterness": 1, "adventurous": 1 },
+    "why": "진하고 응축된 복합미를 고른 당신에게, 아마로네의 건포도빛 농밀함이 어울립니다."
+  },
+  {
+    "id": "w20",
+    "name": "리오하 그란 레세르바",
+    "region": "리오하",
+    "note": "가죽과 바닐라, 말린 자두의 오래 숙성된 레드",
+    "profile": { "sweetness": -1, "body": 1, "acidity": 1, "fruitiness": -2, "roast": 2, "bitterness": 1, "adventurous": 0 },
+    "why": "오래 숙성된 구수한 복합미를 원하는 당신에게, 리오하의 가죽빛 오크향이 어울립니다."
+  },
+  {
+    "id": "w21",
+    "name": "뮈스카데",
+    "region": "루아르",
+    "note": "레몬과 굴 껍질, 짭짤한 미네랄의 바싹 마른 화이트",
+    "profile": { "sweetness": -2, "body": -1, "acidity": 2, "fruitiness": -1, "roast": -1, "bitterness": 0, "adventurous": 0 },
+    "why": "군더더기 없이 바싹 마른 산미를 고른 당신에게, 뮈스카데의 짭짤한 미네랄이 어울립니다."
+  },
+  {
+    "id": "w22",
+    "name": "진판델",
+    "region": "캘리포니아",
+    "note": "잼처럼 익은 검은 과일과 향신료의 농밀한 레드",
+    "profile": { "sweetness": 1, "body": 2, "acidity": 0, "fruitiness": 2, "roast": 1, "bitterness": 1, "adventurous": 0 },
+    "why": "잘 익은 과일의 진한 단맛을 고른 당신에게, 진판델의 잼 같은 농밀함이 어울립니다."
+  },
+  {
+    "id": "w23",
+    "name": "모스카토 다스티",
+    "region": "이탈리아",
+    "note": "청포도와 꽃, 가벼운 기포가 달콤한 저알코올 스위트",
+    "profile": { "sweetness": 2, "body": -2, "acidity": 1, "fruitiness": 2, "roast": -2, "bitterness": -2, "adventurous": 0 },
+    "why": "가볍고 달콤한 한 잔을 고른 당신에게, 모스카토의 포도꽃 같은 상큼한 단맛이 어울립니다."
+  },
+  {
+    "id": "w24",
+    "name": "바롤로",
+    "region": "피에몬테",
+    "note": "타르와 장미, 강한 탄닌과 산미의 오래 가는 풀바디 레드",
+    "profile": { "sweetness": -2, "body": 2, "acidity": 2, "fruitiness": 0, "roast": 2, "bitterness": 2, "adventurous": 1 },
+    "why": "강건하고 오래 숙성된 힘을 고른 당신에게, 바롤로의 타르빛 탄닌과 산미가 어울립니다."
+  }
+]
