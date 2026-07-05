@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -51,28 +52,44 @@ public class PlatformGatewayApplication {
 @RestController
 @RequestMapping("/api")
 class PlatformApiController {
+  private static final String DEFAULT_WORK_MANAGER_PASSWORD_SHA256 = "8e0894262a5710556e3a186ff6476306c62c8c91f9853249fb878bf4f2826176";
   private final PlatformStore store;
   private final String platformApiKey;
   private final String ollamaBaseUrl;
+  private final Set<String> trustedWorkManagerProxies;
 
   PlatformApiController(
       @Value("${app.platform.api-key:dev-key}") String platformApiKey,
       @Value("${app.ollama.base-url:}") String ollamaBaseUrl,
       @Value("${app.platform.elevator-service-url:http://localhost:8003}") String elevatorServiceUrl,
       @Value("${app.platform.sample-spring-service-url:http://localhost:8002}") String sampleSpringServiceUrl,
-      @Value("${app.work-manager.password-sha256:9d77b517528af09a35b95ce19b7d96bc0f4ee00bd886c787814c6c0123ad75a4}") String workManagerPasswordHash,
+      @Value("${app.work-manager.password-sha256:" + DEFAULT_WORK_MANAGER_PASSWORD_SHA256 + "}") String workManagerPasswordHash,
       @Value("${app.work-manager.session-ttl-minutes:30}") int workManagerSessionTtlMinutes,
       @Value("${app.work-manager.max-failed-attempts:5}") int workManagerMaxFailedAttempts,
-      @Value("${app.work-manager.lock-minutes:5}") int workManagerLockMinutes) {
+      @Value("${app.work-manager.lock-minutes:5}") int workManagerLockMinutes,
+      @Value("${app.work-manager.trusted-proxies:}") String trustedWorkManagerProxies) {
+    this(
+        platformApiKey,
+        ollamaBaseUrl,
+        new PlatformStore(
+            elevatorServiceUrl,
+            sampleSpringServiceUrl,
+            workManagerPasswordHash,
+            workManagerSessionTtlMinutes,
+            workManagerMaxFailedAttempts,
+            workManagerLockMinutes),
+        trustedWorkManagerProxies);
+  }
+
+  PlatformApiController(
+      String platformApiKey,
+      String ollamaBaseUrl,
+      PlatformStore store,
+      String trustedWorkManagerProxies) {
     this.platformApiKey = platformApiKey;
     this.ollamaBaseUrl = ollamaBaseUrl;
-    this.store = new PlatformStore(
-        elevatorServiceUrl,
-        sampleSpringServiceUrl,
-        workManagerPasswordHash,
-        workManagerSessionTtlMinutes,
-        workManagerMaxFailedAttempts,
-        workManagerLockMinutes);
+    this.trustedWorkManagerProxies = parseTrustedProxyAddresses(trustedWorkManagerProxies);
+    this.store = store;
   }
 
   @GetMapping("/health")
@@ -205,13 +222,30 @@ class PlatformApiController {
   }
 
   private String resolveRemoteAddress(HttpServletRequest request) {
-    String forwardedFor = request.getHeader("X-Forwarded-For");
-    if (forwardedFor != null && !forwardedFor.isBlank()) {
-      return forwardedFor.split(",")[0].trim();
+    String remoteAddress = normalizeRemoteAddress(request.getRemoteAddr());
+    if (trustedWorkManagerProxies.contains(remoteAddress)) {
+      String forwardedFor = request.getHeader("X-Forwarded-For");
+      if (forwardedFor != null && !forwardedFor.isBlank()) {
+        String forwardedAddress = normalizeRemoteAddress(forwardedFor.split(",")[0]);
+        if (!forwardedAddress.isBlank()) {
+          return forwardedAddress;
+        }
+      }
     }
-    return request.getRemoteAddr() == null || request.getRemoteAddr().isBlank()
+    return remoteAddress;
+  }
+
+  private String normalizeRemoteAddress(String remoteAddress) {
+    return remoteAddress == null || remoteAddress.isBlank()
         ? "unknown"
-        : request.getRemoteAddr();
+        : remoteAddress.trim();
+  }
+
+  private Set<String> parseTrustedProxyAddresses(String rawTrustedProxies) {
+    return Arrays.stream(normalizeRemoteAddress(rawTrustedProxies).split(","))
+        .map(String::trim)
+        .filter(value -> !value.isBlank() && !"unknown".equals(value))
+        .collect(java.util.stream.Collectors.toUnmodifiableSet());
   }
 }
 
@@ -242,13 +276,14 @@ final class PlatformStore {
   private final HttpClient client = HttpClient.newBuilder()
       .connectTimeout(Duration.ofSeconds(2))
       .build();
-  private final Path repoRoot = locateRepoRoot();
+  private final Path repoRoot;
   private final Path workManagerStorePath;
   private final ObjectMapper objectMapper = new ObjectMapper();
   private final String workManagerPasswordHash;
   private final Duration workManagerSessionTtl;
   private final int workManagerMaxFailedAttempts;
   private final Duration workManagerLockDuration;
+  private WorkManagerAuthAttempt workManagerGlobalAuthAttempt = WorkManagerAuthAttempt.unlocked();
 
   PlatformStore(
       String elevatorServiceUrl,
@@ -257,10 +292,29 @@ final class PlatformStore {
       int workManagerSessionTtlMinutes,
       int workManagerMaxFailedAttempts,
       int workManagerLockMinutes) {
+    this(
+        elevatorServiceUrl,
+        sampleSpringServiceUrl,
+        workManagerPasswordHash,
+        workManagerSessionTtlMinutes,
+        workManagerMaxFailedAttempts,
+        workManagerLockMinutes,
+        null);
+  }
+
+  PlatformStore(
+      String elevatorServiceUrl,
+      String sampleSpringServiceUrl,
+      String workManagerPasswordHash,
+      int workManagerSessionTtlMinutes,
+      int workManagerMaxFailedAttempts,
+      int workManagerLockMinutes,
+      Path repoRootOverride) {
     this.workManagerPasswordHash = normalizeText(workManagerPasswordHash, "");
     this.workManagerSessionTtl = Duration.ofMinutes(Math.max(1, workManagerSessionTtlMinutes));
     this.workManagerMaxFailedAttempts = Math.max(1, workManagerMaxFailedAttempts);
     this.workManagerLockDuration = Duration.ofMinutes(Math.max(1, workManagerLockMinutes));
+    this.repoRoot = repoRootOverride == null ? locateRepoRoot() : repoRootOverride.toAbsolutePath().normalize();
     this.workManagerStorePath = repoRoot == null ? null : repoRoot.resolve("gateway").resolve("data").resolve("work-manager-store.json");
 
     services.add(new ServiceDescriptor(
@@ -308,9 +362,14 @@ final class PlatformStore {
       Map<String, Object> payload = objectMapper.readValue(
           Files.readString(workManagerStorePath, StandardCharsets.UTF_8),
           new TypeReference<>() {});
+      boolean scrubbedPersistedSecrets = false;
 
       workManagerCommandHistory.clear();
-      for (Map<String, Object> item : readMapList(payload.get("commandHistory"))) {
+      List<Map<String, Object>> sanitizedCommandHistory = sanitizePersistedWorkManagerMapList(
+          readMapList(payload.get("commandHistory")));
+      scrubbedPersistedSecrets = scrubbedPersistedSecrets
+          || !sanitizedCommandHistory.equals(readMapList(payload.get("commandHistory")));
+      for (Map<String, Object> item : sanitizedCommandHistory) {
         workManagerCommandHistory.add(new WorkManagerCommandRun(
             String.valueOf(item.getOrDefault("id", "")),
             String.valueOf(item.getOrDefault("action", "")),
@@ -325,10 +384,21 @@ final class PlatformStore {
       }
 
       workManagerDynamicFeed.clear();
-      workManagerDynamicFeed.addAll(readMapList(payload.get("activityFeed")));
+      List<Map<String, Object>> sanitizedFeed = sanitizePersistedWorkManagerFeed(
+          readMapList(payload.get("activityFeed")));
+      scrubbedPersistedSecrets = scrubbedPersistedSecrets
+          || !sanitizedFeed.equals(readMapList(payload.get("activityFeed")));
+      workManagerDynamicFeed.addAll(sanitizedFeed);
 
       workManagerAuditLog.clear();
-      workManagerAuditLog.addAll(readMapList(payload.get("auditLog")));
+      List<Map<String, Object>> sanitizedAuditLog = sanitizePersistedWorkManagerMapList(
+          readMapList(payload.get("auditLog")));
+      scrubbedPersistedSecrets = scrubbedPersistedSecrets
+          || !sanitizedAuditLog.equals(readMapList(payload.get("auditLog")));
+      workManagerAuditLog.addAll(sanitizedAuditLog);
+      if (scrubbedPersistedSecrets) {
+        persistWorkManagerState();
+      }
     } catch (Exception ignored) {
       workManagerCommandHistory.clear();
       workManagerDynamicFeed.clear();
@@ -347,9 +417,9 @@ final class PlatformStore {
       payload.put("savedAt", Instant.now().toString());
       payload.put("mode", "file-backed");
       payload.put("targetDatabase", "embedded-h2");
-      payload.put("commandHistory", workManagerCommandHistory());
-      payload.put("activityFeed", List.copyOf(workManagerDynamicFeed));
-      payload.put("auditLog", List.copyOf(workManagerAuditLog));
+      payload.put("commandHistory", sanitizePersistedWorkManagerMapList(workManagerCommandHistory()));
+      payload.put("activityFeed", sanitizePersistedWorkManagerFeed(List.copyOf(workManagerDynamicFeed)));
+      payload.put("auditLog", sanitizePersistedWorkManagerMapList(List.copyOf(workManagerAuditLog)));
       objectMapper.writerWithDefaultPrettyPrinter().writeValue(workManagerStorePath.toFile(), payload);
     } catch (Exception ignored) {
       // Keep the board readable even when audit persistence fails.
@@ -482,7 +552,7 @@ final class PlatformStore {
         normalizedRemoteAddress,
         WorkManagerAuthAttempt.unlocked());
     Instant now = Instant.now();
-    if (attempt.isLocked(now)) {
+    if (attempt.isLocked(now) || workManagerGlobalAuthAttempt.isLocked(now)) {
       throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Too many failed password attempts");
     }
 
@@ -495,10 +565,15 @@ final class PlatformStore {
       workManagerAuthAttempts.put(
           normalizedRemoteAddress,
           attempt.registerFailure(now, workManagerMaxFailedAttempts, workManagerLockDuration));
+      workManagerGlobalAuthAttempt = workManagerGlobalAuthAttempt.registerFailure(
+          now,
+          workManagerMaxFailedAttempts,
+          workManagerLockDuration);
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid shared password");
     }
 
     workManagerAuthAttempts.remove(normalizedRemoteAddress);
+    workManagerGlobalAuthAttempt = WorkManagerAuthAttempt.unlocked();
     String token = UUID.randomUUID().toString() + UUID.randomUUID().toString().replace("-", "");
     Instant expiresAt = now.plus(workManagerSessionTtl);
     workManagerSessions.put(token, new WorkManagerSession(token, "work-manager", normalizedRemoteAddress, expiresAt));
@@ -508,7 +583,6 @@ final class PlatformStore {
         "gateway",
         "Work Manager command gate unlocked",
         "Protected ticket moves and preset commands are available until the session expires.",
-        token,
         List.of());
     recordWorkManagerAudit(
         "auth",
@@ -584,7 +658,6 @@ final class PlatformStore {
         actor,
         ticketId + " moved to " + workManagerColumnLabel(targetStatus),
         summary,
-        workerTicket == null ? "" : workerTicket.id(),
         List.of(ticketId));
     recordWorkManagerAudit(
         "status_transition",
@@ -659,7 +732,6 @@ final class PlatformStore {
         actor,
         ticketId + " metadata updated",
         summary,
-        "",
         List.of(ticketId));
     recordWorkManagerAudit(
         "metadata_update",
@@ -730,7 +802,6 @@ final class PlatformStore {
         note.isBlank()
             ? "Preset command was queued through worker ticket " + workerTicket.id() + "."
             : note,
-        workerTicket.id(),
         relatedTicketId.isBlank() ? List.of() : List.of(relatedTicketId));
     recordWorkManagerAudit(
         "command_run",
@@ -1689,7 +1760,6 @@ final class PlatformStore {
       String actor,
       String title,
       String summary,
-      String runId,
       List<String> relatedTickets) {
     workManagerDynamicFeed.add(0, workManagerFeedItem(
         "feed-" + UUID.randomUUID().toString().substring(0, 8),
@@ -1698,7 +1768,7 @@ final class PlatformStore {
         title,
         summary,
         Instant.now(),
-        runId == null ? "" : runId,
+        newWorkManagerFeedRunId(),
         relatedTickets));
     while (workManagerDynamicFeed.size() > WORK_MANAGER_HISTORY_LIMIT) {
       workManagerDynamicFeed.remove(workManagerDynamicFeed.size() - 1);
@@ -1862,6 +1932,9 @@ final class PlatformStore {
     Instant now = Instant.now();
     workManagerSessions.entrySet().removeIf(entry -> entry.getValue().isExpired(now));
     workManagerAuthAttempts.entrySet().removeIf(entry -> !entry.getValue().isLocked(now) && entry.getValue().failureCount() == 0);
+    if (!workManagerGlobalAuthAttempt.isLocked(now) && workManagerGlobalAuthAttempt.failureCount() == 0) {
+      workManagerGlobalAuthAttempt = WorkManagerAuthAttempt.unlocked();
+    }
   }
 
   private boolean matchesWorkManagerPassword(String password) {
@@ -1869,23 +1942,39 @@ final class PlatformStore {
       return false;
     }
 
-    byte[] actual = sha256Hex(password).getBytes(StandardCharsets.UTF_8);
-    byte[] expected = workManagerPasswordHash.getBytes(StandardCharsets.UTF_8);
+    byte[] actual = sha256Bytes(password);
+    byte[] expected = decodeHexDigest(workManagerPasswordHash);
+    if (expected == null) {
+      return false;
+    }
     return MessageDigest.isEqual(actual, expected);
   }
 
-  private String sha256Hex(String value) {
+  private byte[] sha256Bytes(String value) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      byte[] bytes = digest.digest(value.getBytes(StandardCharsets.UTF_8));
-      StringBuilder builder = new StringBuilder(bytes.length * 2);
-      for (byte current : bytes) {
-        builder.append(String.format("%02x", current));
-      }
-      return builder.toString();
+      return digest.digest(value.getBytes(StandardCharsets.UTF_8));
     } catch (Exception ex) {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "SHA-256 is unavailable");
     }
+  }
+
+  private byte[] decodeHexDigest(String hexDigest) {
+    String normalizedHex = normalizeText(hexDigest, "").toLowerCase();
+    if (normalizedHex.isBlank() || normalizedHex.length() % 2 != 0) {
+      return null;
+    }
+
+    byte[] bytes = new byte[normalizedHex.length() / 2];
+    for (int index = 0; index < normalizedHex.length(); index += 2) {
+      int high = Character.digit(normalizedHex.charAt(index), 16);
+      int low = Character.digit(normalizedHex.charAt(index + 1), 16);
+      if (high < 0 || low < 0) {
+        return null;
+      }
+      bytes[index / 2] = (byte) ((high << 4) + low);
+    }
+    return bytes;
   }
 
   private String cleanBacktickValue(String rawValue) {
@@ -1916,6 +2005,65 @@ final class PlatformStore {
       }
     }
     return normalized;
+  }
+
+  private List<Map<String, Object>> sanitizePersistedWorkManagerMapList(List<Map<String, Object>> items) {
+    List<Map<String, Object>> sanitized = new ArrayList<>();
+    for (Map<String, Object> item : items) {
+      sanitized.add(scrubSensitiveWorkManagerMap(item));
+    }
+    return sanitized;
+  }
+
+  private List<Map<String, Object>> sanitizePersistedWorkManagerFeed(List<Map<String, Object>> items) {
+    List<Map<String, Object>> sanitized = new ArrayList<>();
+    for (Map<String, Object> item : items) {
+      Map<String, Object> sanitizedItem = scrubSensitiveWorkManagerMap(item);
+      String runId = normalizeText(String.valueOf(sanitizedItem.getOrDefault("runId", "")), "");
+      if (!runId.startsWith("wm-feed-run-")) {
+        sanitizedItem.put("runId", newWorkManagerFeedRunId());
+      }
+      sanitized.add(sanitizedItem);
+    }
+    return sanitized;
+  }
+
+  @SuppressWarnings("unchecked")
+  private Map<String, Object> scrubSensitiveWorkManagerMap(Map<String, Object> source) {
+    Map<String, Object> sanitized = new LinkedHashMap<>();
+    for (Map.Entry<String, Object> entry : source.entrySet()) {
+      String key = entry.getKey();
+      if (isSensitiveWorkManagerKey(key)) {
+        continue;
+      }
+
+      Object value = entry.getValue();
+      if (value instanceof Map<?, ?> nestedMap) {
+        sanitized.put(key, scrubSensitiveWorkManagerMap((Map<String, Object>) nestedMap));
+      } else if (value instanceof List<?> nestedList) {
+        List<Object> sanitizedList = new ArrayList<>();
+        for (Object item : nestedList) {
+          if (item instanceof Map<?, ?> nestedItemMap) {
+            sanitizedList.add(scrubSensitiveWorkManagerMap((Map<String, Object>) nestedItemMap));
+          } else {
+            sanitizedList.add(item);
+          }
+        }
+        sanitized.put(key, sanitizedList);
+      } else {
+        sanitized.put(key, value);
+      }
+    }
+    return sanitized;
+  }
+
+  private boolean isSensitiveWorkManagerKey(String key) {
+    String normalizedKey = normalizeText(key, "").toLowerCase();
+    return normalizedKey.contains("token");
+  }
+
+  private String newWorkManagerFeedRunId() {
+    return "wm-feed-run-" + UUID.randomUUID().toString().replace("-", "");
   }
 
   private Map<String, Object> fallbackWorkManagerBoard(String reason) {

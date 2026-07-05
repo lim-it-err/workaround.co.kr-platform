@@ -103,10 +103,11 @@ MVP 런타임 상태는 아래 값을 지원한다.
 Work Manager 운영 경로는 별도의 저장소 티켓 수명주기를 직접 건드릴 수 있으므로 조회와 실행성 액션을 분리한다.
 
 - `GET /api/work-manager/board` 는 공개 조회 경로로 둘 수 있다.
-- `POST /api/work-manager/auth` 는 공유 비밀번호를 server-side SHA-256 해시와 비교해 짧은 세션 토큰을 발급한다.
+- `POST /api/work-manager/auth` 는 공유 비밀번호를 server-side SHA-256 해시와 비교해 짧은 세션 토큰을 발급한다. 기본 내장 해시는 deny-by-default 용도이므로 운영자는 `WORK_MANAGER_PASSWORD_SHA256` 를 명시적으로 설정한다.
 - `POST /api/work-manager/tickets/{ticketId}/transition` 의 목표 전이 매트릭스는 `backlog -> ready`, `ready -> started`, `started -> need_review`, `need_review -> finished` 순방향과 검토 반려용 `need_review -> backlog` 다. (게이트웨이 코드의 현재 전이 매트릭스를 이 정책에 맞추는 작업은 Work Manager 수정 티켓에서 닫는다.)
 - `POST /api/work-manager/commands` 는 freeform 대신 preset action + note 조합만 받아 worker/orchestrator 브리지 티켓을 만든다.
 - 실행성 Work Manager 액션은 `X-Work-Manager-Token` 이 있어야 하고, 조회 전용 보드와 activity feed 는 토큰 없이 볼 수 있다.
+- `X-Forwarded-For` 는 `WORK_MANAGER_TRUSTED_PROXIES` 에 등록한 프록시에서 온 요청일 때만 신뢰한다. activity feed 의 `runId` 는 공개 식별자일 뿐이며 세션 토큰으로 재사용되면 안 된다. 저장 파일의 토큰류 필드는 로드/세이브 시 scrub 한다.
 
 ## Notes
 

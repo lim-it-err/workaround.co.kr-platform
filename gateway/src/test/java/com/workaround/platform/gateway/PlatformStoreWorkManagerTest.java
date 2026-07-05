@@ -1,24 +1,35 @@
 package com.workaround.platform.gateway;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class PlatformStoreWorkManagerTest {
-  private static final String WORK_MANAGER_PASSWORD = "xptmxldxptmxld";
+  private static final String WORK_MANAGER_PASSWORD = "subway-gate-passphrase-2026";
   private static final String WORK_MANAGER_PASSWORD_SHA256 =
-      "9d77b517528af09a35b95ce19b7d96bc0f4ee00bd886c787814c6c0123ad75a4";
+      "ee918019bd5b90917c7aadc92189b286b2dbc45566e14f2da6cf95b7ec849481";
+
+  @TempDir
+  Path tempDir;
 
   @Test
   void workManagerBoardExposesProtectedActionDescriptor() {
-    PlatformStore store = createStore(5);
+    PlatformStore store = createStore(WORK_MANAGER_PASSWORD_SHA256, 5, repoRootForReadOnlyTests());
 
     Map<String, Object> board = store.workManagerBoard();
     Map<String, Object> actions = castMap(board.get("actions"));
@@ -93,14 +104,134 @@ class PlatformStoreWorkManagerTest {
     assertEquals(HttpStatus.TOO_MANY_REQUESTS, third.getStatusCode());
   }
 
+  @Test
+  void authenticateWorkManagerDoesNotLeakSessionTokenToFeedOrStore() throws Exception {
+    PlatformStore store = createStore(5);
+
+    Map<String, Object> authResponse = store.authenticateWorkManager(
+        "127.0.0.1",
+        new WorkManagerAuthRequest(WORK_MANAGER_PASSWORD));
+
+    String token = String.valueOf(authResponse.get("token"));
+    Map<String, Object> board = store.workManagerBoard();
+    List<Map<String, Object>> activityFeed = castList(board.get("activityFeed"));
+    Map<String, Object> authFeed = activityFeed.stream()
+        .filter(item -> "auth".equals(item.get("type")))
+        .findFirst()
+        .orElseThrow();
+    String feedRunId = String.valueOf(authFeed.get("runId"));
+    String persistedStore = Files.readString(
+        tempDir.resolve("gateway").resolve("data").resolve("work-manager-store.json"),
+        StandardCharsets.UTF_8);
+
+    assertThat(feedRunId)
+        .startsWith("wm-feed-run-")
+        .isNotEqualTo(token);
+    assertThat(activityFeed.toString()).doesNotContain(token);
+    assertThat(persistedStore).doesNotContain(token);
+
+    ResponseStatusException replay = assertThrows(
+        ResponseStatusException.class,
+        () -> store.requireWorkManagerSession(feedRunId));
+    assertEquals(HttpStatus.UNAUTHORIZED, replay.getStatusCode());
+  }
+
+  @Test
+  void repeatedFailuresAcrossDifferentRemoteAddressesTriggerGlobalLock() {
+    PlatformStore store = createStore(2);
+
+    ResponseStatusException first = assertThrows(
+        ResponseStatusException.class,
+        () -> store.authenticateWorkManager("198.51.100.10", new WorkManagerAuthRequest("wrong-password")));
+    ResponseStatusException second = assertThrows(
+        ResponseStatusException.class,
+        () -> store.authenticateWorkManager("198.51.100.11", new WorkManagerAuthRequest("wrong-password")));
+    ResponseStatusException third = assertThrows(
+        ResponseStatusException.class,
+        () -> store.authenticateWorkManager("198.51.100.12", new WorkManagerAuthRequest("wrong-password")));
+
+    assertEquals(HttpStatus.UNAUTHORIZED, first.getStatusCode());
+    assertEquals(HttpStatus.UNAUTHORIZED, second.getStatusCode());
+    assertEquals(HttpStatus.TOO_MANY_REQUESTS, third.getStatusCode());
+  }
+
+  @Test
+  void authenticateWorkManagerAcceptsUppercaseSha256Hash() {
+    PlatformStore store = createStore(WORK_MANAGER_PASSWORD_SHA256.toUpperCase(), 5);
+
+    Map<String, Object> authResponse = store.authenticateWorkManager(
+        "127.0.0.1",
+        new WorkManagerAuthRequest(WORK_MANAGER_PASSWORD));
+
+    assertThat(authResponse.get("token")).isNotNull();
+  }
+
+  @Test
+  void controllerIgnoresForwardedForWhenRemoteAddressIsNotTrusted() {
+    PlatformApiController controller = createController(2, "");
+
+    ResponseStatusException first = assertThrows(
+        ResponseStatusException.class,
+        () -> controller.authenticateWorkManager(
+            mockRequest("198.51.100.20", "203.0.113.1"),
+            new WorkManagerAuthRequest("wrong-password")));
+    ResponseStatusException second = assertThrows(
+        ResponseStatusException.class,
+        () -> controller.authenticateWorkManager(
+            mockRequest("198.51.100.20", "203.0.113.2"),
+            new WorkManagerAuthRequest("wrong-password")));
+    ResponseStatusException third = assertThrows(
+        ResponseStatusException.class,
+        () -> controller.authenticateWorkManager(
+            mockRequest("198.51.100.20", "203.0.113.3"),
+            new WorkManagerAuthRequest("wrong-password")));
+
+    assertEquals(HttpStatus.UNAUTHORIZED, first.getStatusCode());
+    assertEquals(HttpStatus.UNAUTHORIZED, second.getStatusCode());
+    assertEquals(HttpStatus.TOO_MANY_REQUESTS, third.getStatusCode());
+  }
+
   private PlatformStore createStore(int maxFailedAttempts) {
+    return createStore(WORK_MANAGER_PASSWORD_SHA256, maxFailedAttempts);
+  }
+
+  private PlatformStore createStore(String passwordHash, int maxFailedAttempts) {
+    return createStore(passwordHash, maxFailedAttempts, tempDir);
+  }
+
+  private PlatformStore createStore(String passwordHash, int maxFailedAttempts, Path repoRoot) {
     return new PlatformStore(
         "http://localhost:8003",
         "http://localhost:8002",
-        WORK_MANAGER_PASSWORD_SHA256,
+        passwordHash,
         30,
         maxFailedAttempts,
-        5);
+        5,
+        repoRoot);
+  }
+
+  private PlatformApiController createController(int maxFailedAttempts, String trustedProxies) {
+    return new PlatformApiController(
+        "dev-key",
+        "",
+        createStore(maxFailedAttempts),
+        trustedProxies);
+  }
+
+  private HttpServletRequest mockRequest(String remoteAddress, String forwardedFor) {
+    HttpServletRequest request = mock(HttpServletRequest.class);
+    when(request.getRemoteAddr()).thenReturn(remoteAddress);
+    when(request.getHeader("X-Forwarded-For")).thenReturn(forwardedFor);
+    return request;
+  }
+
+  private Path repoRootForReadOnlyTests() {
+    Path current = Path.of("").toAbsolutePath().normalize();
+    if (Files.exists(current.resolve("docs").resolve("tickets").resolve("board.md"))) {
+      return current;
+    }
+    Path parent = current.getParent();
+    return parent == null ? current : parent;
   }
 
   @SuppressWarnings("unchecked")

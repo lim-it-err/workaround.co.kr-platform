@@ -7,7 +7,7 @@
 - 제목: Work Manager 인증 하드닝 (토큰 유출/잠금 우회/해시 비교)
 - 우선순위: P1
 - 대상 버전: `chore`
-- 상태: `ready`
+- 상태: `need_review`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`
@@ -73,15 +73,27 @@ Work Manager 인증 경로의 세 가지 보안 결함을 닫아, 공개 호스�
 
 ## 작업자 산출물
 
-- 브랜치 이름
-- 토큰 유출 차단 방식 요약(feed runId 분리 + store scrub)
-- XFF 신뢰 정책 요약
-- 해시 비교 수정 요약
+- 브랜치 이름: `codex/tkt-060-work-manager-auth-hardening`
+- 토큰 유출 차단 방식 요약(feed `runId` 를 세션 토큰과 분리된 opaque 값으로 발급하고, 저장소 로드/세이브 시 token 계열 필드와 기존 unsafe `runId` 를 scrub 하도록 정리)
+- XFF 신뢰 정책 요약(`WORK_MANAGER_TRUSTED_PROXIES` 에 등록한 프록시에서 온 요청만 `X-Forwarded-For` 를 신뢰하고, 그 외에는 `request.getRemoteAddr()` 기준 잠금 + 전역 실패 backstop 적용)
+- 해시 비교 수정 요약(SHA-256 hex 문자열 비교를 digest 바이트 비교로 교체해 대문자 해시도 허용)
 - 테스트/런타임 검증 결과
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\run-gateway-tests.ps1` 통과 (7 tests)
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\run-frontend-build.ps1` 통과
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-docs-encoding.ps1` 통과
 
 ## 검토 메모
 
-- 없음
+- `PlatformGatewayApplication` 에 신뢰 프록시 설정, 전역 auth backstop, opaque feed `runId`, persisted store scrub, hex digest byte 비교를 반영했다.
+- `PlatformStoreWorkManagerTest` 에 토큰 replay 차단, 전역 잠금, 대문자 해시 허용, untrusted XFF 무시 케이스를 추가했다.
+- `gateway/README.md`, `docs/ticket-policy.md` 에 deny-by-default 해시와 trusted proxy 운영 규칙을 반영했다.
+
+## PR 준비 메모
+
+- 제목: `[chore] harden Work Manager auth token handling and proxy lockout`
+- 본문 요약: 공개 activity feed/store 에서 세션 토큰이 유출되던 경로를 차단하고, `X-Forwarded-For` 신뢰 범위를 설정 기반으로 제한했다. 추가로 전역 실패 backstop 과 대문자 SHA-256 해시 허용 테스트를 보강했다.
+- 검증 체크리스트: `run-gateway-tests.ps1`, `run-frontend-build.ps1`, `check-docs-encoding.ps1`
+- 미검증 항목: 없음
 
 ## Notes
 

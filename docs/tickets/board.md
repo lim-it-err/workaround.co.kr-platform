@@ -30,13 +30,14 @@
 
 ## Ready
 
-- `TKT-060` `P1` `chore` `진행 가능` Work Manager 인증 하드닝(토큰 유출/잠금 우회/해시) — 보안 hotfix, 공개 호스팅 선결 [QA]
 
 ## Started
 
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
+- `TKT-060` `P1` `chore` `진행 가능` Work Manager 인증 하드닝(토큰 유출/잠금 우회/해시) — 보안 hotfix, 공개 호스팅 선결 [QA]
 
 ## Finished
 
