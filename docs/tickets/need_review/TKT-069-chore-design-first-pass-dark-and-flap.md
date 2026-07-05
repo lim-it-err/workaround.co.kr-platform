@@ -7,7 +7,7 @@
 - 제목: 확정 디자인 1차 반영 - 다크 기본 + 플랩 아래→위
 - 우선순위: P2
 - 대상 버전: `chore`
-- 상태: `ready`
+- 상태: `need_review`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`
@@ -57,14 +57,20 @@
 
 ## 작업자 산출물
 
-- 브랜치 이름
-- 다크 기본 처리 방식
-- 플랩 방향 전환 방식(회전축/키프레임 변경 요약)
-- 회귀 확인 결과
+- 브랜치 이름: `codex/tkt-069-design-first-pass`
+- 다크 기본 처리 방식: `readInitialTheme()` 기본값을 `dark` 로 고정해 사용자 저장값이 없을 때 항상 다크로 시작하게 했고, 라이트는 기존 토글로만 진입하게 유지했다.
+- 플랩 방향 전환 방식(회전축/키프레임 변경 요약): 스플래시 행선판을 단일 타일 애니메이션에서 상/하 분할 플랩 구조로 바꾸고, 하단 플랩이 먼저 접힌 뒤 상단으로 글자가 올라오도록 키프레임을 재구성했다. `prefers-reduced-motion` 에서는 결과만 노출하고 `다시 재생` 버튼은 유지했다.
+- 회귀 확인 결과: 스플래시에서 메인 허브로 자동 전환이 유지되고, 다크 기본 테마에서 대비가 유지되며, 플랩은 아래→위 방향으로 완주한다.
+- 테스트 결과:
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\run-frontend-build.ps1` 통과
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\run-gateway-tests.ps1` 통과
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-docs-encoding.ps1` 통과
+- 미검증 항목: 없음
+- PR 준비 메모: 스플래시 체감 변화만 빠르게 반영한 1차 티켓이다. 큰 UI 재구성(A 골격/C 환승 홀/App.vue 분해)은 후속 디자인 통합 티켓에서 이어서 다룬다.
 
 ## 검토 메모
 
-- 없음
+- 리뷰 포인트: 플랩 속도감과 반동 강도는 CSS 키프레임만 조정하면 되므로, 사용자 취향 피드백이 오면 후속 미세조정이 쉽다.
 
 ## Notes
 

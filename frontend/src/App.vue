@@ -262,6 +262,8 @@ const studioPostId = ref(readStoredStudioPostId())
 const studioState = ref(createEmptyStudioState())
 const studioSlugTouched = ref(false)
 const blogMessage = ref('')
+const prefersReducedMotion = ref(false)
+const splashReplayKey = ref(0)
 
 const splashRows = [
   { label: 'route', value: 'workaround central', accent: 'line-w' },
@@ -269,6 +271,7 @@ const splashRows = [
   { label: 'platform', value: 'main junction', accent: 'line-r' },
   { label: 'status', value: 'transfer in ten seconds', accent: 'line-p' }
 ]
+const splashCellCount = Math.max(...splashRows.map((row) => row.value.length))
 
 const orchestratorSlices = [
   {
@@ -1052,6 +1055,18 @@ const workVersionHeader = computed(() => ({
 const commandPresets = computed(() => workBoardState.value.actions?.commandPresets || [])
 const activityFeed = computed(() => workBoardState.value.activityFeed || [])
 const commandHistory = computed(() => workBoardState.value.commandHistory || [])
+const splashDisplayRows = computed(() =>
+  splashRows.map((row, rowIndex) => ({
+    ...row,
+    cells: row.value
+      .padEnd(splashCellCount, ' ')
+      .split('')
+      .map((character, charIndex) => ({
+        key: `${splashReplayKey.value}-${row.label}-${rowIndex}-${charIndex}`,
+        display: character === ' ' ? '\u00A0' : character
+      }))
+  }))
+)
 
 let splashTimer
 let clockTimer
@@ -1059,6 +1074,8 @@ let tickerTimer
 let portalRefreshTimer
 let elevatorRefreshTimer
 let taxiSimulationTimer
+let reducedMotionMediaQuery
+let reducedMotionMediaListener
 
 watch(theme, (nextTheme) => {
   if (typeof window !== 'undefined') {
@@ -1175,11 +1192,22 @@ watch(
 
 onMounted(async () => {
   if (!isTestRoute.value) {
-    splashTimer = window.setTimeout(() => {
-      page.value = 'junction'
-    }, SPLASH_DURATION_MS)
+    scheduleSplashTransition()
   } else {
     syncTestLocation()
+  }
+
+  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = reducedMotionMediaQuery.matches
+    reducedMotionMediaListener = (event) => {
+      prefersReducedMotion.value = event.matches
+    }
+    if (typeof reducedMotionMediaQuery.addEventListener === 'function') {
+      reducedMotionMediaQuery.addEventListener('change', reducedMotionMediaListener)
+    } else if (typeof reducedMotionMediaQuery.addListener === 'function') {
+      reducedMotionMediaQuery.addListener(reducedMotionMediaListener)
+    }
   }
 
   currentTicker.value = pickNextTicker([])
@@ -1214,6 +1242,13 @@ onBeforeUnmount(() => {
   window.clearInterval(portalRefreshTimer)
   window.clearInterval(elevatorRefreshTimer)
   window.clearInterval(taxiSimulationTimer)
+  if (reducedMotionMediaQuery && reducedMotionMediaListener) {
+    if (typeof reducedMotionMediaQuery.removeEventListener === 'function') {
+      reducedMotionMediaQuery.removeEventListener('change', reducedMotionMediaListener)
+    } else if (typeof reducedMotionMediaQuery.removeListener === 'function') {
+      reducedMotionMediaQuery.removeListener(reducedMotionMediaListener)
+    }
+  }
 })
 
 async function loadPortalData(options = { refreshElevator: true }) {
@@ -1685,6 +1720,13 @@ function toggleTheme() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
 }
 
+function replaySplashFlap() {
+  splashReplayKey.value += 1
+  if (!isTestRoute.value && page.value === 'splash') {
+    scheduleSplashTransition()
+  }
+}
+
 function openPage(nextPage) {
   if (nextPage === 'blogPost' && !activeBlogSlug.value && publishedBlogPosts.value.length > 0) {
     activeBlogSlug.value = publishedBlogPosts.value[0].slug
@@ -1718,6 +1760,13 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
 function skipSplash() {
   window.clearTimeout(splashTimer)
   openPage('junction')
+}
+
+function scheduleSplashTransition() {
+  window.clearTimeout(splashTimer)
+  splashTimer = window.setTimeout(() => {
+    page.value = 'junction'
+  }, SPLASH_DURATION_MS)
 }
 
 function directionGlyph(direction) {
@@ -2254,7 +2303,7 @@ function readInitialTheme() {
     return stored
   }
 
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return 'dark'
 }
 
 function readIsTestRoute() {
@@ -2459,9 +2508,9 @@ function persistStudioPostId(postId) {
             </div>
           </div>
 
-          <div class="flap-board">
+          <div class="flap-board" :class="{ 'reduced-motion': prefersReducedMotion }">
             <div
-              v-for="(row, rowIndex) in splashRows"
+              v-for="(row, rowIndex) in splashDisplayRows"
               :key="row.label"
               class="flap-row"
               :class="row.accent"
@@ -2469,12 +2518,16 @@ function persistStudioPostId(postId) {
               <span class="flap-label">{{ row.label }}</span>
               <div class="flap-values">
                 <span
-                  v-for="(character, charIndex) in row.value.split('')"
-                  :key="`${row.label}-${rowIndex}-${charIndex}`"
-                  class="flap-tile"
+                  v-for="(cell, charIndex) in row.cells"
+                  :key="cell.key"
+                  class="flap-cell"
+                  :class="[row.accent, { run: !prefersReducedMotion }]"
                   :style="{ '--row-order': rowIndex, '--tile-order': charIndex }"
                 >
-                  {{ character === ' ' ? '\u00A0' : character }}
+                  <span class="flap-half flap-static flap-top"><b>{{ cell.display }}</b></span>
+                  <span class="flap-half flap-static flap-bottom"><b>{{ cell.display }}</b></span>
+                  <span class="flap-half flap-dynamic flap-top-flip"><b>{{ cell.display }}</b></span>
+                  <span class="flap-half flap-dynamic flap-bottom-flip"><b>{{ cell.display }}</b></span>
                 </span>
               </div>
             </div>
@@ -2503,6 +2556,7 @@ function persistStudioPostId(postId) {
 
         <div class="splash-actions">
           <p>메인 페이지는 대시보드가 아니라 환승 허브로 동작하고, 실제 기능은 각 플랫폼에서 이어집니다.</p>
+          <button type="button" class="ghost-button" @click="replaySplashFlap">다시 재생</button>
           <button type="button" class="ghost-button" @click="skipSplash">바로 환승 홀로 이동</button>
         </div>
       </section>
