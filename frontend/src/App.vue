@@ -1840,6 +1840,10 @@ function cloneTaxiState(state) {
   }
 }
 
+function clamp(value, minimum, maximum) {
+  return Math.max(minimum, Math.min(maximum, value))
+}
+
 function shouldSpawnAutoTaxiRequest(state) {
   state.autoSpawnCounter += 1
   return state.autoSpawnCounter % 4 === 0 && state.activeRequests.length < 7
