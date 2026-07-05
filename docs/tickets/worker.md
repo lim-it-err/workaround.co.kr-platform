@@ -17,7 +17,7 @@
 - 운영 문서(`docs/`, `design/`, `README.md`, `AGENTS.md`)를 건드릴 때는 `UTF-8 with BOM` 저장 기준을 지킨다.
 - PowerShell, Python, Node 로 문서를 읽고 쓸 때는 인코딩을 명시하고, 기본 ANSI 인코딩으로 다시 저장하지 않는다.
 - `VERSION`, `docs/releases.md`, `docs/version-policy.md` 를 확인해 개발 상한을 넘지 않는다.
-- `v0.4.0` 과 `v0.5.0` 범위 작업은 `docs/feature-definition.md` 를 먼저 읽고 페이지 책임과 기능 경계를 확인한다.
+- 기능 페이지를 건드리는 작업은 `docs/feature-definition.md` 를 먼저 읽고 페이지 책임과 기능 경계를 확인한다.
 - `docs/tickets/ready/` 에서 티켓을 집는다. `backlog` 나 `inbox` 에서 직접 집지 않는다.
 - 티켓 메타데이터의 `문서 상태` 를 먼저 확인한다.
 - `문서 상태` 가 `작성완료` 가 아니면 시작하지 않는다.

@@ -2,6 +2,12 @@
 
 # Discord-Claude-Codex 브리지 설계
 
+> **2026-07-05 방향 전환**: Discord Channel 방식은 폐기하고 **Remote Control**(claude.ai/code 웹·모바일 앱에서 로컬 Claude 세션을 직접 조종하는 공식 기능)로 대체한다. 사용자는 밖에서 Remote Control 로 로컬 Claude(오케스트레이터) 세션에 직접 지시해 티켓을 만들고, Codex heartbeat(`codex-ready-worker-watch`)가 `ready` 에서 티켓을 집어 개발한다. Discord 봇 중간 단계는 제거한다.
+>
+> 신규 흐름: `사용자 Remote Control 지시 -> 로컬 Claude 오케스트레이터가 backlog/ready 에 티켓 작성 -> Codex heartbeat 가 ready 에서 개발 -> need_review -> 검토 -> finished -> 사용자 merge`.
+>
+> 아래 Discord Channel/hook 관련 구성은 폐기된 대안으로, 기본 운영 경로가 아니다. Remote Control 참고: https://code.claude.com/docs/en/remote-control.md (급히 비동기로 요청만 밀어 넣고 싶을 때의 대안은 Channels: https://code.claude.com/docs/en/channels.md). `codex-ready-worker-watch` heartbeat 는 Discord/Remote Control 과 무관하게 그대로 유효하다.
+
 ## 목적
 
 밖에 있을 때 Discord 한 곳에서 요구사항을 남기면 Claude가 PM/디자인/오케스트레이터 관점으로 티켓을 만들고, Codex가 로컬 저장소에서 타이머로 티켓을 확인해 개발 작업을 이어가는 반자동 운영 흐름을 만든다.
@@ -343,7 +349,7 @@ mode: local project (worktree 선호)
    - docs/tickets/board.md
    - docs/roadmap.md, docs/version-policy.md, docs/releases.md
    - docs/history/README.md 와 최신 docs/history/YYYY-MM-DD.md
-   - 대상이 v0.4.0~v0.6.0 기능이면 docs/feature-definition.md 도 읽는다.
+   - 티켓 대상이 docs/feature-definition.md 에 정의된 기능 페이지(엘리베이터/택시/Work Manager/블로그 등)면 그 문서도 읽는다.
 2. docs/tickets/ready/ 를 확인한다. 착수할 티켓이 없으면 어떤 파일도 바꾸지 말고 조용히 종료한다(사용자에게 메시지 보내지 않는다).
 
 ## 티켓 하나 처리 (한 번에 하나만)
