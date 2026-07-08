@@ -44,10 +44,9 @@
 
 ## Need Review
 
-- `TKT-070` `P1` `chore` `진행 가능` 스플래시 플랩 실제 split-flap 재현(플립 정상화) [사용자 지목]
-
 ## Finished
 
+- `TKT-070` `P1` `chore` 스플래시 플랩 실제 split-flap 재현(플립 정상화) — 검토 통과 [사용자 지목]
 - `TKT-069` `P2` `chore` 확정 디자인 1차 반영(다크 기본 + 플랩 아래→위) — 검토 통과
 
 - `TKT-060` `P1` `chore` Work Manager 인증 하드닝(토큰 유출/잠금 우회/해시) — 보안 hotfix, 검토 통과 [QA]
