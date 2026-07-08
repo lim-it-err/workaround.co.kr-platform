@@ -279,7 +279,7 @@ const studioState = ref(createEmptyStudioState())
 const studioSlugTouched = ref(false)
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
-const splashReplayKey = ref(0)
+const splashBoardRows = ref([])
 
 const splashRows = [
   { label: 'route', value: 'workaround central', accent: 'line-w' },
@@ -288,6 +288,11 @@ const splashRows = [
   { label: 'status', value: 'transfer in ten seconds', accent: 'line-p' }
 ]
 const splashCellCount = Math.max(...splashRows.map((row) => row.value.length))
+const splashLatinCharset = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+const splashDigitCharset = ' 0123456789'
+const splashHangulCharset =
+  ' 가나다라마바사아자차카타파하개내대래배새애재체초코토포호구두루무부수우주추후기니디리미비시이지치키티피히블로그종점행급운'
+splashBoardRows.value = createInitialSplashBoardRows()
 
 const orchestratorSlices = [
   {
@@ -1071,18 +1076,6 @@ const workVersionHeader = computed(() => ({
 const commandPresets = computed(() => workBoardState.value.actions?.commandPresets || [])
 const activityFeed = computed(() => workBoardState.value.activityFeed || [])
 const commandHistory = computed(() => workBoardState.value.commandHistory || [])
-const splashDisplayRows = computed(() =>
-  splashRows.map((row, rowIndex) => ({
-    ...row,
-    cells: row.value
-      .padEnd(splashCellCount, ' ')
-      .split('')
-      .map((character, charIndex) => ({
-        key: `${splashReplayKey.value}-${row.label}-${rowIndex}-${charIndex}`,
-        display: character === ' ' ? '\u00A0' : character
-      }))
-  }))
-)
 
 let splashTimer
 let clockTimer
@@ -1092,6 +1085,8 @@ let elevatorRefreshTimer
 let taxiSimulationTimer
 let reducedMotionMediaQuery
 let reducedMotionMediaListener
+let splashAnimationRunId = 0
+let splashAnimationTimers = []
 
 watch(theme, (nextTheme) => {
   if (typeof window !== 'undefined') {
@@ -1206,24 +1201,198 @@ watch(
   }
 )
 
-onMounted(async () => {
-  if (!isTestRoute.value) {
-    scheduleSplashTransition()
-  } else {
-    syncTestLocation()
+function createInitialSplashBoardRows() {
+  return splashRows.map((row, rowIndex) => ({
+    ...row,
+    cells: row.value
+      .padEnd(splashCellCount, ' ')
+      .split('')
+      .map((_, charIndex) => createSplashCellState(`${row.label}-${rowIndex}-${charIndex}`))
+  }))
+}
+
+function createSplashCellState(key) {
+  return {
+    key,
+    currentCharacter: ' ',
+    topStatic: displaySplashCharacter(' '),
+    bottomStatic: displaySplashCharacter(' '),
+    topFlip: displaySplashCharacter(' '),
+    bottomFlip: displaySplashCharacter(' '),
+    isRunning: false,
+    isSettling: false,
+    durationMs: '330ms'
+  }
+}
+
+function displaySplashCharacter(character) {
+  return character === ' ' ? '\u00A0' : character
+}
+
+function updateSplashCellDisplay(cell, character) {
+  const display = displaySplashCharacter(character)
+  cell.currentCharacter = character
+  cell.topStatic = display
+  cell.bottomStatic = display
+  cell.topFlip = display
+  cell.bottomFlip = display
+  cell.isRunning = false
+  cell.isSettling = false
+}
+
+function resetSplashBoard() {
+  for (const row of splashBoardRows.value) {
+    for (const cell of row.cells) {
+      updateSplashCellDisplay(cell, ' ')
+    }
+  }
+}
+
+function setSplashBoardToTargets() {
+  splashBoardRows.value.forEach((row) => {
+    row.cells.forEach((cell, index) => {
+      updateSplashCellDisplay(cell, row.value.charAt(index) || ' ')
+    })
+  })
+}
+
+function charsetForSplashCharacter(character) {
+  if (/[0-9]/.test(character)) {
+    return splashDigitCharset
+  }
+  if (/[가-힣]/.test(character)) {
+    return splashHangulCharset
+  }
+  return splashLatinCharset
+}
+
+function randomSplashRange(min, max) {
+  return min + Math.random() * (max - min)
+}
+
+function buildSplashFlipSequence(targetCharacter, charIndex) {
+  const charset = charsetForSplashCharacter(targetCharacter)
+  const spins =
+    targetCharacter === ' ' ? (Math.random() < 0.3 ? 1 : 0) : 3 + (charIndex % 3) + Math.floor(Math.random() * 4)
+  const sequence = []
+  for (let spinIndex = 0; spinIndex < spins; spinIndex += 1) {
+    sequence.push(charset.charAt(1 + Math.floor(Math.random() * (charset.length - 1))))
+  }
+  sequence.push(targetCharacter)
+  return sequence
+}
+
+function queueSplashAnimation(callback, delayMs) {
+  const timer = window.setTimeout(() => {
+    splashAnimationTimers = splashAnimationTimers.filter((entry) => entry !== timer)
+    callback()
+  }, delayMs)
+  splashAnimationTimers.push(timer)
+  return timer
+}
+
+function clearSplashAnimationTimers() {
+  splashAnimationTimers.forEach((timer) => window.clearTimeout(timer))
+  splashAnimationTimers = []
+}
+
+function animateSplashCellFlip(cell, nextCharacter, durationMs, settle, runId, onComplete) {
+  if (runId !== splashAnimationRunId) {
+    return
+  }
+  if (nextCharacter === cell.currentCharacter) {
+    onComplete()
+    return
   }
 
+  const currentDisplay = displaySplashCharacter(cell.currentCharacter)
+  const nextDisplay = displaySplashCharacter(nextCharacter)
+  cell.topStatic = currentDisplay
+  cell.bottomStatic = nextDisplay
+  cell.topFlip = nextDisplay
+  cell.bottomFlip = currentDisplay
+  cell.durationMs = `${Math.round(durationMs)}ms`
+  cell.isRunning = false
+  cell.isSettling = settle
+
+  queueSplashAnimation(() => {
+    if (runId !== splashAnimationRunId) {
+      return
+    }
+    cell.isRunning = true
+    queueSplashAnimation(() => {
+      if (runId !== splashAnimationRunId) {
+        return
+      }
+      updateSplashCellDisplay(cell, nextCharacter)
+      onComplete()
+    }, Math.round(durationMs * 1.58) + 96)
+  }, 0)
+}
+
+function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0) {
+  if (runId !== splashAnimationRunId) {
+    return
+  }
+  const nextCharacter = sequence[index]
+  const isLast = index === sequence.length - 1
+  const durationMs = isLast ? 330 : stepDurationMs
+
+  animateSplashCellFlip(cell, nextCharacter, durationMs, isLast, runId, () => {
+    if (!isLast) {
+      playSplashCellSequence(cell, sequence, stepDurationMs, runId, index + 1)
+    }
+  })
+}
+
+function playSplashFlap() {
+  splashAnimationRunId += 1
+  const runId = splashAnimationRunId
+  clearSplashAnimationTimers()
+
+  if (prefersReducedMotion.value) {
+    setSplashBoardToTargets()
+    return
+  }
+
+  resetSplashBoard()
+
+  splashBoardRows.value.forEach((row, rowIndex) => {
+    row.cells.forEach((cell, charIndex) => {
+      const targetCharacter = row.value.charAt(charIndex) || ' '
+      const delayMs = 320 + rowIndex * 170 + charIndex * 55 + randomSplashRange(0, 40)
+      const stepDurationMs = 82 + randomSplashRange(-8, 12)
+      const sequence = buildSplashFlipSequence(targetCharacter, charIndex)
+
+      queueSplashAnimation(() => {
+        playSplashCellSequence(cell, sequence, stepDurationMs, runId)
+      }, delayMs)
+    })
+  })
+}
+
+onMounted(async () => {
   if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
     reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     prefersReducedMotion.value = reducedMotionMediaQuery.matches
     reducedMotionMediaListener = (event) => {
       prefersReducedMotion.value = event.matches
+      if (!isTestRoute.value && page.value === 'splash') {
+        playSplashFlap()
+      }
     }
     if (typeof reducedMotionMediaQuery.addEventListener === 'function') {
       reducedMotionMediaQuery.addEventListener('change', reducedMotionMediaListener)
     } else if (typeof reducedMotionMediaQuery.addListener === 'function') {
       reducedMotionMediaQuery.addListener(reducedMotionMediaListener)
     }
+  }
+
+  if (!isTestRoute.value) {
+    playSplashFlap()
+    scheduleSplashTransition()
+  } else {
+    syncTestLocation()
   }
 
   currentTicker.value = pickNextTicker([])
@@ -1253,6 +1422,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.clearTimeout(splashTimer)
+  clearSplashAnimationTimers()
   window.clearInterval(clockTimer)
   window.clearInterval(tickerTimer)
   window.clearInterval(portalRefreshTimer)
@@ -1737,7 +1907,7 @@ function toggleTheme() {
 }
 
 function replaySplashFlap() {
-  splashReplayKey.value += 1
+  playSplashFlap()
   if (!isTestRoute.value && page.value === 'splash') {
     scheduleSplashTransition()
   }
@@ -1775,12 +1945,14 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
 
 function skipSplash() {
   window.clearTimeout(splashTimer)
+  clearSplashAnimationTimers()
   openPage('junction')
 }
 
 function scheduleSplashTransition() {
   window.clearTimeout(splashTimer)
   splashTimer = window.setTimeout(() => {
+    clearSplashAnimationTimers()
     page.value = 'junction'
   }, SPLASH_DURATION_MS)
 }
@@ -2526,7 +2698,7 @@ function persistStudioPostId(postId) {
 
           <div class="flap-board" :class="{ 'reduced-motion': prefersReducedMotion }">
             <div
-              v-for="(row, rowIndex) in splashDisplayRows"
+              v-for="row in splashBoardRows"
               :key="row.label"
               class="flap-row"
               :class="row.accent"
@@ -2534,16 +2706,16 @@ function persistStudioPostId(postId) {
               <span class="flap-label">{{ row.label }}</span>
               <div class="flap-values">
                 <span
-                  v-for="(cell, charIndex) in row.cells"
+                  v-for="cell in row.cells"
                   :key="cell.key"
                   class="flap-cell"
-                  :class="[row.accent, { run: !prefersReducedMotion }]"
-                  :style="{ '--row-order': rowIndex, '--tile-order': charIndex }"
+                  :class="[row.accent, { run: cell.isRunning && !prefersReducedMotion, settle: cell.isSettling }]"
+                  :style="{ '--flap-duration': cell.durationMs }"
                 >
-                  <span class="flap-half flap-static flap-top"><b>{{ cell.display }}</b></span>
-                  <span class="flap-half flap-static flap-bottom"><b>{{ cell.display }}</b></span>
-                  <span class="flap-half flap-dynamic flap-top-flip"><b>{{ cell.display }}</b></span>
-                  <span class="flap-half flap-dynamic flap-bottom-flip"><b>{{ cell.display }}</b></span>
+                  <span class="flap-half flap-static flap-top"><b>{{ cell.topStatic }}</b></span>
+                  <span class="flap-half flap-static flap-bottom"><b>{{ cell.bottomStatic }}</b></span>
+                  <span class="flap-half flap-dynamic flap-top-flip"><b>{{ cell.topFlip }}</b></span>
+                  <span class="flap-half flap-dynamic flap-bottom-flip"><b>{{ cell.bottomFlip }}</b></span>
                 </span>
               </div>
             </div>

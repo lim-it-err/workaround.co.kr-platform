@@ -29,3 +29,6 @@ tmp/
 
 # Gateway runtime data (work manager file store)
 gateway/data/
+
+# Codex worker worktrees
+.worktrees/

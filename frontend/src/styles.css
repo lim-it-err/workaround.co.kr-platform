@@ -215,14 +215,22 @@ button {
 }
 
 .flap-board {
+  --flap-height: clamp(46px, 5.8vw, 68px);
+  --flap-width: clamp(30px, 4.2vw, 46px);
+  --flap-gap: 4px;
+  --flap-radius: 8px;
+  --flap-ink: #f4e8bb;
   display: grid;
   align-content: center;
   gap: 12px;
+  width: max-content;
+  min-width: 100%;
   padding: 18px;
-  border-radius: 24px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: #06090d;
   overflow-x: auto;
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.72);
 }
 
 .flap-row {
@@ -234,8 +242,9 @@ button {
 
 .flap-label {
   display: grid;
+  gap: 1px;
   place-items: center;
-  min-height: clamp(42px, 7vw, 76px);
+  min-height: var(--flap-height);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background:
@@ -251,19 +260,17 @@ button {
 
 .flap-values {
   display: flex;
-  gap: 4px;
+  gap: var(--flap-gap);
   min-width: 0;
 }
 
 .flap-cell {
-  --flap-height: clamp(42px, 7vw, 76px);
-  --flap-width: clamp(24px, 4vw, 42px);
-  --flap-duration: 188ms;
+  --flap-duration: 330ms;
   position: relative;
   width: var(--flap-width);
   height: var(--flap-height);
   flex: 0 0 auto;
-  perspective: calc(var(--flap-height) * 4.8);
+  perspective: calc(var(--flap-height) * 4.4);
 }
 
 .flap-cell::after {
@@ -273,7 +280,7 @@ button {
   right: 1px;
   top: calc(50% - 1px);
   height: 2px;
-  background: rgba(0, 0, 0, 0.62);
+  background: rgba(0, 0, 0, 0.82);
   z-index: 6;
 }
 
@@ -285,11 +292,6 @@ button {
   overflow: hidden;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 48%, rgba(0, 0, 0, 0.3) 49%, rgba(255, 255, 255, 0.04)),
-    #121922;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .flap-half b {
@@ -299,14 +301,18 @@ button {
   height: var(--flap-height);
   display: grid;
   place-items: center;
-  color: #f4e8bb;
-  font-size: clamp(1.1rem, 4vw, 3rem);
-  font-weight: 900;
+  color: var(--flap-ink);
+  font-size: calc(var(--flap-height) * 0.58);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 .flap-top {
   top: 0;
-  border-radius: 8px 8px 2px 2px;
+  transform-origin: 50% 100%;
+  border-radius: var(--flap-radius) var(--flap-radius) 2px 2px;
+  background: linear-gradient(180deg, #232b38 0%, #171e29 78%, #121822 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09);
 }
 
 .flap-top b {
@@ -315,7 +321,10 @@ button {
 
 .flap-bottom {
   bottom: 0;
-  border-radius: 2px 2px 8px 8px;
+  transform-origin: 50% 0%;
+  border-radius: 2px 2px var(--flap-radius) var(--flap-radius);
+  background: linear-gradient(180deg, #1b2330 0%, #1e2734 30%, #151c27 100%);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.52);
 }
 
 .flap-bottom b {
@@ -327,6 +336,7 @@ button {
   transform: rotateX(-89.8deg);
   z-index: 5;
   display: none;
+  will-change: transform;
 }
 
 .flap-bottom-flip {
@@ -334,19 +344,25 @@ button {
   transform: rotateX(0deg);
   z-index: 4;
   display: none;
+  will-change: transform;
 }
 
 .flap-cell.run .flap-bottom-flip {
   display: block;
   animation: splitFlapLiftFromBottom calc(var(--flap-duration) * 0.54) cubic-bezier(0.52, 0, 0.86, 0.4)
     both;
-  animation-delay: calc((var(--row-order, 0) * 150ms) + (var(--tile-order, 0) * 42ms));
 }
 
 .flap-cell.run .flap-top-flip {
   display: block;
-  animation: splitFlapRiseToTop calc(var(--flap-duration) * 0.76) cubic-bezier(0.15, 0.66, 0.24, 1) both;
-  animation-delay: calc((var(--row-order, 0) * 150ms) + (var(--tile-order, 0) * 42ms) + 62ms);
+  animation: splitFlapRiseToTop calc(var(--flap-duration) * 0.6) cubic-bezier(0.15, 0.66, 0.24, 1) both;
+  animation-delay: calc(var(--flap-duration) * 0.38);
+}
+
+.flap-cell.run.settle .flap-top-flip {
+  animation-name: splitFlapRiseToTopSettle;
+  animation-duration: calc(var(--flap-duration) * 0.78);
+  animation-timing-function: cubic-bezier(0.32, 0.4, 0.36, 1);
 }
 
 .flap-board.reduced-motion .flap-dynamic {
@@ -1648,15 +1664,26 @@ button {
     transform: rotateX(-89.8deg);
     filter: brightness(0.42);
   }
+  100% {
+    transform: rotateX(0deg);
+    filter: brightness(1);
+  }
+}
+
+@keyframes splitFlapRiseToTopSettle {
+  0% {
+    transform: rotateX(-89.8deg);
+    filter: brightness(0.42);
+  }
   55% {
     transform: rotateX(0deg);
     filter: brightness(1.06);
   }
   72% {
-    transform: rotateX(-10.5deg);
+    transform: rotateX(10.5deg);
   }
   86% {
-    transform: rotateX(2.5deg);
+    transform: rotateX(-2.5deg);
   }
   100% {
     transform: rotateX(0deg);

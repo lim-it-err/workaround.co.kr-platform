@@ -7,7 +7,7 @@
 - 제목: 스플래시 플랩 실제 split-flap 재현 (플립 모션 정상화)
 - 우선순위: P1
 - 대상 버전: `chore`
-- 상태: `ready`
+- 상태: `need_review`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`
@@ -49,13 +49,27 @@
 
 ## 작업자 산출물
 
-- 브랜치 이름
-- 플립 재현 방식 요약(반쪽 패널 회전 구조)
-- 검증 결과
+- 브랜치 이름: `codex/tkt-070-real-splitflap`
+- 플립 재현 방식 요약(반쪽 패널 회전 구조): `frontend/src/App.vue` 에 셀별 `currentCharacter / topStatic / bottomStatic / topFlip / bottomFlip` 상태와 중간 문자 시퀀스 엔진을 추가했다. 현재 글자를 든 하단 반쪽이 먼저 위로 접히고, 다음 글자를 든 상단 반쪽이 이어서 올라와 정착하도록 실제 split-flap 레이어를 분리했다.
+- 셀별 시차/문자판 유지 방식: 레퍼런스 mockup 과 같은 방식으로 행/열 지연, 라틴/숫자/한글 문자판, 3~9회 중간 플립, 마지막 장 반동 정착을 유지했다.
+- 검증 결과:
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\run-frontend-build.ps1` 통과
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\run-gateway-tests.ps1` 통과
+  - `powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\check-docs-encoding.ps1` 통과
+- 미검증 항목: 없음
 
 ## 검토 메모
 
-- 없음
+- 사용자 확인 포인트: 실제 체감 속도는 이제 mockup 에 가까워졌고, 남는 조정 포인트는 마지막 반동 강도와 전체 전개 시간 정도다.
+
+## PR 준비 메모
+
+- 제목 초안: `[chore] TKT-070 real split-flap motion normalization`
+- 본문 요지: 스플래시 플랩을 단순 등장 모션에서 실제 반쪽 패널 회전 구조로 교체했다. `TKT-069` 에서 정한 다크 기본, 아래→위 방향, `prefers-reduced-motion`, `다시 재생`을 유지하면서 기계식 물리감을 보강했다.
+- 검증 체크리스트:
+  - [x] `tools/run-frontend-build.ps1`
+  - [x] `tools/run-gateway-tests.ps1`
+  - [x] `tools/check-docs-encoding.ps1`
 
 ## Notes
 
