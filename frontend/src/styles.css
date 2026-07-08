@@ -333,34 +333,33 @@ button {
 
 .flap-top-flip {
   transform-origin: 50% 100%;
-  transform: rotateX(-89.8deg);
-  z-index: 5;
-  display: none;
-  will-change: transform;
-}
-
-.flap-bottom-flip {
-  transform-origin: 50% 0%;
   transform: rotateX(0deg);
   z-index: 4;
   display: none;
   will-change: transform;
 }
 
-.flap-cell.run .flap-bottom-flip {
-  display: block;
-  animation: splitFlapLiftFromBottom calc(var(--flap-duration) * 0.54) cubic-bezier(0.52, 0, 0.86, 0.4)
-    both;
+.flap-bottom-flip {
+  transform-origin: 50% 0%;
+  transform: rotateX(89.8deg);
+  z-index: 3;
+  display: none;
+  will-change: transform;
 }
 
 .flap-cell.run .flap-top-flip {
   display: block;
-  animation: splitFlapRiseToTop calc(var(--flap-duration) * 0.6) cubic-bezier(0.15, 0.66, 0.24, 1) both;
+  animation: waTop calc(var(--flap-duration) * 0.55) cubic-bezier(0.52, 0, 0.86, 0.4) forwards;
+}
+
+.flap-cell.run .flap-bottom-flip {
+  display: block;
+  animation: waBottom calc(var(--flap-duration) * 0.6) cubic-bezier(0.15, 0.66, 0.24, 1) forwards;
   animation-delay: calc(var(--flap-duration) * 0.38);
 }
 
-.flap-cell.run.settle .flap-top-flip {
-  animation-name: splitFlapRiseToTopSettle;
+.flap-cell.run.settle .flap-bottom-flip {
+  animation-name: waBottomSettle;
   animation-duration: calc(var(--flap-duration) * 0.78);
   animation-timing-function: cubic-bezier(0.32, 0.4, 0.36, 1);
 }
@@ -1648,32 +1647,32 @@ button {
   transform: translateY(8px);
 }
 
-@keyframes splitFlapLiftFromBottom {
+@keyframes waTop {
   from {
     transform: rotateX(0deg);
     filter: brightness(1);
   }
   to {
-    transform: rotateX(89.8deg);
-    filter: brightness(0.38);
+    transform: rotateX(-89.8deg);
+    filter: brightness(0.32);
   }
 }
 
-@keyframes splitFlapRiseToTop {
-  0% {
-    transform: rotateX(-89.8deg);
-    filter: brightness(0.42);
+@keyframes waBottom {
+  from {
+    transform: rotateX(89.8deg);
+    filter: brightness(0.45);
   }
-  100% {
+  to {
     transform: rotateX(0deg);
     filter: brightness(1);
   }
 }
 
-@keyframes splitFlapRiseToTopSettle {
+@keyframes waBottomSettle {
   0% {
-    transform: rotateX(-89.8deg);
-    filter: brightness(0.42);
+    transform: rotateX(89.8deg);
+    filter: brightness(0.45);
   }
   55% {
     transform: rotateX(0deg);

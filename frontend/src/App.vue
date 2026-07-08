@@ -1307,10 +1307,10 @@ function animateSplashCellFlip(cell, nextCharacter, durationMs, settle, runId, o
 
   const currentDisplay = displaySplashCharacter(cell.currentCharacter)
   const nextDisplay = displaySplashCharacter(nextCharacter)
-  cell.topStatic = currentDisplay
-  cell.bottomStatic = nextDisplay
-  cell.topFlip = nextDisplay
-  cell.bottomFlip = currentDisplay
+  cell.topStatic = nextDisplay
+  cell.bottomStatic = currentDisplay
+  cell.topFlip = currentDisplay
+  cell.bottomFlip = nextDisplay
   cell.durationMs = `${Math.round(durationMs)}ms`
   cell.isRunning = false
   cell.isSettling = settle
