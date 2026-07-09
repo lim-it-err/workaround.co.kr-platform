@@ -282,16 +282,14 @@ const prefersReducedMotion = ref(false)
 const splashBoardRows = ref([])
 
 const splashRows = [
-  { label: 'route', value: 'workaround central', accent: 'line-w' },
-  { label: 'next', value: 'seoul subway portal', accent: 'line-e' },
-  { label: 'platform', value: 'main junction', accent: 'line-r' },
-  { label: 'status', value: 'transfer in ten seconds', accent: 'line-p' }
+  { label: 'route', value: 'WORKAROUND CENTRAL', accent: 'line-w' },
+  { label: 'next', value: 'BLOG DISTRICT LINE', accent: 'line-e' },
+  { label: 'platform', value: 'MAIN JUNCTION', accent: 'line-r' },
+  { label: 'status', value: 'TRANSFER IN 10S', accent: 'line-p' }
 ]
 const splashCellCount = Math.max(...splashRows.map((row) => row.value.length))
 const splashLatinCharset = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const splashDigitCharset = ' 0123456789'
-const splashHangulCharset =
-  ' 가나다라마바사아자차카타파하개내대래배새애재체초코토포호구두루무부수우주추후기니디리미비시이지치키티피히블로그종점행급운'
 splashBoardRows.value = createInitialSplashBoardRows()
 
 const orchestratorSlices = [
@@ -1259,9 +1257,6 @@ function setSplashBoardToTargets() {
 function charsetForSplashCharacter(character) {
   if (/[0-9]/.test(character)) {
     return splashDigitCharset
-  }
-  if (/[가-힣]/.test(character)) {
-    return splashHangulCharset
   }
   return splashLatinCharset
 }
