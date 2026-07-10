@@ -1780,11 +1780,14 @@ button {
 
   .flap-values {
     gap: 3px;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .flap-tile {
-    min-width: 18px;
-    font-size: 0.94rem;
+  .flap-cell {
+    --flap-width: clamp(18px, 4.6vw, 30px);
+    --flap-height: clamp(30px, 7.6vw, 46px);
   }
 
   .ticker-strip,
@@ -1842,5 +1845,56 @@ button {
   .studio-toolbar {
     flex-direction: column;
     align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-shell {
+    padding: 8px;
+  }
+
+  .flap-cell {
+    --flap-width: clamp(15px, 4.3vw, 22px);
+    --flap-height: clamp(26px, 7vw, 36px);
+  }
+
+  .flap-label b {
+    font-size: 0.82rem;
+  }
+
+  .flap-label i {
+    font-size: 0.56rem;
+    letter-spacing: 0.16em;
+  }
+
+  .ticker-strip {
+    font-size: 0.94rem;
+    line-height: 1.55;
+  }
+
+  .header-copy {
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .dispatch-head,
+  .dispatch-row {
+    font-size: 0.82rem;
+  }
+
+  .station-node strong {
+    font-size: 0.9rem;
+  }
+
+  .line-card,
+  .mobile-card,
+  .ticket-card,
+  .command-card {
+    padding: 14px;
+  }
+
+  .reading-shell {
+    font-size: 1rem;
+    line-height: 1.72;
   }
 }
