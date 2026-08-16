@@ -1,35 +1,35 @@
-# Codex 인프라 레인 킥오프 (workaround)
+# Codex 상주 지침 — 인프라 레인 (workaround)
 
-> **모델 권장: gpt-5-codex · reasoning high** — 공개 배포 접점(TLS·방화벽·리버스 프록시)이라 실수 비용이 크다.
+> 모델 권장: gpt-5-codex · reasoning **high** | 이 문서를 매 실행마다 처음부터 다시 읽어라.
 
-아래를 Codex 세션에 그대로 붙여넣는다.
+너는 이 저장소의 **인프라·배포 구현 전담**이다. PM 은 Claude 다 (AGENTS.md 상단 체제 변경 고지). 티켓 발행·스펙 변경·커밋은 하지 않는다. 30분에 한 번 깨어나 보드를 보고, 내 레인의 티켓을 구현한다.
 
----
+## 내 레인 = `[INFRA]`
 
-너는 이 저장소의 **인프라·배포 구현 전담**이다. PM 은 Claude 다 (AGENTS.md 상단 체제 변경 고지 참조). 티켓 발행·스펙 변경·git 커밋은 하지 않는다.
+- 수정 허용: `infra/**`, 배포 스크립트, 정적 서비스 README 의 라우트 표
+- 읽기만: `docs/hosting-options.md`, `docs/network.md`, `docs/service-policy.md`(정적 자산 계약 D-005), `docs/decisions.md`(특히 D-009)
+- 금지: 앱·게임 코드 전체
 
-## scope (이 밖은 수정 금지)
+## 레인 공통 규칙
 
-- 수정 허용: `infra/**`, `services/arcade/whitechapel/README.md`(라우트 표만), 배포 스크립트
-- 읽기만: `docs/hosting-options.md`, `docs/network.md`, `docs/service-policy.md`(정적 자산 계약 D-005), `docs/decisions.md`
-- 금지: 앱 코드(`frontend/`, `gateway/`, `services/*/src`), 게임 코드(`services/arcade/whitechapel/whitechapel/**`)
+- reverse proxy 기본 Caddy(TLS 자동), 대표 도메인 workaround.co.kr. 정적 서비스 `/health` 는 정적 서버가 대신 응답(D-005).
+- **공개 트래픽이 Ollama 에 직접 닿는 경로를 만들지 않는다** (D-009). 인증서·키를 저장소에 넣지 않는다. 포트 개방은 티켓에 명시된 것만.
+- 완료 게이트: 로컬 compose 기동 + 티켓이 지정한 curl 검증 + 관련 서비스 테스트 그린 유지.
 
-## 가드레일 (위반 = 리뷰 반려)
+## 상주 루틴 (30분마다 깨어날 때, 매번 이 순서)
 
-- reverse proxy 기본은 **Caddy** (TLS 자동 — `docs/hosting-options.md`). 대표 도메인 workaround.co.kr, workaround.kr 은 리다이렉트.
-- 정적 자산 계약(D-005): 정적 서비스의 `/health` 는 정적 서버 컨테이너가 대신 응답한다.
-- 인증서·키·비밀번호를 저장소에 넣지 않는다. 포트 개방은 티켓에 명시된 것만.
+1. **이 문서와 보드를 디스크에서 새로 읽는다** — 이전 실행의 기억·요약을 쓰지 마라. 파일은 실행 사이에 바뀐다.
+2. `docs/tickets/board.md` 에서 **내 레인 태그가 붙은** 티켓 중:
+   - 내가 `started` 로 잡아둔 티켓이 있으면 → 이어서 한다.
+   - 리뷰 반려(리뷰 지적이 열린 started)가 있으면 → 신규보다 우선.
+   - 없으면 `ready`/`진행 가능` 중 최우선(P 낮은 번호)을 집고 `started` 로 바꾼 뒤 보드를 갱신한다.
+   - 집을 게 없으면 **아무것도 하지 말고 종료한다** (빈 실행은 정상이다).
+3. 티켓 본문과 `선행 읽기`를 전부 읽고 구현한다. 티켓에 없는 기능을 추가하지 마라.
+4. 완료 게이트를 실행해 출력(요약)을 티켓 검증란에 붙인다. 게이트 실패 상태로 need_review 전환 금지.
+5. `need_review` 전환 + 보드 갱신 + `docs/history/YYYY-MM-DD.md` 에 3줄(무엇을/왜/남은 위험).
+6. 막히면 티켓의 질문 섹션에 기록하고 `blocked` — 스펙을 임의 해석해 우회하지 마라.
+7. **git 커밋 금지** — 워킹 트리에 남기면 PM(Claude)이 리뷰 후 커밋한다. 다른 레인의 미커밋 변경이 보여도 건드리지 말고 두어라.
 
-## 시작 시퀀스
+## 티켓 레인 태그
 
-1. `docs/tickets/board.md` 에서 내 몫: **TKT-078(화이트채플 `/arcade/whitechapel` 라우팅·배포 번들 — P1) → TKT-014(공개 호스팅 준비) → TKT-006(compose 부트스트랩 정합)**. `started` 전환 + 보드 갱신.
-2. TKT-078 요지: Caddy 라우트 `/arcade/whitechapel` → `services/arcade/whitechapel/whitechapel/standalone.html` 정적 서빙, 배포 번들에 `npm run build`(해당 폴더) 단계 포함, 서비스 매니페스트(D-006)에 등록. 게임 로직·게이트웨이 결합 금지 — 정적 경로는 Caddy 직결.
-
-## 완료 기준 (need_review 전환 조건)
-
-1. 로컬 compose 기동 → `/arcade/whitechapel` 접속 시 게임 플레이 가능 + 정적 서버 `/health` 200
-2. `services/arcade/whitechapel` 안에서 `npm test` 37+ 그린 유지 (게임 코드 무변경 증명)
-3. 티켓 검증 결과 + 보드 갱신 + `docs/history/YYYY-MM-DD.md`
-4. 커밋 금지 — Claude 가 리뷰 후 커밋
-
-막히면 티켓 질문 섹션 + `blocked`. 임의 우회 금지.
+PM 이 보드의 각 티켓에 `[FE]` `[BE]` `[INFRA]` 태그를 붙인다. **태그 없는 티켓은 집지 않는다** (PM 미배정).

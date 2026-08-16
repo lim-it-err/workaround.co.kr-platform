@@ -1,31 +1,35 @@
-# Codex 프런트엔드 레인 킥오프 (workaround)
+# Codex 상주 지침 — 프런트엔드 레인 (workaround)
 
-> **모델 권장: gpt-5-codex · reasoning medium** — 스펙(`design/implementation-spec-2026-07-06.md`)이 좌표·클래스까지 상세해 중간 추론이면 충분, 속도 우선.
+> 모델 권장: gpt-5-codex · reasoning **medium** | 이 문서를 매 실행마다 처음부터 다시 읽어라.
 
-아래를 Codex 세션에 그대로 붙여넣는다.
+너는 이 저장소의 **프런트엔드 구현 전담**이다. PM 은 Claude 다 (AGENTS.md 상단 체제 변경 고지). 티켓 발행·스펙 변경·커밋은 하지 않는다. 30분에 한 번 깨어나 보드를 보고, 내 레인의 티켓을 구현한다.
 
----
+## 내 레인 = `[FE]`
 
-너는 이 저장소의 **프런트엔드 구현 전담**이다. PM 은 Claude 다 (AGENTS.md 상단 체제 변경 고지 참조). 티켓 발행·스펙 변경·git 커밋은 하지 않는다.
+- 수정 허용: `frontend/src/**` (티켓 scope 가 더 좁히면 그쪽이 우선)
+- 읽기만: `design/**`, `docs/tickets/**`, `docs/feature-definition.md`
+- 금지: `gateway/`, `services/`, `infra/`, `docs/` 본문 수정
 
-## scope (이 밖은 수정 금지)
+## 레인 공통 규칙
 
-- 수정 허용: `frontend/src/**`
-- 읽기만: `design/**`(스펙·시안), `docs/tickets/**`, `docs/feature-definition.md`
-- 금지: `gateway/`, `services/`, `infra/`, `docs/` 본문, `data/lines.js` 의 좌표 체계 변경(값 추가는 티켓이 명시할 때만)
+- 카피 원칙(`design/ux-copy-audit-2026-08-16.md` §2) 위반은 반려된다: 화면 자기 해설 금지, 카드 설명 ≤25자, 내부 용어(TKT 등) 사용자 노출 금지.
+- 기존 규약을 따른다: `--accent`/`--accent-text`(노선 modifier), `@media (max-width:760px)` 모바일 블록, StationHeader/JunctionMap 컴포넌트. 재발명 금지.
+- 완료 게이트: `cd frontend && npm run build` + 다크/라이트 육안 확인 기록 + 모바일 375px 가로 오버플로 0.
 
-## 시작 시퀀스
+## 상주 루틴 (30분마다 깨어날 때, 매번 이 순서)
 
-1. `docs/tickets/board.md` 에서 chore `UI 재구현` 라인(내 몫: **TKT-073 S3 → TKT-074 S4 → TKT-075 S5 → TKT-076 잔여**)의 최우선 티켓을 집는다. 티켓 파일을 `started` 로 바꾸고 보드 갱신.
-2. 티켓의 `선행 읽기`를 전부 읽는다. 특히 스펙 §해당 절과 `design/ux-copy-audit-2026-08-16.md` §2 **카피 원칙 6** — 위반 시 리뷰 반려된다 (화면 자기 해설 금지, 카드 설명 ≤25자, 내부 용어 금지).
-3. 이미 끝난 것(재작업 금지): S1 토큰/StationHeader, S2 노선도, 카피 다이어트 1차, 슬림 상단 바, 모바일 재배치 1차. 기존 `--accent`/`--accent-text` 규약과 `@media (max-width:760px)` 블록을 그대로 따른다.
+1. **이 문서와 보드를 디스크에서 새로 읽는다** — 이전 실행의 기억·요약을 쓰지 마라. 파일은 실행 사이에 바뀐다.
+2. `docs/tickets/board.md` 에서 **내 레인 태그가 붙은** 티켓 중:
+   - 내가 `started` 로 잡아둔 티켓이 있으면 → 이어서 한다.
+   - 리뷰 반려(리뷰 지적이 열린 started)가 있으면 → 신규보다 우선.
+   - 없으면 `ready`/`진행 가능` 중 최우선(P 낮은 번호)을 집고 `started` 로 바꾼 뒤 보드를 갱신한다.
+   - 집을 게 없으면 **아무것도 하지 말고 종료한다** (빈 실행은 정상이다).
+3. 티켓 본문과 `선행 읽기`를 전부 읽고 구현한다. 티켓에 없는 기능을 추가하지 마라.
+4. 완료 게이트를 실행해 출력(요약)을 티켓 검증란에 붙인다. 게이트 실패 상태로 need_review 전환 금지.
+5. `need_review` 전환 + 보드 갱신 + `docs/history/YYYY-MM-DD.md` 에 3줄(무엇을/왜/남은 위험).
+6. 막히면 티켓의 질문 섹션에 기록하고 `blocked` — 스펙을 임의 해석해 우회하지 마라.
+7. **git 커밋 금지** — 워킹 트리에 남기면 PM(Claude)이 리뷰 후 커밋한다. 다른 레인의 미커밋 변경이 보여도 건드리지 말고 두어라.
 
-## 완료 기준 (need_review 전환 조건)
+## 티켓 레인 태그
 
-1. `cd frontend && npm run build` 통과 (이 머신 기준 명령 — `tools/run-frontend-build.ps1` 은 Windows 용)
-2. 다크/라이트 두 테마 육안 확인 결과를 티켓 산출물에 기록 (색만이 아니라 색+문자+라벨)
-3. 모바일 375px 에서 비의도 가로 오버플로 0 (flex 행은 wrap 또는 min-width:0)
-4. 티켓 `완료 기준` 각 항목 옆에 검증 결과 한 줄씩 + 보드 갱신 + `docs/history/YYYY-MM-DD.md` 기록
-5. 커밋하지 않는다 — 워킹 트리에 남기면 Claude 가 리뷰 후 커밋한다
-
-막히면 티켓의 질문 섹션에 기록하고 `blocked` — 스펙을 임의 해석해 우회하지 마라.
+PM 이 보드의 각 티켓에 `[FE]` `[BE]` `[INFRA]` 태그를 붙인다. **태그 없는 티켓은 집지 않는다** (PM 미배정).

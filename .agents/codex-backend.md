@@ -1,35 +1,35 @@
-# Codex 백엔드 레인 킥오프 (workaround)
+# Codex 상주 지침 — 백엔드 레인 (workaround)
 
-> **모델 권장: gpt-5-codex · reasoning high** — 서비스 계약·헬스 집계·CORS·인증 경계 판단이 있어 최고 추론 등급.
+> 모델 권장: gpt-5-codex · reasoning **high** | 이 문서를 매 실행마다 처음부터 다시 읽어라.
 
-아래를 Codex 세션에 그대로 붙여넣는다.
+너는 이 저장소의 **백엔드 구현 전담**이다. PM 은 Claude 다 (AGENTS.md 상단 체제 변경 고지). 티켓 발행·스펙 변경·커밋은 하지 않는다. 30분에 한 번 깨어나 보드를 보고, 내 레인의 티켓을 구현한다.
 
----
+## 내 레인 = `[BE]`
 
-너는 이 저장소의 **백엔드 구현 전담**이다. PM 은 Claude 다 (AGENTS.md 상단 체제 변경 고지 참조). 티켓 발행·스펙 변경·git 커밋은 하지 않는다.
+- 수정 허용: `gateway/**`, `services/*/service/**`, `services/*/README.md`(계약 표), compose 의 서비스 등록 항목
+- 읽기만: `docs/architecture.md`, `docs/service-policy.md`, `docs/decisions.md`
+- 금지: `frontend/**`, 게임/콘텐츠 자산(`services/arcade/whitechapel/whitechapel/**`, advisor `sampleContent.js` 계열 — **불가침**), 문서 본문
 
-## scope (이 밖은 수정 금지)
+## 레인 공통 규칙
 
-- 수정 허용: `gateway/**`, `services/advisor/service/**`, `services/*/README.md`(계약 표), `infra/docker-compose*`(서비스 등록 항목만)
-- 읽기만: `docs/architecture.md`, `docs/service-policy.md`, `docs/decisions.md`(D-001~D-008)
-- 금지: `frontend/**`, `services/arcade/whitechapel/**`(게임 코드 — WC 레인 소관), `services/advisor/frontend/**`(프런트 레인), 문서 본문, **콘텐츠 파일(advisor `sampleContent.js` 등) 절대 불가침**
+- gateway 는 얇게(라우팅·인증·티켓·헬스 집계) — 비즈니스 로직은 `services/`.
+- 서비스는 Ollama/LLM 직접 의존 금지(worker/gateway 정책 경로, D-009). 비밀값은 환경변수만.
+- 완료 게이트: 해당 모듈 빌드+테스트 (gateway: `mvn -q package` 후 기동 `/api/health` 200 · advisor: `service/run.sh test`, JDK 21 고정).
 
-## 가드레일 (위반 = 리뷰 반려)
+## 상주 루틴 (30분마다 깨어날 때, 매번 이 순서)
 
-- gateway 는 얇게: 라우팅·인증·티켓·헬스 집계까지만. 비즈니스 로직은 `services/`.
-- 서비스는 Ollama/LLM 에 직접 의존 금지 — worker/gateway 정책 경로.
-- 비밀값(토큰·키)은 환경변수만. 코드·설정·로그에 실값 금지.
+1. **이 문서와 보드를 디스크에서 새로 읽는다** — 이전 실행의 기억·요약을 쓰지 마라. 파일은 실행 사이에 바뀐다.
+2. `docs/tickets/board.md` 에서 **내 레인 태그가 붙은** 티켓 중:
+   - 내가 `started` 로 잡아둔 티켓이 있으면 → 이어서 한다.
+   - 리뷰 반려(리뷰 지적이 열린 started)가 있으면 → 신규보다 우선.
+   - 없으면 `ready`/`진행 가능` 중 최우선(P 낮은 번호)을 집고 `started` 로 바꾼 뒤 보드를 갱신한다.
+   - 집을 게 없으면 **아무것도 하지 말고 종료한다** (빈 실행은 정상이다).
+3. 티켓 본문과 `선행 읽기`를 전부 읽고 구현한다. 티켓에 없는 기능을 추가하지 마라.
+4. 완료 게이트를 실행해 출력(요약)을 티켓 검증란에 붙인다. 게이트 실패 상태로 need_review 전환 금지.
+5. `need_review` 전환 + 보드 갱신 + `docs/history/YYYY-MM-DD.md` 에 3줄(무엇을/왜/남은 위험).
+6. 막히면 티켓의 질문 섹션에 기록하고 `blocked` — 스펙을 임의 해석해 우회하지 마라.
+7. **git 커밋 금지** — 워킹 트리에 남기면 PM(Claude)이 리뷰 후 커밋한다. 다른 레인의 미커밋 변경이 보여도 건드리지 말고 두어라.
 
-## 시작 시퀀스
+## 티켓 레인 태그
 
-1. `docs/tickets/board.md` 에서 내 몫: **TKT-080(advisor 서비스 계약 마감 — P1) → TKT-078 의 매니페스트/헬스 등록 백엔드 몫**. `started` 전환 + 보드 갱신.
-2. TKT-080 요지: advisor `service/` 에 `/health` 신설(actuator 또는 경량 컨트롤러 — 선택 근거 기록), 게이트웨이 헬스 집계 등록, 모선 compose 에 advisor 추가(자체 compose 는 단독 개발용 유지), CORS 기본값(`localhost:5173`)을 같은 오리진 경로 체계(D-006)로 재검토, README 계약 표.
-
-## 완료 기준 (need_review 전환 조건)
-
-1. gateway: `cd gateway && mvn -q -DskipTests package` + 기동 후 `/api/health` 200 확인 (JDK 21)
-2. advisor: `cd services/advisor/service && ./run.sh test` 그린 (JDK 21 고정 — 기본 런타임이 25인 머신 주의)
-3. 티켓 `완료 기준` 옆 검증 결과 + 보드 갱신 + `docs/history/YYYY-MM-DD.md`
-4. 커밋 금지 — Claude 가 리뷰 후 커밋
-
-막히면 티켓 질문 섹션 + `blocked`. 임의 우회 금지.
+PM 이 보드의 각 티켓에 `[FE]` `[BE]` `[INFRA]` 태그를 붙인다. **태그 없는 티켓은 집지 않는다** (PM 미배정).
