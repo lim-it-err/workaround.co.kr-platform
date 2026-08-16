@@ -27,6 +27,8 @@ function go(line) {
 
 <template>
   <section class="map-panel" aria-label="환승 홀 노선도">
+    <!-- SVG 만 가로 스크롤 — 행 목록은 뷰포트 폭에 남는다 (모바일 재배치, S6 선행) -->
+    <div class="map-scroll">
     <svg class="route-map" viewBox="0 0 1000 460" role="img" aria-hidden="true">
       <!-- 지선 -->
       <path
@@ -72,6 +74,7 @@ function go(line) {
       <text class="name name-c" :x="JUNCTION.x" :y="JUNCTION.y - 52">환승 홀</text>
       <text class="sub sub-c" :x="JUNCTION.x" :y="JUNCTION.y - 34">Main Junction</text>
     </svg>
+    </div>
 
     <!-- 이동 목록 (접근성·모바일 폴백 + 실제 링크) -->
     <div class="route-rows">

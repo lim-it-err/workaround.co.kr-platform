@@ -72,3 +72,16 @@
 
 - 플랩 아래→위 물리 연출은 TKT-070(실제 split-flap 모션)이 담당한다. 본 티켓은 플랩 CSS/JS 를 건드리지 않는다.
 - 선택 슬라이스다. S1~S5 마감 후 여력이 있을 때 착수하며, 모바일 재배치와 Writing Studio 마감 두 조각은 필요하면 별도 PR 로 나눠도 된다.
+
+
+## 진행 기록 (2026-08-16, claude — PO "이번엔 모바일" 지시로 모바일 몫 선행)
+
+**모바일 재배치 1차 완료** (styles.css `@media (max-width:760px)` 블록 + JunctionMap `.map-scroll` 분리):
+
+- 상태 바(wayfinding-bar)·통계(banner-stats): 구 720px 규칙의 세로 스택을 **가로 랩**으로 교체 — 상태 바 높이 ~290px→68px
+- 환승 홀: **이동 목록(실 링크)을 노선도보다 먼저** (order 재배치, "축소 아닌 재배치" 원칙). SVG 는 `.map-scroll` 전용 컨테이너에서만 가로 스크롤 — 행 목록은 뷰포트 폭 유지
+- route-row: 상태를 요약 아래 줄로 내리는 2행 그리드
+- **flex 최소폭 오버플로 수정**: chip-button·section-head 등 flex 행이 min-content 로 페이지를 542px 까지 밀어 우측이 잘리던 문제 — min-width:0 가드 + flex-wrap. dispatch-table/work-board/district-grid 는 자기 컨테이너 스크롤
+- 검증(375×812 실측): junction·elevator·taxi·work·bloghub·runtime 전부 **비의도 가로 오버플로 0**, 행 목록 우선 노출 확인
+
+**잔여 (이 티켓의 나머지)**: Writing Studio 상태 흐름 마감, 시안 A/C 모바일 프리뷰의 세부(하단 빠른 환승 등), 스플래시 플랩 모바일 폭 미세조정.
