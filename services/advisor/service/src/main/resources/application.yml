@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: advisor
+  profiles:
+    active: mock
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+  datasource:
+    url: jdbc:h2:file:./data/advisor;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+advisor:
+  auth:
+    token: ${ADVISOR_AUTH_TOKEN:}
+  cors:
+    allowed-origin: http://localhost:5173
+  llm:
+    roles:
+      generate: { provider: mock, model: default }
+      review: { provider: mock, model: default }
+      chat: { provider: mock, model: default }
