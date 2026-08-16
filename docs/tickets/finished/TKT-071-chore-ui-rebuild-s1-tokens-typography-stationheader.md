@@ -7,7 +7,7 @@
 - 제목: UI 재구현 S1 - 디자인 토큰 + 타이포 + StationHeader 앱 전역 적용
 - 우선순위: P1
 - 대상 버전: `chore`
-- 상태: `need_review`
+- 상태: `finished`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`

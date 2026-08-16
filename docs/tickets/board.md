@@ -45,11 +45,10 @@
 
 ## Need Review
 
-- `TKT-081` `P1` `chore` `need_review` UX 카피 다이어트 — 자기 해설·내부 용어·중복 서술 제거 (PO 피드백 즉시 조치, 2026-08-16)
-- `TKT-071` `P1` `chore` `need_review` UI 재구현 S1 — 토큰·타이포·StationHeader 전 페이지 적용 (2026-08-16 claude 구현, PO 육안 확인 대기)
-
 ## Finished
 
+- `TKT-081` `P1` `chore` UX 카피 다이어트 1차 — PO 승인 (추가 다이어트는 후속 라운드, S4 수용 기준 연계)
+- `TKT-071` `P1` `chore` UI 재구현 S1 — 토큰·타이포·StationHeader, PO 승인
 - `TKT-077` `P1` `chore` 스플래시 플랩 split-flap 정합(글자 배치/방향/settle) — 오케스트레이터 직접 [사용자 지목]
 - `TKT-070` `P1` `chore` 스플래시 플랩 실제 split-flap 재현(플립 정상화) — 검토 통과 [사용자 지목]
 - `TKT-069` `P2` `chore` 확정 디자인 1차 반영(다크 기본 + 플랩 아래→위) — 검토 통과
