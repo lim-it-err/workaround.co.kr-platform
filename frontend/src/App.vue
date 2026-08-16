@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import StationHeader from './components/StationHeader.vue'
 
 const SPLASH_DURATION_MS = 10000
 const TEST_ROUTE_PATH = '/test'
@@ -2933,29 +2934,32 @@ function persistStudioPostId(postId) {
             </section>
 
             <section v-else-if="page === 'taxi'" class="feature-shell prototype-shell">
-              <section class="platform-banner line-p">
-                <div>
-                  <p class="eyebrow">Line T / Taxi District Lab</p>
-                  <h3>가상 도시 수요 보드</h3>
-                  <p>
-                    `v0.5.0` 택시 시뮬레이터는 표만 많은 화면이 아니라, 구역과 요청과 차량의 관계가 먼저 보이는
-                    승강장이어야 합니다. 지도 감각, 리워드, 차량 재배치 비용을 한 레일에서 같이 읽습니다.
-                  </p>
-                </div>
-
+              <StationHeader
+                line-class="line-t"
+                station-code="T01"
+                title="가상 도시 수요 보드"
+                title-en="TAXI DISTRICT LAB"
+                prev-label="← 가상 레일"
+                status="가상 레일 프로토"
+                status-tone="warn"
+                summary="9구역 · 수요 보드 목업"
+                @exit="openPage('junction')"
+              />
+              <section class="station-lead">
+                <p>`v0.5.0` 택시 시뮬레이터는 표만 많은 화면이 아니라, 구역과 요청과 차량의 관계가 먼저 보이는 승강장이어야 합니다. 지도 감각, 리워드, 차량 재배치 비용을 한 레일에서 같이 읽습니다.</p>
                 <div class="banner-stats">
-                  <article>
-                    <span>districts</span>
-                    <strong>{{ taxiDistricts.length }}</strong>
-                  </article>
-                  <article>
-                    <span>active fleet</span>
-                    <strong>{{ taxiFleetCards.length }}</strong>
-                  </article>
-                  <article>
-                    <span>reward rail</span>
-                    <strong>live mock</strong>
-                  </article>
+                <article>
+                <span>districts</span>
+                <strong>{{ taxiDistricts.length }}</strong>
+                </article>
+                <article>
+                <span>active fleet</span>
+                <strong>{{ taxiFleetCards.length }}</strong>
+                </article>
+                <article>
+                <span>reward rail</span>
+                <strong>live mock</strong>
+                </article>
                 </div>
               </section>
 
@@ -3043,29 +3047,32 @@ function persistStudioPostId(postId) {
             </section>
 
             <section v-else-if="page === 'ops'" class="feature-shell prototype-shell">
-              <section class="platform-banner line-w">
-                <div>
-                  <p class="eyebrow">Line O / Crew Board</p>
-                  <h3>worker 가시화 확장</h3>
-                  <p>
-                    `v0.4.0` Work Manager 가 상태와 command gate 를 복구했다면, `v0.5.0` 은 누가 어떤 티켓을 집었는지와
-                    우선순위가 실제 반응으로 어떻게 이어지는지를 보이게 해야 합니다.
-                  </p>
-                </div>
-
+              <StationHeader
+                line-class="line-w"
+                station-code="W02"
+                title="worker 가시화 확장"
+                title-en="CREW BOARD"
+                prev-label="← 가상 레일"
+                status="가상 레일 프로토"
+                status-tone="warn"
+                summary="v0.5.0 · design first"
+                @exit="openPage('junction')"
+              />
+              <section class="station-lead">
+                <p>`v0.4.0` Work Manager 가 상태와 command gate 를 복구했다면, `v0.5.0` 은 누가 어떤 티켓을 집었는지와 우선순위가 실제 반응으로 어떻게 이어지는지를 보이게 해야 합니다.</p>
                 <div class="banner-stats">
-                  <article>
-                    <span>visible crews</span>
-                    <strong>{{ opsCrewCards.length }}</strong>
-                  </article>
-                  <article>
-                    <span>focus version</span>
-                    <strong>v0.5.0</strong>
-                  </article>
-                  <article>
-                    <span>handoff</span>
-                    <strong>design first</strong>
-                  </article>
+                <article>
+                <span>visible crews</span>
+                <strong>{{ opsCrewCards.length }}</strong>
+                </article>
+                <article>
+                <span>focus version</span>
+                <strong>v0.5.0</strong>
+                </article>
+                <article>
+                <span>handoff</span>
+                <strong>design first</strong>
+                </article>
                 </div>
               </section>
 
@@ -3109,29 +3116,32 @@ function persistStudioPostId(postId) {
             </section>
 
             <section v-else class="feature-shell prototype-shell">
-              <section class="platform-banner line-r">
-                <div>
-                  <p class="eyebrow">Line S / Signal Room</p>
-                  <h3>실사용 레일과 가상 레일의 분리</h3>
-                  <p>
-                    이번 버전의 핵심은 새 디자인을 빠르게 보되, 기존 실사용 경로를 절대 덮어쓰지 않는 것입니다.
-                    오케스트레이터는 이 신호실을 보고 어디를 구현하고 어디를 문서 review 로 남길지 구분합니다.
-                  </p>
-                </div>
-
+              <StationHeader
+                line-class="line-r"
+                station-code="R02"
+                title="실사용 레일과 가상 레일의 분리"
+                title-en="SIGNAL ROOM"
+                prev-label="← 가상 레일"
+                status="가상 레일 프로토"
+                status-tone="warn"
+                summary="live / · legacy /test · proto /test/v0-5-0"
+                @exit="openPage('junction')"
+              />
+              <section class="station-lead">
+                <p>이번 버전의 핵심은 새 디자인을 빠르게 보되, 기존 실사용 경로를 절대 덮어쓰지 않는 것입니다. 오케스트레이터는 이 신호실을 보고 어디를 구현하고 어디를 문서 review 로 남길지 구분합니다.</p>
                 <div class="banner-stats">
-                  <article>
-                    <span>live root</span>
-                    <strong>/</strong>
-                  </article>
-                  <article>
-                    <span>legacy review</span>
-                    <strong>/test</strong>
-                  </article>
-                  <article>
-                    <span>v0.5.0 proto</span>
-                    <strong>/test/v0-5-0</strong>
-                  </article>
+                <article>
+                <span>live root</span>
+                <strong>/</strong>
+                </article>
+                <article>
+                <span>legacy review</span>
+                <strong>/test</strong>
+                </article>
+                <article>
+                <span>v0.5.0 proto</span>
+                <strong>/test/v0-5-0</strong>
+                </article>
                 </div>
               </section>
 
@@ -3319,7 +3329,7 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else-if="page === 'simhub'" class="feature-shell">
-            <section class="platform-banner line-p">
+            <section class="platform-banner subhub-banner">
               <div>
                 <p class="eyebrow">Line S / Sim Hub</p>
                 <h3>시뮬레이션만 따로 모은 환승 허브</h3>
@@ -3390,29 +3400,31 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else-if="page === 'elevator'" class="feature-shell">
-            <section class="platform-banner line-e">
-              <div>
-                <p class="eyebrow">Line E / Elevator Station</p>
-                <h3>23층 수직 승강장</h3>
-                <p>
-                  승객 수, 목적층, 현재 적재 인원, 층 사이 연속 위치를 실제 시뮬레이터 상태로 읽습니다.
-                  수동 버튼은 상행/하행 1명 추가 단위로 동작하고, step 은 디버그 보조 제어로만 남깁니다.
-                </p>
-              </div>
-
+            <StationHeader
+              line-class="line-e"
+              station-code="E01"
+              title="23층 수직 승강장"
+              title-en="ELEVATOR STATION"
+              status="실시간 운행"
+              status-tone="live"
+              :summary="`23층 · car ${elevatorCars.length}대 · 정원 20명`"
+              @exit="openPage('junction')"
+            />
+            <section class="station-lead">
+              <p>승객 수, 목적층, 현재 적재 인원, 층 사이 연속 위치를 실제 시뮬레이터 상태로 읽습니다. 수동 버튼은 상행/하행 1명 추가 단위로 동작하고, step 은 디버그 보조 제어로만 남깁니다.</p>
               <div class="banner-stats">
-                <article>
-                  <span>demand</span>
-                  <strong>{{ elevatorDemand.presetLabel }}</strong>
-                </article>
-                <article>
-                  <span>moving cars</span>
-                  <strong>{{ elevatorSummary.movingElevators }}</strong>
-                </article>
-                <article>
-                  <span>waiting pax</span>
-                  <strong>{{ elevatorSummary.waitingPassengers }}</strong>
-                </article>
+              <article>
+              <span>demand</span>
+              <strong>{{ elevatorDemand.presetLabel }}</strong>
+              </article>
+              <article>
+              <span>moving cars</span>
+              <strong>{{ elevatorSummary.movingElevators }}</strong>
+              </article>
+              <article>
+              <span>waiting pax</span>
+              <strong>{{ elevatorSummary.waitingPassengers }}</strong>
+              </article>
               </div>
             </section>
 
@@ -3589,21 +3601,23 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else-if="page === 'taxi'" class="feature-shell">
-            <section class="platform-banner line-p">
-              <div>
-                <p class="eyebrow">Line T / Taxi District Lab</p>
-                <h3>9구역 택시 시뮬레이터 코어</h3>
-                <p>
-                  랜덤 호출과 수동 호출을 같이 넣고, 가장 가까우면서 정원 여유가 있는 차량이 먼저 움직입니다.
-                  처리 시간은 reward 로, 차량 추가는 penalty 로 누적됩니다.
-                </p>
-              </div>
-
+            <StationHeader
+              line-class="line-t"
+              station-code="T01"
+              title="9구역 택시 시뮬레이터 코어"
+              title-en="TAXI DISTRICT LAB"
+              status="프런트 코어 운행"
+              status-tone="live"
+              summary="9구역 · reward/penalty 누적"
+              @exit="openPage('junction')"
+            />
+            <section class="station-lead">
+              <p>랜덤 호출과 수동 호출을 같이 넣고, 가장 가까우면서 정원 여유가 있는 차량이 먼저 움직입니다. 처리 시간은 reward 로, 차량 추가는 penalty 로 누적됩니다.</p>
               <div class="banner-stats">
-                <article v-for="metric in taxiDashboardMetrics" :key="metric.label">
-                  <span>{{ metric.label }}</span>
-                  <strong>{{ metric.value }}</strong>
-                </article>
+              <article v-for="metric in taxiDashboardMetrics" :key="metric.label">
+              <span>{{ metric.label }}</span>
+              <strong>{{ metric.value }}</strong>
+              </article>
               </div>
             </section>
 
@@ -3778,21 +3792,23 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else-if="page === 'bloghub'" class="feature-shell blog-shell">
-            <section class="platform-banner line-b">
-              <div>
-                <p class="eyebrow">Line B / Blog District</p>
-                <h3>읽기와 쓰기를 위한 조용한 승강장</h3>
-                <p>
-                  공개 아카이브는 차분한 목록 리듬으로, Writing Studio 는 편집과 미리보기를 분리한 집중 화면으로
-                  구성했습니다. published 만 공개되고 draft 는 Studio 안에서만 보입니다.
-                </p>
-              </div>
-
+            <StationHeader
+              line-class="line-b"
+              station-code="B01"
+              title="읽기와 쓰기를 위한 조용한 승강장"
+              title-en="BLOG DISTRICT"
+              status="공개 운행"
+              status-tone="live"
+              summary="published 만 공개 · draft 는 Studio 안에서만"
+              @exit="openPage('junction')"
+            />
+            <section class="station-lead">
+              <p>공개 아카이브는 차분한 목록 리듬으로, Writing Studio 는 편집과 미리보기를 분리한 집중 화면으로 구성했습니다. published 만 공개되고 draft 는 Studio 안에서만 보입니다.</p>
               <div class="banner-stats">
-                <article v-for="item in blogHeroStats" :key="item.label">
-                  <span>{{ item.label }}</span>
-                  <strong>{{ item.value }}</strong>
-                </article>
+              <article v-for="item in blogHeroStats" :key="item.label">
+              <span>{{ item.label }}</span>
+              <strong>{{ item.value }}</strong>
+              </article>
               </div>
             </section>
 
@@ -3915,28 +3931,31 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else-if="page === 'writingStudio'" class="feature-shell blog-shell">
-            <section class="platform-banner line-b">
-              <div>
-                <p class="eyebrow">Line B / Writing Studio</p>
-                <h3>{{ studioState.title || '새 글 초안' }}</h3>
-                <p>
-                  제목, slug, 요약, Markdown 본문을 저장하고 preview 와 publish 상태를 같은 데이터 모델로 연결합니다.
-                </p>
-              </div>
-
+            <StationHeader
+              line-class="line-b"
+              station-code="B02"
+              :title="studioState.title || '새 글 초안'"
+              title-en="WRITING STUDIO"
+              :status="BLOG_STATUS_LABELS[studioState.status]"
+              status-tone="ok"
+              summary="저장 · 미리보기 · 발행 한 모델"
+              @exit="openPage('junction')"
+            />
+            <section class="station-lead">
+              <p>제목, slug, 요약, Markdown 본문을 저장하고 preview 와 publish 상태를 같은 데이터 모델로 연결합니다.</p>
               <div class="banner-stats">
-                <article>
-                  <span>status</span>
-                  <strong>{{ BLOG_STATUS_LABELS[studioState.status] }}</strong>
-                </article>
-                <article>
-                  <span>words</span>
-                  <strong>{{ studioWordCount }}</strong>
-                </article>
-                <article>
-                  <span>reading</span>
-                  <strong>{{ studioReadingMinutes }} min</strong>
-                </article>
+              <article>
+              <span>status</span>
+              <strong>{{ BLOG_STATUS_LABELS[studioState.status] }}</strong>
+              </article>
+              <article>
+              <span>words</span>
+              <strong>{{ studioWordCount }}</strong>
+              </article>
+              <article>
+              <span>reading</span>
+              <strong>{{ studioReadingMinutes }} min</strong>
+              </article>
               </div>
             </section>
 
@@ -4042,29 +4061,31 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else-if="page === 'work'" class="feature-shell">
-            <section class="platform-banner line-w">
-              <div>
-                <p class="eyebrow">Line W / Work Manager</p>
-                <h3>운영 보드 승강장</h3>
-                <p>
-                  `Backlog` 와 `Ready` 는 프런트에서 분리해 보여주고, 실제 파일 기반 상태 전이는 현재 gateway 계약을
-                  따릅니다. command 영역은 preset action + memo 조합만 허용합니다.
-                </p>
-              </div>
-
+            <StationHeader
+              line-class="line-w"
+              station-code="W01"
+              title="운영 보드 승강장"
+              title-en="WORK MANAGER"
+              :status="workManagerToken ? 'command gate unlocked' : '조회 공개 · gate locked'"
+              :status-tone="workManagerToken ? 'live' : 'ok'"
+              summary="5레인 · preset command + memo"
+              @exit="openPage('junction')"
+            />
+            <section class="station-lead">
+              <p>`Backlog` 와 `Ready` 는 프런트에서 분리해 보여주고, 실제 파일 기반 상태 전이는 현재 gateway 계약을 따릅니다. command 영역은 preset action + memo 조합만 허용합니다.</p>
               <div class="banner-stats">
-                <article>
-                  <span>lanes</span>
-                  <strong>5</strong>
-                </article>
-                <article>
-                  <span>selected</span>
-                  <strong>{{ selectedWorkTicket?.id || 'none' }}</strong>
-                </article>
-                <article>
-                  <span>command gate</span>
-                  <strong>{{ workManagerToken ? 'unlocked' : 'locked' }}</strong>
-                </article>
+              <article>
+              <span>lanes</span>
+              <strong>5</strong>
+              </article>
+              <article>
+              <span>selected</span>
+              <strong>{{ selectedWorkTicket?.id || 'none' }}</strong>
+              </article>
+              <article>
+              <span>command gate</span>
+              <strong>{{ workManagerToken ? 'unlocked' : 'locked' }}</strong>
+              </article>
               </div>
             </section>
 
@@ -4433,29 +4454,31 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else class="feature-shell">
-            <section class="platform-banner line-r">
-              <div>
-                <p class="eyebrow">Line R / Runtime Board</p>
-                <h3>노드 정책 보드</h3>
-                <p>
-                  릴리스 레일과 런타임 레일을 같이 봅니다. GitHub Release 는 태그 기반으로 만들 수 있지만,
-                  현재 저장소에는 실제 GitHub Release 생성 단계가 아직 연결되어 있지 않습니다.
-                </p>
-              </div>
-
+            <StationHeader
+              line-class="line-r"
+              station-code="R01"
+              title="노드 정책 보드"
+              title-en="RUNTIME BOARD"
+              status="정책 조회"
+              status-tone="ok"
+              summary="ion2 · rtx5070 · gateway"
+              @exit="openPage('junction')"
+            />
+            <section class="station-lead">
+              <p>릴리스 레일과 런타임 레일을 같이 봅니다. GitHub Release 는 태그 기반으로 만들 수 있지만, 현재 저장소에는 실제 GitHub Release 생성 단계가 아직 연결되어 있지 않습니다.</p>
               <div class="banner-stats">
-                <article>
-                  <span>gateway</span>
-                  <strong>{{ healthState.status }}</strong>
-                </article>
-                <article>
-                  <span>rtx5070</span>
-                  <strong>{{ runtimeState.ollama?.status || 'unknown' }}</strong>
-                </article>
-                <article>
-                  <span>queued</span>
-                  <strong>{{ healthState.tickets?.queued ?? 0 }}</strong>
-                </article>
+              <article>
+              <span>gateway</span>
+              <strong>{{ healthState.status }}</strong>
+              </article>
+              <article>
+              <span>rtx5070</span>
+              <strong>{{ runtimeState.ollama?.status || 'unknown' }}</strong>
+              </article>
+              <article>
+              <span>queued</span>
+              <strong>{{ healthState.tickets?.queued ?? 0 }}</strong>
+              </article>
               </div>
             </section>
 

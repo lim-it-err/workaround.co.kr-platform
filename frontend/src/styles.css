@@ -1,28 +1,66 @@
 :root {
   color-scheme: dark;
-  font-family: "Noto Sans KR", "Segoe UI", sans-serif;
+  /* 타이포 (스펙 §2) — 시스템/설치형만, 외부 CDN 금지 */
+  --font-sans: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic",
+               "Apple SD Gothic Neo", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Cascadia Code", Consolas, "SF Mono", "Roboto Mono", monospace;
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --bg: #0d131c;
-  --bg-2: #141d29;
-  --panel: rgba(20, 28, 39, 0.84);
-  --panel-2: rgba(27, 37, 51, 0.94);
-  --panel-soft: rgba(255, 255, 255, 0.06);
-  --border: rgba(255, 255, 255, 0.08);
-  --text: #f4f7fb;
-  --text-2: #c0cad9;
-  --muted: #93a2ba;
-  --line-r: #1f5eff;
-  --line-w: #1ca856;
-  --line-e: #2eb5ff;
-  --line-p: #c7a23a;
-  --line-b: #7e294f;
-  --line-v: #8d5cff;
+  /* 타이포 스케일 (스펙 §2 표) */
+  --fs-display: clamp(1.7rem, 4vw, 2.6rem);
+  --fs-h2: clamp(1.5rem, 3vw, 2.1rem);
+  --fs-station: clamp(1.3rem, 2.6vw, 1.7rem);
+  --fs-post-h1: clamp(1.6rem, 3.4vw, 2.15rem);
+  --fs-body: 1rem;
+  --fs-caption: 0.74rem;
+  --fs-eyebrow: 0.72rem;
+  /* 구조/표면/텍스트/액센트 (스펙 §1.1, 다크 기본) */
+  --bg: #0D131C;
+  --bg-2: #111721;
+  --panel: #1A212D;
+  --panel-2: #212A38;
+  --panel-soft: rgba(255, 255, 255, 0.045);
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --border: var(--line); /* 구 토큰 별칭 — 기존 규칙 호환 */
+  --text: #F3F6FB;
+  --text-2: #AEB8C8;
+  --muted: #7C8AA0;
+  --safety: #F3C544;
+  --safety-ink: #201A05;
+  --exit: #17A757;
+  --exit-hover: #129149;
   --warning: #f0a02d;
-  --danger: #df5668;
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+  --danger: #E06A7A;
+  --shadow: 0 18px 44px rgba(2, 6, 12, 0.42);
+  --head-bg: rgba(13, 19, 28, 0.86);
+  --map-node: #0D131C;
+  --code-bg: #10161F;
+  --quote-bg: rgba(243, 197, 68, 0.06);
+  --radius: 14px;
+  --radius-lg: 20px;
+  /* 노선 코어/텍스트 틴트 (스펙 §1.2, 다크) — §1.3 리매핑: 금색=T, P=틸(Palate), V→D(Discovery) */
+  --line-b: #E14D78;
+  --line-b-text: #F07CA0;
+  --line-e: #3FC1FF;
+  --line-e-text: #7BD4FF;
+  --line-t: #F0B33C;
+  --line-t-text: #F5C86E;
+  --line-w: #35C275;
+  --line-w-text: #6BD59B;
+  --line-r: #5B8DEF;
+  --line-r-text: #8FB0F5;
+  --line-d: #9B6BF2;
+  --line-d-text: #BCA1F7;
+  --line-p: #22C3A7;
+  --line-p-text: #5AD9C2;
+  /* 상태 색 (스펙 §1.4 — 정의만, 배지 실렌더는 S3) */
+  --status-draft: #7C8AA0;
+  --status-pub: #35C275;
+  --status-arch: #C69A54;
 }
 
 * {
@@ -38,9 +76,10 @@ body,
 
 body {
   min-height: 100vh;
+  line-height: 1.6;
   background:
-    radial-gradient(circle at top left, rgba(46, 181, 255, 0.14), transparent 24%),
-    radial-gradient(circle at top right, rgba(28, 168, 86, 0.12), transparent 24%),
+    radial-gradient(circle at top left, rgba(63, 193, 255, 0.10), transparent 24%),
+    radial-gradient(circle at top right, rgba(53, 194, 117, 0.08), transparent 24%),
     linear-gradient(180deg, #0b1118 0%, #101723 48%, #0c1218 100%);
 }
 
@@ -57,16 +96,65 @@ button {
 
 .app-shell[data-theme='light'] {
   color-scheme: light;
-  --bg: #eef3f9;
-  --bg-2: #dce5f2;
-  --panel: rgba(255, 255, 255, 0.92);
-  --panel-2: rgba(248, 251, 255, 0.98);
-  --panel-soft: rgba(20, 28, 39, 0.05);
-  --border: rgba(16, 22, 34, 0.1);
-  --text: #142032;
-  --text-2: #42526c;
-  --muted: #677891;
-  --shadow: 0 24px 54px rgba(53, 77, 114, 0.12);
+  --bg: #EDF1F6;
+  --bg-2: #E4EAF2;
+  --panel: #FFFFFF;
+  --panel-2: #F5F8FC;
+  --panel-soft: rgba(16, 24, 38, 0.045);
+  --line: rgba(16, 24, 38, 0.12);
+  --line-strong: rgba(16, 24, 38, 0.22);
+  --text: #16202E;
+  --text-2: #45536A;
+  --muted: #6B7A92;
+  --safety: #E9B92B;
+  --exit: #0E8A46;
+  --exit-hover: #0B7038;
+  --danger: #C24557;
+  --shadow: 0 16px 40px rgba(53, 77, 114, 0.14);
+  --head-bg: rgba(237, 241, 246, 0.88);
+  --map-node: #FFFFFF;
+  --code-bg: #101724;
+  --quote-bg: rgba(233, 185, 43, 0.10);
+  --line-b: #C0264F;
+  --line-b-text: #A81F43;
+  --line-e: #0090C8;
+  --line-e-text: #006E99;
+  --line-t: #C8830E;
+  --line-t-text: #96650E;
+  --line-w: #00A84D;
+  --line-w-text: #00793A;
+  --line-r: #0052A4;
+  --line-r-text: #0052A4;
+  --line-d: #6E3FC0;
+  --line-d-text: #5A2FA8;
+  --line-p: #0E9C86;
+  --line-p-text: #0B7D6C;
+  --status-draft: #6B7A92;
+  --status-pub: #00A84D;
+  --status-arch: #9A6E2E;
+}
+
+/* 노선 modifier — 코어/틴트 주입 (스펙 §1.3). 배너/카드/헤더는 --accent 만 참조한다. */
+.line-b { --accent: var(--line-b); --accent-text: var(--line-b-text); }
+.line-e { --accent: var(--line-e); --accent-text: var(--line-e-text); }
+.line-t { --accent: var(--line-t); --accent-text: var(--line-t-text); }
+.line-w { --accent: var(--line-w); --accent-text: var(--line-w-text); }
+.line-r { --accent: var(--line-r); --accent-text: var(--line-r-text); }
+.line-d { --accent: var(--line-d); --accent-text: var(--line-d-text); }
+.line-p { --accent: var(--line-p); --accent-text: var(--line-p-text); }
+
+/* 전역 접근성 (스펙 부록 A) */
+:focus-visible {
+  outline: 2px solid var(--safety);
+  outline-offset: 2px;
+}
+
+/* 숫자 정렬 (스펙 §2) */
+.num,
+.banner-stats strong,
+.clock-box strong {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
 }
 
 .splash-stage,
@@ -172,12 +260,25 @@ button {
   color: #fff4f7;
 }
 
+.line-round.line-t,
+.station-badge.line-t {
+  background: var(--line-t);
+  color: #201A05;
+}
+
+.line-round.line-d,
+.station-badge.line-d {
+  background: var(--line-d);
+  color: #f6f0ff;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-size: 0.72rem;
+  font-weight: 700;
+  font-size: var(--fs-eyebrow);
 }
 
 .splash-top h1,
@@ -480,16 +581,69 @@ button {
   cursor: pointer;
 }
 
-.ghost-button {
-  background: rgba(255, 255, 255, 0.08);
+/* 버튼 정합 (스펙 §3.6): primary=Exit Green 전용, ghost=보더형. 클래스명은 유지, 규칙만 통일. */
+.ghost-button,
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line-strong);
   color: var(--text);
+}
+
+.ghost-button:hover,
+.btn-ghost:hover {
+  border-color: var(--safety);
 }
 
 .primary-button,
 .line-cta,
-.chip-button.active {
-  background: linear-gradient(135deg, var(--line-w), #1f8ad4);
-  color: #f7fbff;
+.chip-button.active,
+.btn-exit {
+  background: var(--exit);
+  color: #F2FFF7;
+}
+
+.primary-button:hover,
+.line-cta:hover,
+.btn-exit:hover {
+  background: var(--exit-hover);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--text);
+}
+
+/* 섹션 골격 (스펙 §3.6) — 노랑은 섹션 레일·현재 위치·포커스 전용 */
+.sec-rail {
+  width: 44px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--safety);
+}
+
+.roundel {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent, var(--line-strong));
+  color: #fff;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+}
+
+.roundel.sm {
+  width: 24px;
+  height: 24px;
+  font-size: 0.72rem;
 }
 
 .portal-stage {
@@ -670,24 +824,8 @@ button {
     var(--panel-2);
 }
 
-.line-card.line-e {
-  box-shadow: inset 0 0 0 1px rgba(46, 181, 255, 0.14);
-}
-
-.line-card.line-w {
-  box-shadow: inset 0 0 0 1px rgba(28, 168, 86, 0.14);
-}
-
-.line-card.line-r {
-  box-shadow: inset 0 0 0 1px rgba(31, 94, 255, 0.14);
-}
-
-.line-card.line-p {
-  box-shadow: inset 0 0 0 1px rgba(199, 162, 58, 0.14);
-}
-
-.line-card.line-b {
-  box-shadow: inset 0 0 0 1px rgba(126, 41, 79, 0.16);
+.line-card[class*='line-'] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, var(--line-strong)) 14%, transparent);
 }
 
 .line-card-top {
@@ -1002,24 +1140,9 @@ button {
   align-items: start;
 }
 
-.platform-banner.line-e {
-  box-shadow: inset 0 0 0 1px rgba(46, 181, 255, 0.16);
-}
-
-.platform-banner.line-w {
-  box-shadow: inset 0 0 0 1px rgba(28, 168, 86, 0.16);
-}
-
-.platform-banner.line-r {
-  box-shadow: inset 0 0 0 1px rgba(31, 94, 255, 0.16);
-}
-
-.platform-banner.line-p {
-  box-shadow: inset 0 0 0 1px rgba(199, 162, 58, 0.16);
-}
-
-.platform-banner.line-b {
-  box-shadow: inset 0 0 0 1px rgba(126, 41, 79, 0.18);
+/* 노선 액센트는 modifier 가 주입한 --accent 만 참조 (스펙 §1.3) */
+.platform-banner[class*='line-'] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, var(--line-strong)) 16%, transparent);
 }
 
 .banner-stats {
@@ -1896,5 +2019,152 @@ button {
   .reading-shell {
     font-size: 1rem;
     line-height: 1.72;
+  }
+}
+
+/* ── StationHeader — 승강장 역명판 (스펙 §3.1, TKT-071/S1) ───────────── */
+
+.station-sign {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.station-sign .band {
+  height: 8px;
+  background: var(--accent, var(--line-strong));
+}
+
+.station-sign-in {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px clamp(14px, 2.4vw, 24px);
+}
+
+.station-prev,
+.station-next {
+  flex: 0 0 auto;
+  min-width: 7.5em;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.station-next {
+  text-align: right;
+}
+
+.station-center {
+  flex: 1;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-width: 0;
+}
+
+.station-code {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  border: 3px solid var(--accent, var(--line-strong));
+  color: var(--accent-text, var(--text));
+  font-weight: 900;
+  font-size: 0.82rem;
+  display: grid;
+  place-items: center;
+  letter-spacing: 0.02em;
+}
+
+.station-center h3 {
+  margin: 0;
+  font-size: var(--fs-station);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.station-center small {
+  display: block;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.66rem;
+}
+
+.station-sub {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px clamp(14px, 2.4vw, 24px);
+  border-top: 1px solid var(--line);
+  background: var(--panel-2);
+  font-size: 0.8rem;
+  color: var(--text-2);
+}
+
+.station-sub .spacer {
+  flex: 1;
+}
+
+.station-sub .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-2);
+}
+
+.station-sub .chip .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--exit);
+}
+
+.station-sub .chip.warn .dot {
+  background: var(--safety);
+}
+
+.station-sub .chip.ok .dot {
+  background: var(--line-r);
+}
+
+.station-sub .btn.btn-ghost {
+  padding: 0.34rem 0.8rem;
+  font-size: 0.78rem;
+}
+
+/* 역명판 아래 리드 문단 + 기존 banner-stats 수용 패널 (본문 스킨은 S3/S4) */
+.station-lead {
+  display: grid;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.station-lead > p {
+  margin: 0;
+  color: var(--text-2);
+  max-width: 68em;
+}
+
+/* Sim Hub 중립 헤더 — 노선색 없음 (스펙 §4 simhub) */
+.subhub-banner {
+  border-left: 4px solid var(--line-strong);
+}
+
+@media (max-width: 760px) {
+  .station-prev,
+  .station-next {
+    display: none;
   }
 }

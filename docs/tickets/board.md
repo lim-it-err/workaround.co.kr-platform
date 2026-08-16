@@ -39,13 +39,13 @@
 
 ## Ready
 
-- `TKT-071` `P1` `chore` `진행 가능` UI 재구현 S1 - 색 토큰+타이포+역명판 헤더 [시안 적용]
-
 ## Started
 
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
+- `TKT-071` `P1` `chore` `need_review` UI 재구현 S1 — 토큰·타이포·StationHeader 전 페이지 적용 (2026-08-16 claude 구현, PO 육안 확인 대기)
 
 ## Finished
 

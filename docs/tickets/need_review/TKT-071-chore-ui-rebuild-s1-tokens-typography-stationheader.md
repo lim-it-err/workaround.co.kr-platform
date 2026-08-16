@@ -7,7 +7,7 @@
 - 제목: UI 재구현 S1 - 디자인 토큰 + 타이포 + StationHeader 앱 전역 적용
 - 우선순위: P1
 - 대상 버전: `chore`
-- 상태: `ready`
+- 상태: `need_review`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`
@@ -67,13 +67,26 @@ UI 재구현의 토대인 슬라이스 S1을 구현한다. `design/implementatio
 - `design/mockups/2026-07-05/variant-c-night-line.html`
 - `docs/feature-definition.md`
 
-## 작업자 산출물
+## 작업자 산출물 (2026-08-16, claude — PO 직접 지시로 구현)
 
-- 브랜치 이름
-- 토큰 교체/리매핑 요약(§1.3 이동 반영 여부)
-- StationHeader 적용 페이지 목록
-- 다크/라이트 검수 결과
-- 검증 결과(run-frontend-build)
+- 브랜치: 트렁크 `codex/v0.6.0-line` 직접 (체제 변경 D-001 이후 커밋 주체=Claude)
+- 토큰: §1.1/§1.2/§1.4 전면 교체 완료. 다크 기본 + 라이트 전량 재정의. 구 `--border` 는 `var(--line)` 별칭으로 유지해 1,900줄 기존 규칙 무수정 호환. §1.3 리매핑 반영 — **금색→`--line-t`**, `--line-p`=틸(Palate), `--line-v` 제거→`--line-d`(Discovery) 신설. modifier 7종(`.line-b`~`.line-p`)이 `--accent`/`--accent-text` 주입, platform-banner/line-card 액센트는 하드코딩 rgba 10개 규칙 → `color-mix(--accent)` 2개 규칙으로 통합.
+- 타이포: `--font-sans/--font-mono`(§2, CDN 없음), `--fs-*` 변수 6종, body line-height 1.6, `.num` + banner-stats/clock strong 에 tabular-nums, eyebrow 700/0.18em. `:focus-visible` 노랑 아웃라인 전역.
+- StationHeader: `components/StationHeader.vue` 신설(§3.1 — band/code/역명/인접역/상태 chip/복귀 CTA, #actions 슬롯, statusTone live|warn|ok).
+- 적용 페이지 (10곳 전부, `platform-banner line-X` 잔재 0 — grep 확인):
+  - live: elevator E01 / taxi **T01(line-t)** / bloghub B01 / writingStudio B02(동적 status) / work W01(gate 상태 동적 chip) / runtime R01
+  - proto(가상 레일): taxi T01 / ops W02 / signals R02 — prev "← 가상 레일", warn 톤
+  - simhub: StationHeader 아님 — **중립 헤더**(`subhub-banner`, 노선색 없음, 좌측 `--line-strong` 레일) §4 준수
+  - 기존 리드 문단·banner-stats 는 `.station-lead` 패널로 보존 (본문 스킨은 S3/S4)
+- 버튼 정합(§3.6): `.primary-button`/`.line-cta` → Exit Green 단색(그라디언트 제거), `.ghost-button` → 보더형+hover 노랑. `.btn/.btn-exit/.btn-ghost/.sec-rail/.roundel` 신설.
+- 다크/라이트 검수(실행): elevator(다크)·taxi(다크+라이트 — 금색 #F0B33C→#C8830E 전환 확인)·bloghub(라이트 rose #C0264F)·work(라이트 green #00A84D, gate locked chip) 육안 확인. 한 화면 포인트색 경쟁 없음(노랑=포커스/레일, 초록=CTA 만).
+- 검증: `npm run build` 통과 (mac 치환 — `tools/run-frontend-build.ps1` 은 Windows 전용, `../CLAUDE.md` §10). css 30.55kB.
+
+## 검토 메모 (후속 슬라이스로 이관)
+
+- simhub 시뮬 카드의 `9` station-badge(구 line-p)가 틸로 표시됨 — 카드 라운델 개편은 S4(TKT-074) 소관, 그때 E/T 라운델로 교체.
+- 스플래시 flap-cell 의 line-p 셀도 틸로 전환됨 — 플랩 연출은 TKT-070 소관, 색 자체는 §1.3 리매핑의 의도된 결과.
+- §2 타이포 스케일의 페이지별 전면 적용(Post H1, 카드 제목 등)은 변수 정의까지 — 실적용은 S3/S4 페이지 스킨에서.
 
 ## 검토 메모
 
