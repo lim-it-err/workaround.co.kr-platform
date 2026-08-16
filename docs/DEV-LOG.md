@@ -33,3 +33,6 @@
 - 2026-08-16 claude 경계선 한 칸 2판 작성 + dev-017 큐잉 (main)
 - 2026-08-16 claude dev-016(한 번만 물어본다면) 병합 — 신규 게임 1호 라이브 (merge)
 - 2026-08-16 claude dev-017(경계선 한 칸) 병합 — 신규 게임 2호 라이브, 큐 완주 (merge)
+- 2026-08-16 claude 통합 PM 편입 — CLAUDE.md 신설(콘텐츠 전담·dev-queue 발주·검수 역할 명문화), PO 질문은 newProject/ASK.md 로 일원화 (main)
+- 2026-08-16 claude 이전 세션 잔여 배경 프로세스 4종 종료 — vite/esbuild/outbox 감시 루프/브랜치 자동커밋 대기 스크립트. 저장소 이동 준비였으나 PO 지시로 이동 취소. 파일 무변경, 워킹트리는 agent/codex/probe-game 체크아웃 상태로 남음 (환경 조치)
+- 2026-08-16 claude 검증 점검 — service ./run.sh test 통과, frontend npx vite build **실패**(vite 5.4.21 이 node>=20.12 의 util.styleText 요구, 이 머신은 node 20.10.0) (환경 조치)
