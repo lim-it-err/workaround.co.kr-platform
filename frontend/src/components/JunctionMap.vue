@@ -43,8 +43,14 @@ function go(line) {
       <path class="rl rl-b" :d="trunk.path" :style="{ stroke: `var(--${trunk.lineClass})` }" />
       <path class="rl rl-b" :d="trunk.cap" :style="{ stroke: `var(--${trunk.lineClass})` }" />
 
-      <!-- 본선 정차역 -->
-      <g v-for="stop in trunk.stops" :key="stop.label">
+      <!-- 본선 정차역 (라벨 클릭 = 이동) -->
+      <g
+        v-for="stop in trunk.stops"
+        :key="stop.label"
+        class="g-click"
+        role="link"
+        @click="emit('open', stop.page || trunk.page)"
+      >
         <circle
           class="stn"
           :class="{ term: stop.terminus }"
@@ -58,7 +64,13 @@ function go(line) {
       </g>
 
       <!-- 지선 종점 문자 배지 + 라벨 -->
-      <g v-for="line in branches" :key="`c-${line.code}`" :class="{ 'g-upcoming': line.upcoming }">
+      <g
+        v-for="line in branches"
+        :key="`c-${line.code}`"
+        :class="{ 'g-upcoming': line.upcoming, 'g-click': !line.upcoming }"
+        :role="line.upcoming ? undefined : 'link'"
+        @click="go(line)"
+      >
         <circle class="lchip" :cx="line.chip.x" :cy="line.chip.y" r="13" :style="{ fill: `var(--${line.lineClass})` }" />
         <text class="lchip-txt" :x="line.chip.x" :y="line.chip.y + 4.5">{{ line.code }}</text>
         <text class="name" :x="line.labelPos.x" :y="line.labelPos.y" :text-anchor="line.labelPos.anchor">{{ line.nameKo }}</text>

@@ -16,9 +16,9 @@ export const LINES = [
     path: 'M300 230 H852',
     cap: 'M840 214 V246',
     stops: [
-      { x: 472, y: 230, label: '공개 아카이브' },
-      { x: 620, y: 230, label: '글 상세' },
-      { x: 772, y: 230, label: 'Writing Studio', terminus: true }
+      { x: 472, y: 230, label: '공개 아카이브', page: 'blogArchive' },
+      { x: 620, y: 230, label: '글 상세', page: 'bloghub' },
+      { x: 772, y: 230, label: 'Writing Studio', terminus: true, page: 'writingStudio' }
     ],
     rowStops: '공개 아카이브 → 글 상세 → Writing Studio'
   },

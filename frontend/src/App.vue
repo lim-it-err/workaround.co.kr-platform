@@ -652,6 +652,23 @@ const activeTestCheckpoints = computed(() => {
   return isVersionedTestRoute.value ? versionedTestCheckpoints : testCheckpoints
 })
 
+const TOPBAR_LINES = {
+  junction: ['line-w', 'W'],
+  simhub: ['', 'S'],
+  elevator: ['line-e', 'E'],
+  taxi: ['line-t', 'T'],
+  bloghub: ['line-b', 'B'],
+  blogArchive: ['line-b', 'B'],
+  blogPost: ['line-b', 'B'],
+  writingStudio: ['line-b', 'B'],
+  work: ['line-w', 'W'],
+  runtime: ['line-r', 'R'],
+  ops: ['line-w', 'W'],
+  signals: ['line-r', 'R']
+}
+const topbarLineClass = computed(() => (TOPBAR_LINES[page.value] || ['', 'W'])[0])
+const topbarLetter = computed(() => (TOPBAR_LINES[page.value] || ['', 'W'])[1])
+
 const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'junction') {
     return {
@@ -2768,34 +2785,24 @@ function persistStudioPostId(postId) {
       </section>
 
       <main v-else class="portal-stage">
-        <header class="portal-header">
-          <div>
-            <p class="eyebrow">{{ currentRoute.line }}</p>
-            <h2>{{ currentRoute.title }}</h2>
-            <p class="header-copy">{{ currentRoute.description }}</p>
-          </div>
-
-          <div class="header-actions">
+        <header class="station-topbar" :class="topbarLineClass">
+          <span class="roundel" :class="topbarLineClass">{{ topbarLetter }}</span>
+          <h2>{{ currentRoute.title }}</h2>
+          <div class="topbar-actions">
             <button
               v-if="page !== 'junction'"
               type="button"
-              class="primary-button"
+              class="ghost-button"
               @click="openPage('junction')"
             >
-              Main page 환승 홀로
+              환승 홀
             </button>
-            <button type="button" class="ghost-button" @click="toggleTheme">
-              {{ theme === 'dark' ? '라이트 모드' : '다크 모드' }}
+            <button type="button" class="ghost-button" @click="toggleTheme" :aria-label="theme === 'dark' ? '라이트 모드' : '다크 모드'">
+              {{ theme === 'dark' ? '☀' : '☾' }}
             </button>
           </div>
         </header>
 
-        <section class="wayfinding-bar">
-          <span>현재 위치 {{ currentRoute.line }}</span>
-          <span>서비스 {{ servicesState.length }}개 연결</span>
-          <span>gateway {{ healthState.status }}</span>
-          <span>Exit 1 Main page</span>
-        </section>
 
         <div class="page-scroller">
           <section v-if="isTestRoute" class="test-route-banner">

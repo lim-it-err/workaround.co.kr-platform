@@ -2523,3 +2523,65 @@ button {
     -webkit-overflow-scrolling: touch;
   }
 }
+
+/* ── 슬림 상단 바 (PO 2026-08-17: 레퍼런스 블로그 헤더 — 원형 배지 + 타이틀만, 하단 노선색 라인) ── */
+
+.station-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  border-bottom: 3px solid var(--accent, var(--line-strong));
+  background: var(--panel);
+}
+
+.station-topbar h2 {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.station-topbar .roundel {
+  width: 30px;
+  height: 30px;
+  font-size: 0.78rem;
+  flex: none;
+}
+
+.topbar-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.topbar-actions .ghost-button {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+}
+
+/* 노선도가 한 화면에 — 데스크톱에서 SVG 높이 캡 (viewBox 비율 유지, 가운데 정렬) */
+.route-map {
+  max-height: min(58vh, 520px);
+  margin-inline: auto;
+}
+
+.junction-shell {
+  gap: 12px;
+}
+
+/* 노선도 라벨 클릭 이동 (PO 2026-08-17) */
+.route-map .g-click {
+  cursor: pointer;
+}
+
+.route-map .g-click:hover .name {
+  fill: var(--safety);
+}
