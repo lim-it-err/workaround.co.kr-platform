@@ -1,6 +1,8 @@
-# Claude 작업 지침 (화이트채플 / bitter_sweet_testbed)
+# Claude 작업 지침 (화이트채플)
 
-이 저장소의 협업 규약은 `AGENTS.md` → `docs/works/README.md` 가 기준이다. 이 문서는 **Claude 레인의 작업 지침**이며, 상위 통합 규칙은 `../CLAUDE.md` 다.
+> **편입 고지 (2026-08-16)**: 이 폴더는 모선 `services/arcade/whitechapel/` 로 흡수됐다. 공용 브랜치·`IN_PROGRESS` 커밋 락 등 **원 레포의 브랜치 규칙은 폐기** — 커밋·브랜치는 모선 규칙(모선 루트 `CLAUDE.md`)을 따른다. WC-### 티켓·교차 리뷰·`scope` 규칙은 이 폴더 안에서 유효하다.
+
+이 폴더의 협업 규약은 `AGENTS.md` → `docs/works/README.md` 가 기준이다. 이 문서는 **Claude 레인의 작업 지침**이다.
 
 ## 역할
 
