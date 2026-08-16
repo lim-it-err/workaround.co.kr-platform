@@ -2585,3 +2585,18 @@ button {
 .route-map .g-click:hover .name {
   fill: var(--safety);
 }
+
+/* 역명판 "← 환승 홀" 클릭 이동 (PO 2026-08-17) */
+button.station-prev {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: var(--muted);
+  text-align: left;
+}
+
+button.station-prev:hover {
+  color: var(--safety);
+}

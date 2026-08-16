@@ -27,7 +27,7 @@ defineEmits(['exit'])
   <section class="station-sign" :class="lineClass">
     <div class="band" aria-hidden="true"></div>
     <div class="station-sign-in">
-      <span class="station-prev">{{ prevLabel }}</span>
+      <button type="button" class="station-prev" @click="$emit('exit')">{{ prevLabel }}</button>
       <div class="station-center">
         <span class="station-code">{{ stationCode }}</span>
         <div>
