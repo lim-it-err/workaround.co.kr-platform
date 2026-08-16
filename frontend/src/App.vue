@@ -3187,10 +3187,6 @@ function persistStudioPostId(postId) {
               <div>
                 <p class="eyebrow">Transfer Hall</p>
                 <h3>메인에서는 길을 고르고, 실제 조작은 각 승강장으로 들어가서 합니다.</h3>
-                <p>
-                  허브는 지금 연결된 상태를 요약해서 보여주는 구간입니다. Elevator, Work Manager,
-                  Runtime 은 각자의 책임을 가진 페이지에서만 자세히 노출합니다.
-                </p>
               </div>
 
               <div class="hero-metrics">
@@ -3207,7 +3203,6 @@ function persistStudioPostId(postId) {
                   <p class="eyebrow">Route Cards</p>
                   <h3>노선 입구</h3>
                 </div>
-                <span>메인에서는 실제 시뮬레이터 표와 운영 보드를 직접 펼치지 않습니다.</span>
               </div>
 
               <div class="line-grid">
@@ -3233,10 +3228,6 @@ function persistStudioPostId(postId) {
                     <p>{{ card.detail }}</p>
                   </div>
 
-                  <div class="line-ticket-row">
-                    <span v-for="ticket in card.tickets" :key="ticket" class="ticket-tag">{{ ticket }}</span>
-                  </div>
-
                   <button
                     type="button"
                     class="line-cta"
@@ -3245,26 +3236,6 @@ function persistStudioPostId(postId) {
                   >
                     {{ card.cta }}
                   </button>
-                </article>
-              </div>
-            </section>
-
-            <section class="section-block">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">Orchestrator Review</p>
-                  <h3>티켓 슬라이스 힌트</h3>
-                </div>
-                <span>디자인 더미는 `/test` 에 남기고, 실제 포털은 여기에서 다시 살아 있는 데이터를 유지합니다.</span>
-              </div>
-
-              <div class="slice-grid">
-                <article v-for="slice in orchestratorSlices" :key="slice.name" class="slice-card">
-                  <div class="slice-top">
-                    <strong>{{ slice.name }}</strong>
-                    <span>{{ slice.ticket }}</span>
-                  </div>
-                  <p>{{ slice.body }}</p>
                 </article>
               </div>
             </section>
@@ -3302,29 +3273,8 @@ function persistStudioPostId(postId) {
                   </div>
                 </div>
 
-                <p class="rail-caption">
-                  메인은 환승 홀이고, 기능 페이지는 승강장입니다. 허브가 길어질수록 포털은 흐려지고, 승강장이 분명할수록 사용성은 좋아집니다.
-                </p>
               </article>
 
-              <article class="mobile-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">Mobile First</p>
-                    <h3>모바일 동선</h3>
-                  </div>
-                </div>
-
-                <div class="mobile-stack-preview">
-                  <div class="mobile-card">1. 현재 상태</div>
-                  <div class="mobile-card">2. 노선 선택</div>
-                  <div class="mobile-card">3. 기능 진입</div>
-                </div>
-
-                <ul class="check-list">
-                  <li v-for="item in mobileCheckpoints" :key="item">{{ item }}</li>
-                </ul>
-              </article>
             </section>
           </section>
 
@@ -3333,10 +3283,6 @@ function persistStudioPostId(postId) {
               <div>
                 <p class="eyebrow">Line S / Sim Hub</p>
                 <h3>시뮬레이션만 따로 모은 환승 허브</h3>
-                <p>
-                  메인 허브를 다시 거대한 조작판으로 되돌리지 않고, 실제 시뮬레이터 선택과 상태 요약만 담당하는
-                  중간 환승면입니다. Elevator 는 품질 개선 패치가 붙었고, Taxi 는 프런트 단독 코어로 바로 들어갑니다.
-                </p>
               </div>
 
               <div class="banner-stats">
@@ -3387,10 +3333,6 @@ function persistStudioPostId(postId) {
                     <p>{{ card.detail }}</p>
                   </div>
 
-                  <div class="line-ticket-row">
-                    <span v-for="ticket in card.tickets" :key="ticket" class="ticket-tag">{{ ticket }}</span>
-                  </div>
-
                   <button type="button" class="line-cta" @click="openPage(card.page)">
                     {{ card.cta }}
                   </button>
@@ -3411,8 +3353,7 @@ function persistStudioPostId(postId) {
               @exit="openPage('junction')"
             />
             <section class="station-lead">
-              <p>승객 수, 목적층, 현재 적재 인원, 층 사이 연속 위치를 실제 시뮬레이터 상태로 읽습니다. 수동 버튼은 상행/하행 1명 추가 단위로 동작하고, step 은 디버그 보조 제어로만 남깁니다.</p>
-              <div class="banner-stats">
+                          <div class="banner-stats">
               <article>
               <span>demand</span>
               <strong>{{ elevatorDemand.presetLabel }}</strong>
@@ -3612,8 +3553,7 @@ function persistStudioPostId(postId) {
               @exit="openPage('junction')"
             />
             <section class="station-lead">
-              <p>랜덤 호출과 수동 호출을 같이 넣고, 가장 가까우면서 정원 여유가 있는 차량이 먼저 움직입니다. 처리 시간은 reward 로, 차량 추가는 penalty 로 누적됩니다.</p>
-              <div class="banner-stats">
+                          <div class="banner-stats">
               <article v-for="metric in taxiDashboardMetrics" :key="metric.label">
               <span>{{ metric.label }}</span>
               <strong>{{ metric.value }}</strong>
@@ -3696,17 +3636,17 @@ function persistStudioPostId(postId) {
                   <article class="reward-card">
                     <span>reward</span>
                     <strong>{{ formatSignedValue(taxiRewardSummary.reward) }}</strong>
-                    <p>짧은 처리 시간과 안정적인 배차가 보상으로 쌓입니다.</p>
+                    <p>빠른 배차 = 보상</p>
                   </article>
                   <article class="reward-card">
                     <span>penalty</span>
                     <strong>{{ formatSignedValue(-taxiRewardSummary.penalty) }}</strong>
-                    <p>차량 추가 배치 시 운영비 패널티가 즉시 반영됩니다.</p>
+                    <p>차량 추가 = 패널티</p>
                   </article>
                   <article class="reward-card">
                     <span>net</span>
                     <strong>{{ formatSignedValue(taxiRewardSummary.net) }}</strong>
-                    <p>보상과 패널티를 합친 현재 시뮬레이터 점수입니다.</p>
+                    <p>보상 − 패널티 = 순점수</p>
                   </article>
                 </div>
 
@@ -3803,8 +3743,7 @@ function persistStudioPostId(postId) {
               @exit="openPage('junction')"
             />
             <section class="station-lead">
-              <p>공개 아카이브는 차분한 목록 리듬으로, Writing Studio 는 편집과 미리보기를 분리한 집중 화면으로 구성했습니다. published 만 공개되고 draft 는 Studio 안에서만 보입니다.</p>
-              <div class="banner-stats">
+                          <div class="banner-stats">
               <article v-for="item in blogHeroStats" :key="item.label">
               <span>{{ item.label }}</span>
               <strong>{{ item.value }}</strong>
@@ -3852,15 +3791,15 @@ function persistStudioPostId(postId) {
                 <div class="prototype-rule-list">
                   <article class="prototype-rule-card">
                     <strong>draft</strong>
-                    <p>아직 공개되지 않는 작성 중 글. Studio 에서만 노출됩니다.</p>
+                    <p>작성 중 · Studio 전용</p>
                   </article>
                   <article class="prototype-rule-card">
                     <strong>published</strong>
-                    <p>아카이브와 글 상세에 즉시 연결되는 공개 상태입니다.</p>
+                    <p>공개 목록에 노출</p>
                   </article>
                   <article class="prototype-rule-card">
                     <strong>archived</strong>
-                    <p>삭제가 아니라 보관. 기본 공개 목록에서는 제외됩니다.</p>
+                    <p>보관 · 삭제 아님</p>
                   </article>
                 </div>
 
@@ -3942,8 +3881,7 @@ function persistStudioPostId(postId) {
               @exit="openPage('junction')"
             />
             <section class="station-lead">
-              <p>제목, slug, 요약, Markdown 본문을 저장하고 preview 와 publish 상태를 같은 데이터 모델로 연결합니다.</p>
-              <div class="banner-stats">
+                          <div class="banner-stats">
               <article>
               <span>status</span>
               <strong>{{ BLOG_STATUS_LABELS[studioState.status] }}</strong>
@@ -3971,7 +3909,7 @@ function persistStudioPostId(postId) {
                 <div class="preset-column">
                   <button type="button" class="command-card" @click="createNewStudioPost(false)">
                     <strong>새 글 초안</strong>
-                    <p>지금 편집 중인 글과 별도로 새 draft 를 시작합니다.</p>
+                    <p>편집 중인 글은 유지됩니다.</p>
                   </button>
                   <button
                     v-for="post in draftBlogPosts"
@@ -4072,8 +4010,7 @@ function persistStudioPostId(postId) {
               @exit="openPage('junction')"
             />
             <section class="station-lead">
-              <p>`Backlog` 와 `Ready` 는 프런트에서 분리해 보여주고, 실제 파일 기반 상태 전이는 현재 gateway 계약을 따릅니다. command 영역은 preset action + memo 조합만 허용합니다.</p>
-              <div class="banner-stats">
+                          <div class="banner-stats">
               <article>
               <span>lanes</span>
               <strong>5</strong>
@@ -4465,8 +4402,7 @@ function persistStudioPostId(postId) {
               @exit="openPage('junction')"
             />
             <section class="station-lead">
-              <p>릴리스 레일과 런타임 레일을 같이 봅니다. GitHub Release 는 태그 기반으로 만들 수 있지만, 현재 저장소에는 실제 GitHub Release 생성 단계가 아직 연결되어 있지 않습니다.</p>
-              <div class="banner-stats">
+                          <div class="banner-stats">
               <article>
               <span>gateway</span>
               <strong>{{ healthState.status }}</strong>
