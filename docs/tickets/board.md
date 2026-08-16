@@ -39,6 +39,11 @@
 
 ## Ready
 
+- `TKT-091` `P1` `voyage` `ready` `[FE]` Line V 노선 등록 — 토큰·lines.js·환승 홀 (088~090 선행)
+- `TKT-088` `P1` `voyage` `ready` `[FE]` V 준비 화면 — 체크리스트·여정·예산 (데이터 voyage.js 완성됨)
+- `TKT-089` `P1` `voyage` `ready` `[FE]` V 일일 운행 안내 — 오늘의 지침서 (모바일 1급)
+- `TKT-090` `P2` `voyage` `ready` `[FE]` V 기록 화면 — 도시 아카이브·스탬프
+
 - `TKT-085` `P1` `infra` `ready` `[INFRA]` 도메인 공개 준비 — Cloudflare 프록시 + Caddy (PO 수작업 체크리스트 산출 포함)
 - `TKT-087` `P1` `v0.7.0` `ready` `[BE]` advisor Haiku provider 연동 (M2 — PO "haiku 푸시")
 
