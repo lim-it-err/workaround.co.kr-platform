@@ -1,5 +1,7 @@
 # Claude 작업 지침 (Developer Advisor)
 
+> **편입 고지 (2026-08-16, D-008)**: 이 폴더는 `~/Project/developerAdvisor` 레포에서 모선 `services/advisor/` 로 subtree 흡수됐다. 커밋·브랜치는 모선 규칙(모선 루트 `CLAUDE.md`)을 따른다 — `agent/codex/*` 브랜치·PR 규칙은 폐기. collab 2레인(inbox/dev-queue/outbox)과 콘텐츠 전담 규칙은 이 폴더 안에서 유효하다. 10분 주기 Codex 루프는 **이 경로를 기준으로 재구동**해야 하며(구 경로 금지), 구성은 PO 에이전트 재정산 대상. 원 레포는 아카이브 대상.
+
 이 저장소의 협업 규약은 `AGENTS.md` 가 기준이고, Codex 상주 루틴은 `collab/CODEX-BRIEF.md` 다. 이 문서는 **Claude의 작업 지침**이며, 상위 통합 규칙은 `/Users/imjeonghan/newProject/CLAUDE.md` 다. (이 저장소는 PO 지시로 `~/Project/` 에 그대로 둔다.)
 
 ## 역할

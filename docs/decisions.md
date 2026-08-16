@@ -40,6 +40,12 @@
 - **결정**: 정적 자산 서비스는 다음 4개로 계약을 만족한 것으로 본다 — ①빌드 산출물 경로와 빌드 명령 ②reverse proxy(Caddy) 라우트 prefix ③정적 서버 컨테이너가 대신 응답하는 `/health` ④자산 출처·권리 표기. `docs/service-policy.md`에 절 추가 완료.
 - **경위**: PO가 편입 시작을 승인("그전에 시작해도 돼", 2026-08-16)함에 따라 시행. 세부 형태에 PO 이의가 있으면 조정한다.
 
+## D-008 advisor subtree 편입 시행 · 확정 (2026-08-16, PO "어 그렇게 해 흡수하고 디자인이 다른 건 백로그로")
+
+- **무엇을**: `~/Project/developerAdvisor`(main, dev-001~017 완료 상태)를 `services/advisor/` 로 subtree 흡수 — 이력 보존(dev 커밋 23건 포함). 새 위치에서 `service/run.sh test` 통과 확인. collab 2레인·콘텐츠 불가침 규칙은 폴더 안에서 유지, `agent/codex/*` 브랜치·PR 규칙은 폐기(모선 규칙 적용). 편입 고지를 폴더 CLAUDE.md/AGENTS.md 에 삽입.
+- **디자인 분리 원칙 (PO)**: 기능 편입과 디자인 통합을 분리한다 — 디자인 차이는 **백로그 티켓**으로: TKT-079(디자인·프레임 통합), TKT-080(서비스 계약 마감 — `/health` 부재 확인됨).
+- **후속**: 원 레포(`~/Project/developerAdvisor`)는 아카이브 대상, 신규 커밋 금지. 10분 주기 Codex 루프는 새 경로 기준으로 재구동(에이전트 재정산 대상). `newProject/developer-advisor` 낡은 사본은 삭제 후보(PO 확인).
+
 ## D-007 화이트채플 subtree 편입 시행 · 확정 (2026-08-16)
 
 - **무엇을**: `bitter_sweet_testbed`(공용 브랜치, WC 커밋 40건)를 `services/arcade/whitechapel/` 로 subtree 흡수. 게임 무관 학습 폴더(language·rust·study_book)는 폴더에서 제거(이력 보존). 새 위치에서 `npm test` 37/37·`npm run build` 통과 확인. 흡수분에 미리뷰 작업 WC-212·213 포함 — 화이트채플 보드 기준 교차 리뷰 대상.
