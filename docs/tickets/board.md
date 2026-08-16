@@ -38,6 +38,8 @@
 
 ## Ready
 
+- `TKT-084` `P1` `voyage` `started` `[PM]` Line V(동유럽 여행) 콘텐츠 모델·화면 스펙 — claude 작성 중, 이후 [FE] 분할 (D-010, 출발 일정 제약)
+
 - `TKT-083` `P1` `chore` `backlog→스펙 대기` `[PM→SIM]` 엘리베이터 원점 재설계 — 스펙(claude) 후 SIM 레인 구현 (PO: '표현 방식부터 원점 재검토')
 
 - `TKT-082` `P1` `chore` `ready` `[PM]` 택시 디스패치 버그 — 유휴 차량이 큐를 집지 않음 (PO 실사용 보고, TKT-074 와 함께 claude 직접)
