@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>화이트채플의 그림자 — 1인용 추적 게임</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>화이트채플의 그림자</h1>
+    <p class="subtitle">1888년 런던 이스트엔드 — 4번의 밤, 추격과 도주</p>
+  </header>
+
+  <main>
+    <div id="board-wrap">
+      <svg id="board" preserveAspectRatio="xMidYMid meet"></svg>
+      <div id="zoom-controls">
+        <button id="zoom-in" aria-label="확대">＋</button>
+        <button id="zoom-out" aria-label="축소">－</button>
+        <button id="zoom-reset" aria-label="원래대로">⟲</button>
+      </div>
+      <div id="action-bar" class="hidden">
+        <span id="bar-chip" class="chip hidden"></span>
+        <span id="bar-hint"></span>
+        <button id="bar-search" class="hidden">🔍 주변 수색</button>
+        <button id="bar-coach" class="ghost hidden">🐎 마차</button>
+        <button id="bar-alley" class="ghost hidden">🚪 골목</button>
+        <button id="bar-deselect" class="ghost hidden">✕</button>
+        <button id="bar-endturn" class="hidden">턴 종료</button>
+      </div>
+    </div>
+
+    <aside id="panel">
+      <section class="card">
+        <h2>상황판</h2>
+        <dl>
+          <div><dt>밤</dt><dd id="info-night">-</dd></div>
+          <div><dt>잭의 이동</dt><dd id="info-moves">-</dd></div>
+          <div><dt>마지막 이동</dt><dd id="info-lastmove">-</dd></div>
+          <div><dt>남은 마차</dt><dd id="info-coach">-</dd></div>
+          <div><dt>남은 골목</dt><dd id="info-alley">-</dd></div>
+          <div><dt>난이도</dt><dd id="info-diff">-</dd></div>
+        </dl>
+        <p id="info-phase" class="phase"></p>
+      </section>
+
+      <section class="card">
+        <h2>지휘</h2>
+        <p class="hint small">
+          순찰대를 탭해 선택 → <b>이동</b>(초록 교차점 탭, 최대 2칸) →
+          <b>주변 수색</b>(버튼: 인접 지점을 단서가 나올 때까지 차례로 확인) 또는
+          <b>체포</b>(붉게 표시된 인접 지점 탭). 순서는 이동 → 행동이며, 행동하면 그 턴엔 못 움직입니다.
+          지도는 핀치/휠로 확대, 드래그로 이동.
+        </p>
+        <label class="hint"><input type="checkbox" id="chk-belief" /> 잭의 추정 위치 표시 (근사)</label>
+        <div class="btn-row">
+          <button id="btn-endturn" disabled>턴 종료 (잭 이동)</button>
+          <button id="btn-speed" class="ghost hidden-btn">⏩ 빨리감기</button>
+          <button id="btn-newgame" class="ghost">새 게임</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>리뷰</h2>
+        <p class="hint small">
+          게임이 끝나면 전체 기보를 내보낼 수 있습니다. 파일을 AI(LLM) 채팅에 붙여넣거나
+          업로드하면 플레이 분석을 받을 수 있어요 — 규칙 설명이 함께 들어 있어 처음 보는 AI도 분석할 수 있습니다.
+        </p>
+        <div class="btn-row">
+          <button id="btn-review-dl" disabled>기보 파일 저장</button>
+          <button id="btn-review-copy" class="ghost" disabled>복사</button>
+        </div>
+      </section>
+
+      <section class="card grow">
+        <h2>수사 일지</h2>
+        <div id="log"></div>
+      </section>
+    </aside>
+  </main>
+
+  <!-- 시작 화면 -->
+  <div id="start-overlay" class="overlay">
+    <div class="dialog">
+      <h2>화이트채플의 그림자</h2>
+      <p>
+        살인마 잭은 매일 밤 붉은 지점 중 한 곳에서 범행 후, 비밀 은신처로 돌아갑니다.<br />
+        순찰대를 움직여 <b>수색</b>으로 흔적을 좇고, 확신이 서면 <b>체포</b>하세요.<br />
+        잭이 4번의 밤을 모두 버티면 당신의 패배입니다.
+      </p>
+      <fieldset>
+        <legend>모드</legend>
+        <label><input type="radio" name="pmode" value="play" checked />
+          경찰 — 순찰대를 지휘해 잭(AI)을 추적합니다</label>
+        <label><input type="radio" name="pmode" value="jack" />
+          잭 — 당신이 살인마가 되어 AI 경찰을 따돌립니다</label>
+        <label><input type="radio" name="pmode" value="spectate" />
+          AI 관전 — 잭 AI와 경찰 AI의 대결을 지켜봅니다</label>
+      </fieldset>
+      <fieldset>
+        <legend>난이도</legend>
+        <label><input type="radio" name="difficulty" value="easy" checked />
+          쉬움 — 잭이 한 수 앞만 봅니다 (탐색 깊이 1)</label>
+        <label><input type="radio" name="difficulty" value="medium" />
+          보통 — 잭이 세 수 앞을 봅니다 (탐색 깊이 3)</label>
+        <label><input type="radio" name="difficulty" value="hard" />
+          어려움 — 깊이 4 + 밤마다 성향이 바뀌고, 경찰의 시야를 역이용합니다</label>
+        <label class="disabled"><input type="radio" name="difficulty" value="nightmare" />
+          악몽 — Claude Sonnet이 잭을 조종 <span class="tag">미구현</span></label>
+      </fieldset>
+      <p id="start-warn" class="warn"></p>
+      <button id="btn-start">게임 시작</button>
+    </div>
+  </div>
+
+  <!-- 세로 화면 회전 안내 -->
+  <div id="rotate-overlay">
+    <div class="rotate-box">
+      <div class="rotate-icon">📱↻</div>
+      <p><b>가로 모드로 돌려주세요</b></p>
+      <p class="hint small">이 게임은 넓은 지도를 쓰는 가로 화면에 최적화되어 있습니다.</p>
+      <button id="btn-rotate-dismiss" class="ghost">그래도 세로로 볼래요</button>
+    </div>
+  </div>
+
+  <!-- 안내 모달 -->
+  <div id="modal" class="overlay hidden">
+    <div class="dialog">
+      <h2 id="modal-title"></h2>
+      <p id="modal-body"></p>
+      <button id="modal-btn">확인</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>
+      <a href="https://boardgamegeek.com/boardgame/59959/letters-from-whitechapel" target="_blank" rel="noopener">Letters from Whitechapel</a>에서
+      영감을 받은 비상업 팬 구현입니다. 보드 배치·그래픽·문구는 모두 자체 제작입니다.
+    </p>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
