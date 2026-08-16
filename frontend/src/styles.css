@@ -2168,3 +2168,241 @@ button {
     display: none;
   }
 }
+
+/* ── JunctionMap — 환승 홀 노선도 (스펙 §3.3, TKT-072/S2) ───────────── */
+
+.map-panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+  padding: clamp(10px, 2vw, 22px);
+}
+
+.route-map {
+  width: 100%;
+  min-width: 820px;
+  height: auto;
+  display: block;
+}
+
+.route-map .rl {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 6;
+}
+
+.route-map .rl-b {
+  stroke-width: 11;
+}
+
+.route-map .rl.upcoming {
+  opacity: 0.45;
+  stroke-dasharray: 2 10;
+}
+
+.route-map .stn {
+  fill: var(--map-node);
+  stroke-width: 4;
+}
+
+.route-map .xfer {
+  fill: var(--map-node);
+  stroke: var(--text);
+  stroke-width: 3;
+}
+
+.route-map .lchip {
+  stroke: var(--map-node);
+  stroke-width: 2.5;
+}
+
+.route-map .lchip-txt {
+  fill: #fff;
+  font-weight: 900;
+  font-size: 13px;
+  text-anchor: middle;
+}
+
+.route-map .g-upcoming {
+  opacity: 0.55;
+}
+
+.route-map .pulse {
+  fill: none;
+  stroke: var(--safety);
+  stroke-width: 3;
+  animation: mapPulse 2.6s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes mapPulse {
+  0% { transform: scale(0.55); opacity: 1; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+.route-map .name {
+  fill: var(--text);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.route-map .name-c {
+  text-anchor: middle;
+}
+
+.route-map .sub {
+  fill: var(--muted);
+  font-size: 11px;
+}
+
+.route-map .sub-c {
+  text-anchor: middle;
+}
+
+/* 이동 목록 (접근성·모바일 폴백) */
+.route-rows {
+  border-top: 2px solid var(--text);
+  margin-top: 8px;
+  min-width: 0;
+}
+
+.route-row {
+  display: grid;
+  grid-template-columns: 6px 1fr auto auto;
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+  padding: 12px 10px 12px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+
+.route-row:hover {
+  background: var(--panel-soft);
+}
+
+.route-row .tick {
+  width: 6px;
+  height: 34px;
+  border-radius: 3px;
+  background: var(--tick, var(--line-strong));
+}
+
+.route-row.primary .tick {
+  height: 46px;
+}
+
+.route-row .rr-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.route-row .rr-main strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.route-row.primary .rr-main strong {
+  font-size: 1.14rem;
+}
+
+.route-row .rr-main small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.route-row .rr-status {
+  color: var(--text-2);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.route-row .rr-go {
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.route-row:hover .rr-go {
+  color: var(--safety);
+}
+
+.route-row.upcoming {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.route-row.upcoming:hover {
+  background: none;
+}
+
+/* 현재 위치 줄 (스펙 §3.5A) — 노랑은 현재 위치 표시 전용 */
+.wayfinding {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--safety);
+  border-radius: 12px;
+  background: var(--panel);
+  font-size: 0.86rem;
+  color: var(--text-2);
+}
+
+.wayfinding .here {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.wayfinding .here::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--safety);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--safety) 22%, transparent);
+}
+
+.wayfinding .sep {
+  color: var(--line-strong);
+}
+
+.wayfinding .transfer {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wayfinding .roundel.sm.upcoming {
+  opacity: 0.45;
+}
+
+.junction-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-map .pulse {
+    animation: none;
+    opacity: 0.5;
+  }
+}

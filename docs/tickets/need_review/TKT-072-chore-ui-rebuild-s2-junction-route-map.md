@@ -7,7 +7,7 @@
 - 제목: UI 재구현 S2 - 환승 홀 노선도(시안 C) JunctionMap/RouteRow
 - 우선순위: P1
 - 대상 버전: `chore`
-- 상태: `backlog`
+- 상태: `need_review`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`
@@ -87,3 +87,18 @@
 
 - `data/lines.js` 는 S5(TKT-075)에서 JunctionMap/RouteRow/LineCard/Wayfinding 공유 단일 소스로 이어진다. 여기서 스키마를 확정하면 후속 분해가 쉬워진다.
 - D/P 의 실제 승강장 페이지는 별도 기능 티켓(예: Discovery TKT-065)에서 다룬다. 본 티켓은 노선도 진입점/예정 표기까지만.
+
+
+## 작업자 산출물 (2026-08-16, claude)
+
+- 브랜치: 트렁크 `codex/v0.6.0-line` 직접
+- `data/lines.js` 신설 — 노선 단일 소스(코드/이름/색토큰/페이지/좌표/upcoming). D·P 추가·좌표 조정은 이 파일 한 곳만.
+- `JunctionMap.vue` 신설 — 인라인 SVG(viewBox 1000×460): B 본선(11px, 정차역 3 + 종점 이중원+캡) + 지선 6(W/R/E/T + **D·P upcoming 점선**), 노란 pulse 링은 환승 홀에만, `prefers-reduced-motion` 시 정지. 아래 `.route-rows` 행 목록이 접근성·모바일 폴백이자 실제 이동 링크(버튼) — upcoming 은 div 로 비활성.
+- junction 페이지 교체 — hero-panel·line-grid(카드 5장)·rail-strip 미니맵 제거 → **Wayfinding 한 줄 + 노선도 + 행 목록 + 고정 문구**("홀에서는 이동만"). 동적 상태는 `junctionLineStates` computed 로 주입(블로그 편수/엘베 대기/택시 요청/Work 레인 수/런타임).
+- Sim Hub 처리: 노선이 아니므로(스펙 §4) 노선도에 넣지 않고 E/T 행의 요약에 "Sim Hub 경유"로 표기. simhub 페이지 자체는 유지.
+- 검증: `npm run build` 통과. 브라우저 실검수 — 행 7개 전부 동적 데이터 렌더, B 행 클릭 → bloghub 이동 확인, 다크/라이트 양 테마에서 노선색·pulse·upcoming 감쇠 확인. 카피 원칙(ux-copy-audit §2) 준수 — 해설 문단 0.
+
+## 검토 메모
+
+- 미사용으로 남은 script 상수(lineCards·heroMetrics 등)는 S5(컴포넌트 분해)에서 정리.
+- 노선도 SVG 좌표는 스펙 §3.3 baseline 그대로. 노선 추가 시 lines.js 만 수정.

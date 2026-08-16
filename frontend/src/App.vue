@@ -1,6 +1,8 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import StationHeader from './components/StationHeader.vue'
+import JunctionMap from './components/JunctionMap.vue'
+import { LINES } from './data/lines.js'
 
 const SPLASH_DURATION_MS = 10000
 const TEST_ROUTE_PATH = '/test'
@@ -594,6 +596,25 @@ const lineCards = computed(() => {
       tickets: ['TKT-028', 'TKT-029', 'TKT-053']
     }
   ]
+})
+
+const junctionRoundels = LINES
+const junctionGateLabel = computed(() => (healthState.value.status === 'ok' ? '게이트 정상' : `gateway ${healthState.value.status || 'unknown'}`))
+const junctionLineStates = computed(() => {
+  const elevatorSummary = elevatorState.value.summary || fallbackElevatorState.summary
+  return {
+    B: { status: '운행 중', summary: `${publishedBlogPosts.value.length}편 공개 · ${draftBlogPosts.value.length}편 초안` },
+    E: {
+      status: elevatorState.value.mode === 'live-traffic-loop' ? '실시간 운행' : '저하 운행',
+      summary: `${elevatorSummary.waitingPassengers ?? 0}명 대기 · ${elevatorCars.value.length}대 운행 · Sim Hub 경유`
+    },
+    T: { status: '프런트 코어', summary: `${taxiState.value.activeRequests.length}건 요청 진행 · Sim Hub 경유` },
+    W: {
+      status: workBoardState.value.actions?.commandBridgeReady ? '명령 브리지 준비' : '조회 전용',
+      summary: `Backlog ${countWorkTicketsByStatus('backlog')} · Ready ${readyColumnTickets.value.length} · Started ${countWorkTicketsByStatus('started')}`
+    },
+    R: { status: runtimeState.value.ollama?.status === 'ok' ? '정상' : '부분 저하', summary: 'ion2 · rtx5070 · gateway' }
+  }
 })
 
 const heroMetrics = computed(() => [
@@ -3183,99 +3204,20 @@ function persistStudioPostId(postId) {
           </template>
 
           <section v-else-if="page === 'junction'" class="junction-shell">
-            <section class="hero-panel">
-              <div>
-                <p class="eyebrow">Transfer Hall</p>
-                <h3>메인에서는 길을 고르고, 실제 조작은 각 승강장으로 들어가서 합니다.</h3>
-              </div>
+            <div class="wayfinding">
+              <span class="here">현재 위치 · 환승 홀</span>
+              <span class="sep">|</span>
+              <span class="transfer">
+                환승 가능
+                <span v-for="line in junctionRoundels" :key="line.code" class="roundel sm" :class="[line.lineClass, { upcoming: line.upcoming }]">{{ line.code }}</span>
+              </span>
+              <span class="sep">|</span>
+              <span class="chip"><span class="dot" aria-hidden="true"></span>{{ junctionGateLabel }}</span>
+            </div>
 
-              <div class="hero-metrics">
-                <article v-for="metric in heroMetrics" :key="metric.label">
-                  <span>{{ metric.label }}</span>
-                  <strong>{{ metric.value }}</strong>
-                </article>
-              </div>
-            </section>
+            <JunctionMap :line-states="junctionLineStates" @open="openPage" />
 
-            <section class="section-block">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">Route Cards</p>
-                  <h3>노선 입구</h3>
-                </div>
-              </div>
-
-              <div class="line-grid">
-                <article
-                  v-for="card in lineCards"
-                  :key="card.key"
-                  class="line-card"
-                  :class="card.accent"
-                >
-                  <div class="line-card-top">
-                    <div class="line-mark">
-                      <span class="line-round">{{ card.lineNo }}</span>
-                      <div>
-                        <strong>{{ card.lineCode }}</strong>
-                        <p>{{ card.name }}</p>
-                      </div>
-                    </div>
-                    <span class="status-chip">{{ card.status }}</span>
-                  </div>
-
-                  <div class="line-copy">
-                    <h4>{{ card.summary }}</h4>
-                    <p>{{ card.detail }}</p>
-                  </div>
-
-                  <button
-                    type="button"
-                    class="line-cta"
-                    :disabled="card.page === 'junction'"
-                    @click="openPage(card.page)"
-                  >
-                    {{ card.cta }}
-                  </button>
-                </article>
-              </div>
-            </section>
-
-            <section class="section-block split-layout">
-              <article class="rail-map-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">Transfer Map</p>
-                    <h3>허브 노선도</h3>
-                  </div>
-                </div>
-
-                <div class="rail-strip">
-                  <div class="rail-line"></div>
-                  <div class="station-node left-0">
-                    <span class="station-badge line-r">1</span>
-                    <strong>Runtime</strong>
-                  </div>
-                  <div class="station-node left-25">
-                    <span class="station-badge line-w">2</span>
-                    <strong>Main Junction</strong>
-                  </div>
-                  <div class="station-node left-46">
-                    <span class="station-badge line-p">9</span>
-                    <strong>Sim Hub</strong>
-                  </div>
-                  <div class="station-node left-66">
-                    <span class="station-badge line-e">4</span>
-                    <strong>Elevator</strong>
-                  </div>
-                  <div class="station-node left-86">
-                    <span class="station-badge line-b">B</span>
-                    <strong>Blog</strong>
-                  </div>
-                </div>
-
-              </article>
-
-            </section>
+            <p class="junction-note">홀에서는 이동만 — 조작은 각 승강장에서 합니다.</p>
           </section>
 
           <section v-else-if="page === 'simhub'" class="feature-shell">
