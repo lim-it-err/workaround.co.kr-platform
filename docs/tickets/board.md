@@ -22,6 +22,7 @@
 - `TKT-056` `P2` `v0.6.0` `진행 가능` 블로그 아카이브 상태 모델과 상태 배지 [QA]
 - `TKT-057` `P2` `v0.6.0` `진행 가능` 블로그 마크다운 렌더러 + XSS 가드 유지 [QA]
 - `TKT-053` `P2` `v0.6.0` `v0.6.0 진행 시 가능` 블로그 이미지 업로드와 미디어 자산 처리
+- `TKT-086` `P2` `v0.8.0` `backlog` `[BE]` 플랫폼 챗봇 — gateway 경유 Ollama 질의 (D-009, TKT-068 선행)
 - `TKT-028` `P1` `v0.7.0` `v0.7.0 진행 시 가능` Flash Game 공간과 Ruffle 기반 SWF 플레이어 통합
 - `TKT-029` `P1` `v0.7.0` `v0.7.0 진행 시 가능` Flash Game 카탈로그와 합법 반입 기준
 - `TKT-065` `P2` `v0.8.0` `v0.8.0 진행 시 가능` 발견 정거장 UI + 정적 주제 데이터 (depth 0~1)
@@ -37,6 +38,9 @@
 - `TKT-080` `P1` `v0.7.0` `진행 가능` `[BE]` advisor 서비스 계약 마감 — /health·라우트·매니페스트·빌드 게이트
 
 ## Ready
+
+- `TKT-085` `P1` `infra` `ready` `[INFRA]` 도메인 공개 준비 — Cloudflare 프록시 + Caddy (PO 수작업 체크리스트 산출 포함)
+- `TKT-087` `P1` `v0.7.0` `ready` `[BE]` advisor Haiku provider 연동 (M2 — PO "haiku 푸시")
 
 - `TKT-084` `P1` `voyage` `started` `[PM]` Line V(동유럽 여행) 콘텐츠 모델·화면 스펙 — claude 작성 중, 이후 [FE] 분할 (D-010, 출발 일정 제약)
 
