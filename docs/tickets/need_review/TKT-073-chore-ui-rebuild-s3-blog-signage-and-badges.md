@@ -7,7 +7,7 @@
 - 제목: UI 재구현 S3 - 블로그 페이지 시안 A 처리 + 상태 배지
 - 우선순위: P2
 - 대상 버전: `chore`
-- 상태: `backlog`
+- 상태: `need_review`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`
@@ -67,15 +67,17 @@
 
 ## 작업자 산출물
 
-- 브랜치 이름
-- StatusBadge 색 매핑 요약(슬레이트/그린/브론즈)
-- bloghub/archive/post 변경 요약
-- 공개면 published-only 확인
-- 검증 결과(run-frontend-build)
+- 브랜치: `codex/v0.6.0-line`
+- `StatusBadge.vue`를 신설하고 상태를 draft→슬레이트(초안), published→그린(공개), archived→브론즈(보관)로 매핑했다. Studio의 기존 상태 칩도 같은 컴포넌트를 재사용한다.
+- bloghub는 `blog-primary` 본선 카드와 최근 발행 목록으로, archive는 문서형 `archive-item` 목록으로, post는 720px `post-detail` 문서 레이아웃으로 정제했다. 본문 heading hairline·안전색 목록 marker·코드/인용 강조와 하단 글 내비게이션을 포함한다.
+- 공개 허브·아카이브·상세 데이터는 모두 published만 사용하며, draft/archived 배지는 Writing Studio에서만 렌더됨을 런타임으로 확인했다.
+- 연재 태그 규약은 `series:<표시명>`이다. 공개 글만 연재별로 묶고 제어용 series 태그는 화면 태그 목록에서 숨긴다. `series:Line V`를 주입한 런타임 검증에서 Line V 섹션과 글 1건이 생성됨을 확인한 뒤 원래 태그로 복구했다.
+- 검증: 프런트 빌드 통과(Vite 6.4.3, 17 modules, 655ms), 데스크톱 양 테마와 375px 허브/아카이브/상세 overflow 0, 상세 폭 720px·상단 Line B 5px, 공개면 비공개 배지 0건, Studio 3상태 색 구분, 브라우저 console error/warning 0.
 
 ## 검토 메모
 
-- 없음
+- 구현과 완료 게이트를 마쳤다. 실제 Line V 콘텐츠는 TKT-090에서 들어오며 현재는 `series:<표시명>` 경량 태그 계약만 제공한다.
+- Writing Studio 상태 흐름의 최종 UX 마감은 범위대로 TKT-076에 남긴다.
 
 ## Notes
 

@@ -13,16 +13,11 @@
 - `TKT-035` `P1` `v0.3.0` `진행 가능` 엘리베이터 실시간 수요 분포와 연속 이동 루프
 - `TKT-058` `P1` `v0.3.2` `보류` 엘리베이터 코어 수정 [QA] — TKT-083 원점 재설계에 흡수 예정, 착수 금지
 - `TKT-059` `P2` `v0.3.2` `보류` 엘리베이터 모션 수정 [QA] — TKT-083 에 흡수 예정, 착수 금지
-- `TKT-061` `P1` `v0.4.1` `진행 가능` `[FE]` Work Manager 인증 세션 만료 UX(401 토큰 정리) [QA]
-- `TKT-062` `P2` `v0.4.1` `진행 가능` `[FE]` Work Manager 전이 흐름(UI 연결 + need_review→backlog) [QA]
+- `TKT-062` `P2` `v0.4.1` `blocked/진행 불가` `[FE]` Work Manager 전이 흐름 — gateway 수정 범위 재배정 + UI 전이 계약 PM 결정 대기
 - `TKT-063` `P2` `v0.4.1` `진행 가능` `[BE]` Work Manager 저장소 정합(persistence/감사/seed/gate) [QA]
 - `TKT-064` `P2` `v0.4.1` `진행 가능` `[BE]` Work Manager 동시성 + 테스트 보강 [QA]
 - `TKT-043` `P2` `v0.5.0` `v0.5.0 진행 시 가능` Work Manager DB 저장소 전환과 감사 로그
 - `TKT-026` `P2` `v0.5.1` `v0.5.1 진행 시 가능` 택시 시뮬레이터 피드백/자동 학습 루프
-- `TKT-054` `P1` `v0.6.0` `진행 가능` `[FE]` 블로그 Writing Studio 저장/발행 무결성 [QA]
-- `TKT-055` `P1` `v0.6.0` `진행 가능` `[FE]` 블로그 공개 라우팅/딥링크 [QA]
-- `TKT-056` `P2` `v0.6.0` `진행 가능` `[FE]` 블로그 아카이브 상태 모델과 상태 배지 [QA] — S3(073)와 함께
-- `TKT-057` `P2` `v0.6.0` `진행 가능` `[FE]` 블로그 마크다운 렌더러 + XSS 가드 유지 [QA]
 - `TKT-053` `P2` `v0.6.0` `진행 가능` `[BE]` 블로그 이미지 업로드와 미디어 자산 처리 (PM 게이트 해제)
 - `TKT-086` `P2` `v0.8.0` `backlog` `[BE]` 플랫폼 챗봇 — gateway 경유 Ollama 질의 (D-009, TKT-068 선행)
 - `TKT-028` `P1` `v0.7.0` `v0.7.0 진행 시 가능` Flash Game 공간과 Ruffle 기반 SWF 플레이어 통합
@@ -31,7 +26,6 @@
 - `TKT-066` `P2` `v0.8.0` `v0.8.0 진행 시 가능` 발견 노선 depth 2~3 확장 API + 캐싱
 - `TKT-067` `P2` `v0.9.0` `v0.9.0 진행 시 가능` 취향 노선 - 10선택 규칙 기반 와인/커피 추천
 - `TKT-068` `P2` `infra` `진행 가능` `[INFRA]` RTX5070 Ollama 실제 구동 + 게이트웨이 연결 검증 (하드웨어 단계는 PO 협조 항목으로 분리 기록)
-- `TKT-073` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S3 - 블로그 사인 + 상태 배지 [시안 적용]
 - `TKT-074` `P1` `chore` `ready` `[SIM]` S4 시뮬 페이지 재구현 — 스펙 완료: `design/sim-taxi-spec.md` (택시 지도), work/runtime 명료화는 [FE] 후속 분할 - 시뮬/운영 페이지 사인 [시안 적용]
 - `TKT-075` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S5 - App.vue 컴포넌트 분해 [시안 적용]
 - `TKT-076` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S6 - 모바일 재배치 + 스튜디오 [시안 적용] — **모바일 재배치 1차는 2026-08-16 선행 완료**(티켓 진행 기록), 잔여=Studio 마감·모바일 세부
@@ -42,25 +36,29 @@
 ## Ready
 
 - `TKT-091` `P1` `voyage` `ready` `[FE]` Line V 노선 등록 — 토큰·lines.js·환승 홀 (088~090 선행)
-- `TKT-088` `P1` `voyage` `ready` `[FE]` V 준비 화면 — 체크리스트·여정·예산 (데이터 voyage.js 완성됨)
+- `TKT-088` `P1` `voyage` `ready` `[FE]` `blocked/진행 불가` V 준비 화면 — TKT-088↔091 순환 의존 + `design/voyage-line-spec.md` 미완료, PM 결정 대기
 - `TKT-089` `P1` `voyage` `ready` `[FE]` V 일일 운행 안내 — 오늘의 지침서 (모바일 1급)
 - `TKT-090` `P2` `voyage` `ready` `[FE]` V 기록 화면 — 도시 아카이브·스탬프
 
-- `TKT-085` `P1` `infra` `ready` `[INFRA]` 도메인 공개 준비 — Cloudflare 프록시 + Caddy (PO 수작업 체크리스트 산출 포함)
-- `TKT-087` `P1` `v0.7.0` `ready` `[BE]` advisor Haiku provider 연동 (M2 — PO "haiku 푸시")
-
 - `TKT-084` `P1` `voyage` `started` `[PM]` Line V(동유럽 여행) 콘텐츠 모델·화면 스펙 — claude 작성 중, 이후 [FE] 분할 (D-010, 출발 일정 제약)
-
-- `TKT-083` `P1` `chore` `ready` `[SIM]` 엘리베이터 원점 재설계 — 스펙 완료: `design/sim-elevator-spec.md` (R1 승인)
 
 - `TKT-082` `P1` `chore` `ready` `[SIM]` 택시 디스패치 버그 — 진단 절차: `design/sim-taxi-spec.md` §1 (지도보다 먼저) — 유휴 차량이 큐를 집지 않음 (PO 실사용 보고, TKT-074 와 함께 claude 직접)
 
 ## Started
 
+- `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
+- `TKT-085` `P1` `infra` `blocked` `[INFRA]` 도메인 공개 준비 — 구현 완료, Caddy 이미지 pull 정지로 로컬 compose/curl 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
 
+- `TKT-073` `P2` `chore` `need_review` `[FE]` S3 블로그 공개면·StatusBadge — build/양 테마/375px/published-only/연재 게이트 통과
+- `TKT-057` `P2` `v0.6.0` `need_review` `[FE]` 중첩·순서 목록/링크·이미지/code-span + XSS allowlist — build/runtime/양 테마/375px 게이트 통과
+- `TKT-056` `P2` `v0.6.0` `need_review` `[FE]` 블로그 보관 목록·초안/공개 복원·3상태 배지 — build/양 테마/375px/runtime 게이트 통과
+- `TKT-055` `P1` `v0.6.0` `need_review` `[FE]` 블로그 공개 `/blog` 딥링크·History API·not-found 검증 완료
+- `TKT-054` `P1` `v0.6.0` `need_review` `[FE]` Writing Studio 저장/발행 무결성 — autosave·상태/발행일 보존·slug 잠금 검증 완료
+- `TKT-061` `P1` `v0.4.1` `need_review` `[FE]` Work Manager 인증 세션 만료 UX — 저장 만료·TTL·401 재잠금 및 재인증 복구 검증 완료
+- `TKT-083` `P1` `chore` `need_review` `[SIM]` 엘리베이터 원점 재설계 — 수직 단면·자동 수요·층 클릭 구현, build/양 테마/375px/30초 게이트 통과
 - `TKT-072` `P1` `chore` `need_review` UI 재구현 S2 — 환승 홀 노선도(시안 C) + 행 목록, D/P 예정 지선 포함 (2026-08-16 claude 구현)
 
 ## Finished
@@ -121,5 +119,3 @@
 - 우선순위는 전사 통일 척도 `P1~P3` (P1 즉시 · P2 이번 사이클 · P3 여유). 구 P4/P5 표기는 P3 로 읽는다. (PO 2026-08-18 J8)
 - `진행 가능`, `진행 불가`, `vX.Y.Z 진행 시 가능` 은 worker 시작 판단용 오케스트레이터 판정이다.
 - `Ready` 는 현재 저장소 파일 수명주기와 분리된 Work Manager 표시/전이 설계 항목으로 먼저 도입하며, 실제 파일 기반 상태 확장은 관련 구현 티켓에서 함께 닫는다.
-
-

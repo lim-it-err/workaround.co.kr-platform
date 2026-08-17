@@ -2,7 +2,7 @@
 
 ## 메타데이터
 - 제목: 도메인 공개 준비 — Cloudflare 프록시 + Caddy 연동
-- 우선순위: P1 / 상태: `ready` / 문서 상태: 작성완료
+- 우선순위: P1 / 상태: `blocked` / 문서 상태: 작성완료
 - 담당: `[INFRA]` / scope: `infra/**`, `docs/network.md`(절차 절 추가)
 - 근거: D-009, U-15 (방문자에게 집 IP 은닉)
 
@@ -17,3 +17,30 @@ workaround.co.kr / workaround.kr 을 Cloudflare 프록시 뒤에서 자가 서�
 ## 완료 게이트
 - 로컬 compose 로 Caddy 기동, host 헤더로 두 도메인 라우팅 curl 검증 (실 DNS 없이)
 - 비밀값 저장소 미포함 확인
+
+## 구현 결과 (2026-08-17, codex-2)
+
+- `infra/public-site/docker-compose.public-site.yml` 에 `local`, `cloudflare` 프로필을 분리했다.
+- 공개 Caddy 구성에 두 zone의 Origin CA TLS, `workaround.kr` canonical redirect, `/api/*` gateway 프록시, `/arcade/*` 정적 라우트를 반영했다.
+- `Caddyfile.local` 로 실제 DNS·인증서 없이 `127.0.0.1:8088` Host 헤더 검증 경로를 추가했다.
+- `update-cloudflare-dns.ps1` 로 두 zone apex A 레코드의 proxied upsert 초안을 추가했다. 토큰과 zone ID는 환경 변수로만 받는다.
+- `docs/network.md` 에 TLS 비교/권고, DNS-01 대안, PO 수작업 체크리스트, DDNS 운영 경계를 기록했다.
+- `.gitignore` 에 공개 배포 env와 Origin CA secret 디렉터리를 추가했다.
+
+## 검증 기록
+
+- `docker compose ... --profile local config`: 통과
+- `docker compose ... --profile cloudflare config`: 통과
+- JDK 21 고정 `mvn -q package`: 통과 (`Tests run: 7, Failures: 0, Errors: 0`)
+- `git diff --check`: 통과
+- Docker Desktop/daemon 기동 확인: Server `24.0.2`
+- 로컬 compose 실제 기동: **미완료**. `caddy:2.9-alpine` pull이 두 차례 모두 출력 없이 장시간 정지해 중단했다. 따라서 Host 헤더 curl 4종은 아직 실행하지 못했다.
+- 2026-08-17 04:39 KST 재시도: Docker daemon `24.0.2` 정상, 호스트에서 Docker Hub registry endpoint는 HTTP `401`로 도달했지만 `docker pull caddy:2.9-alpine`은 약 50초 동안 출력/진행 없이 다시 정지했다. pull을 중단했고 Caddy 이미지는 생성되지 않았다.
+
+## 질문/결정 기록
+
+- 결정: 오리진 TLS는 Cloudflare Origin CA 인증서 + Cloudflare `Full (strict)` 조합을 권고한다. 서로 다른 두 zone의 인증서/키를 분리한다.
+- 결정: 공개 Caddy는 Ollama를 직접 라우팅하지 않고 `/api/*`를 gateway로만 전달한다(D-009).
+- 차단 해제 조건: Docker registry에서 `caddy:2.9-alpine` pull이 가능한 환경에서 README의 `--profile local` 기동과 Host 헤더 curl을 재실행한다.
+- PM 질문: 다음 실행에서 registry 접근이 복구되면 동일 게이트를 재시도해도 되는가? 구현 범위 변경은 필요 없다.
+- 재시도 메모: 호스트 HTTPS 연결 자체는 정상이므로 Docker Desktop engine의 image pull 경로/credential/network 상태 확인이 필요하다. 실행 중인 타 작업 컨테이너가 있어 Docker Desktop 강제 재시작은 수행하지 않았다.
