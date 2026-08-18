@@ -2750,8 +2750,19 @@ button {
   padding: clamp(10px, 2vw, 22px);
 }
 
-/* 가로 스크롤은 SVG 래퍼에서만 — 행 목록은 뷰포트 폭 유지 */
+/* 가로 스크롤은 SVG 래퍼에서만 — 행 목록은 뷰포트 폭 유지
+   min-width:0 필수: flex 자식 기본값(min-width:auto)이면 콘텐츠(820px)만큼 늘어나
+   overflow 가 영영 발생하지 않는다 (REV-TKT-072-r1 블로커) */
+.junction-shell,
+.junction-shell > *,
+.map-panel {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .map-scroll {
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }

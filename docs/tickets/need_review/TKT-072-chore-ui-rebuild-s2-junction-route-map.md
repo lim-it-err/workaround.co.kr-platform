@@ -7,7 +7,7 @@
 - 제목: UI 재구현 S2 - 환승 홀 노선도(시안 C) JunctionMap/RouteRow
 - 우선순위: P1
 - 대상 버전: `chore`
-- 상태: `started`
+- 상태: `need_review`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`
@@ -102,3 +102,10 @@
 
 - 미사용으로 남은 script 상수(lineCards·heroMetrics 등)는 S5(컴포넌트 분해)에서 정리.
 - 노선도 SVG 좌표는 스펙 §3.3 baseline 그대로. 노선 추가 시 lines.js 만 수정.
+
+
+## r2 재개 (PM, 2026-08-18)
+
+- [블로커] 수정: `.junction-shell`/`.map-panel`/`.map-scroll` 체인에 min-width:0 가드 — 375px 실측 scrollWidth 820 > clientWidth 299, scrollLeft 동작 확인.
+- 완료 기준 개정(리뷰 지적 수용): upcoming 노선의 "클릭 시 예정 안내" → **행에 상시 노출된 '예정 · vX' 라벨 방식을 정식 채택** (항상 보이는 쪽이 우월).
+- [중요] RouteRow 컴포넌트 분리는 S5(TKT-075)로 이관.

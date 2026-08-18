@@ -47,13 +47,15 @@
 
 ## Started
 
-- `TKT-072` `P1` `chore` `started(반려 r1)` `[PM]` S2 환승 홀 노선도 — [블로커] 모바일 SVG 스크롤 수정 필요 (PM 본인 구현분)
+
 
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `started` `[INFRA]` 도메인 공개 준비 — **D-011 방향 갱신: Pages+Tunnel 하이브리드** (티켓 '방향 갱신' 절). Caddy pull 게이트 축소 — cloudflared+gateway 확인으로 대체
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
+- `TKT-072` `P1` `chore` `need_review(r2)` `[PM]` S2 환승 홀 노선도 — 블로커 수정(flex 체인 min-width 가드, 375px 실측), 완료 기준 문구 개정
 
 
 ## Finished
