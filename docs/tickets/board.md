@@ -36,8 +36,7 @@
 
 ## Ready
 
-- `TKT-091` `P1` `voyage` `ready` `[FE]` Line V 노선 등록 — 토큰·lines.js·환승 홀 (088~090 선행)
-- `TKT-088` `P1` `voyage` `ready` `[FE]` `blocked/진행 불가` V 준비 화면 — TKT-088↔091 순환 의존 + `design/voyage-line-spec.md` 미완료, PM 결정 대기
+- `TKT-088` `P1` `voyage` `ready` `[FE]` V 준비 화면 — **unblock (PM 2026-08-18)**: 091 이 need_review 진입(의존성 완화 규칙), 순환은 문구 정정으로 해소, 스펙은 티켓 본문+voyage.js 로 충분(별도 문서 불요)
 - `TKT-089` `P1` `voyage` `ready` `[FE]` V 일일 운행 안내 — 오늘의 지침서 (모바일 1급)
 - `TKT-090` `P2` `voyage` `ready` `[FE]` V 기록 화면 — 도시 아카이브·스탬프
 
@@ -53,6 +52,7 @@
 
 ## Need Review
 
+- `TKT-091` `P1` `voyage` `need_review` `[FE]` Line V 노선 등록 — 토큰·lines.js·환승 홀, build/양 테마/375px/SVG 클릭 게이트 통과 (088~090의 선행)
 - `TKT-073` `P2` `chore` `need_review` `[FE]` S3 블로그 공개면·StatusBadge — build/양 테마/375px/published-only/연재 게이트 통과
 - `TKT-057` `P2` `v0.6.0` `need_review` `[FE]` 중첩·순서 목록/링크·이미지/code-span + XSS allowlist — build/runtime/양 테마/375px 게이트 통과
 - `TKT-056` `P2` `v0.6.0` `need_review` `[FE]` 블로그 보관 목록·초안/공개 복원·3상태 배지 — build/양 테마/375px/runtime 게이트 통과
