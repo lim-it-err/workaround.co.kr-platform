@@ -2,7 +2,7 @@
 ## 메타데이터
 - 문서 상태: 작성완료
 - 제목: Line V 노선 등록 — 토큰·lines.js·환승 홀 노출
-- 우선순위: P1 / 상태: `need_review` / 담당: `[FE]`
+- 우선순위: P1 / 상태: `finished` / 담당: `[FE]`
 - 의존: **없음 — 이 티켓이 088~090 의 선행이다** (091 → 088 → 089 → 090 순서. 순환 아님, PM 문구 정정 2026-08-18)
 - scope: `frontend/src/styles.css`(--line-v 토큰 추가만), `frontend/src/data/lines.js`, `frontend/src/App.vue`(라우팅 case 추가만)
 ## 목표

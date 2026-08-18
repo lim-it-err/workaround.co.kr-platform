@@ -42,9 +42,12 @@
 
 - `TKT-084` `P1` `voyage` `started` `[PM]` Line V(동유럽 여행) 콘텐츠 모델·화면 스펙 — claude 작성 중, 이후 [FE] 분할 (D-010, 출발 일정 제약)
 
+- `TKT-094` `P3` `chore` `ready` `[SIM]` 엘베 탑승 흡수 애니메이션 (083 잔여)
 - `TKT-082` `P1` `chore` `ready` `[SIM]` 택시 디스패치 버그 — 진단 절차: `design/sim-taxi-spec.md` §1 (지도보다 먼저) — 유휴 차량이 큐를 집지 않음 (PO 실사용 보고, TKT-074 와 함께 claude 직접)
 
 ## Started
+
+- `TKT-072` `P1` `chore` `started(반려 r1)` `[PM]` S2 환승 홀 노선도 — [블로커] 모바일 SVG 스크롤 수정 필요 (PM 본인 구현분)
 
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `started` `[INFRA]` 도메인 공개 준비 — **D-011 방향 갱신: Pages+Tunnel 하이브리드** (티켓 '방향 갱신' 절). Caddy pull 게이트 축소 — cloudflared+gateway 확인으로 대체
@@ -52,17 +55,17 @@
 
 ## Need Review
 
-- `TKT-091` `P1` `voyage` `need_review` `[FE]` Line V 노선 등록 — 토큰·lines.js·환승 홀, build/양 테마/375px/SVG 클릭 게이트 통과 (088~090의 선행)
-- `TKT-073` `P2` `chore` `need_review` `[FE]` S3 블로그 공개면·StatusBadge — build/양 테마/375px/published-only/연재 게이트 통과
-- `TKT-057` `P2` `v0.6.0` `need_review` `[FE]` 중첩·순서 목록/링크·이미지/code-span + XSS allowlist — build/runtime/양 테마/375px 게이트 통과
-- `TKT-056` `P2` `v0.6.0` `need_review` `[FE]` 블로그 보관 목록·초안/공개 복원·3상태 배지 — build/양 테마/375px/runtime 게이트 통과
-- `TKT-055` `P1` `v0.6.0` `need_review` `[FE]` 블로그 공개 `/blog` 딥링크·History API·not-found 검증 완료
-- `TKT-054` `P1` `v0.6.0` `need_review` `[FE]` Writing Studio 저장/발행 무결성 — autosave·상태/발행일 보존·slug 잠금 검증 완료
-- `TKT-061` `P1` `v0.4.1` `need_review` `[FE]` Work Manager 인증 세션 만료 UX — 저장 만료·TTL·401 재잠금 및 재인증 복구 검증 완료
-- `TKT-083` `P1` `chore` `need_review` `[SIM]` 엘리베이터 원점 재설계 — 수직 단면·자동 수요·층 클릭 구현, build/양 테마/375px/30초 게이트 통과
-- `TKT-072` `P1` `chore` `need_review` UI 재구현 S2 — 환승 홀 노선도(시안 C) + 행 목록, D/P 예정 지선 포함 (2026-08-16 claude 구현)
 
 ## Finished
+
+- `TKT-091` `[FE]` Line V 노선 등록 — r1 통과 (2026-08-18)
+- `TKT-073` `[FE]` S3 블로그 공개면·StatusBadge — r1 통과
+- `TKT-057` `[FE]` 마크다운 충실도+XSS — r1 통과 (페이로드 7종 라이브 검증)
+- `TKT-056` `[FE]` 보관 복원·3상태 배지 — r1 통과
+- `TKT-055` `[FE]` 블로그 딥링크 — r1 통과
+- `TKT-054` `[FE]` Studio 저장/발행 무결성 — r1 통과
+- `TKT-061` `[FE]` WM 세션 만료 UX — r1 통과
+- `TKT-083` `[SIM]` 엘베 원점 재설계 — r1 조건부 통과, [중요]→TKT-094
 
 - `TKT-081` `P1` `chore` UX 카피 다이어트 1차 — PO 승인 (추가 다이어트는 후속 라운드, S4 수용 기준 연계)
 - `TKT-071` `P1` `chore` UI 재구현 S1 — 토큰·타이포·StationHeader, PO 승인

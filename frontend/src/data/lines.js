@@ -45,6 +45,19 @@ export const LINES = [
     labelPos: { x: 96, y: 356, sub: 374, anchor: 'middle' }
   },
   {
+    code: 'V',
+    nameKo: '여행 노선',
+    nameEn: 'Voyage',
+    lineClass: 'line-v',
+    page: 'voyage',
+    kind: 'branch',
+    upcoming: false,
+    path: 'M300 230 L180 382 H96',
+    chip: { x: 96, y: 382 },
+    labelPos: { x: 96, y: 418, sub: 436, anchor: 'middle' },
+    rowStops: '중부유럽 순환선'
+  },
+  {
     code: 'D',
     nameKo: '발견 노선',
     nameEn: 'Discovery',

@@ -7,7 +7,7 @@
 - 제목: UI 재구현 S2 - 환승 홀 노선도(시안 C) JunctionMap/RouteRow
 - 우선순위: P1
 - 대상 버전: `chore`
-- 상태: `need_review`
+- 상태: `started`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`

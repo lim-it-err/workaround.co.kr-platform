@@ -2,6 +2,8 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import StationHeader from './components/StationHeader.vue'
 import JunctionMap from './components/JunctionMap.vue'
+import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
+import StatusBadge from './components/StatusBadge.vue'
 import { LINES } from './data/lines.js'
 
 const SPLASH_DURATION_MS = 10000
@@ -16,6 +18,7 @@ const LIVE_PAGES = [
   'blogArchive',
   'blogPost',
   'writingStudio',
+  'voyage',
   'work',
   'runtime'
 ]
@@ -24,10 +27,12 @@ const VERSIONED_TESTABLE_PAGES = ['junction', 'taxi', 'ops', 'signals']
 const BOARD_READY_STORAGE_KEY = 'workaround-ready-lane'
 const THEME_STORAGE_KEY = 'workaround-theme'
 const TOKEN_STORAGE_KEY = 'workaround-work-manager-token'
+const TOKEN_EXPIRY_STORAGE_KEY = 'workaround-work-manager-token-expires-at'
 const BLOG_POST_STORAGE_KEY = 'workaround-blog-posts'
 const BLOG_ACTIVE_SLUG_STORAGE_KEY = 'workaround-blog-active-slug'
 const BLOG_STUDIO_VIEW_STORAGE_KEY = 'workaround-blog-studio-view'
 const BLOG_STUDIO_POST_STORAGE_KEY = 'workaround-blog-studio-post'
+let fallbackEntityIdCounter = 0
 const TARGET_VERSION_OPTIONS = ['v0.4.0', 'v0.5.0', 'v0.5.1', 'v0.6.0', 'infra', 'chore']
 const WORK_ROADMAP_ITEMS = [
   {
@@ -203,8 +208,8 @@ const fallbackElevatorState = {
   completedCalls: [],
   floorQueues: [],
   demand: {
-    preset: 'commute',
-    presetLabel: '출근',
+    preset: 'normal',
+    presetLabel: '보통',
     intensity: 55,
     autoMode: true,
     stepSeconds: 0.35
@@ -249,9 +254,15 @@ const selectedWorkTicketId = ref('')
 const selectedCommand = ref('')
 const commandNote = ref('')
 const workManagerPassword = ref('')
-const workManagerToken = ref(readStoredWorkManagerToken())
+const initialWorkManagerSession = readStoredWorkManagerSession()
+const workManagerToken = ref(initialWorkManagerSession.token)
+const workManagerTokenExpiresAt = ref(initialWorkManagerSession.expiresAt)
 const workManagerMessage = ref('')
-const workManagerError = ref('')
+const workManagerError = ref(
+  initialWorkManagerSession.expired
+    ? '이전 command gate 세션이 만료되어 다시 잠갔습니다. 재인증해 주세요.'
+    : ''
+)
 const metadataTargetVersion = ref('v0.4.0')
 const metadataPriority = ref('P2')
 const metadataDependencies = ref('')
@@ -260,8 +271,9 @@ const metadataError = ref('')
 const isUnlockingWorkManager = ref(false)
 const isRunningCommand = ref(false)
 const isSavingMetadata = ref(false)
-const demandPreset = ref('commute')
+const demandPreset = ref('normal')
 const demandIntensity = ref(55)
+const elevatorTickerOpen = ref(readElevatorTickerDefault())
 const dragTicketId = ref('')
 const readyTicketIds = ref(readReadyTicketIds())
 const healthState = ref(fallbackHealth)
@@ -276,11 +288,12 @@ const taxiManualDestination = ref(TAXI_ZONE_DEFINITIONS[5].id)
 const taxiManualPassengers = ref(2)
 const taxiMessage = ref('')
 const blogPosts = ref(readStoredBlogPosts())
-const activeBlogSlug = ref(readStoredBlogSlug())
+const activeBlogSlug = ref(readInitialBlogSlug() || readStoredBlogSlug())
 const studioViewMode = ref(readStoredStudioViewMode())
 const studioPostId = ref(readStoredStudioPostId())
 const studioState = ref(createEmptyStudioState())
-const studioSlugTouched = ref(false)
+const studioDirty = ref(false)
+const studioLastSavedAt = ref('')
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
 const splashBoardRows = ref([])
@@ -613,7 +626,8 @@ const junctionLineStates = computed(() => {
       status: workBoardState.value.actions?.commandBridgeReady ? '명령 브리지 준비' : '조회 전용',
       summary: `Backlog ${countWorkTicketsByStatus('backlog')} · Ready ${readyColumnTickets.value.length} · Started ${countWorkTicketsByStatus('started')}`
     },
-    R: { status: runtimeState.value.ollama?.status === 'ok' ? '정상' : '부분 저하', summary: 'ion2 · rtx5070 · gateway' }
+    R: { status: runtimeState.value.ollama?.status === 'ok' ? '정상' : '부분 저하', summary: 'ion2 · rtx5070 · gateway' },
+    V: { status: '여행 준비', summary: '체크리스트 · 일정 · 예산' }
   }
 })
 
@@ -661,6 +675,7 @@ const TOPBAR_LINES = {
   blogArchive: ['line-b', 'B'],
   blogPost: ['line-b', 'B'],
   writingStudio: ['line-b', 'B'],
+  voyage: ['line-v', 'V'],
   work: ['line-w', 'W'],
   runtime: ['line-r', 'R'],
   ops: ['line-w', 'W'],
@@ -766,6 +781,14 @@ const currentRoute = computed(() => {
     }
   }
 
+  if (page.value === 'voyage') {
+    return {
+      line: 'Line V / Voyage',
+      title: 'east europe voyage line',
+      description: '출발 전 체크리스트와 일정, 예산을 한 흐름에서 확인합니다.'
+    }
+  }
+
   if (page.value === 'work') {
     return {
       line: 'Line W / Work Manager',
@@ -784,6 +807,7 @@ const currentRoute = computed(() => {
 const elevatorSummary = computed(() => elevatorState.value.summary || fallbackElevatorState.summary)
 const elevatorDemand = computed(() => elevatorState.value.demand || fallbackElevatorState.demand)
 const elevatorCars = computed(() => elevatorState.value.elevators || fallbackElevatorState.elevators)
+const elevatorBuilding = computed(() => elevatorState.value.building || fallbackElevatorState.building)
 
 const elevatorFloorRows = computed(() => {
   const building = elevatorState.value.building || fallbackElevatorState.building
@@ -794,41 +818,55 @@ const elevatorFloorRows = computed(() => {
     const queue = queueMap.get(floor) || {
       floor,
       up: 0,
-      down: 0,
-      topDestinations: { up: [], down: [] }
+      down: 0
     }
     floors.push({
       floor,
       up: queue.up ?? 0,
-      down: queue.down ?? 0,
-      topUp: formatTopDestinations(queue.topDestinations?.up),
-      topDown: formatTopDestinations(queue.topDestinations?.down)
+      down: queue.down ?? 0
     })
   }
   return floors
 })
 
-const elevatorArrivals = computed(() => {
-  const completedCalls = elevatorState.value.completedCalls || []
-  if (completedCalls.length > 0) {
-    return completedCalls.slice(-8).reverse().map((entry) => {
-      const car = entry.assignedElevatorId || entry.assignedElevatorIds?.[0] || 'E?'
-      const count = entry.passengerCount ?? 1
-      return `${car} · ${entry.floor}F · ${entry.direction === 'down' ? '하행' : '상행'} ${count}명 처리`
-    })
+const elevatorAverageWaitSeconds = computed(() => {
+  const waitingPassengers = elevatorState.value.waitingPassengers || []
+  if (waitingPassengers.length === 0) {
+    return 0
   }
 
-  const completedPassengers = elevatorState.value.completedPassengers || []
-  if (completedPassengers.length > 0) {
-    return completedPassengers.slice(-8).reverse().map((passenger) => {
-      return `${passenger.assignedElevatorId || 'E?'} · ${passenger.originFloor}F -> ${passenger.destinationFloor}F · 1명 도착`
-    })
+  const currentTick = Number(elevatorState.value.tick || 0)
+  const stepSeconds = Number(elevatorDemand.value.stepSeconds || 0.35)
+  const totalWaitSeconds = waitingPassengers.reduce((total, passenger) => {
+    return total + Math.max(currentTick - Number(passenger.requestedAtTick || currentTick), 0) * stepSeconds
+  }, 0)
+  return Math.round(totalWaitSeconds / waitingPassengers.length)
+})
+
+const elevatorEvents = computed(() => {
+  const boarded = elevatorCars.value.flatMap((car) => {
+    return (car.passengers || []).map((passenger) => ({
+      tick: Number(passenger.boardedAtTick || 0),
+      text: `${passenger.originFloor}F 탑승 → ${car.id}`
+    }))
+  })
+  const arrived = (elevatorState.value.completedPassengers || []).map((passenger) => ({
+    tick: Number(passenger.servedAtTick || 0),
+    text: `${passenger.servedByElevatorId || passenger.assignedElevatorId || 'E?'} ${passenger.destinationFloor}F 도착`
+  }))
+  const events = [...boarded, ...arrived]
+    .filter((event) => event.tick > 0)
+    .sort((left, right) => right.tick - left.tick)
+    .slice(0, 8)
+
+  if (events.length > 0) {
+    return events.map((event) => event.text)
   }
 
-  return [
-    '최근 도착 로그가 아직 없습니다.',
-    '수요를 올리거나 상행/하행 1명 추가를 눌러 흐름을 확인해 주세요.'
-  ]
+  return elevatorCars.value.slice(0, 4).map((car) => {
+    const floor = Number(car.position ?? car.currentFloor).toFixed(1)
+    return `${car.id} ${floor}F ${directionGlyph(car.direction) || '대기'}`
+  })
 })
 
 const simHubCards = computed(() => [
@@ -939,11 +977,10 @@ const archivedBlogPosts = computed(() =>
     .sort((left, right) => String(right.updatedAt || '').localeCompare(String(left.updatedAt || '')))
 )
 const activeBlogPost = computed(() => {
-  const published = publishedBlogPosts.value
-  if (published.length === 0) {
+  if (!activeBlogSlug.value) {
     return null
   }
-  return published.find((post) => post.slug === activeBlogSlug.value) || published[0]
+  return publishedBlogPosts.value.find((post) => post.slug === activeBlogSlug.value) || null
 })
 const activeBlogPostIndex = computed(() =>
   publishedBlogPosts.value.findIndex((post) => post.slug === activeBlogPost.value?.slug)
@@ -957,15 +994,44 @@ const adjacentBlogPosts = computed(() => ({
 const blogHeroStats = computed(() => {
   const latestPublished = publishedBlogPosts.value[0]
   return [
-    { label: 'published', value: String(publishedBlogPosts.value.length) },
-    { label: 'draft', value: String(draftBlogPosts.value.length) },
-    { label: 'archived', value: String(archivedBlogPosts.value.length) },
-    { label: 'last publish', value: latestPublished ? formatDate(latestPublished.publishedAt) : '없음' }
+    { label: '공개', value: `${publishedBlogPosts.value.length}편` },
+    { label: '초안', value: `${draftBlogPosts.value.length}편` },
+    { label: '최근 발행', value: latestPublished ? formatDate(latestPublished.publishedAt) : '없음' }
   ]
 })
+const blogSeriesGroups = computed(() => {
+  const groups = new Map()
+  publishedBlogPosts.value.forEach((post) => {
+    const seriesTag = post.tags.find(isBlogSeriesTag)
+    if (!seriesTag) {
+      return
+    }
+    const label = seriesTag.slice(seriesTag.indexOf(':') + 1).trim()
+    if (!groups.has(label)) {
+      groups.set(label, [])
+    }
+    groups.get(label).push(post)
+  })
+  return Array.from(groups, ([label, posts]) => ({ label, posts }))
+})
+const standalonePublishedBlogPosts = computed(() =>
+  publishedBlogPosts.value.filter((post) => !post.tags.some(isBlogSeriesTag))
+)
 const studioPreviewHtml = computed(() => renderMarkdownToHtml(studioState.value.bodyMarkdown))
 const studioWordCount = computed(() => countWords(studioState.value.bodyMarkdown))
 const studioReadingMinutes = computed(() => Math.max(1, Math.ceil(studioWordCount.value / 230)))
+const activeBlogReadingMinutes = computed(() =>
+  activeBlogPost.value ? Math.max(1, Math.ceil(countWords(activeBlogPost.value.bodyMarkdown) / 230)) : 0
+)
+const studioSaveStatus = computed(() => {
+  if (studioDirty.value) {
+    return '미저장 변경 있음'
+  }
+  if (studioLastSavedAt.value) {
+    return `저장됨 ${formatTimestamp(studioLastSavedAt.value)}`
+  }
+  return '저장 대기'
+})
 
 const workWorkerSummary = computed(() => {
   const summary = workBoardState.value.workerSummary
@@ -1121,6 +1187,9 @@ let tickerTimer
 let portalRefreshTimer
 let elevatorRefreshTimer
 let taxiSimulationTimer
+let workManagerExpiryTimer
+let studioAutosaveTimer
+let studioSavedSnapshot = ''
 let reducedMotionMediaQuery
 let reducedMotionMediaListener
 let splashAnimationRunId = 0
@@ -1132,17 +1201,14 @@ watch(theme, (nextTheme) => {
   }
 })
 
-watch(workManagerToken, (nextToken) => {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  if (nextToken) {
-    window.localStorage.setItem(TOKEN_STORAGE_KEY, nextToken)
-  } else {
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY)
-  }
-})
+watch(
+  [workManagerToken, workManagerTokenExpiresAt],
+  ([nextToken, nextExpiresAt]) => {
+    persistWorkManagerSession(nextToken, nextExpiresAt)
+    scheduleWorkManagerExpiration()
+  },
+  { immediate: true }
+)
 
 watch(blogPosts, (nextPosts) => {
   persistBlogPosts(nextPosts)
@@ -1232,11 +1298,26 @@ watch(
 watch(
   () => studioState.value.title,
   (nextTitle) => {
-    if (studioSlugTouched.value && studioState.value.slug) {
+    if (studioState.value.slugLocked && studioState.value.slug) {
       return
     }
     studioState.value.slug = slugify(nextTitle)
   }
+)
+
+watch(
+  () => createStudioEditableSnapshot(studioState.value),
+  (nextSnapshot) => {
+    if (!studioSavedSnapshot) {
+      studioSavedSnapshot = nextSnapshot
+      return
+    }
+    studioDirty.value = nextSnapshot !== studioSavedSnapshot
+    if (studioDirty.value) {
+      scheduleStudioAutosave()
+    }
+  },
+  { flush: 'post' }
 )
 
 function createInitialSplashBoardRows() {
@@ -1407,6 +1488,8 @@ function playSplashFlap() {
 }
 
 onMounted(async () => {
+  window.addEventListener('beforeunload', handleStudioBeforeUnload)
+  window.addEventListener('popstate', handleLocationPopState)
   if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
     reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     prefersReducedMotion.value = reducedMotionMediaQuery.matches
@@ -1423,9 +1506,11 @@ onMounted(async () => {
     }
   }
 
-  if (!isTestRoute.value) {
+  if (!isTestRoute.value && page.value === 'splash') {
     playSplashFlap()
     scheduleSplashTransition()
+  } else if (!isTestRoute.value) {
+    syncLiveLocation({ replace: true })
   } else {
     syncTestLocation()
   }
@@ -1440,6 +1525,9 @@ onMounted(async () => {
   }, 1000)
 
   await loadPortalData()
+  if (page.value === 'elevator') {
+    await activateElevatorPage()
+  }
   initializeBlogWorkspace()
 
   portalRefreshTimer = window.setInterval(() => {
@@ -1463,6 +1551,10 @@ onBeforeUnmount(() => {
   window.clearInterval(portalRefreshTimer)
   window.clearInterval(elevatorRefreshTimer)
   window.clearInterval(taxiSimulationTimer)
+  window.clearTimeout(workManagerExpiryTimer)
+  window.clearTimeout(studioAutosaveTimer)
+  window.removeEventListener('beforeunload', handleStudioBeforeUnload)
+  window.removeEventListener('popstate', handleLocationPopState)
   if (reducedMotionMediaQuery && reducedMotionMediaListener) {
     if (typeof reducedMotionMediaQuery.removeEventListener === 'function') {
       reducedMotionMediaQuery.removeEventListener('change', reducedMotionMediaListener)
@@ -1536,9 +1628,17 @@ async function applyDemandPreset(nextPreset) {
   demandPreset.value = nextPreset
   await postElevatorJson('/api/services/elevator-service/api/demand', {
     preset: nextPreset,
-    intensity: demandIntensity.value
+    intensity: demandIntensity.value,
+    autoMode: true
   })
   await loadElevatorState()
+}
+
+async function activateElevatorPage() {
+  const livePreset = ['quiet', 'normal', 'busy'].includes(elevatorDemand.value.preset)
+    ? elevatorDemand.value.preset
+    : 'normal'
+  await applyDemandPreset(livePreset)
 }
 
 async function updateDemandIntensity(nextValue) {
@@ -1550,10 +1650,9 @@ async function updateDemandIntensity(nextValue) {
   })
 }
 
-async function addPassenger(direction) {
-  const originFloor = direction === 'up' ? 1 : elevatorState.value.building?.maxFloor || 23
+async function addPassengerAtFloor({ floor, direction }) {
   await postElevatorJson('/api/services/elevator-service/api/passenger', {
-    floor: originFloor,
+    floor,
     direction
   })
   await loadElevatorState()
@@ -1687,10 +1786,13 @@ function openBlogPost(slug) {
 }
 
 function createNewStudioPost(moveToStudio = true) {
+  if (page.value === 'writingStudio' && !prepareStudioTransition()) {
+    return
+  }
   const blank = createEmptyStudioState()
   studioState.value = blank
   studioPostId.value = blank.id
-  studioSlugTouched.value = false
+  markStudioSaved('', blank)
   blogMessage.value = ''
   if (moveToStudio) {
     openPage('writingStudio')
@@ -1702,11 +1804,18 @@ function openStudioForPost(postId) {
   if (!post) {
     return
   }
+  if (page.value === 'writingStudio' && postId !== studioPostId.value && !prepareStudioTransition()) {
+    return
+  }
   populateStudio(post)
   openPage('writingStudio')
 }
 
 function populateStudio(post) {
+  const slugLocked =
+    typeof post.slugLocked === 'boolean'
+      ? post.slugLocked
+      : Boolean(post.slug && post.slug !== slugify(post.title))
   studioState.value = {
     id: post.id,
     title: post.title,
@@ -1715,22 +1824,26 @@ function populateStudio(post) {
     bodyMarkdown: post.bodyMarkdown,
     status: post.status,
     tags: [...(post.tags || [])].join(', '),
+    slugLocked,
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
     publishedAt: post.publishedAt || ''
   }
   studioPostId.value = post.id
-  studioSlugTouched.value = false
+  markStudioSaved(post.updatedAt || '', studioState.value)
 }
 
 function setStudioSlug(value) {
-  studioSlugTouched.value = true
+  studioState.value.slugLocked = true
   studioState.value.slug = slugify(value)
 }
 
 function saveStudioDraft() {
-  persistStudioPost('draft')
-  blogMessage.value = '초안을 저장했습니다.'
+  const saved = persistStudioPost(studioState.value.status || 'draft')
+  if (!saved) {
+    return
+  }
+  blogMessage.value = saved.status === 'published' ? '변경사항을 저장했습니다.' : '초안을 저장했습니다.'
 }
 
 function publishStudioPost() {
@@ -1752,25 +1865,78 @@ function archiveStudioPost() {
   openPage('bloghub')
 }
 
-function persistStudioPost(nextStatus) {
+function restoreArchivedPost(postId, nextStatus) {
+  const targetStatus = nextStatus === 'published' ? 'published' : 'draft'
+  const postIndex = blogPosts.value.findIndex((post) => post.id === postId && post.status === 'archived')
+  if (postIndex < 0) {
+    return
+  }
+
+  const post = blogPosts.value[postIndex]
+  if (
+    targetStatus === 'published' &&
+    (!String(post.summary || '').trim() || !String(post.bodyMarkdown || '').trim())
+  ) {
+    blogMessage.value = '공개 복원 전 요약과 본문이 필요합니다.'
+    return
+  }
+
+  const restoredPost = {
+    ...post,
+    status: targetStatus,
+    updatedAt: new Date().toISOString(),
+    publishedAt:
+      targetStatus === 'published' ? post.publishedAt || new Date().toISOString() : post.publishedAt || ''
+  }
+  const nextPosts = [...blogPosts.value]
+  nextPosts.splice(postIndex, 1, restoredPost)
+  persistBlogPosts(nextPosts)
+  blogPosts.value = nextPosts
+
+  if (studioPostId.value === restoredPost.id) {
+    populateStudio(restoredPost)
+  }
+  blogMessage.value =
+    targetStatus === 'published' ? '보관 글을 다시 공개했습니다.' : '보관 글을 초안으로 복원했습니다.'
+}
+
+function unpublishStudioPost() {
+  if (studioState.value.status !== 'published') {
+    return
+  }
+  const saved = persistStudioPost('draft')
+  if (saved) {
+    blogMessage.value = '발행을 취소하고 초안으로 전환했습니다.'
+  }
+}
+
+function persistStudioPost(nextStatus, options = {}) {
   const nowIso = new Date().toISOString()
   const title = studioState.value.title.trim()
   const summary = studioState.value.summary.trim()
   const bodyMarkdown = studioState.value.bodyMarkdown.trim()
-  if (!title || !summary || !bodyMarkdown) {
-    blogMessage.value = '제목, 요약, 본문을 모두 입력해야 저장할 수 있습니다.'
+  const current = blogPosts.value.find((post) => post.id === studioState.value.id)
+  const status = nextStatus || current?.status || studioState.value.status || 'draft'
+  if (!title) {
+    if (!options.silent) {
+      blogMessage.value = '제목을 입력하면 저장할 수 있습니다.'
+    }
+    return null
+  }
+  if (status === 'published' && (!summary || !bodyMarkdown)) {
+    if (!options.silent) {
+      blogMessage.value = '발행하려면 요약과 본문을 입력해 주세요.'
+    }
     return null
   }
 
-  const current = blogPosts.value.find((post) => post.id === studioState.value.id)
   const createdAt = current?.createdAt || nowIso
-  const status = nextStatus || studioState.value.status || 'draft'
   const slug = ensureUniqueSlug(
     studioState.value.slug || studioState.value.title,
     current?.id || studioState.value.id
   )
   const publishedAt =
-    status === 'published' ? current?.publishedAt || studioState.value.publishedAt || nowIso : ''
+    current?.publishedAt || studioState.value.publishedAt || (status === 'published' ? nowIso : '')
 
   const nextPost = {
     id: current?.id || studioState.value.id || createEntityId('post'),
@@ -1779,6 +1945,7 @@ function persistStudioPost(nextStatus) {
     summary,
     bodyMarkdown,
     status,
+    slugLocked: Boolean(studioState.value.slugLocked || current?.slugLocked),
     tags: studioState.value.tags
       .split(',')
       .map((tag) => tag.trim())
@@ -1796,9 +1963,67 @@ function persistStudioPost(nextStatus) {
     nextPosts.unshift(nextPost)
   }
 
+  persistBlogPosts(nextPosts)
+  persistStudioPostId(nextPost.id)
   blogPosts.value = nextPosts
   populateStudio(nextPost)
   return nextPost
+}
+
+function createStudioEditableSnapshot(state) {
+  return JSON.stringify({
+    id: state.id,
+    title: state.title,
+    slug: state.slug,
+    slugLocked: Boolean(state.slugLocked),
+    summary: state.summary,
+    tags: state.tags,
+    bodyMarkdown: state.bodyMarkdown,
+    status: state.status,
+    publishedAt: state.publishedAt
+  })
+}
+
+function markStudioSaved(savedAt, state = studioState.value) {
+  window.clearTimeout(studioAutosaveTimer)
+  studioSavedSnapshot = createStudioEditableSnapshot(state)
+  studioDirty.value = false
+  studioLastSavedAt.value = savedAt
+}
+
+function scheduleStudioAutosave() {
+  if (typeof window === 'undefined') {
+    return
+  }
+  window.clearTimeout(studioAutosaveTimer)
+  studioAutosaveTimer = window.setTimeout(() => {
+    flushStudioAutosave()
+  }, 800)
+}
+
+function flushStudioAutosave() {
+  if (!studioDirty.value) {
+    return true
+  }
+  window.clearTimeout(studioAutosaveTimer)
+  const saved = persistStudioPost(studioState.value.status || 'draft', { silent: true })
+  return Boolean(saved)
+}
+
+function prepareStudioTransition() {
+  if (!studioDirty.value || flushStudioAutosave()) {
+    return true
+  }
+  window.clearTimeout(studioAutosaveTimer)
+  return window.confirm('제목 없는 변경은 저장되지 않습니다. 이 화면을 나갈까요?')
+}
+
+function handleStudioBeforeUnload(event) {
+  if (page.value !== 'writingStudio' || !studioDirty.value || flushStudioAutosave()) {
+    return
+  }
+  event.preventDefault()
+  event.returnValue = ''
 }
 
 async function postElevatorJson(url, body) {
@@ -1834,7 +2059,12 @@ async function unlockWorkManager() {
         password: workManagerPassword.value
       })
     })
-    workManagerToken.value = response.token || ''
+    const session = resolveWorkManagerAuthSession(response)
+    if (!session) {
+      throw new Error('인증 응답에 유효한 세션 만료 시각이 없습니다.')
+    }
+    workManagerToken.value = session.token
+    workManagerTokenExpiresAt.value = session.expiresAt
     workManagerPassword.value = ''
     workManagerMessage.value = response.message || 'Command gate unlocked'
     await loadWorkBoardState()
@@ -1851,7 +2081,7 @@ async function saveWorkTicketMetadata() {
     return
   }
 
-  if (!workManagerToken.value) {
+  if (!hasActiveWorkManagerSession()) {
     metadataError.value = '먼저 command gate 를 열어야 메타데이터를 저장할 수 있습니다.'
     return
   }
@@ -1879,6 +2109,9 @@ async function saveWorkTicketMetadata() {
       await loadWorkBoardState()
     }
   } catch (error) {
+    if (handleWorkManagerAuthorizationError(error, 'metadata')) {
+      return
+    }
     metadataError.value = error.message || '티켓 메타데이터 저장에 실패했습니다.'
   } finally {
     isSavingMetadata.value = false
@@ -1891,7 +2124,7 @@ async function submitPresetCommand() {
     return
   }
 
-  if (!workManagerToken.value) {
+  if (!hasActiveWorkManagerSession()) {
     workManagerError.value = '먼저 command gate 를 열어야 합니다.'
     return
   }
@@ -1916,6 +2149,9 @@ async function submitPresetCommand() {
     commandNote.value = ''
     await loadWorkBoardState()
   } catch (error) {
+    if (handleWorkManagerAuthorizationError(error, 'command')) {
+      return
+    }
     workManagerError.value = error.message || '명령 실행에 실패했습니다.'
   } finally {
     isRunningCommand.value = false
@@ -1923,8 +2159,70 @@ async function submitPresetCommand() {
 }
 
 function logoutWorkManager() {
-  workManagerToken.value = ''
+  clearWorkManagerSession()
   workManagerMessage.value = 'Command gate 를 잠갔습니다.'
+}
+
+function hasActiveWorkManagerSession() {
+  if (!workManagerToken.value) {
+    return false
+  }
+  if (isExpiredWorkManagerSession(workManagerTokenExpiresAt.value)) {
+    lockWorkManagerSession('Command gate 세션이 만료되었습니다. 다시 인증해 주세요.')
+    return false
+  }
+  return true
+}
+
+function handleWorkManagerAuthorizationError(error, target) {
+  if (error?.status !== 401) {
+    return false
+  }
+
+  const message = 'Command gate 세션이 만료되었거나 유효하지 않습니다. 다시 인증해 주세요.'
+  lockWorkManagerSession(message)
+  if (target === 'metadata') {
+    metadataError.value = message
+  }
+  return true
+}
+
+function lockWorkManagerSession(message) {
+  clearWorkManagerSession()
+  workManagerMessage.value = ''
+  workManagerError.value = message
+}
+
+function clearWorkManagerSession() {
+  workManagerToken.value = ''
+  workManagerTokenExpiresAt.value = ''
+  if (typeof window !== 'undefined') {
+    window.clearTimeout(workManagerExpiryTimer)
+    window.localStorage.removeItem(TOKEN_STORAGE_KEY)
+    window.localStorage.removeItem(TOKEN_EXPIRY_STORAGE_KEY)
+  }
+}
+
+function scheduleWorkManagerExpiration() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.clearTimeout(workManagerExpiryTimer)
+  if (!workManagerToken.value) {
+    return
+  }
+
+  const expiresAtMs = Date.parse(workManagerTokenExpiresAt.value)
+  const remainingMs = expiresAtMs - Date.now()
+  if (!Number.isFinite(expiresAtMs) || remainingMs <= 0) {
+    lockWorkManagerSession('Command gate 세션이 만료되었습니다. 다시 인증해 주세요.')
+    return
+  }
+
+  workManagerExpiryTimer = window.setTimeout(() => {
+    lockWorkManagerSession('Command gate 세션이 만료되었습니다. 다시 인증해 주세요.')
+  }, remainingMs)
 }
 
 function countWorkTicketsByStatus(status) {
@@ -1949,6 +2247,9 @@ function replaySplashFlap() {
 }
 
 function openPage(nextPage) {
+  if (page.value === 'writingStudio' && nextPage !== 'writingStudio' && !prepareStudioTransition()) {
+    return
+  }
   if (nextPage === 'blogPost' && !activeBlogSlug.value && publishedBlogPosts.value.length > 0) {
     activeBlogSlug.value = publishedBlogPosts.value[0].slug
   }
@@ -1962,7 +2263,10 @@ function openPage(nextPage) {
   } else {
     page.value = normalizeLivePage(nextPage)
   }
-  syncTestLocation()
+  syncBrowserLocation()
+  if (page.value === 'elevator') {
+    void activateElevatorPage()
+  }
   window.requestAnimationFrame(() => {
     document.querySelector('.page-scroller')?.scrollTo({ top: 0, behavior: 'smooth' })
   })
@@ -1989,6 +2293,7 @@ function scheduleSplashTransition() {
   splashTimer = window.setTimeout(() => {
     clearSplashAnimationTimers()
     page.value = 'junction'
+    syncLiveLocation({ replace: true })
   }, SPLASH_DURATION_MS)
 }
 
@@ -1996,10 +2301,6 @@ function directionGlyph(direction) {
   if (direction === 'up') return '↑'
   if (direction === 'down') return '↓'
   return '·'
-}
-
-function isCarNearFloor(position, floor) {
-  return Math.abs(Number(position ?? 0) - floor) < 0.55
 }
 
 function startTicketDrag(ticketId) {
@@ -2318,6 +2619,7 @@ function createEmptyStudioState() {
     summary: '',
     bodyMarkdown: '## 새 글\n\n여기에서 본문을 시작합니다.',
     status: 'draft',
+    slugLocked: false,
     tags: '',
     createdAt: nowIso,
     updatedAt: nowIso,
@@ -2326,7 +2628,23 @@ function createEmptyStudioState() {
 }
 
 function createEntityId(prefix) {
-  return `${prefix}-${Math.random().toString(36).slice(2, 10)}`
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return `${prefix}-${globalThis.crypto.randomUUID()}`
+  }
+  if (typeof globalThis.crypto?.getRandomValues === 'function') {
+    const randomValues = globalThis.crypto.getRandomValues(new Uint32Array(2))
+    return `${prefix}-${Array.from(randomValues, (value) => value.toString(36)).join('-')}`
+  }
+  fallbackEntityIdCounter += 1
+  return `${prefix}-${Date.now().toString(36)}-${fallbackEntityIdCounter.toString(36)}`
+}
+
+function isBlogSeriesTag(tag) {
+  return /^series\s*:\s*.+/i.test(String(tag || ''))
+}
+
+function visibleBlogTags(tags) {
+  return (Array.isArray(tags) ? tags : []).filter((tag) => !isBlogSeriesTag(tag))
 }
 
 function slugify(value) {
@@ -2353,15 +2671,11 @@ function ensureUniqueSlug(candidate, currentId) {
 function renderMarkdownToHtml(markdown) {
   const lines = escapeHtml(String(markdown || '')).replace(/\r\n/g, '\n').split('\n')
   const html = []
-  let inList = false
   let inCode = false
 
-  for (const line of lines) {
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index]
     if (line.startsWith('```')) {
-      if (inList) {
-        html.push('</ul>')
-        inList = false
-      }
       html.push(inCode ? '</code></pre>' : '<pre class="post-code"><code>')
       inCode = !inCode
       continue
@@ -2373,25 +2687,15 @@ function renderMarkdownToHtml(markdown) {
     }
 
     if (!line.trim()) {
-      if (inList) {
-        html.push('</ul>')
-        inList = false
-      }
       continue
     }
 
-    if (line.startsWith('- ')) {
-      if (!inList) {
-        html.push('<ul>')
-        inList = true
-      }
-      html.push(`<li>${inlineMarkdown(line.slice(2))}</li>`)
+    const listItem = parseMarkdownListItem(line)
+    if (listItem) {
+      const renderedList = renderMarkdownList(lines, index, listItem.indent, listItem.type)
+      html.push(renderedList.html)
+      index = renderedList.nextIndex - 1
       continue
-    }
-
-    if (inList) {
-      html.push('</ul>')
-      inList = false
     }
 
     if (line.startsWith('### ')) {
@@ -2410,15 +2714,21 @@ function renderMarkdownToHtml(markdown) {
     }
 
     if (line.startsWith('> ')) {
-      html.push(`<blockquote>${inlineMarkdown(line.slice(2))}</blockquote>`)
+      const quoteLines = [line.slice(2)]
+      while (lines[index + 1]?.startsWith('> ')) {
+        index += 1
+        quoteLines.push(lines[index].slice(2))
+      }
+      html.push(`<blockquote>${inlineMarkdown(quoteLines.join(' '))}</blockquote>`)
       continue
     }
 
-    html.push(`<p>${inlineMarkdown(line)}</p>`)
-  }
-
-  if (inList) {
-    html.push('</ul>')
+    const paragraphLines = [line.trim()]
+    while (lines[index + 1]?.trim() && !isMarkdownBlockStart(lines[index + 1])) {
+      index += 1
+      paragraphLines.push(lines[index].trim())
+    }
+    html.push(`<p>${inlineMarkdown(paragraphLines.join(' '))}</p>`)
   }
   if (inCode) {
     html.push('</code></pre>')
@@ -2427,11 +2737,102 @@ function renderMarkdownToHtml(markdown) {
   return html.join('')
 }
 
+function parseMarkdownListItem(line) {
+  const match = line.replace(/\t/g, '    ').match(/^(\s*)([-+*]|\d+\.)\s+(.+)$/)
+  if (!match) {
+    return null
+  }
+  return {
+    indent: match[1].length,
+    type: /\d+\./.test(match[2]) ? 'ol' : 'ul',
+    content: match[3]
+  }
+}
+
+function renderMarkdownList(lines, startIndex, baseIndent, listType) {
+  const html = [`<${listType}>`]
+  let index = startIndex
+
+  while (index < lines.length) {
+    const item = parseMarkdownListItem(lines[index])
+    if (!item || item.indent !== baseIndent || item.type !== listType) {
+      break
+    }
+
+    html.push(`<li>${inlineMarkdown(item.content)}`)
+    index += 1
+
+    while (index < lines.length) {
+      const child = parseMarkdownListItem(lines[index])
+      if (!child || child.indent <= baseIndent) {
+        break
+      }
+      const renderedChild = renderMarkdownList(lines, index, child.indent, child.type)
+      html.push(renderedChild.html)
+      index = renderedChild.nextIndex
+    }
+
+    html.push('</li>')
+  }
+
+  html.push(`</${listType}>`)
+  return { html: html.join(''), nextIndex: index }
+}
+
+function isMarkdownBlockStart(line) {
+  return (
+    line.startsWith('```') ||
+    /^(#{1,3})\s/.test(line) ||
+    line.startsWith('> ') ||
+    Boolean(parseMarkdownListItem(line))
+  )
+}
+
 function inlineMarkdown(text) {
+  const protectedTokens = []
+  const protect = (value) => {
+    const token = `\u0000${protectedTokens.length}\u0000`
+    protectedTokens.push(value)
+    return token
+  }
+
+  let rendered = String(text || '').replace(/`([^`\n]+)`/g, (_, code) => protect(`<code>${code}</code>`))
+
+  rendered = rendered.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, url) => {
+    const safeUrl = allowedMarkdownUrl(url, ['http:', 'https:'])
+    if (!safeUrl) {
+      return alt
+    }
+    const safeAlt = alt.replace(/[*_`]/g, '')
+    return protect(`<img src="${safeUrl}" alt="${safeAlt}" loading="lazy">`)
+  })
+
+  rendered = rendered.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
+    const safeUrl = allowedMarkdownUrl(url, ['http:', 'https:', 'mailto:'])
+    if (!safeUrl) {
+      return label
+    }
+    return protect(`<a href="${safeUrl}" rel="noopener noreferrer">${formatInlineMarkdown(label)}</a>`)
+  })
+
+  rendered = formatInlineMarkdown(rendered)
+  return rendered.replace(/\u0000(\d+)\u0000/g, (_, index) => protectedTokens[Number(index)] || '')
+}
+
+function formatInlineMarkdown(text) {
   return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>')
+}
+
+function allowedMarkdownUrl(value, allowedProtocols) {
+  const candidate = String(value || '').trim()
+  try {
+    const parsed = new URL(candidate)
+    return allowedProtocols.includes(parsed.protocol) ? candidate : ''
+  } catch (error) {
+    return ''
+  }
 }
 
 function escapeHtml(value) {
@@ -2439,6 +2840,8 @@ function escapeHtml(value) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 function countWords(text) {
@@ -2475,19 +2878,8 @@ function formatClock() {
   })
 }
 
-function formatTopDestinations(destinations) {
-  if (!Array.isArray(destinations) || destinations.length === 0) {
-    return '없음'
-  }
-  return destinations
-    .slice(0, 2)
-    .map((entry) => `${entry.floor}F ${entry.count}명`)
-    .join(', ')
-}
-
-function formatLoadRatio(value) {
-  const ratio = Number(value || 0)
-  return `${Math.round(ratio * 100)}%`
+function readElevatorTickerDefault() {
+  return typeof window === 'undefined' || window.innerWidth > 760
 }
 
 function formatTimestamp(value) {
@@ -2509,9 +2901,16 @@ function formatTimestamp(value) {
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options)
   const text = await response.text()
-  const data = text ? JSON.parse(text) : {}
+  let data = {}
+  try {
+    data = text ? JSON.parse(text) : {}
+  } catch (error) {
+    data = {}
+  }
   if (!response.ok) {
-    throw new Error(data.message || data.error || response.statusText || 'Request failed')
+    const requestError = new Error(data.message || data.error || response.statusText || 'Request failed')
+    requestError.status = response.status
+    throw requestError
   }
   return data
 }
@@ -2552,12 +2951,42 @@ function readTestRouteMode() {
 function readInitialPage() {
   const mode = readTestRouteMode()
   if (mode === 'live') {
-    return 'splash'
+    return readLiveBlogRoute()?.page || 'splash'
   }
   if (mode === 'v050') {
     return normalizeVersionedTestView(readVersionedTestViewParam())
   }
   return normalizeTestView(readTestViewParam())
+}
+
+function readInitialBlogSlug() {
+  if (readTestRouteMode() !== 'live') {
+    return ''
+  }
+  return readLiveBlogRoute()?.slug || ''
+}
+
+function readLiveBlogRoute() {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  const parts = window.location.pathname.split('/').filter(Boolean)
+  if (parts[0] !== 'blog') {
+    return null
+  }
+  if (parts.length === 1) {
+    return { page: 'blogArchive', slug: '' }
+  }
+  if (parts.length !== 2) {
+    return { page: 'blogPost', slug: '' }
+  }
+
+  try {
+    return { page: 'blogPost', slug: decodeURIComponent(parts[1]) }
+  } catch (error) {
+    return { page: 'blogPost', slug: '' }
+  }
 }
 
 function readTestViewParam() {
@@ -2606,6 +3035,79 @@ function syncTestLocation() {
   window.history.replaceState({}, '', `${nextUrl.pathname}${nextUrl.search}`)
 }
 
+function syncBrowserLocation(options = {}) {
+  if (isTestRoute.value) {
+    syncTestLocation()
+    return
+  }
+  syncLiveLocation(options)
+}
+
+function syncLiveLocation({ replace = false } = {}) {
+  if (typeof window === 'undefined' || isTestRoute.value) {
+    return
+  }
+
+  const nextUrl = new URL(window.location.href)
+  if (page.value === 'blogArchive') {
+    nextUrl.pathname = '/blog'
+  } else if (page.value === 'blogPost') {
+    nextUrl.pathname = activeBlogSlug.value
+      ? `/blog/${encodeURIComponent(activeBlogSlug.value)}`
+      : '/blog/__not-found__'
+  } else {
+    nextUrl.pathname = '/'
+  }
+  nextUrl.search = ''
+  nextUrl.hash = ''
+
+  const nextPath = `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`
+  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`
+  const state = { page: page.value, blogSlug: activeBlogSlug.value }
+  if (replace || nextPath === currentPath) {
+    window.history.replaceState(state, '', nextPath)
+  } else {
+    window.history.pushState(state, '', nextPath)
+  }
+}
+
+function handleLocationPopState(event) {
+  const nextMode = readTestRouteMode()
+  if (page.value === 'writingStudio' && nextMode === 'live' && !prepareStudioTransition()) {
+    syncLiveLocation()
+    return
+  }
+
+  window.clearTimeout(splashTimer)
+  clearSplashAnimationTimers()
+  testRouteMode.value = nextMode
+
+  if (nextMode === 'v050') {
+    page.value = normalizeVersionedTestView(readVersionedTestViewParam())
+  } else if (nextMode === 'v040') {
+    page.value = normalizeTestView(readTestViewParam())
+  } else {
+    const liveRoute = readLiveBlogRoute()
+    if (liveRoute) {
+      activeBlogSlug.value = liveRoute.slug
+      page.value = liveRoute.page
+    } else {
+      const statePage = normalizeLivePage(event.state?.page)
+      page.value = statePage === 'blogArchive' || statePage === 'blogPost' ? 'junction' : statePage
+      if (page.value === 'blogPost') {
+        activeBlogSlug.value = event.state?.blogSlug || ''
+      }
+    }
+  }
+
+  if (page.value === 'elevator') {
+    void activateElevatorPage()
+  }
+  window.requestAnimationFrame(() => {
+    document.querySelector('.page-scroller')?.scrollTo({ top: 0 })
+  })
+}
+
 function pickNextTicker(excluded = []) {
   const blocked = new Set(excluded)
   const candidates = tickerPool.filter((line) => !blocked.has(line))
@@ -2633,11 +3135,62 @@ function persistReadyTicketIds(ticketIds) {
   window.localStorage.setItem(BOARD_READY_STORAGE_KEY, JSON.stringify(ticketIds))
 }
 
-function readStoredWorkManagerToken() {
+function readStoredWorkManagerSession() {
   if (typeof window === 'undefined') {
-    return ''
+    return { token: '', expiresAt: '', expired: false }
   }
-  return window.localStorage.getItem(TOKEN_STORAGE_KEY) || ''
+
+  try {
+    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY) || ''
+    const expiresAt = window.localStorage.getItem(TOKEN_EXPIRY_STORAGE_KEY) || ''
+    if (token && !isExpiredWorkManagerSession(expiresAt)) {
+      return { token, expiresAt, expired: false }
+    }
+
+    window.localStorage.removeItem(TOKEN_STORAGE_KEY)
+    window.localStorage.removeItem(TOKEN_EXPIRY_STORAGE_KEY)
+    return { token: '', expiresAt: '', expired: Boolean(token) }
+  } catch (error) {
+    return { token: '', expiresAt: '', expired: false }
+  }
+}
+
+function persistWorkManagerSession(token, expiresAt) {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  if (token && !isExpiredWorkManagerSession(expiresAt)) {
+    window.localStorage.setItem(TOKEN_STORAGE_KEY, token)
+    window.localStorage.setItem(TOKEN_EXPIRY_STORAGE_KEY, expiresAt)
+    return
+  }
+
+  window.localStorage.removeItem(TOKEN_STORAGE_KEY)
+  window.localStorage.removeItem(TOKEN_EXPIRY_STORAGE_KEY)
+}
+
+function resolveWorkManagerAuthSession(response) {
+  const token = response?.token || ''
+  const directExpiresAt = response?.expiresAt || ''
+  const directExpiresAtMs = Date.parse(directExpiresAt)
+  if (token && Number.isFinite(directExpiresAtMs) && directExpiresAtMs > Date.now()) {
+    return { token, expiresAt: new Date(directExpiresAtMs).toISOString() }
+  }
+
+  const ttlMinutes = Number(response?.sessionTtlMinutes)
+  if (token && Number.isFinite(ttlMinutes) && ttlMinutes > 0) {
+    return {
+      token,
+      expiresAt: new Date(Date.now() + ttlMinutes * 60 * 1000).toISOString()
+    }
+  }
+  return null
+}
+
+function isExpiredWorkManagerSession(expiresAt) {
+  const expiresAtMs = Date.parse(expiresAt)
+  return !Number.isFinite(expiresAtMs) || expiresAtMs <= Date.now()
 }
 
 function readStoredBlogPosts() {
@@ -3290,6 +3843,19 @@ function persistStudioPostId(postId) {
             </section>
           </section>
 
+          <section v-else-if="page === 'voyage'" class="feature-shell line-v">
+            <StationHeader
+              line-class="line-v"
+              station-code="V01"
+              title="여행 준비"
+              title-en="VOYAGE"
+              status="개찰구 앞"
+              status-tone="ok"
+              summary="체크리스트 · 일정 · 예산"
+              @exit="openPage('junction')"
+            />
+          </section>
+
           <section v-else-if="page === 'elevator'" class="feature-shell">
             <StationHeader
               line-class="line-e"
@@ -3301,192 +3867,102 @@ function persistStudioPostId(postId) {
               :summary="`23층 · car ${elevatorCars.length}대 · 정원 20명`"
               @exit="openPage('junction')"
             />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article>
-              <span>demand</span>
-              <strong>{{ elevatorDemand.presetLabel }}</strong>
-              </article>
-              <article>
-              <span>moving cars</span>
-              <strong>{{ elevatorSummary.movingElevators }}</strong>
-              </article>
-              <article>
-              <span>waiting pax</span>
-              <strong>{{ elevatorSummary.waitingPassengers }}</strong>
-              </article>
-              </div>
-            </section>
 
-            <section class="section-block elevator-layout">
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">Demand Control</p>
-                    <h3>수요 분포와 승객 추가</h3>
-                  </div>
-                </div>
+            <section class="section-block elevator-live-layout line-e">
+              <ElevatorCrossSection
+                :cars="elevatorCars"
+                :floors="elevatorFloorRows"
+                :min-floor="elevatorBuilding.minFloor"
+                :max-floor="elevatorBuilding.maxFloor"
+                @add-passenger="addPassengerAtFloor"
+              />
 
-                <div class="preset-row">
-                  <button
-                    v-for="preset in ['commute', 'lunch', 'evening']"
-                    :key="preset"
-                    type="button"
-                    class="chip-button"
-                    :class="{ active: demandPreset === preset }"
-                    @click="applyDemandPreset(preset)"
-                  >
-                    {{
-                      preset === 'commute'
-                        ? '출근'
-                        : preset === 'lunch'
-                          ? '식사'
-                          : '저녁'
-                    }}
-                  </button>
-                </div>
-
-                <div class="control-grid">
-                  <label class="input-block">
-                    <span>강도 {{ demandIntensity }}</span>
-                    <input
-                      class="range-input"
-                      type="range"
-                      min="0"
-                      max="100"
-                      :value="demandIntensity"
-                      @change="updateDemandIntensity($event.target.value)"
-                    />
-                  </label>
-
-                  <label class="input-block">
-                    <span>car 수 {{ elevatorCarCount }}</span>
-                    <input
-                      class="range-input"
-                      type="range"
-                      min="2"
-                      max="6"
-                      :value="elevatorCarCount"
-                      @change="updateElevatorCarCount($event.target.value)"
-                    />
-                  </label>
-
-                  <div class="queue-buttons">
-                    <button type="button" class="primary-button" @click="addPassenger('up')">상행 1명 추가</button>
-                    <button type="button" class="ghost-button" @click="addPassenger('down')">하행 1명 추가</button>
-                    <button type="button" class="ghost-button" @click="resetElevator">리셋</button>
-                  </div>
-                </div>
-
-                <div class="info-stack">
+              <aside class="elevator-control-panel">
+                <div class="elevator-metrics" aria-label="엘리베이터 실시간 지표">
                   <article>
-                    <span>active hall calls</span>
-                    <strong>{{ elevatorSummary.activeHallCalls }}</strong>
+                    <span>대기</span>
+                    <strong class="num">{{ elevatorSummary.waitingPassengers }}</strong>
                   </article>
                   <article>
-                    <span>onboard pax</span>
-                    <strong>{{ elevatorSummary.onboardPassengers }}</strong>
+                    <span>탑승</span>
+                    <strong class="num">{{ elevatorSummary.onboardPassengers }}</strong>
                   </article>
                   <article>
-                    <span>load ratio</span>
-                    <strong>{{ formatLoadRatio(elevatorSummary.loadRatio) }}</strong>
+                    <span>이동 중</span>
+                    <strong class="num">{{ elevatorSummary.movingElevators }}</strong>
+                  </article>
+                  <article>
+                    <span>평균 대기</span>
+                    <strong class="num">{{ elevatorAverageWaitSeconds }}초</strong>
                   </article>
                 </div>
-              </article>
 
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">Car State</p>
-                    <h3>shaft 상태</h3>
+                <section class="elevator-demand-panel">
+                  <div class="section-head compact">
+                    <h3>수요</h3>
+                    <span>{{ elevatorDemand.presetLabel }}</span>
                   </div>
-                </div>
+                  <div class="preset-row elevator-presets">
+                    <button
+                      v-for="preset in [
+                        { id: 'quiet', label: '한산' },
+                        { id: 'normal', label: '보통' },
+                        { id: 'busy', label: '혼잡' }
+                      ]"
+                      :key="preset.id"
+                      type="button"
+                      class="chip-button"
+                      :class="{ active: demandPreset === preset.id }"
+                      @click="applyDemandPreset(preset.id)"
+                    >
+                      {{ preset.label }}
+                    </button>
+                  </div>
+                </section>
 
-                <div class="car-stack">
-                  <article v-for="car in elevatorCars" :key="car.id" class="car-card">
-                    <div class="car-top">
-                      <strong>{{ car.id }}</strong>
-                      <span>{{ directionGlyph(car.direction) }} {{ Number(car.position ?? car.currentFloor).toFixed(2) }}F</span>
-                    </div>
-                    <p>{{ car.status }} · 다음 {{ car.nextTarget || '대기' }}</p>
-                    <div class="load-track">
-                      <span :style="{ width: `${((car.currentLoad || 0) / (car.capacity || 20)) * 100}%` }"></span>
-                    </div>
-                    <small>{{ car.currentLoad || 0 }} / {{ car.capacity || 20 }} passengers</small>
-                    <div class="passenger-dot-row">
-                      <span
-                        v-for="index in Math.min(car.currentLoad || 0, 10)"
-                        :key="`${car.id}-dot-${index}`"
-                        class="passenger-dot"
-                      ></span>
-                      <small v-if="(car.currentLoad || 0) > 10">+{{ (car.currentLoad || 0) - 10 }}</small>
-                    </div>
-                    <div class="position-track">
-                      <span
-                        :style="{
-                          left: `${(((Number(car.position ?? car.currentFloor) - 1) / Math.max(1, (elevatorState.building?.maxFloor || 23) - 1)) * 100).toFixed(1)}%`
-                        }"
-                      ></span>
-                    </div>
-                    <small class="position-note">queue {{ car.queue?.join(', ') || '없음' }}</small>
-                  </article>
-                </div>
-              </article>
-            </section>
+                <details class="elevator-advanced">
+                  <summary>고급 설정</summary>
+                  <div class="control-grid">
+                    <label class="input-block">
+                      <span>강도 {{ demandIntensity }}</span>
+                      <input
+                        class="range-input"
+                        type="range"
+                        min="0"
+                        max="100"
+                        :value="demandIntensity"
+                        @change="updateDemandIntensity($event.target.value)"
+                      />
+                    </label>
+                    <label class="input-block">
+                      <span>car 수 {{ elevatorCarCount }}</span>
+                      <input
+                        class="range-input"
+                        type="range"
+                        min="2"
+                        max="6"
+                        :value="elevatorCarCount"
+                        @change="updateElevatorCarCount($event.target.value)"
+                      />
+                    </label>
+                    <button type="button" class="ghost-button" @click="resetElevator">초기화</button>
+                  </div>
+                </details>
 
-            <section class="section-block">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">Dispatch Grid</p>
-                  <h3>층별 대기와 shaft 위치</h3>
-                </div>
-                <span>정원 초과는 대기 인원으로 남고, car 위치는 연속 값 기준으로 반영합니다.</span>
-              </div>
-
-              <div class="dispatch-table">
-                <div
-                  class="dispatch-head"
-                  :style="{ gridTemplateColumns: `70px minmax(150px, 1.6fr) repeat(${elevatorCars.length}, minmax(54px, 0.64fr))` }"
+                <details
+                  class="elevator-event-panel"
+                  :open="elevatorTickerOpen"
+                  @toggle="elevatorTickerOpen = $event.target.open"
                 >
-                  <span>floor</span>
-                  <span>queue</span>
-                  <span v-for="car in elevatorCars" :key="`${car.id}-head`">{{ car.id }}</span>
-                </div>
-
-                <div
-                  v-for="row in elevatorFloorRows"
-                  :key="row.floor"
-                  class="dispatch-row"
-                  :style="{ gridTemplateColumns: `70px minmax(150px, 1.6fr) repeat(${elevatorCars.length}, minmax(54px, 0.64fr))` }"
-                >
-                  <span class="floor-chip">{{ row.floor }}F</span>
-                  <div class="queue-chip" :class="{ hotspot: row.up + row.down > 0 }">
-                    <strong>상행 {{ row.up }}명 · 하행 {{ row.down }}명</strong>
-                    <small>up {{ row.topUp }} / down {{ row.topDown }}</small>
+                  <summary>최근 운행 <span>최대 8건</span></summary>
+                  <div class="elevator-event-list">
+                    <article v-for="(entry, index) in elevatorEvents" :key="`${entry}-${index}`">
+                      <span class="live-dot" aria-hidden="true"></span>
+                      {{ entry }}
+                    </article>
                   </div>
-                  <div
-                    v-for="car in elevatorCars"
-                    :key="`${car.id}-${row.floor}`"
-                    class="shaft-cell"
-                    :class="{ occupied: isCarNearFloor(car.position ?? car.currentFloor, row.floor) }"
-                  >
-                    <span v-if="isCarNearFloor(car.position ?? car.currentFloor, row.floor)">{{ car.id }}</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <section class="section-block">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">Recent Arrivals</p>
-                  <h3>최근 도착 로그</h3>
-                </div>
-              </div>
-
-              <div class="arrival-log">
-                <article v-for="entry in elevatorArrivals" :key="entry">{{ entry }}</article>
-              </div>
+                </details>
+              </aside>
             </section>
           </section>
 
@@ -3691,130 +4167,128 @@ function persistStudioPostId(postId) {
               summary="published 만 공개 · draft 는 Studio 안에서만"
               @exit="openPage('junction')"
             />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article v-for="item in blogHeroStats" :key="item.label">
-              <span>{{ item.label }}</span>
-              <strong>{{ item.value }}</strong>
-              </article>
-              </div>
-            </section>
+            <section class="section-block blog-primary">
+              <article class="blog-primary-main">
+                <div>
+                  <p class="eyebrow">Line B · Blog District</p>
+                  <h3>읽고 쓰는 승강장</h3>
+                  <p class="blog-primary-copy">공개 글과 초안을 한곳에서</p>
+                </div>
 
-            <section class="section-block split-layout">
-              <article class="surface-panel">
-                <div class="section-head">
+                <div class="blog-primary-stats">
+                  <article v-for="item in blogHeroStats" :key="item.label">
+                    <span>{{ item.label }}</span>
+                    <strong class="num">{{ item.value }}</strong>
+                  </article>
+                </div>
+
+                <div class="blog-primary-actions">
+                  <button type="button" class="btn btn-exit" @click="openBlogArchive">아카이브 들어가기</button>
+                  <button type="button" class="btn btn-ghost" @click="openPage('writingStudio')">Writing Studio</button>
+                </div>
+              </article>
+
+              <aside class="blog-primary-list">
+                <div class="section-head compact">
+                  <h3>최근 발행</h3>
+                  <button type="button" class="text-button" @click="openBlogArchive">전체 보기</button>
+                </div>
+                <article v-for="post in publishedBlogPosts.slice(0, 3)" :key="post.id" class="blog-recent-item">
                   <div>
-                    <p class="eyebrow">Public Entry</p>
-                    <h3>공개 읽기 레일</h3>
+                    <time class="num">{{ formatDate(post.publishedAt) }}</time>
+                    <StatusBadge :status="post.status" />
                   </div>
-                </div>
-
-                <div class="line-grid">
-                  <article v-for="post in publishedBlogPosts.slice(0, 2)" :key="post.id" class="archive-card">
-                    <div class="archive-top">
-                      <span class="status-chip">{{ BLOG_STATUS_LABELS[post.status] }}</span>
-                      <small>{{ formatDate(post.publishedAt) }}</small>
-                    </div>
-                    <strong>{{ post.title }}</strong>
-                    <p>{{ post.summary }}</p>
-                    <div class="line-ticket-row">
-                      <span v-for="tag in post.tags" :key="`${post.id}-${tag}`" class="ticket-tag">#{{ tag }}</span>
-                    </div>
-                    <button type="button" class="ghost-button" @click="openBlogPost(post.slug)">글 읽기</button>
-                  </article>
-                </div>
-
-                <div class="queue-buttons">
-                  <button type="button" class="primary-button" @click="openBlogArchive">Public Archive 열기</button>
-                </div>
-              </article>
-
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">Writing Studio</p>
-                    <h3>초안과 발행 흐름</h3>
-                  </div>
-                </div>
-
-                <div class="prototype-rule-list">
-                  <article class="prototype-rule-card">
-                    <strong>draft</strong>
-                    <p>작성 중 · Studio 전용</p>
-                  </article>
-                  <article class="prototype-rule-card">
-                    <strong>published</strong>
-                    <p>공개 목록에 노출</p>
-                  </article>
-                  <article class="prototype-rule-card">
-                    <strong>archived</strong>
-                    <p>보관 · 삭제 아님</p>
-                  </article>
-                </div>
-
-                <div class="queue-buttons">
-                  <button type="button" class="primary-button" @click="openPage('writingStudio')">Studio 열기</button>
-                  <button type="button" class="ghost-button" @click="createNewStudioPost()">새 글 만들기</button>
-                </div>
-              </article>
+                  <button type="button" @click="openBlogPost(post.slug)">{{ post.title }}</button>
+                </article>
+              </aside>
             </section>
           </section>
 
           <section v-else-if="page === 'blogArchive'" class="feature-shell blog-shell">
-            <section class="section-block reading-shell">
+            <section class="section-block reading-shell archive-document">
               <div class="section-head archive-head">
                 <div>
                   <p class="eyebrow">Public Archive</p>
                   <h3>공개 글 목록</h3>
                 </div>
-                <span>published 상태만 공개 목록에 노출됩니다.</span>
+                <span>{{ publishedBlogPosts.length }}편</span>
               </div>
 
+              <section v-for="series in blogSeriesGroups" :key="series.label" class="archive-series">
+                <div class="archive-series-head">
+                  <p class="eyebrow">Series</p>
+                  <h4>{{ series.label }}</h4>
+                  <span>{{ series.posts.length }}편</span>
+                </div>
+                <div class="archive-list">
+                  <article v-for="post in series.posts" :key="post.id" class="archive-item">
+                    <time class="when num">{{ formatDate(post.publishedAt) }}</time>
+                    <div class="archive-item-main">
+                      <button type="button" class="archive-title" @click="openBlogPost(post.slug)">{{ post.title }}</button>
+                      <p class="summary">{{ post.summary }}</p>
+                      <div class="archive-meta">
+                        <span v-for="(tag, tagIndex) in visibleBlogTags(post.tags)" :key="`${post.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
+                        <StatusBadge :status="post.status" />
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </section>
+
               <div class="archive-list">
-                <article v-for="post in publishedBlogPosts" :key="post.id" class="archive-card archive-list-card">
-                  <div class="archive-top">
-                    <span class="status-chip">{{ BLOG_STATUS_LABELS[post.status] }}</span>
-                    <small>{{ formatDate(post.publishedAt) }}</small>
+                <article v-for="post in standalonePublishedBlogPosts" :key="post.id" class="archive-item">
+                  <time class="when num">{{ formatDate(post.publishedAt) }}</time>
+                  <div class="archive-item-main">
+                    <button type="button" class="archive-title" @click="openBlogPost(post.slug)">{{ post.title }}</button>
+                    <p class="summary">{{ post.summary }}</p>
+                    <div class="archive-meta">
+                      <span v-for="(tag, tagIndex) in visibleBlogTags(post.tags)" :key="`${post.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
+                      <StatusBadge :status="post.status" />
+                    </div>
                   </div>
-                  <strong>{{ post.title }}</strong>
-                  <p>{{ post.summary }}</p>
-                  <div class="line-ticket-row">
-                    <span v-for="tag in post.tags" :key="`${post.id}-${tag}`" class="ticket-tag">#{{ tag }}</span>
-                  </div>
-                  <button type="button" class="ghost-button" @click="openBlogPost(post.slug)">글 읽기</button>
                 </article>
+              </div>
+
+              <div class="badge-legend">
+                <StatusBadge status="published" />
+                <span>공개 글만 노출 · 초안과 보관은 Studio에서 관리</span>
               </div>
             </section>
           </section>
 
           <section v-else-if="page === 'blogPost'" class="feature-shell blog-shell">
-            <article v-if="activeBlogPost" class="reading-shell post-shell">
+            <article v-if="activeBlogPost" class="post-detail">
               <div class="post-meta-line">
-                <span>{{ formatDate(activeBlogPost.createdAt) }}</span>
-                <span>{{ formatDate(activeBlogPost.updatedAt) }} 수정</span>
                 <span>{{ formatDate(activeBlogPost.publishedAt) }} 발행</span>
+                <span>{{ formatDate(activeBlogPost.updatedAt) }} 수정</span>
+                <span class="num">읽기 {{ activeBlogReadingMinutes }}분</span>
               </div>
 
-              <header class="post-header">
-                <span class="status-chip">{{ BLOG_STATUS_LABELS[activeBlogPost.status] }}</span>
-                <h3>{{ activeBlogPost.title }}</h3>
-                <p class="post-summary">{{ activeBlogPost.summary }}</p>
-                <div class="line-ticket-row">
-                  <span v-for="tag in activeBlogPost.tags" :key="`${activeBlogPost.id}-${tag}`" class="ticket-tag">#{{ tag }}</span>
-                </div>
-              </header>
+              <h1>{{ activeBlogPost.title }}</h1>
+              <p class="post-lead">{{ activeBlogPost.summary }}</p>
+              <div class="post-tags">
+                <span v-for="(tag, tagIndex) in visibleBlogTags(activeBlogPost.tags)" :key="`${activeBlogPost.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
+                <StatusBadge :status="activeBlogPost.status" />
+              </div>
 
-              <div class="markdown-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown)"></div>
+              <div class="markdown-body post-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown)"></div>
 
-              <footer class="post-footer-nav">
+              <footer class="post-foot-nav">
                 <button v-if="adjacentBlogPosts.previous" type="button" class="ghost-button" @click="openBlogPost(adjacentBlogPosts.previous.slug)">
                   이전 글
                 </button>
+                <button type="button" class="ghost-button" @click="openStudioForPost(activeBlogPost.id)">Studio에서 편집</button>
                 <button type="button" class="primary-button" @click="openBlogArchive">아카이브로</button>
                 <button v-if="adjacentBlogPosts.next" type="button" class="ghost-button" @click="openBlogPost(adjacentBlogPosts.next.slug)">
                   다음 글
                 </button>
               </footer>
+            </article>
+            <article v-else class="reading-shell blog-not-found" role="status">
+              <p class="eyebrow">404 / Blog District</p>
+              <h3>공개 글을 찾을 수 없습니다</h3>
+              <p>주소가 바뀌었거나 보관된 글입니다.</p>
+              <button type="button" class="primary-button" @click="openBlogArchive">공개 글 목록</button>
             </article>
           </section>
 
@@ -3868,10 +4342,43 @@ function persistStudioPostId(postId) {
                     :class="{ active: studioPostId === post.id }"
                     @click="openStudioForPost(post.id)"
                   >
+                    <span class="studio-shelf-meta">
+                      <StatusBadge status="draft" />
+                      <small>{{ formatDate(post.updatedAt) }}</small>
+                    </span>
                     <strong>{{ post.title }}</strong>
-                    <p>{{ formatDate(post.updatedAt) }} 수정 · {{ post.summary }}</p>
+                    <p>{{ post.summary }}</p>
                   </button>
                 </div>
+
+                <section class="archive-shelf">
+                  <div class="section-head">
+                    <div>
+                      <p class="eyebrow">Archive Shelf</p>
+                      <h3>보관 글</h3>
+                    </div>
+                    <span>{{ archivedBlogPosts.length }}</span>
+                  </div>
+
+                  <p v-if="archivedBlogPosts.length === 0" class="archive-shelf-empty">보관된 글이 없습니다.</p>
+                  <div v-else class="archive-shelf-list">
+                    <article v-for="post in archivedBlogPosts" :key="post.id" class="archive-shelf-card">
+                      <span class="studio-shelf-meta">
+                        <StatusBadge status="archived" />
+                        <small>{{ formatDate(post.updatedAt) }}</small>
+                      </span>
+                      <strong>{{ post.title }}</strong>
+                      <div class="archive-restore-actions">
+                        <button type="button" class="ghost-button" @click="restoreArchivedPost(post.id, 'draft')">
+                          초안으로 복원
+                        </button>
+                        <button type="button" class="primary-button" @click="restoreArchivedPost(post.id, 'published')">
+                          공개로 복원
+                        </button>
+                      </div>
+                    </article>
+                  </div>
+                </section>
               </aside>
 
               <div class="studio-main">
@@ -3882,9 +4389,21 @@ function persistStudioPostId(postId) {
                     <button type="button" class="ghost-button" @click="studioViewMode = 'preview'">Preview</button>
                   </div>
 
+                  <span class="studio-save-status" :class="{ unsaved: studioDirty }" role="status" aria-live="polite">
+                    {{ studioSaveStatus }}
+                  </span>
+
                   <div class="command-actions">
-                    <button type="button" class="ghost-button" @click="saveStudioDraft">draft 저장</button>
+                    <button type="button" class="ghost-button" @click="saveStudioDraft">저장</button>
                     <button type="button" class="primary-button" @click="publishStudioPost">publish</button>
+                    <button
+                      v-if="studioState.status === 'published'"
+                      type="button"
+                      class="ghost-button"
+                      @click="unpublishStudioPost"
+                    >
+                      발행 취소
+                    </button>
                     <button type="button" class="ghost-button" @click="archiveStudioPost">archive</button>
                   </div>
                 </div>
@@ -3931,7 +4450,7 @@ function persistStudioPostId(postId) {
                   <article class="studio-preview reading-shell">
                     <div class="post-meta-line">
                       <span>{{ studioState.slug || 'slug 미정' }}</span>
-                      <span>{{ BLOG_STATUS_LABELS[studioState.status] }}</span>
+                      <StatusBadge :status="studioState.status" />
                       <span>{{ formatDate(studioState.updatedAt) }}</span>
                     </div>
                     <header class="post-header">
@@ -4311,7 +4830,12 @@ function persistStudioPostId(postId) {
                 </label>
 
                 <div class="command-actions">
-                  <button type="button" class="primary-button" :disabled="isRunningCommand || !selectedCommand" @click="submitPresetCommand">
+                  <button
+                    type="button"
+                    class="primary-button"
+                    :disabled="isRunningCommand || !selectedCommand || !workManagerToken"
+                    @click="submitPresetCommand"
+                  >
                     {{ isRunningCommand ? '큐 등록 중...' : 'preset command 전송' }}
                   </button>
                 </div>
