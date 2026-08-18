@@ -77,3 +77,10 @@
   3. **종착 후 (기록)** — 역(도시)별 아카이브: 사진·글, 블로그 본선과 상호 링크.
 - **게임 보드 요소**: 역 도장(방문 스탬프), 노선도 위 현재 위치 pulse 가 실제 여행 위치, 일일 미션 달성 표시.
 - **일정 제약**: 출발이 다음달 — 준비 구간 화면부터 역순 우선. 스펙 = claude(TKT-084), 구현 = `[FE]`.
+
+## D-011 공개 호스팅 = Cloudflare Pages + Tunnel 하이브리드 · 확정 (PO 2026-08-18 "채택")
+
+- **결정**: 정적 프론트(Vue 빌드 산출물)는 **Cloudflare Pages**, 동적 API 는 **Cloudflare Tunnel → 홈서버 Spring gateway**. 브라우저는 기존대로 같은 오리진 `/api/*` — Pages Function 이 Tunnel 호스트로 프록시. RTX5070/Ollama 는 계속 gateway 뒤 내부망 (D-009 불변).
+- **효과**: 홈서버·회선이 죽어도 블로그·여행 콘텐츠는 생존, 동적 기능만 degraded. 집 IP 인바운드 개방(80/443 포워딩) 불필요 — Tunnel 은 아웃바운드만.
+- **근거**: `../reports/2026-08-18-hosting-cf-options.md` (부관 조사).
+- **후속**: TKT-085 방향 갱신(Caddy 는 내부 개발용으로 강등), Pages 프로젝트·Tunnel 인증은 PO 계정 작업 병행.

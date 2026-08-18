@@ -47,7 +47,7 @@
 ## Started
 
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
-- `TKT-085` `P1` `infra` `blocked` `[INFRA]` 도메인 공개 준비 — 구현 완료, Caddy 이미지 pull 정지로 로컬 compose/curl 게이트 대기
+- `TKT-085` `P1` `infra` `started` `[INFRA]` 도메인 공개 준비 — **D-011 방향 갱신: Pages+Tunnel 하이브리드** (티켓 '방향 갱신' 절). Caddy pull 게이트 축소 — cloudflared+gateway 확인으로 대체
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review

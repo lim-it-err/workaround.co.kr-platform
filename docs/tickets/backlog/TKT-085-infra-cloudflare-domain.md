@@ -44,3 +44,13 @@ workaround.co.kr / workaround.kr 을 Cloudflare 프록시 뒤에서 자가 서�
 - 차단 해제 조건: Docker registry에서 `caddy:2.9-alpine` pull이 가능한 환경에서 README의 `--profile local` 기동과 Host 헤더 curl을 재실행한다.
 - PM 질문: 다음 실행에서 registry 접근이 복구되면 동일 게이트를 재시도해도 되는가? 구현 범위 변경은 필요 없다.
 - 재시도 메모: 호스트 HTTPS 연결 자체는 정상이므로 Docker Desktop engine의 image pull 경로/credential/network 상태 확인이 필요하다. 실행 중인 타 작업 컨테이너가 있어 Docker Desktop 강제 재시작은 수행하지 않았다.
+
+
+## 방향 갱신 (D-011 확정, 2026-08-18 — PO "채택")
+
+기존 "자가서버 Caddy 공개 ingress" 구성을 **Pages+Tunnel 하이브리드**로 전환:
+1. 프론트 빌드 산출물의 Cloudflare Pages 배포 구성(빌드 명령·출력 경로) 문서화 + 스크립트
+2. `cloudflared` Tunnel 컨테이너를 compose 에 추가 — gateway 로만 연결 (인바운드 포트 개방 없음)
+3. `/api/*` 프록시: Pages Function(또는 apex Worker) 코드
+4. 기존 Caddy 구성은 로컬/내부 개발용으로 강등 (삭제 금지 — 재활용)
+5. **완료 게이트 축소**: 도커 게이트는 cloudflared+gateway 기동 확인만. Pages 실배포·Tunnel 인증은 PO 계정 단계(체크리스트 산출). 부관 TLS 보고서의 Origin CA 절차는 하이브리드에선 불필요해짐을 명기.
