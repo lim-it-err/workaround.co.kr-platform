@@ -1,195 +1,126 @@
 param(
   [string]$EnvFile = '.env.public-site',
+  [ValidateSet('tunnel', 'local', 'caddy')]
+  [string]$Profile = 'tunnel',
   [switch]$AsJson,
   [switch]$CheckDns
 )
 
 $ErrorActionPreference = 'Stop'
 
-function Get-DockerCommand {
-  $docker = Get-Command docker -ErrorAction SilentlyContinue
-  if ($docker) {
-    return $docker.Source
-  }
-
-  return $null
-}
-
 function Read-KeyValueFile {
-  param(
-    [Parameter(Mandatory = $true)]
-    [string]$Path
-  )
+  param([Parameter(Mandatory = $true)][string]$Path)
 
   $values = @{}
   foreach ($line in Get-Content -Encoding UTF8 $Path) {
     $trimmed = $line.Trim()
-    if (-not $trimmed -or $trimmed.StartsWith('#')) {
-      continue
-    }
-
+    if (-not $trimmed -or $trimmed.StartsWith('#')) { continue }
     $parts = $trimmed -split '=', 2
-    if ($parts.Count -eq 2) {
-      $values[$parts[0]] = $parts[1]
-    }
+    if ($parts.Count -eq 2) { $values[$parts[0]] = $parts[1] }
   }
-
   return $values
 }
 
-function Test-PortListener {
-  param(
-    [Parameter(Mandatory = $true)]
-    [int]$Port
-  )
+function Resolve-ConfiguredPath {
+  param([string]$Value, [string]$BaseDirectory)
+
+  if ([string]::IsNullOrWhiteSpace($Value)) { return $null }
+  if ([System.IO.Path]::IsPathRooted($Value)) { return $Value }
+  return Join-Path $BaseDirectory $Value
+}
+
+function Get-PortStatus {
+  param([int]$Port)
 
   try {
     $listeners = @(Get-NetTCPConnection -State Listen -LocalPort $Port -ErrorAction Stop)
-    return [pscustomobject]@{
-      port = $Port
-      status = if ($listeners.Count -gt 0) { 'in_use' } else { 'available' }
-      listeners = @($listeners | Select-Object -First 5 -Property LocalAddress,LocalPort,OwningProcess)
-      note = $null
-    }
+    return [pscustomobject]@{ port = $Port; status = if ($listeners.Count) { 'in_use' } else { 'available' } }
   }
   catch {
-    return [pscustomobject]@{
-      port = $Port
-      status = 'unknown'
-      listeners = @()
-      note = $_.Exception.Message
-    }
+    return [pscustomobject]@{ port = $Port; status = 'unknown'; note = $_.Exception.Message }
   }
 }
 
 function Get-DnsStatus {
-  param(
-    [Parameter(Mandatory = $true)]
-    [string]$Domain
-  )
+  param([string]$Domain)
 
   try {
     $records = @(Resolve-DnsName -Name $Domain -Type A -ErrorAction Stop)
-    return [pscustomobject]@{
-      domain = $Domain
-      status = 'resolved'
-      records = @($records | Select-Object -Property Name,Type,IPAddress)
-      note = $null
-    }
+    return [pscustomobject]@{ domain = $Domain; status = 'resolved'; records = $records.IPAddress }
   }
   catch {
-    return [pscustomobject]@{
-      domain = $Domain
-      status = 'unresolved'
-      records = @()
-      note = $_.Exception.Message
-    }
+    return [pscustomobject]@{ domain = $Domain; status = 'unresolved'; note = $_.Exception.Message }
   }
 }
 
 $scriptDir = $PSScriptRoot
-$resolvedEnvFile = if ([System.IO.Path]::IsPathRooted($EnvFile)) {
-  $EnvFile
-} else {
-  Join-Path $scriptDir $EnvFile
-}
-
-$envExists = Test-Path $resolvedEnvFile
+$resolvedEnvFile = if ([System.IO.Path]::IsPathRooted($EnvFile)) { $EnvFile } else { Join-Path $scriptDir $EnvFile }
+$envExists = Test-Path $resolvedEnvFile -PathType Leaf
 $envValues = if ($envExists) { Read-KeyValueFile -Path $resolvedEnvFile } else { @{} }
-$dockerPath = Get-DockerCommand
 
-$dockerCli = [pscustomobject]@{
-  found = [bool]$dockerPath
-  path = $dockerPath
+$docker = Get-Command docker -ErrorAction SilentlyContinue
+$dockerStatus = [ordered]@{
+  found = [bool]$docker
   version = $null
   daemonReachable = $false
   composeAvailable = $false
-  note = $null
+}
+if ($docker) {
+  $dockerStatus.version = (& $docker.Source --version 2>&1 | Select-Object -First 1)
+  & $docker.Source info 2>$null | Out-Null
+  $dockerStatus.daemonReachable = ($LASTEXITCODE -eq 0)
+  & $docker.Source compose version 2>$null | Out-Null
+  $dockerStatus.composeAvailable = ($LASTEXITCODE -eq 0)
 }
 
-if ($dockerPath) {
-  try {
-    $dockerCli.version = (& $dockerPath --version 2>&1 | Select-Object -First 1)
-  }
-  catch {
-    $dockerCli.note = $_.Exception.Message
-  }
+$requiredKeys = @('PUBLIC_SITE_DOMAIN', 'PUBLIC_SITE_ALIAS_DOMAIN', 'PLATFORM_API_KEY')
+if ($Profile -eq 'tunnel') { $requiredKeys += 'CLOUDFLARE_TUNNEL_TOKEN' }
 
-  try {
-    [void](& $dockerPath info 2>$null)
-    $dockerCli.daemonReachable = ($LASTEXITCODE -eq 0)
-  }
-  catch {
-    $dockerCli.note = $_.Exception.Message
-  }
+$missingKeys = @($requiredKeys | Where-Object {
+  -not $envValues.ContainsKey($_) -or [string]::IsNullOrWhiteSpace($envValues[$_])
+})
+$platformApiKeyIsPlaceholder = $envValues['PLATFORM_API_KEY'] -eq 'replace-before-public-deploy'
 
-  try {
-    [void](& $dockerPath compose version 2>$null)
-    $dockerCli.composeAvailable = ($LASTEXITCODE -eq 0)
-  }
-  catch {
-    $dockerCli.note = $_.Exception.Message
-  }
-}
-
-$requiredKeys = @(
-  'PUBLIC_SITE_DOMAIN',
-  'PUBLIC_SITE_ALIAS_DOMAIN',
-  'PUBLIC_SITE_EMAIL'
+$originKeys = @(
+  'CLOUDFLARE_ORIGIN_CERT_CO_KR_PATH',
+  'CLOUDFLARE_ORIGIN_KEY_CO_KR_PATH',
+  'CLOUDFLARE_ORIGIN_CERT_KR_PATH',
+  'CLOUDFLARE_ORIGIN_KEY_KR_PATH'
 )
-
-$missingKeys = @()
-foreach ($key in $requiredKeys) {
-  if (-not $envValues.ContainsKey($key) -or [string]::IsNullOrWhiteSpace($envValues[$key])) {
-    $missingKeys += $key
+$originFiles = @()
+if ($Profile -eq 'caddy') {
+  foreach ($key in $originKeys) {
+    $path = Resolve-ConfiguredPath -Value $envValues[$key] -BaseDirectory $scriptDir
+    $originFiles += [pscustomobject]@{ key = $key; path = $path; exists = if ($path) { Test-Path $path -PathType Leaf } else { $false } }
   }
 }
 
-$canonicalDomain = $envValues['PUBLIC_SITE_DOMAIN']
-$aliasDomain = $envValues['PUBLIC_SITE_ALIAS_DOMAIN']
-$email = $envValues['PUBLIC_SITE_EMAIL']
-
-$configChecks = [pscustomobject]@{
-  envFileExists = $envExists
-  envFile = $resolvedEnvFile
-  missingKeys = $missingKeys
-  canonicalDomain = $canonicalDomain
-  aliasDomain = $aliasDomain
-  publicEmail = $email
-  canonicalDiffersFromAlias = if ($canonicalDomain -and $aliasDomain) { $canonicalDomain -ne $aliasDomain } else { $false }
-}
-
-$ports = @(
-  (Test-PortListener -Port 80),
-  (Test-PortListener -Port 443)
-)
-
+$ports = if ($Profile -eq 'caddy') { @((Get-PortStatus 80), (Get-PortStatus 443)) } else { @() }
 $dns = @()
-if ($CheckDns -and $canonicalDomain) {
-  $dns += Get-DnsStatus -Domain $canonicalDomain
-}
-if ($CheckDns -and $aliasDomain) {
-  $dns += Get-DnsStatus -Domain $aliasDomain
+if ($CheckDns) {
+  foreach ($domain in @($envValues['PUBLIC_SITE_DOMAIN'], $envValues['PUBLIC_SITE_ALIAS_DOMAIN'])) {
+    if ($domain) { $dns += Get-DnsStatus -Domain $domain }
+  }
 }
 
 $result = [ordered]@{
-  composeDirectory = $scriptDir
-  env = $configChecks
-  docker = $dockerCli
+  profile = $Profile
+  envFile = $resolvedEnvFile
+  envFileExists = $envExists
+  missingKeys = $missingKeys
+  platformApiKeyIsPlaceholder = $platformApiKeyIsPlaceholder
+  originFiles = $originFiles
+  docker = $dockerStatus
   ports = $ports
   dns = $dns
   ready = (
-    $configChecks.envFileExists -and
+    $envExists -and
     $missingKeys.Count -eq 0 -and
-    $dockerCli.found -and
-    $dockerCli.daemonReachable -and
-    $dockerCli.composeAvailable
-  )
-  nextSteps = @(
-    'Review PUBLIC_SITE_* values in the env file.',
-    'Confirm ports 80 and 443 are reachable on the target host.',
-    'Run docker compose --env-file .env.public-site -f docker-compose.public-site.yml up -d --build from infra/public-site.',
-    'Collect redirect and TLS evidence with verify-public-site.ps1 after deployment.'
+    -not $platformApiKeyIsPlaceholder -and
+    ($Profile -ne 'caddy' -or @($originFiles | Where-Object { -not $_.exists }).Count -eq 0) -and
+    $dockerStatus.found -and
+    $dockerStatus.daemonReachable -and
+    $dockerStatus.composeAvailable
   )
 }
 
@@ -198,41 +129,14 @@ if ($AsJson) {
   exit 0
 }
 
-Write-Host "Compose directory: $scriptDir"
+Write-Host "Profile: $Profile"
 Write-Host "Env file: $resolvedEnvFile"
+Write-Host "Missing keys: $(if ($missingKeys.Count) { $missingKeys -join ', ' } else { 'none' })"
+Write-Host "Docker daemon reachable: $($dockerStatus.daemonReachable)"
 Write-Host "Ready: $($result.ready)"
-Write-Host ""
-Write-Host "[Env]"
-Write-Host "- exists: $($configChecks.envFileExists)"
-Write-Host "- missing keys: $(if ($missingKeys.Count -gt 0) { $missingKeys -join ', ' } else { 'none' })"
-Write-Host "- canonical: $canonicalDomain"
-Write-Host "- alias: $aliasDomain"
-Write-Host "- email: $email"
-Write-Host ""
-Write-Host "[Docker]"
-Write-Host "- found: $($dockerCli.found)"
-Write-Host "- path: $($dockerCli.path)"
-Write-Host "- version: $($dockerCli.version)"
-Write-Host "- daemon reachable: $($dockerCli.daemonReachable)"
-Write-Host "- compose available: $($dockerCli.composeAvailable)"
-if ($dockerCli.note) {
-  Write-Host "- note: $($dockerCli.note)"
+if ($Profile -eq 'tunnel') {
+  Write-Host 'Tunnel opens no inbound host ports. Configure the Cloudflare public hostname to http://gateway:8080.'
 }
-Write-Host ""
-Write-Host "[Ports]"
-foreach ($port in $ports) {
-  Write-Host "- $($port.port): $($port.status)"
-  if ($port.note) {
-    Write-Host "  - note: $($port.note)"
-  }
-}
-if ($dns.Count -gt 0) {
-  Write-Host ""
-  Write-Host "[DNS]"
-  foreach ($entry in $dns) {
-    Write-Host "- $($entry.domain): $($entry.status)"
-    if ($entry.note) {
-      Write-Host "  - note: $($entry.note)"
-    }
-  }
+elseif ($Profile -eq 'caddy') {
+  Write-Host 'The caddy profile is retained for legacy/internal operation and is not the primary public path.'
 }

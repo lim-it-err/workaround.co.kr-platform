@@ -1,5 +1,6 @@
 services:
   public-site:
+    profiles: ["local", "caddy"]
     build:
       context: ../../services/public-site
     environment:
@@ -21,20 +22,65 @@ services:
       timeout: 5s
       retries: 5
 
-  caddy:
+  gateway:
+    profiles: ["local", "tunnel", "caddy"]
+    build:
+      context: ../../gateway
+    environment:
+      PLATFORM_API_KEY: ${PLATFORM_API_KEY}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://rtx5070-host:11434}
+    expose:
+      - "8080"
+
+  cloudflared:
+    profiles: ["tunnel"]
+    image: ${CLOUDFLARED_IMAGE:-cloudflare/cloudflared:latest}
+    depends_on:
+      gateway:
+        condition: service_started
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run
+    restart: unless-stopped
+
+  caddy-local:
+    profiles: ["local"]
     image: caddy:2.9-alpine
     depends_on:
       public-site:
         condition: service_healthy
+      gateway:
+        condition: service_started
     environment:
       PUBLIC_SITE_DOMAIN: ${PUBLIC_SITE_DOMAIN}
       PUBLIC_SITE_ALIAS_DOMAIN: ${PUBLIC_SITE_ALIAS_DOMAIN}
-      PUBLIC_SITE_EMAIL: ${PUBLIC_SITE_EMAIL}
+    ports:
+      - "127.0.0.1:${PUBLIC_SITE_LOCAL_PORT:-8088}:80"
+    volumes:
+      - ./Caddyfile.local:/etc/caddy/Caddyfile:ro
+      - ../../services/arcade/whitechapel/whitechapel:/srv/arcade/whitechapel:ro
+
+  caddy-cloudflare:
+    profiles: ["caddy"]
+    image: caddy:2.9-alpine
+    depends_on:
+      public-site:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+    environment:
+      PUBLIC_SITE_DOMAIN: ${PUBLIC_SITE_DOMAIN}
+      PUBLIC_SITE_ALIAS_DOMAIN: ${PUBLIC_SITE_ALIAS_DOMAIN}
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../../services/arcade/whitechapel/whitechapel:/srv/arcade/whitechapel:ro
+      - ${CLOUDFLARE_ORIGIN_CERT_CO_KR_PATH:-./secrets/cloudflare-origin-co-kr.pem}:/run/secrets/cloudflare-origin-co-kr.pem:ro
+      - ${CLOUDFLARE_ORIGIN_KEY_CO_KR_PATH:-./secrets/cloudflare-origin-co-kr.key}:/run/secrets/cloudflare-origin-co-kr.key:ro
+      - ${CLOUDFLARE_ORIGIN_CERT_KR_PATH:-./secrets/cloudflare-origin-kr.pem}:/run/secrets/cloudflare-origin-kr.pem:ro
+      - ${CLOUDFLARE_ORIGIN_KEY_KR_PATH:-./secrets/cloudflare-origin-kr.key}:/run/secrets/cloudflare-origin-kr.key:ro
       - caddy_data:/data
       - caddy_config:/config
 

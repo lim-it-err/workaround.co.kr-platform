@@ -7,7 +7,7 @@
 - 제목: UI 재구현 S6 - 모바일 재배치 + Writing Studio 마감 (선택)
 - 우선순위: P3
 - 대상 버전: `chore`
-- 상태: `backlog`
+- 상태: `finished`
 - 문서 상태: `작성완료`
 - 진행 판정: `진행 가능`
 - 소유자 유형: `worker`
@@ -58,11 +58,13 @@
 
 ## 작업자 산출물
 
-- 브랜치 이름
-- 모바일 재배치 우선순위/구현 요약
-- Writing Studio 상태 흐름·강조 요약
-- 반응형/접근성 검수 결과(두 테마)
-- 검증 결과(run-frontend-build)
+- 브랜치 이름: 브랜치 생성 없음(공유 워킹 트리, PM 커밋 대기).
+- 모바일 재배치: 기존 `현재 상태 → 블로그 본선 → 놀이터 목록` 순서와 route-row 우선 노출 위에, 모바일 전용 하단 빠른 환승(`노선도`/`아카이브`/`승강장`)을 추가했다. 3열 `minmax(0, 1fr)`, 48px 터치 타깃, sticky 하단으로 구성했다.
+- Writing Studio: `StatusBadge`에 Studio 전용 `preview`를 확장하고 초안→미리보기→공개→보관 흐름을 한 줄로 보이게 했다. 화면 모드는 한글/pressed 상태로, 저장은 보조, 공개 발행은 Exit Green 최강조, 보관은 브론즈로 구분했다.
+- 반응형/접근성: 2026-08-16 375×812 전 페이지 오버플로 0 실측 기준을 유지하고, 신규 흐름은 2열 `minmax(0, 1fr)`, 하단 환승은 3열로 제한했다. 브라우저 CSSOM에서 모바일 규칙·48px 타깃·overflow 가드, `:focus-visible` 2px safety outline, reduced-motion의 노선 pulse/화면 전환 정지를 확인했다.
+- 테마 검수: 브라우저에서 다크/라이트 모두 Studio 상태 흐름과 저장/발행/보관 위계를 육안 확인했다. 다크 archive `rgb(220,187,126)`, 라이트 archive `rgb(124,90,36)`, publish는 각 테마 Exit Green이며 데스크톱 가로 오버플로 0이다.
+- 동작 검수: 미리보기 버튼을 누르면 editor가 숨고 preview가 표시되며, 상태 흐름에서 `미리보기`와 현재 저장 상태 `공개`가 함께 활성화되는 것을 확인했다.
+- 빌드: `cd frontend && npm run build` 2회 통과(Vite 27 modules, 최종 819ms). `pwsh -File tools/run-frontend-build.ps1`는 이 호스트에 `pwsh`가 없어 실행 불가했으나, 스크립트의 핵심 프런트 빌드를 직접 통과했다.
 
 ## 검토 메모
 

@@ -29,36 +29,34 @@
 - `TKT-068` `P2` `infra` `진행 가능` `[INFRA]` RTX5070 Ollama 실제 구동 + 게이트웨이 연결 검증 (하드웨어 단계는 PO 협조 항목으로 분리 기록)
 - `TKT-074` `P1` `chore` `ready` `[SIM]` S4 시뮬 페이지 재구현 — 스펙 완료: `design/sim-taxi-spec.md` (택시 지도), work/runtime 명료화는 [FE] 후속 분할 - 시뮬/운영 페이지 사인 [시안 적용]
 - `TKT-075` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S5 - App.vue 컴포넌트 분해 [시안 적용]
-- `TKT-076` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S6 - 모바일 재배치 + 스튜디오 [시안 적용] — **모바일 재배치 1차는 2026-08-16 선행 완료**(티켓 진행 기록), 잔여=Studio 마감·모바일 세부
 - `TKT-078` `P1` `v0.7.0` `진행 가능` `[INFRA]` 화이트채플 아케이드 편입 마감 — 라우팅·매니페스트 (코드 subtree 흡수는 2026-08-16 완료, D-003~005)
 - `TKT-079` `P2` `v0.7.0` `v0.7.0 진행 시 가능` advisor 디자인·프레임 통합 — 미션 화면을 모선 룩앤필로 (PO: "디자인 다른 건 백로그로", TKT-071 뒤 권장)
 - `TKT-080` `P1` `v0.7.0` `진행 가능` `[BE]` advisor 서비스 계약 마감 — /health·라우트·매니페스트·빌드 게이트
 
 ## Ready
 
-- `TKT-088` `P1` `voyage` `ready` `[FE]` V 준비 화면 — **unblock (PM 2026-08-18)**: 091 이 need_review 진입(의존성 완화 규칙), 순환은 문구 정정으로 해소, 스펙은 티켓 본문+voyage.js 로 충분(별도 문서 불요)
-- `TKT-089` `P1` `voyage` `ready` `[FE]` V 일일 운행 안내 — 오늘의 지침서 (모바일 1급)
-- `TKT-090` `P2` `voyage` `ready` `[FE]` V 기록 화면 — 도시 아카이브·스탬프
-
 - `TKT-084` `P1` `voyage` `started` `[PM]` Line V(동유럽 여행) 콘텐츠 모델·화면 스펙 — claude 작성 중, 이후 [FE] 분할 (D-010, 출발 일정 제약)
 
-- `TKT-094` `P3` `chore` `ready` `[SIM]` 엘베 탑승 흡수 애니메이션 (083 잔여)
 - `TKT-082` `P1` `chore` `ready` `[SIM]` 택시 디스패치 버그 — 진단 절차: `design/sim-taxi-spec.md` §1 (지도보다 먼저) — 유휴 차량이 큐를 집지 않음 (PO 실사용 보고, TKT-074 와 함께 claude 직접)
 
 ## Started
 
-
-
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
-- `TKT-085` `P1` `infra` `started` `[INFRA]` 도메인 공개 준비 — **D-011 방향 갱신: Pages+Tunnel 하이브리드** (티켓 '방향 갱신' 절). Caddy pull 게이트 축소 — cloudflared+gateway 확인으로 대체
+- `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
 
-- `TKT-072` `P1` `chore` `need_review(r2)` `[PM]` S2 환승 홀 노선도 — 블로커 수정(flex 체인 min-width 가드, 375px 실측), 완료 기준 문구 개정
 
 
 ## Finished
+
+- `TKT-072` S2 환승 홀 노선도 — r2 통과 (블로커 해소 확인)
+- `TKT-076` S6 모바일 재배치·스튜디오 — r1 통과
+- `TKT-088` V 준비 화면 — r1 통과
+- `TKT-089` V 일일 운행 안내 — r1 통과 (여행 당일 실화면 확인)
+- `TKT-090` V 기록·스탬프 — r1 통과
+- `TKT-094` 엘베 탑승 흡수 애니메이션 — r1 통과
 
 - `TKT-091` `[FE]` Line V 노선 등록 — r1 통과 (2026-08-18)
 - `TKT-073` `[FE]` S3 블로그 공개면·StatusBadge — r1 통과

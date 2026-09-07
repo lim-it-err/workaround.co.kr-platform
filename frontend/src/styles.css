@@ -902,6 +902,12 @@ button {
   background: var(--panel-soft);
 }
 
+.badge-preview {
+  color: var(--line-b-text);
+  border-color: color-mix(in srgb, var(--line-b) 42%, transparent);
+  background: color-mix(in srgb, var(--line-b) 10%, transparent);
+}
+
 .badge-arch {
   color: #DCBB7E;
   border-color: color-mix(in srgb, var(--status-arch) 45%, transparent);
@@ -2278,6 +2284,74 @@ button {
   gap: 16px;
 }
 
+.studio-state-flow {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.studio-state-flow > span {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-2);
+  opacity: 0.62;
+}
+
+.studio-state-flow > span:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  top: 50%;
+  right: -8px;
+  z-index: 1;
+  translate: 50% -50%;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.studio-state-flow > span.active {
+  border-color: var(--safety);
+  box-shadow: inset 3px 0 0 var(--safety);
+  opacity: 1;
+}
+
+.studio-state-flow small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.studio-view-controls .ghost-button.active {
+  border-color: var(--line-b);
+  color: var(--line-b-text);
+  background: color-mix(in srgb, var(--line-b) 10%, transparent);
+}
+
+.studio-publish-button {
+  min-width: 112px;
+  font-weight: 900;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--exit) 24%, transparent);
+}
+
+.studio-archive-button {
+  border-color: color-mix(in srgb, var(--status-arch) 58%, var(--line));
+  color: #DCBB7E;
+  background: color-mix(in srgb, var(--status-arch) 9%, transparent);
+}
+
+.app-shell[data-theme='light'] .studio-archive-button {
+  color: #7C5A24;
+}
+
+.mobile-quick-nav {
+  display: none;
+}
+
 .studio-save-status {
   margin-inline: auto;
   color: var(--text-2);
@@ -2988,9 +3062,21 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .route-map .pulse {
     animation: none;
     opacity: 0.5;
+  }
+
+  .fade-enter-active,
+  .fade-leave-active,
+  .route-row,
+  .studio-view-controls .ghost-button,
+  .mobile-quick-nav button {
+    transition: none;
   }
 }
 
@@ -3145,6 +3231,48 @@ button {
   .district-grid {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .studio-state-flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .studio-state-flow > span:nth-child(2)::after {
+    content: none;
+  }
+
+  .mobile-quick-nav {
+    position: sticky;
+    bottom: 0;
+    z-index: 25;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 10px 0 0;
+    border-top: 1px solid var(--line-strong);
+    background: var(--head-bg);
+    box-shadow: 0 -10px 24px color-mix(in srgb, var(--bg) 86%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .mobile-quick-nav button {
+    min-height: 48px;
+    border: 0;
+    border-right: 1px solid var(--line);
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .mobile-quick-nav button:last-child {
+    border-right: 0;
+  }
+
+  .mobile-quick-nav button.active {
+    color: var(--safety);
+    box-shadow: inset 0 3px 0 var(--safety);
   }
 }
 

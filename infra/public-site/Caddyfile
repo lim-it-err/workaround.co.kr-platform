@@ -1,20 +1,48 @@
-{
-	email {$PUBLIC_SITE_EMAIL}
+(public_routes) {
+	encode gzip zstd
+
+	@arcadeHealth path /arcade/whitechapel/health
+	handle @arcadeHealth {
+		respond `{"service":"whitechapel","status":"ok"}` 200
+	}
+
+	@whitechapelEntry path /arcade/whitechapel /arcade/whitechapel/
+	handle @whitechapelEntry {
+		root * /srv/arcade
+		rewrite * /whitechapel/standalone.html
+		file_server
+	}
+
+	handle_path /arcade/* {
+		root * /srv/arcade
+		file_server
+	}
+
+	handle /api/* {
+		reverse_proxy gateway:8080
+	}
+
+	handle {
+		reverse_proxy public-site:8010
+	}
 }
 
 {$PUBLIC_SITE_DOMAIN} {
-	encode gzip zstd
-	reverse_proxy public-site:8010
+	tls /run/secrets/cloudflare-origin-co-kr.pem /run/secrets/cloudflare-origin-co-kr.key
+	import public_routes
 }
 
 www.{$PUBLIC_SITE_DOMAIN} {
+	tls /run/secrets/cloudflare-origin-co-kr.pem /run/secrets/cloudflare-origin-co-kr.key
 	redir https://{$PUBLIC_SITE_DOMAIN}{uri} permanent
 }
 
 {$PUBLIC_SITE_ALIAS_DOMAIN} {
+	tls /run/secrets/cloudflare-origin-kr.pem /run/secrets/cloudflare-origin-kr.key
 	redir https://{$PUBLIC_SITE_DOMAIN}{uri} permanent
 }
 
 www.{$PUBLIC_SITE_ALIAS_DOMAIN} {
+	tls /run/secrets/cloudflare-origin-kr.pem /run/secrets/cloudflare-origin-kr.key
 	redir https://{$PUBLIC_SITE_DOMAIN}{uri} permanent
 }

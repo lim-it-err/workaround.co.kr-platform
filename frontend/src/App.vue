@@ -4,6 +4,7 @@ import StationHeader from './components/StationHeader.vue'
 import JunctionMap from './components/JunctionMap.vue'
 import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
+import VoyageView from './components/VoyageView.vue'
 import { LINES } from './data/lines.js'
 
 const SPLASH_DURATION_MS = 10000
@@ -3843,18 +3844,7 @@ function persistStudioPostId(postId) {
             </section>
           </section>
 
-          <section v-else-if="page === 'voyage'" class="feature-shell line-v">
-            <StationHeader
-              line-class="line-v"
-              station-code="V01"
-              title="여행 준비"
-              title-en="VOYAGE"
-              status="개찰구 앞"
-              status-tone="ok"
-              summary="체크리스트 · 일정 · 예산"
-              @exit="openPage('junction')"
-            />
-          </section>
+          <VoyageView v-else-if="page === 'voyage'" @exit="openPage('junction')" />
 
           <section v-else-if="page === 'elevator'" class="feature-shell">
             <StationHeader
@@ -4382,11 +4372,30 @@ function persistStudioPostId(postId) {
               </aside>
 
               <div class="studio-main">
+                <div class="studio-state-flow" aria-label="글 상태 흐름">
+                  <span :class="{ active: studioState.status === 'draft' }" :aria-current="studioState.status === 'draft' ? 'step' : undefined">
+                    <StatusBadge status="draft" />
+                    <small>작성</small>
+                  </span>
+                  <span :class="{ active: studioViewMode === 'preview' }" :aria-current="studioViewMode === 'preview' ? 'step' : undefined">
+                    <StatusBadge status="preview" />
+                    <small>확인</small>
+                  </span>
+                  <span :class="{ active: studioState.status === 'published' }" :aria-current="studioState.status === 'published' ? 'step' : undefined">
+                    <StatusBadge status="published" />
+                    <small>독자 공개</small>
+                  </span>
+                  <span :class="{ active: studioState.status === 'archived' }" :aria-current="studioState.status === 'archived' ? 'step' : undefined">
+                    <StatusBadge status="archived" />
+                    <small>보관</small>
+                  </span>
+                </div>
+
                 <div class="studio-toolbar">
-                  <div class="test-route-actions">
-                    <button type="button" class="ghost-button" @click="studioViewMode = 'split'">Split</button>
-                    <button type="button" class="ghost-button" @click="studioViewMode = 'edit'">Edit</button>
-                    <button type="button" class="ghost-button" @click="studioViewMode = 'preview'">Preview</button>
+                  <div class="test-route-actions studio-view-controls" aria-label="편집 화면 모드">
+                    <button type="button" class="ghost-button" :class="{ active: studioViewMode === 'split' }" :aria-pressed="studioViewMode === 'split'" @click="studioViewMode = 'split'">나란히</button>
+                    <button type="button" class="ghost-button" :class="{ active: studioViewMode === 'edit' }" :aria-pressed="studioViewMode === 'edit'" @click="studioViewMode = 'edit'">편집</button>
+                    <button type="button" class="ghost-button" :class="{ active: studioViewMode === 'preview' }" :aria-pressed="studioViewMode === 'preview'" @click="studioViewMode = 'preview'">미리보기</button>
                   </div>
 
                   <span class="studio-save-status" :class="{ unsaved: studioDirty }" role="status" aria-live="polite">
@@ -4394,8 +4403,8 @@ function persistStudioPostId(postId) {
                   </span>
 
                   <div class="command-actions">
-                    <button type="button" class="ghost-button" @click="saveStudioDraft">저장</button>
-                    <button type="button" class="primary-button" @click="publishStudioPost">publish</button>
+                    <button type="button" class="ghost-button studio-save-button" @click="saveStudioDraft">지금 저장</button>
+                    <button type="button" class="primary-button studio-publish-button" @click="publishStudioPost">공개 발행</button>
                     <button
                       v-if="studioState.status === 'published'"
                       type="button"
@@ -4404,7 +4413,7 @@ function persistStudioPostId(postId) {
                     >
                       발행 취소
                     </button>
-                    <button type="button" class="ghost-button" @click="archiveStudioPost">archive</button>
+                    <button type="button" class="ghost-button studio-archive-button" @click="archiveStudioPost">보관</button>
                   </div>
                 </div>
 
@@ -4945,6 +4954,24 @@ function persistStudioPostId(postId) {
               </article>
             </section>
           </section>
+
+          <nav v-if="!isTestRoute" class="mobile-quick-nav" aria-label="빠른 환승">
+            <button type="button" :class="{ active: page === 'junction' }" @click="openPage('junction')">노선도</button>
+            <button
+              type="button"
+              :class="{ active: ['bloghub', 'blogArchive', 'blogPost', 'writingStudio'].includes(page) }"
+              @click="openBlogArchive"
+            >
+              아카이브
+            </button>
+            <button
+              type="button"
+              :class="{ active: ['simhub', 'elevator', 'taxi'].includes(page) }"
+              @click="openPage('simhub')"
+            >
+              승강장
+            </button>
+          </nav>
         </div>
       </main>
     </transition>

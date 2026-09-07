@@ -21,7 +21,8 @@ ANTHROPIC_API_KEY=sk-... ADVISOR_PROFILE=claude docker compose up --build   # �
 
 - `export ANTHROPIC_API_KEY=...` 환경변수 **하나가 전부다**. 파일에 적지 않는다.
 - 키가 없으면 claude 프로파일은 시작을 거부한다(run.sh 가드). mock은 영원히 무과금.
-- 모델: 리뷰·출제 = claude-sonnet-5, 채팅 = claude-haiku-4-5 (application-claude.yml).
+- 모델: 출제·리뷰·채팅 = `claude-haiku-4-5-20251001` (application-claude.yml).
+- Claude 호출이 네트워크·HTTP·응답 파싱 오류로 실패하면 같은 요청을 mock provider로 폴백한다.
 
 ## 데이터
 

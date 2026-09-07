@@ -1,91 +1,117 @@
 # 공개 사이트 배포 번들
 
-`workaround.co.kr` 와 `workaround.kr` 공개 사이트용 Docker 배포 기준선이다.
+공개 경로의 기본안은 D-011에 따른 **Cloudflare Pages + Cloudflare Tunnel** 하이브리드다. Vue 정적 산출물은 Pages가 서빙하고, Pages Function의 `/api/*` 요청만 Tunnel을 통해 `gateway:8080`으로 전달한다. 호스트의 80/443 포트와 집 공인 IP는 공개하지 않는다.
 
 ## 구성
 
-- `docker-compose.public-site.yml`: 공개 사이트 서비스와 Caddy reverse proxy
-- `Caddyfile`: TLS, canonical domain, alias redirect 정책
-- `.env.public-site.example`: 운영자가 채울 환경 변수 예시
+- `build-pages.ps1`: `frontend`를 빌드하고 Pages 라우트 파일을 `frontend/dist`에 복사
+- `deploy-pages.ps1`: Wrangler로 Pages 산출물과 Function을 배포
+- `pages/functions/api/[[path]].js`: 고정된 `API_ORIGIN`으로만 전달하는 `/api/*` 프록시
+- `pages/_routes.json`: Function 실행 범위를 `/api/*`로 제한
+- `docker-compose.public-site.yml`: `tunnel`, `local`, `caddy` 프로필
+- `Caddyfile.local`, `Caddyfile`: 로컬/내부 개발 및 레거시 자가 호스팅용 Caddy 구성
+- `update-cloudflare-dns.ps1`: 레거시 Caddy 공개 방식을 위한 DDNS 도구
 
-## 현재 기본 정책
-
-- 대표 도메인: `workaround.co.kr`
-- 보조 도메인: `workaround.kr`
-- `www.workaround.co.kr`, `www.workaround.kr` 은 모두 대표 도메인으로 리다이렉트
-- TLS 는 Caddy 자동 인증서 발급을 기본값으로 둔다.
-
-## DNS 체크리스트
-
-1. `workaround.co.kr` A 또는 AAAA 레코드가 공개 서버 IP 를 가리키는지 확인한다.
-2. `workaround.kr` 도 같은 서버 IP 를 가리키게 맞춘다.
-3. `www.workaround.co.kr`, `www.workaround.kr` 도 같은 서버 IP 또는 CNAME 정책으로 맞춘다.
-4. 기존 레코드와 TTL 을 캡처해 롤백 기준을 남긴다.
-5. DNS 관리 주체와 콘솔 접근 방법을 기록한다.
-
-## 서버 체크리스트
-
-1. 80, 443 포트가 공개되어 있는지 확인한다.
-2. Docker 와 Docker Compose plugin 이 설치되어 있는지 확인한다.
-3. 방화벽과 클라우드 보안 그룹에서 80, 443 을 허용한다.
-4. 서버에 이 저장소를 배포할 경로를 정한다.
-
-## 배포 전 preflight
-
-아래 스크립트로 env 파일, Docker, 80/443 포트 상태를 먼저 확인한다.
+## 요청 경로
 
 ```text
-powershell -ExecutionPolicy Bypass -File preflight.ps1 -EnvFile .env.public-site
+Browser -> Cloudflare Pages -> static frontend/dist
+                           `-> /api/* -> Pages Function
+                                          -> https://api-origin.workaround.co.kr
+                                          -> Cloudflare Tunnel
+                                          -> gateway:8080
 ```
 
-옵션:
+Tunnel compose 네트워크에서는 `cloudflared`만 `gateway:8080`에 접근한다. `gateway`, Ollama, 기타 서비스는 호스트 포트로 publish하지 않는다. API 원점 장애 시 Function은 정적 사이트를 건드리지 않고 해당 요청에만 `503` JSON을 반환한다.
 
-- `-AsJson`: 자동화용 JSON 출력
-- `-CheckDns`: 현재 머신에서 DNS resolve 까지 같이 확인
+## Pages 빌드와 배포
 
-## 배포
+로컬/CI 빌드 기준값은 다음과 같다.
+
+| 항목 | 값 |
+| --- | --- |
+| 루트 디렉터리 | 저장소 루트 |
+| 빌드 명령 | `npm --prefix frontend run build` |
+| 출력 디렉터리 | `frontend/dist` |
+| Function 소스 | `infra/public-site/pages/functions` |
+| 환경 변수 | `API_ORIGIN=https://api-origin.workaround.co.kr` |
+
+직접 업로드는 PowerShell 7에서 실행한다.
 
 ```text
 cd infra/public-site
-copy .env.public-site.example .env.public-site
-docker compose --env-file .env.public-site -f docker-compose.public-site.yml up -d --build
+./build-pages.ps1
+$env:CLOUDFLARE_PAGES_PROJECT='workaround-co-kr'
+$env:CLOUDFLARE_PAGES_BRANCH='main'
+./deploy-pages.ps1
 ```
 
-## 수동 검증
+`deploy-pages.ps1 -DryRun`은 빌드 산출물과 배포 인자를 확인하되 Cloudflare에 쓰지 않는다. 실제 배포에는 `npx`, Wrangler 로그인 또는 `CLOUDFLARE_API_TOKEN`, 기존 Pages 프로젝트 권한이 필요하다.
+
+Function 디렉터리가 저장소 루트의 `/functions`가 아니므로 `deploy-pages.ps1`은 `pages/`에서 Wrangler를 실행한다. Pages 프로젝트는 이 배포 방식에 맞는 Direct Upload 프로젝트로 만들고, 나중에 Git integration으로 바꾸려면 새 프로젝트가 필요하다는 Cloudflare 제약을 PO가 먼저 확인한다. 사용자 입력이나 요청 헤더로 `API_ORIGIN`을 바꿀 수 없게 유지한다.
+
+## Tunnel 기동
+
+1. Cloudflare Zero Trust에서 named Tunnel을 만든다.
+2. Public Hostname `api-origin.workaround.co.kr`의 service를 `http://gateway:8080`으로 지정한다.
+3. `.env.public-site.example`을 `.env.public-site`로 복사하고 `PLATFORM_API_KEY`, `CLOUDFLARE_TUNNEL_TOKEN`을 운영 secret으로 주입한다.
+4. 다음 명령으로 기동한다.
 
 ```text
-curl http://127.0.0.1:8010/health
-curl -I http://workaround.kr
-curl -I https://workaround.co.kr
+docker compose --env-file .env.public-site -f docker-compose.public-site.yml --profile tunnel up -d --build
+docker compose --env-file .env.public-site -f docker-compose.public-site.yml --profile tunnel ps
+docker compose --env-file .env.public-site -f docker-compose.public-site.yml --profile tunnel logs --tail 100 cloudflared
 ```
 
-PowerShell 증거 수집:
+`tunnel` 프로필은 인바운드 `ports`를 선언하지 않는다. 토큰, Pages API 원점 변수, `PLATFORM_API_KEY`는 Git에 넣지 않는다.
+
+계정 인증 없이 로컬 이미지/컨테이너 게이트만 확인할 때는 gateway 기동과 cloudflared 바이너리 실행을 분리한다.
 
 ```text
-powershell -ExecutionPolicy Bypass -File verify-public-site.ps1
+docker compose --env-file .env.public-site -f docker-compose.public-site.yml --profile tunnel up -d --build gateway
+docker compose --env-file .env.public-site -f docker-compose.public-site.yml --profile tunnel run --rm --entrypoint cloudflared cloudflared --version
 ```
 
-확인 포인트:
+기본 compose는 gateway 포트를 공개하지 않으므로 `docker compose ps`와 gateway 로그로 기동 상태를 확인한다.
 
-- `/health` 가 200 이다.
-- `http://workaround.kr` 이 `https://workaround.co.kr` 로 301/308 리다이렉트된다.
-- `https://workaround.co.kr` 가 소개 페이지 HTML 을 반환한다.
+## PO 계정 단계
+
+1. `workaround.co.kr`, `workaround.kr` zone을 Cloudflare에 연결한다.
+2. Pages Direct Upload 프로젝트를 만들고 대표 도메인을 `workaround.co.kr`로 연결한다.
+3. `workaround.kr`과 `www.*`를 대표 도메인으로 리다이렉트한다.
+4. Pages production 환경 변수 `API_ORIGIN`을 위의 고정 HTTPS 원점으로 설정한다.
+5. named Tunnel과 `api-origin.workaround.co.kr -> http://gateway:8080` public hostname을 만든다.
+6. Tunnel 토큰과 플랫폼 API 키를 배포 호스트의 secret store에 넣는다.
+7. `/`, `/api/health`, 대표 도메인 리다이렉트, API 장애 시 정적 사이트 생존을 확인한다.
+
+Pages 실배포와 Tunnel 계정 인증은 PO 계정 단계다. 하이브리드 경로에는 Origin CA 인증서, 공유기 80/443 포워딩, 공인 IPv4 DDNS가 필요하지 않다.
+
+## 사전 점검
+
+```text
+./preflight.ps1 -Profile tunnel -EnvFile .env.public-site
+./preflight.ps1 -Profile tunnel -EnvFile .env.public-site -AsJson
+```
+
+`preflight.ps1`는 secret 값을 출력하지 않고 필수 키 존재 여부, Docker/Compose, daemon 상태를 확인한다.
+
+## Caddy 로컬/레거시 경로
+
+Caddy 구성은 삭제하지 않고 로컬/내부 개발 및 롤백 자산으로 유지한다.
+
+```text
+# 실 DNS/인증서 없이 127.0.0.1:8088에서 Host 헤더 검증
+docker compose --env-file .env.public-site -f docker-compose.public-site.yml --profile local up -d --build
+
+# 레거시 Origin CA + 호스트 80/443 방식(기본 공개안 아님)
+docker compose --env-file .env.public-site -f docker-compose.public-site.yml --profile caddy up -d --build
+```
+
+`caddy` 프로필에만 Origin CA 파일, 80/443 포워딩, DDNS가 필요하다. `update-cloudflare-dns.ps1`와 `verify-public-site.ps1`도 이 레거시 경로에서만 사용한다.
 
 ## 롤백
 
-1. 기존 배포가 있으면 직전 compose 파일과 `.env.public-site` 백업을 유지한다.
-2. 문제 발생 시 아래 명령으로 현재 번들을 내린다.
-
-```text
-docker compose --env-file .env.public-site -f docker-compose.public-site.yml down
-```
-
-3. 직전 compose 또는 기존 정적 호스팅 설정으로 되돌린다.
-4. DNS 를 이미 변경했다면 이전 레코드로 복원한다.
-
-## 운영 메모
-
-- 공개 사이트는 소개 페이지용 정적 서비스다.
-- 내부 플랫폼 프리뷰(`localhost:7000`)나 gateway 라우팅 정책과 직접 섞지 않는다.
-- 실제 서버 OS, SSH 접근 방식, DNS 콘솔 정보가 확보되면 그때 실배포 체크 결과를 `docs/history/` 에 추가한다.
-- 배포 전에는 `preflight.ps1`, 배포 후에는 `verify-public-site.ps1` 결과를 함께 남기면 다음 검토자가 증거를 재사용하기 쉽다.
+- Pages 배포 문제: Cloudflare Pages에서 직전 deployment로 롤백한다.
+- API 문제: Pages는 유지하고 Tunnel 또는 `API_ORIGIN`을 직전 설정으로 되돌린다.
+- Tunnel 종료: `docker compose ... --profile tunnel down`을 실행한다.
+- Caddy 임시 대체는 보안/포트 조건을 다시 검토한 뒤 `caddy` 프로필로만 수행한다.

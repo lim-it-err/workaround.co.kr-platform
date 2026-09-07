@@ -30,5 +30,9 @@ tmp/
 # Gateway runtime data (work manager file store)
 gateway/data/
 
+# Public ingress secrets / local deployment values
+infra/public-site/.env.public-site
+infra/public-site/secrets/
+
 # Codex worker worktrees
 .worktrees/

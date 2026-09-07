@@ -1,0 +1,44 @@
+(local_routes) {
+	encode gzip zstd
+
+	@arcadeHealth path /arcade/whitechapel/health
+	handle @arcadeHealth {
+		respond `{"service":"whitechapel","status":"ok"}` 200
+	}
+
+	@whitechapelEntry path /arcade/whitechapel /arcade/whitechapel/
+	handle @whitechapelEntry {
+		root * /srv/arcade
+		rewrite * /whitechapel/standalone.html
+		file_server
+	}
+
+	handle_path /arcade/* {
+		root * /srv/arcade
+		file_server
+	}
+
+	handle /api/* {
+		reverse_proxy gateway:8080
+	}
+
+	handle {
+		reverse_proxy public-site:8010
+	}
+}
+
+http://{$PUBLIC_SITE_DOMAIN} {
+	import local_routes
+}
+
+http://www.{$PUBLIC_SITE_DOMAIN} {
+	redir http://{$PUBLIC_SITE_DOMAIN}{uri} permanent
+}
+
+http://{$PUBLIC_SITE_ALIAS_DOMAIN} {
+	redir http://{$PUBLIC_SITE_DOMAIN}{uri} permanent
+}
+
+http://www.{$PUBLIC_SITE_ALIAS_DOMAIN} {
+	redir http://{$PUBLIC_SITE_DOMAIN}{uri} permanent
+}

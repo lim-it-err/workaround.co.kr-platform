@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, ref } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 
 const props = defineProps({
   cars: { type: Array, default: () => [] },
@@ -10,7 +10,11 @@ const props = defineProps({
 
 const emit = defineEmits(['add-passenger'])
 const floorPulses = ref({})
+const boardingAbsorptions = ref([])
 const pulseTimers = new Map()
+const absorptionTimers = new Map()
+let hasOnboardSnapshot = false
+let seenOnboardPassengerIds = new Set()
 
 function clamp(value, minimum, maximum) {
   return Math.min(Math.max(value, minimum), maximum)
@@ -60,9 +64,54 @@ function addPassenger(floor) {
   emit('add-passenger', { floor, direction })
 }
 
+function passengerKey(passenger, carId, index) {
+  return String(passenger.id || `${carId}-${passenger.originFloor}-${passenger.destinationFloor}-${passenger.boardedAtTick}-${index}`)
+}
+
+function showBoardingAbsorption(passenger, carIndex, carCount, passengerId) {
+  const floor = Number(passenger.originFloor)
+  if (!Number.isFinite(floor)) return
+
+  const id = `${passengerId}-${carIndex}`
+  const targetPercent = ((carIndex + 0.5) / Math.max(carCount, 1)) * 100
+  boardingAbsorptions.value = [
+    ...boardingAbsorptions.value.filter((entry) => entry.id !== id),
+    { id, floor, targetPercent }
+  ]
+
+  window.clearTimeout(absorptionTimers.get(id))
+  absorptionTimers.set(id, window.setTimeout(() => {
+    boardingAbsorptions.value = boardingAbsorptions.value.filter((entry) => entry.id !== id)
+    absorptionTimers.delete(id)
+  }, 120))
+}
+
+watch(
+  () => props.cars,
+  (cars) => {
+    const currentPassengerIds = new Set()
+    cars.forEach((car, carIndex) => {
+      const passengers = car.passengers || []
+      passengers.forEach((passenger, passengerIndex) => {
+        const id = passengerKey(passenger, car.id, passengerIndex)
+        currentPassengerIds.add(id)
+        if (hasOnboardSnapshot && !seenOnboardPassengerIds.has(id)) {
+          showBoardingAbsorption(passenger, carIndex, cars.length, id)
+        }
+      })
+    })
+
+    seenOnboardPassengerIds = currentPassengerIds
+    hasOnboardSnapshot = true
+  },
+  { deep: true, immediate: true }
+)
+
 onBeforeUnmount(() => {
   pulseTimers.forEach((timer) => window.clearTimeout(timer))
   pulseTimers.clear()
+  absorptionTimers.forEach((timer) => window.clearTimeout(timer))
+  absorptionTimers.clear()
 })
 </script>
 
@@ -100,6 +149,18 @@ onBeforeUnmount(() => {
         </span>
         <span class="elevator-floor-line"></span>
       </button>
+
+      <div class="elevator-boarding-layer" aria-hidden="true">
+        <i
+          v-for="absorption in boardingAbsorptions"
+          :key="absorption.id"
+          class="elevator-boarding-dot"
+          :style="{
+            top: `${floorPercent(absorption.floor)}%`,
+            '--absorb-target': `${absorption.targetPercent}%`
+          }"
+        ></i>
+      </div>
 
       <div
         class="elevator-shaft-grid"
@@ -234,6 +295,25 @@ onBeforeUnmount(() => {
   border-top: 1px solid var(--line);
 }
 
+.elevator-boarding-layer {
+  position: absolute;
+  z-index: 3;
+  inset: 0 0 0 calc(var(--floor-label) + var(--queue-width));
+  overflow: visible;
+  pointer-events: none;
+}
+
+.elevator-boarding-dot {
+  position: absolute;
+  left: -10px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-e);
+  transform: translate(-50%, -50%);
+  animation: passenger-boards 80ms ease-in forwards;
+}
+
 .elevator-shaft-grid {
   position: absolute;
   z-index: 2;
@@ -298,6 +378,19 @@ onBeforeUnmount(() => {
   to { opacity: 1; transform: translateX(0) scale(1); }
 }
 
+@keyframes passenger-boards {
+  from {
+    left: -10px;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    left: var(--absorb-target);
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+}
+
 @media (max-width: 760px) {
   .elevator-cross-section {
     --floor-label: 40px;
@@ -338,6 +431,11 @@ onBeforeUnmount(() => {
 @media (prefers-reduced-motion: reduce) {
   .elevator-waiting-dots i.is-new {
     animation: none;
+  }
+
+  .elevator-boarding-dot {
+    animation: none;
+    opacity: 0;
   }
 }
 </style>
