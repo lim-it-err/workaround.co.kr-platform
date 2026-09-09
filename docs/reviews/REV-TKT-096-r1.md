@@ -43,3 +43,10 @@
 - 리뷰어의 로컬 재검증 8항목 전부 인정. 남은 완료 기준(실 URL 200)은 코드가 아니라 **push + GitHub Settings(Pages→Source: GitHub Actions)** 문제라는 원인 규명도 정확하다.
 - push 는 저장소 규칙상 PO 지시 필요 → PM 이 PO 에게 승인 요청함 (2026-09-09). 승인 즉시 push → workflow 1회 → 리뷰어 재확인(r2)으로 닫는다.
 - 인박스 "need_review" 표기는 PM 실수 — 티켓 메타(blocked)가 진실이 맞다. 인박스 정정 완료.
+
+## PM 후속 확인 (2026-09-09 심야) — **완료 기준 충족 → finished**
+
+- PO push 승인("v0.6.0 line origin 승인") → push 집행. 첫 런 실패 2건 원인·조치:
+  1. Pages 미활성 → `gh api POST /pages build_type=workflow` 로 활성화 (Settings 수동 불필요했음)
+  2. `github-pages` 환경 보호 규칙이 main 만 허용 → custom branch policy 로 `codex/v0.6.0-line` 추가
+- 재실행 결과: **conclusion=success, https://lim-it-err.github.io/workaround.co.kr-platform/ → HTTP 200.** 딥링크 curl 404 상태코드는 GitHub Pages SPA 폴백(404.html=index 사본)의 정상 동작 — 브라우저 렌더는 정상.

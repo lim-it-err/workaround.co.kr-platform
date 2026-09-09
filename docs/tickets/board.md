@@ -47,7 +47,6 @@
 
 ## Started
 
-- `TKT-096` `P0` `infra` `blocked` `[INFRA]` GitHub Pages 여행 우선 공개 — 로컬 검증 전부 그린(REV-096-r1), **PO push 승인 + Settings Pages=GitHub Actions 대기**
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -60,6 +59,8 @@
 
 
 ## Finished
+
+- `TKT-096` `[INFRA]` GitHub Pages 여행 우선 공개 — **라이브** https://lim-it-err.github.io/workaround.co.kr-platform/ (2026-09-09)
 
 - `TKT-095` `[FE]` Line V 공유 대화 증분 반영 — r1 통과 (2026-09-09, 리뷰어 초안 오검은 PM 재검증으로 정정)
 - `TKT-084` `[PM]` Line V 스펙 — 종결 (구현 088~091·095 전부 finished, voyage.js=단일 소스)
