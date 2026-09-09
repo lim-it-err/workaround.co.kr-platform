@@ -63,6 +63,16 @@ Spring은 무거운 비즈니스 로직을 쌓는 곳이 아니라, 게이트웨
 버전 진행 상한은 [docs/version-policy.md](docs/version-policy.md) 를 따른다.
 1차 공개 웹사이트 목표는 [docs/roadmap.md](docs/roadmap.md) 에 정리한다.
 
+## GitHub Pages 여행 우선 공개
+
+- 공개 주소: <https://lim-it-err.github.io/workaround.co.kr-platform/>
+- `main`에 반영되면 `.github/workflows/deploy-github-pages.yml`이 `frontend`를 project base로 빌드해 자동 배포한다.
+- 수동 배포는 GitHub의 **Actions → Deploy GitHub Pages → Run workflow**에서 `main`을 선택한다.
+- Line V는 첫 화면의 `Line V / Voyage`에서 준비·일일 안내·도시 기록으로 들어간다.
+- Blog 글쓰기는 `Blog District → Writing Studio`에서 시작한다.
+- 여행 메모와 블로그 초안은 현재 같은 브라우저의 `localStorage`에만 남는다. 다른 기기와 동기화되지 않고 브라우저 데이터 삭제 시 복구되지 않는다.
+- Pages 배포 SHA와 빌드 시각은 배포 산출물의 `deployment.json`과 Actions 실행 요약에서 확인한다.
+
 ## 테스트 / 커버리지
 
 - Node/npm 기준선 점검: `powershell -ExecutionPolicy Bypass -File .\tools\check-node-toolchain.ps1`

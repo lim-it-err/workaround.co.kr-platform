@@ -2,8 +2,12 @@
 
 공개 경로의 기본안은 D-011에 따른 **Cloudflare Pages + Cloudflare Tunnel** 하이브리드다. Vue 정적 산출물은 Pages가 서빙하고, Pages Function의 `/api/*` 요청만 Tunnel을 통해 `gateway:8080`으로 전달한다. 호스트의 80/443 포트와 집 공인 IP는 공개하지 않는다.
 
+여행 기간의 우선 공개 경로는 GitHub Pages다. Cloudflare 계정 구성을 기다리지 않고 <https://lim-it-err.github.io/workaround.co.kr-platform/>에 정적 프런트를 배포하며, Cloudflare 구성은 후속 대표 도메인 작업으로 유지한다.
+
 ## 구성
 
+- `.github/workflows/deploy-github-pages.yml`: `main` push·수동 실행용 GitHub Pages 빌드/배포
+- `prepare-github-pages.mjs`: project base 정적 자산 검증, SPA `404.html`, `.nojekyll`, 배포 메타데이터 생성
 - `build-pages.ps1`: `frontend`를 빌드하고 Pages 라우트 파일을 `frontend/dist`에 복사
 - `deploy-pages.ps1`: Wrangler로 Pages 산출물과 Function을 배포
 - `pages/functions/api/[[path]].js`: 고정된 `API_ORIGIN`으로만 전달하는 `/api/*` 프록시
@@ -11,6 +15,32 @@
 - `docker-compose.public-site.yml`: `tunnel`, `local`, `caddy` 프로필
 - `Caddyfile.local`, `Caddyfile`: 로컬/내부 개발 및 레거시 자가 호스팅용 Caddy 구성
 - `update-cloudflare-dns.ps1`: 레거시 Caddy 공개 방식을 위한 DDNS 도구
+
+## GitHub Pages 여행 우선 경로
+
+워크플로는 기본 Cloudflare 빌드 계약(`/`)을 바꾸지 않고 GitHub Pages 빌드에만 `/workaround.co.kr-platform/` base를 주입한다.
+
+```text
+npm --prefix frontend ci
+npm --prefix frontend run build -- --base=/workaround.co.kr-platform/
+node infra/public-site/prepare-github-pages.mjs --dist frontend/dist --base /workaround.co.kr-platform/ --sha local
+```
+
+준비 스크립트는 `index.html`의 JS/CSS/assets/manifest/icon 로컬 참조가 project base 아래에 있고 실제 파일이 존재하는지 검사한다. 이어서 아래 파일을 산출한다.
+
+- `404.html`: GitHub Pages의 SPA 새로고침 fallback
+- `.nojekyll`: 산출물을 Jekyll 변환 없이 그대로 제공
+- `deployment.json`: 배포 commit SHA, UTC 빌드 시각, base 경로
+
+자동 배포는 `main` push에서 실행된다. 수동 재배포는 GitHub **Actions → Deploy GitHub Pages → Run workflow**에서 `main`을 선택하거나 GitHub CLI로 실행한다.
+
+```text
+gh workflow run deploy-github-pages.yml --ref main
+```
+
+최초 1회 repository **Settings → Pages → Build and deployment → Source**를 `GitHub Actions`로 선택해야 한다. 워크플로가 끝나면 `github-pages` environment URL, 실행 요약의 commit SHA, 공개 산출물의 `deployment.json`을 함께 확인한다.
+
+Line V는 공개 첫 화면에서 `Line V / Voyage`를 선택하고, Blog 글쓰기는 `Blog District → Writing Studio`로 들어간다. 현재 기록은 같은 브라우저의 localStorage에만 저장된다. project base 내부 이동과 직접 진입의 프런트 라우팅 정합은 TKT-DRAFT-0338의 완료 후 통합 검증한다.
 
 ## 요청 경로
 

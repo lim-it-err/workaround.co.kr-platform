@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import StationHeader from './StationHeader.vue'
+import VoyagePlanningSections from './voyage/VoyagePlanningSections.vue'
 import { VOYAGE } from '../data/voyage.js'
 
 defineEmits(['exit', 'open-daily', 'open-archive'])
@@ -147,6 +148,8 @@ function setChecklistItem(id, checked) {
       </div>
       <p class="voyage-rationale">{{ VOYAGE.flights.rationale }}</p>
     </section>
+
+    <VoyagePlanningSections />
 
     <section class="section-block voyage-checklist" aria-labelledby="voyage-checklist-title">
       <div class="section-head voyage-section-head">

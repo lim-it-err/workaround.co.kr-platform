@@ -5,6 +5,7 @@ import kr.co.workaround.advisor.adapter.out.llm.LlmProperties;
 import kr.co.workaround.advisor.adapter.out.llm.RoutingLlmClient;
 import kr.co.workaround.advisor.application.exception.LlmException;
 import kr.co.workaround.advisor.application.port.LlmRole;
+import kr.co.workaround.advisor.domain.mission.content.MissionContent;
 import kr.co.workaround.advisor.domain.review.content.ReviewContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,14 +51,17 @@ class ClaudeLlmProviderTest {
     }
 
     @Test
-    void routesReviewAndChatModelsIntoForcedToolUseRequestsAndParsesTypedResponses() {
-        expectRequest("contract-sonnet", "review prompt", reviewResponse());
+    void routesGenerateReviewAndChatToHaikuWithForcedToolUseAndParsesTypedResponses() {
+        expectRequest("contract-haiku", "generate prompt", missionResponse());
+        expectRequest("contract-haiku", "review prompt", reviewResponse());
         expectRequest("contract-haiku", "chat prompt", chatResponse());
 
         RoutingLlmClient client = new RoutingLlmClient(List.of(provider), properties);
+        MissionContent mission = client.complete(LlmRole.GENERATE, "generate prompt", MissionContent.class);
         ReviewContent review = client.complete(LlmRole.REVIEW, "review prompt", ReviewContent.class);
         ChatReply chat = client.complete(LlmRole.CHAT, "chat prompt", ChatReply.class);
 
+        assertThat(mission.scenario()).isEqualTo("계약 검증 미션");
         assertThat(review.summary()).isEqualTo("계약 검증 리뷰");
         assertThat(review.items()).singleElement().satisfies(item -> {
             assertThat(item.rubricName()).isEqualTo("책임 분리");
@@ -77,7 +81,7 @@ class ClaudeLlmProviderTest {
                         .contentType(MediaType.TEXT_PLAIN)
                         .body(privateBody));
 
-        assertThatThrownBy(() -> provider.complete("contract-sonnet", "prompt", ReviewContent.class))
+        assertThatThrownBy(() -> provider.complete("contract-haiku", "prompt", ReviewContent.class))
                 .isInstanceOf(LlmException.class)
                 .hasMessage("Claude call failed with HTTP " + status)
                 .hasMessageNotContaining(privateBody)
@@ -127,14 +131,31 @@ class ClaudeLlmProviderTest {
         properties.getClaude().setVersion("2023-06-01");
         properties.getClaude().setMaxTokens(2048);
 
+        LlmProperties.RoleRoute generate = new LlmProperties.RoleRoute();
+        generate.setProvider("claude");
+        generate.setModel("contract-haiku");
         LlmProperties.RoleRoute review = new LlmProperties.RoleRoute();
         review.setProvider("claude");
-        review.setModel("contract-sonnet");
+        review.setModel("contract-haiku");
         LlmProperties.RoleRoute chat = new LlmProperties.RoleRoute();
         chat.setProvider("claude");
         chat.setModel("contract-haiku");
-        properties.setRoles(Map.of("review", review, "chat", chat));
+        properties.setRoles(Map.of("generate", generate, "review", review, "chat", chat));
         return properties;
+    }
+
+    private static String missionResponse() {
+        return """
+                {
+                  "content": [{
+                    "type": "tool_use",
+                    "name": "emit_result",
+                    "input": {
+                      "scenario": "계약 검증 미션"
+                    }
+                  }]
+                }
+                """;
     }
 
     private static String reviewResponse() {

@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Developer Advisor 백엔드 시작 스크립트
 # 용법:  ./run.sh test           — 전체 테스트
-#        ./run.sh start [프로필]  — 서버 기동 (:8080). 프로필 생략 시 mock (API 키 불필요)
+#        ./run.sh start [프로필]  — 서버 기동 (:8000). 프로필 생략 시 mock (API 키 불필요)
 #                                   예) ./run.sh start claude  — 실제 Claude 호출 (ANTHROPIC_API_KEY 필요)
 #        ./run.sh demo           — 떠 있는 서버에 트랙→미션→제출→리뷰 사이클 curl
 set -e
@@ -18,7 +18,7 @@ case "${1:-start}" in
     echo "✅ 테스트 통과"
     ;;
   start)
-    profile="${2:-mock}"
+    profile="${2:-${ADVISOR_PROFILE:-mock}}"
     if [[ "$profile" == "claude" && -z "$ANTHROPIC_API_KEY" ]]; then
       echo "❌ ANTHROPIC_API_KEY가 설정되어 있지 않습니다."
       echo "   export ANTHROPIC_API_KEY=... 후 다시 실행하세요."
@@ -35,7 +35,7 @@ case "${1:-start}" in
     echo "$track" | python3 -m json.tool
     tid=$(echo "$track" | python3 -c 'import sys,json;print(json.load(sys.stdin)["id"])')
 
-    echo "② 미션 생성 (LLM: mock)"
+    echo "② 미션 생성 (LLM 프로필: ${ADVISOR_PROFILE:-서버 설정})"
     mission=$(curl -sf -X POST "$base/tracks/$tid/missions" -H 'Content-Type: application/json' -d '{}')
     mid=$(echo "$mission" | python3 -c 'import sys,json;print(json.load(sys.stdin)["id"])')
     echo "$mission" | python3 -c 'import sys,json;m=json.load(sys.stdin);print(" ", m["id"], "|", m["title"])'

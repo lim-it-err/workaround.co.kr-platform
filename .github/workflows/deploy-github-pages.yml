@@ -1,0 +1,83 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - codex/v0.6.0-line   # 현 트렁크 (D-002) — main 승격 전까지 실제 배포 트리거
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+env:
+  GITHUB_PAGES_BASE: /workaround.co.kr-platform/
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install frontend dependencies
+        run: npm --prefix frontend ci
+
+      - name: Build frontend for the project Pages base
+        run: npm --prefix frontend run build -- --base="$GITHUB_PAGES_BASE"
+
+      - name: Prepare and verify GitHub Pages artifact
+        env:
+          BUILD_SHA: ${{ github.sha }}
+        run: >-
+          node infra/public-site/prepare-github-pages.mjs
+          --dist frontend/dist
+          --base "$GITHUB_PAGES_BASE"
+          --sha "$BUILD_SHA"
+
+      - name: Summarize deployment candidate
+        shell: bash
+        run: |
+          {
+            echo "## GitHub Pages candidate"
+            echo "- URL: https://lim-it-err.github.io/workaround.co.kr-platform/"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Base: \`${GITHUB_PAGES_BASE}\`"
+            echo "- Artifact: \`frontend/dist\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: frontend/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

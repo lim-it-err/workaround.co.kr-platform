@@ -43,6 +43,8 @@ public class LlmProperties {
     public static class RoleRoute {
         private String provider;
         private String model;
+        private String fallbackProvider;
+        private String fallbackModel;
 
         public String getProvider() {
             return provider;
@@ -58,6 +60,22 @@ public class LlmProperties {
 
         public void setModel(String model) {
             this.model = model;
+        }
+
+        public String getFallbackProvider() {
+            return fallbackProvider;
+        }
+
+        public void setFallbackProvider(String fallbackProvider) {
+            this.fallbackProvider = fallbackProvider;
+        }
+
+        public String getFallbackModel() {
+            return fallbackModel;
+        }
+
+        public void setFallbackModel(String fallbackModel) {
+            this.fallbackModel = fallbackModel;
         }
     }
 

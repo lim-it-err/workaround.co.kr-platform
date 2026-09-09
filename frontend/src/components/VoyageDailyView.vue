@@ -1,6 +1,7 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import StationHeader from './StationHeader.vue'
+import VoyageDaySession from './voyage/VoyageDaySession.vue'
 import { VOYAGE } from '../data/voyage.js'
 
 defineEmits(['back', 'exit', 'open-archive'])
@@ -31,7 +32,10 @@ function formatDrive(minutes) {
 const todayIndex = VOYAGE.days.findIndex((day) => day.date === localDateKey())
 const guideStatus = todayIndex >= 0 ? '오늘 운행' : '일정 미리보기'
 const selectedIndex = ref(todayIndex >= 0 ? todayIndex : 0)
+const activeSession = ref(null)
+const savedScrollTop = ref(0)
 const selectedDay = computed(() => VOYAGE.days[selectedIndex.value])
+const selectedSession = computed(() => VOYAGE.daySessions.find((session) => session.dayIndex === selectedIndex.value))
 const hasDrive = computed(() => selectedDay.value.driveMin > 0)
 const driveRule = VOYAGE.principles.find((principle) => principle.key === 'drive')?.text || ''
 const daySegments = computed(() => [
@@ -45,10 +49,38 @@ function selectDay(index) {
     selectedIndex.value = index
   }
 }
+
+async function openSession() {
+  if (!selectedSession.value) return
+  const scroller = document.querySelector('.page-scroller')
+  savedScrollTop.value = scroller?.scrollTop || window.scrollY || 0
+  activeSession.value = selectedSession.value
+  await nextTick()
+  scroller?.scrollTo({ top: 0 })
+}
+
+async function closeSession() {
+  const restoreTop = savedScrollTop.value
+  activeSession.value = null
+  await nextTick()
+  const scroller = document.querySelector('.page-scroller')
+  if (scroller) {
+    scroller.scrollTo({ top: restoreTop })
+  } else {
+    window.scrollTo({ top: restoreTop })
+  }
+}
 </script>
 
 <template>
-  <section class="feature-shell line-v voyage-daily">
+  <VoyageDaySession
+    v-if="activeSession"
+    :session="activeSession"
+    :day-number="activeSession.dayIndex + 1"
+    @back="closeSession"
+    @exit="$emit('exit')"
+  />
+  <section v-else class="feature-shell line-v voyage-daily">
     <StationHeader
       line-class="line-v"
       station-code="V02"
@@ -107,6 +139,19 @@ function selectDay(index) {
           </button>
         </li>
       </ol>
+
+      <button
+        v-if="selectedSession"
+        type="button"
+        class="voyage-session-entry"
+        @click="openSession"
+      >
+        <span>
+          <small>FIELD SESSION</small>
+          <strong>{{ selectedIndex + 1 }}일차 상세 세션 열기</strong>
+        </span>
+        <span aria-hidden="true">→</span>
+      </button>
     </section>
 
     <section
@@ -232,6 +277,38 @@ function selectDay(index) {
 .voyage-day-strip button.today > span {
   outline: 2px solid var(--safety);
   outline-offset: 3px;
+}
+
+.voyage-session-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  padding: 13px 15px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--line));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 9%, var(--panel-2));
+  color: var(--accent-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.voyage-session-entry > span:first-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.voyage-session-entry small {
+  color: var(--muted);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.08em;
+}
+
+.voyage-session-entry strong {
+  overflow-wrap: anywhere;
 }
 
 .voyage-drive-status {

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 /**
  * Stateless review endpoint for the frontend prototype whose missions live client-side
- * (no backend mission/submission record). Routes to the REVIEW role — Sonnet on the claude
+ * (no backend mission/submission record). Routes to the REVIEW role — Haiku on the claude
  * profile, the fixture on mock — without touching the DB. Mirrors {@link ChatPreviewController}.
  */
 @RestController

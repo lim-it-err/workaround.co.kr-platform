@@ -2,9 +2,9 @@
 advisor:
   llm:
     roles:
-      generate: { provider: claude, model: claude-sonnet-5 }
-      review: { provider: claude, model: claude-sonnet-5 }
-      chat: { provider: claude, model: claude-haiku-4-5-20251001 } # chat = Haiku (CURRICULUM: fast/cheap)
+      generate: { provider: claude, model: claude-haiku-4-5-20251001, fallback-provider: mock, fallback-model: default }
+      review: { provider: claude, model: claude-haiku-4-5-20251001, fallback-provider: mock, fallback-model: default }
+      chat: { provider: claude, model: claude-haiku-4-5-20251001, fallback-provider: mock, fallback-model: default }
     claude:
       base-url: https://api.anthropic.com
       api-key: ${ANTHROPIC_API_KEY:}
