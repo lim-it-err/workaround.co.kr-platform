@@ -23,6 +23,19 @@ export const LINES = [
     rowStops: '공개 아카이브 → 글 상세 → Writing Studio'
   },
   {
+    code: 'A',
+    nameKo: 'Developer Advisor',
+    nameEn: 'Advisor',
+    lineClass: 'line-a',
+    page: null,
+    kind: 'branch',
+    upcoming: true,
+    targetVersion: '연결 준비 중',
+    path: 'M300 230 L180 78 H96',
+    chip: { x: 96, y: 78 },
+    labelPos: { x: 96, y: 46, sub: 64, anchor: 'middle' }
+  },
+  {
     code: 'W',
     nameKo: 'Work Manager',
     nameEn: 'Work Manager',

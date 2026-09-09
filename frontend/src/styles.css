@@ -3355,3 +3355,9 @@ button.station-prev {
 button.station-prev:hover {
   color: var(--safety);
 }
+
+/* Line A (Developer Advisor) — 연결 준비 중 표시용 (TKT-079 에서 개통) */
+:root { --line-a: #7C89F0; --line-a-text: #A5AEF5; }
+.app-shell[data-theme='light'] { --line-a: #3D4EC0; --line-a-text: #32409E; }
+.line-a { --accent: var(--line-a); --accent-text: var(--line-a-text); }
+.line-round.line-a, .station-badge.line-a { background: var(--line-a); color: #f2f4ff; }
