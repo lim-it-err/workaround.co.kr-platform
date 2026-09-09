@@ -41,24 +41,28 @@
 - `TKT-098` `P1` `advisor` `ready` `[FE]` Advisor 기내 콘텐츠 팩 — 100+ 콘텐츠·미션 6·자유 플레이 (여행 P0 뒤)
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
-- `TKT-084` `P1` `voyage` `started` `[PM]` Line V(동유럽 여행) 콘텐츠 모델·화면 스펙 — claude 작성 중, 이후 [FE] 분할 (D-010, 출발 일정 제약)
+
 
 - `TKT-082` `P1` `chore` `ready` `[SIM]` 택시 디스패치 버그 — 진단 절차: `design/sim-taxi-spec.md` §1 (지도보다 먼저) — 유휴 차량이 큐를 집지 않음 (PO 실사용 보고, TKT-074 와 함께 claude 직접)
 
 ## Started
 
+- `TKT-096` `P0` `infra` `blocked` `[INFRA]` GitHub Pages 여행 우선 공개 — 로컬 검증 전부 그린(REV-096-r1), **PO push 승인 + Settings Pages=GitHub Actions 대기**
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
 
-- `TKT-095` `P0` `voyage` `need_review` `[FE]` Line V 공유 대화 증분 반영 — 대리 기간 구현분(결정 트레일·예산안·숙소 가이드·1~2일차 상세·coverage 테스트), build+테스트 그린 — 리뷰어 검증 대기
-- `TKT-096` `P0` `infra` `need_review` `[INFRA]` GitHub Pages 여행 우선 공개 — workflow+prepare 스크립트 구현(트리거 트렁크 보정), **실배포는 push 후 확인**
+
+
 
 
 
 ## Finished
+
+- `TKT-095` `[FE]` Line V 공유 대화 증분 반영 — r1 통과 (2026-09-09, 리뷰어 초안 오검은 PM 재검증으로 정정)
+- `TKT-084` `[PM]` Line V 스펙 — 종결 (구현 088~091·095 전부 finished, voyage.js=단일 소스)
 
 - `TKT-072` S2 환승 홀 노선도 — r2 통과 (블로커 해소 확인)
 - `TKT-076` S6 모바일 재배치·스튜디오 — r1 통과
