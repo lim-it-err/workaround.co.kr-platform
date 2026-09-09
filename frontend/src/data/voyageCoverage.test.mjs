@@ -43,11 +43,11 @@ for (const coverage of VOYAGE.sourceCoverage) {
   assert.ok(coverage.surface, `${coverage.id}: 노출 화면이 필요하다`)
 }
 
-assert.deepEqual(VOYAGE.daySessions.map((session) => session.date), ['2026-09-08', '2026-09-09'], '1·2일차 상세 세션이 필요하다')
+assert.deepEqual(VOYAGE.daySessions.map((session) => session.date), ['2026-09-08', '2026-09-09', '2026-09-10', '2026-09-11'], '1~4일차 상세 세션이 필요하다')
 for (const session of VOYAGE.daySessions) {
   assert.ok(session.timeline.length >= 4, `${session.id}: 현장 시간표가 필요하다`)
   assert.ok(session.branches.length >= 4, `${session.id}: 상황별 분기가 필요하다`)
   assert.ok(Object.values(session.checklist).flat().length >= 6, `${session.id}: 현장 체크리스트가 필요하다`)
 }
 
-console.log('voyage coverage: 12/12, lodging: 18, day sessions: 2, regressions: pass')
+console.log('voyage coverage: 12/12, lodging: 18, day sessions: 4, regressions: pass')
