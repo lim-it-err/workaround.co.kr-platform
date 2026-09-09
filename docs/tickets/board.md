@@ -36,6 +36,8 @@
 ## Ready
 
 - `TKT-097` `P0` `voyage` `ready` `[FE]` 정적 모드 글쓰기 UX — localStorage 고지/복원/백업 (codex-1 단독)
+- `TKT-100` `P1` `chore` `ready` `[FE]` Writing Studio 전면 재설계 — "글 쓰는 방" (스펙 `design/writing-studio-spec.md`, 097 need_review 진입 시 착수 가능)
+- `TKT-101` `P1` `chore` `ready` `[FE]` 시뮬 묶음 단일 진입 "미스터리 트레인" — 노선도 E·T 제거→S 지선 1개 (D-012)
 - `TKT-098` `P1` `advisor` `ready` `[FE]` Advisor 기내 콘텐츠 팩 — 100+ 콘텐츠·미션 6·자유 플레이 (여행 P0 뒤)
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
