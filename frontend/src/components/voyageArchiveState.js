@@ -1,3 +1,5 @@
+import { safeWriteJson } from '../staticWritingState.js'
+
 export function buildVoyageStops(voyage, todayKey) {
   const cityChain = voyage.subtitle.split(' → ')
   const lastDayByCity = new Map()
@@ -42,5 +44,5 @@ export function readVoyageArchiveState(storage, key, validIds) {
 }
 
 export function writeVoyageArchiveState(storage, key, state) {
-  storage.setItem(key, JSON.stringify(state))
+  return safeWriteJson(storage, key, state)
 }

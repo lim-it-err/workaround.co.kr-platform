@@ -49,6 +49,8 @@
   --line-e-text: #7BD4FF;
   --line-t: #F0B33C;
   --line-t-text: #F5C86E;
+  --line-s: #9AA8B5;
+  --line-s-text: #BCC7D1;
   --line-w: #35C275;
   --line-w-text: #6BD59B;
   --line-r: #5B8DEF;
@@ -123,6 +125,8 @@ button {
   --line-e-text: #006E99;
   --line-t: #C8830E;
   --line-t-text: #96650E;
+  --line-s: #657385;
+  --line-s-text: #485869;
   --line-w: #00A84D;
   --line-w-text: #00793A;
   --line-r: #0052A4;
@@ -142,6 +146,7 @@ button {
 .line-b { --accent: var(--line-b); --accent-text: var(--line-b-text); }
 .line-e { --accent: var(--line-e); --accent-text: var(--line-e-text); }
 .line-t { --accent: var(--line-t); --accent-text: var(--line-t-text); }
+.line-s { --accent: var(--line-s); --accent-text: var(--line-s-text); }
 .line-w { --accent: var(--line-w); --accent-text: var(--line-w-text); }
 .line-r { --accent: var(--line-r); --accent-text: var(--line-r-text); }
 .line-d { --accent: var(--line-d); --accent-text: var(--line-d-text); }
@@ -2363,6 +2368,57 @@ button {
   color: var(--safety);
 }
 
+.studio-save-status.error {
+  color: var(--danger, #e35d6a);
+}
+
+.writing-storage-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.writing-storage-card h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.writing-storage-card p:not(.eyebrow) {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.writing-storage-actions {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.writing-storage-actions small {
+  max-width: 220px;
+  color: var(--muted);
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .writing-storage-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .writing-storage-actions {
+    justify-items: stretch;
+  }
+
+  .writing-storage-actions small {
+    max-width: none;
+    text-align: left;
+  }
+}
+
 .studio-grid[data-view='edit'] {
   grid-template-columns: 1fr;
 }
@@ -2800,12 +2856,25 @@ button {
   max-width: 68em;
 }
 
-/* Sim Hub 중립 헤더 — 노선색 없음 (스펙 §4 simhub) */
-.subhub-banner {
-  border-left: 4px solid var(--line-strong);
+/* 미스터리 트레인 — 중립 S 지선과 두 시뮬 카드 */
+.sim-annex-grid .line-card-top {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sim-annex-grid .line-round {
+  flex: 0 0 auto;
+}
+
+.sim-annex-grid .line-cta {
+  width: 100%;
 }
 
 @media (max-width: 760px) {
+  .sim-annex-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .station-prev,
   .station-next {
     display: none;
@@ -3078,6 +3147,10 @@ button {
   .mobile-quick-nav button {
     transition: none;
   }
+
+  .mobile-quick-nav.static {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* ── 모바일 재배치 1차 (TKT-076 선행분, 2026-08-16) ─────────────────────
@@ -3308,6 +3381,20 @@ button {
   height: 30px;
   font-size: 0.78rem;
   flex: none;
+}
+
+/* 스튜디오는 전역 상단 바 아래의 남은 공간을 편집에 사용한다. */
+.portal-stage.writing-stage {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.writing-stage .page-scroller {
+  display: flex;
+  flex-direction: column;
+}
+
+.writing-stage .writing-room {
+  flex: 1;
 }
 
 .topbar-actions {

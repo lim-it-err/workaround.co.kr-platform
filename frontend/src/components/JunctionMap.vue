@@ -6,7 +6,8 @@ import { JUNCTION, LINES } from '../data/lines.js'
 
 // lineStates: { [code]: { status, summary } } — 동적 상태는 부모(App)가 주입
 const props = defineProps({
-  lineStates: { type: Object, default: () => ({}) }
+  lineStates: { type: Object, default: () => ({}) },
+  disabledPages: { type: Array, default: () => [] }
 })
 
 const emit = defineEmits(['open'])
@@ -18,6 +19,10 @@ const rows = [trunk, ...branches]
 function stateOf(line) {
   if (line.upcoming) return { status: `예정 · ${line.targetVersion}`, summary: '' }
   return props.lineStates[line.code] ?? { status: '', summary: '' }
+}
+
+function isUnavailable(line) {
+  return Boolean(line.page && props.disabledPages.includes(line.page))
 }
 
 function go(line) {
@@ -67,7 +72,7 @@ function go(line) {
       <g
         v-for="line in branches"
         :key="`c-${line.code}`"
-        :class="{ 'g-upcoming': line.upcoming, 'g-click': !line.upcoming }"
+        :class="{ 'g-upcoming': line.upcoming || isUnavailable(line), 'g-click': !line.upcoming }"
         :role="line.upcoming ? undefined : 'link'"
         @click="go(line)"
       >
@@ -95,7 +100,7 @@ function go(line) {
         v-for="line in rows"
         :key="`r-${line.code}`"
         class="route-row"
-        :class="{ primary: line.kind === 'trunk', upcoming: line.upcoming }"
+        :class="{ primary: line.kind === 'trunk', upcoming: line.upcoming || isUnavailable(line) }"
         :style="{ '--tick': `var(--${line.lineClass})` }"
         type="button"
         @click="go(line)"

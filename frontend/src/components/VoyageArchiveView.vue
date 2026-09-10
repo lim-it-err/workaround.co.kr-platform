@@ -1,7 +1,12 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import StationHeader from './StationHeader.vue'
 import { VOYAGE } from '../data/voyage.js'
+import {
+  LOCAL_WRITING_HELP,
+  LOCAL_WRITING_NOTICE,
+  downloadWritingBackup
+} from '../staticWritingState.js'
 import {
   buildVoyageStops,
   readVoyageArchiveState,
@@ -33,18 +38,55 @@ const initialState = typeof window === 'undefined'
   : readVoyageArchiveState(window.localStorage, ARCHIVE_STORAGE_KEY, validStopIds)
 const stampedIds = ref(initialState.stamps)
 const notes = ref(initialState.notes)
+const savePhase = ref('saved')
+const backupMessage = ref('')
 const stampedSet = computed(() => new Set(stampedIds.value))
 const stampedCount = computed(() => stampedIds.value.length)
 const recordedCount = computed(() => Object.values(notes.value).filter((note) => note.trim()).length)
+const saveStatus = computed(() => ({
+  saving: '저장 중',
+  saved: '저장됨',
+  error: '저장 실패'
+})[savePhase.value])
+let saveTimer
 
 watch([stampedIds, notes], ([nextStamps, nextNotes]) => {
   if (typeof window !== 'undefined') {
-    writeVoyageArchiveState(window.localStorage, ARCHIVE_STORAGE_KEY, {
-      stamps: nextStamps,
-      notes: nextNotes
-    })
+    savePhase.value = 'saving'
+    window.clearTimeout(saveTimer)
+    saveTimer = window.setTimeout(() => persistArchive(nextStamps, nextNotes), 450)
   }
 }, { deep: true })
+
+onBeforeUnmount(() => {
+  if (savePhase.value === 'saving') {
+    persistArchive(stampedIds.value, notes.value)
+  }
+  window.clearTimeout(saveTimer)
+})
+
+function persistArchive(nextStamps = stampedIds.value, nextNotes = notes.value) {
+  window.clearTimeout(saveTimer)
+  const saved = writeVoyageArchiveState(window.localStorage, ARCHIVE_STORAGE_KEY, {
+    stamps: nextStamps,
+    notes: nextNotes
+  })
+  savePhase.value = saved ? 'saved' : 'error'
+  return saved
+}
+
+function backupWriting() {
+  if (savePhase.value === 'saving' && !persistArchive()) {
+    backupMessage.value = '저장 실패를 해결한 뒤 다시 시도해 주세요.'
+    return
+  }
+  try {
+    downloadWritingBackup(window.localStorage, ARCHIVE_STORAGE_KEY)
+    backupMessage.value = '백업 파일을 내려받았습니다.'
+  } catch (error) {
+    backupMessage.value = '백업 파일을 만들지 못했습니다.'
+  }
+}
 
 function toggleStamp(stop) {
   if (!stop.visited) {
@@ -77,6 +119,19 @@ function toggleStamp(stop) {
         <button type="button" class="btn btn-ghost" @click="$emit('open-daily')">일일 안내</button>
       </template>
     </StationHeader>
+
+    <section class="section-block local-writing-card" aria-labelledby="voyage-local-writing-title">
+      <div>
+        <p class="eyebrow">LOCAL NOTES</p>
+        <h3 id="voyage-local-writing-title">{{ LOCAL_WRITING_NOTICE }}</h3>
+        <p>{{ LOCAL_WRITING_HELP }}</p>
+      </div>
+      <div class="local-writing-actions">
+        <span class="local-save-status" :data-phase="savePhase" role="status" aria-live="polite">{{ saveStatus }}</span>
+        <button type="button" class="btn btn-ghost" @click="backupWriting">내 기록 백업</button>
+        <small v-if="backupMessage" role="status" aria-live="polite">{{ backupMessage }}</small>
+      </div>
+    </section>
 
     <section class="section-block voyage-archive-overview" aria-labelledby="voyage-archive-title">
       <div>
@@ -160,6 +215,48 @@ function toggleStamp(stop) {
   gap: 18px;
   align-items: center;
   box-shadow: inset 0 4px 0 var(--accent);
+}
+
+.local-writing-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.local-writing-card h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.local-writing-card p:not(.eyebrow) {
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.local-writing-actions {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.local-writing-actions small {
+  max-width: 220px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.local-save-status {
+  color: var(--accent-text);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.local-save-status[data-phase='error'] {
+  color: var(--danger, #e35d6a);
 }
 
 .voyage-archive-overview h3,
@@ -355,6 +452,19 @@ function toggleStamp(stop) {
 }
 
 @media (max-width: 760px) {
+  .local-writing-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .local-writing-actions {
+    justify-items: stretch;
+  }
+
+  .local-writing-actions small {
+    max-width: none;
+    text-align: left;
+  }
+
   .voyage-archive-overview {
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px;

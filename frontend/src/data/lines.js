@@ -84,28 +84,17 @@ export const LINES = [
     labelPos: { x: 622, y: 92, sub: 110, anchor: 'start' }
   },
   {
-    code: 'E',
-    nameKo: 'Elevator Station',
-    nameEn: 'Elevator',
-    lineClass: 'line-e',
-    page: 'elevator',
+    code: 'S',
+    nameKo: '미스터리 트레인',
+    nameEn: 'Mystery Train',
+    subtitle: '심야 임시 운행',
+    lineClass: 'line-s',
+    page: 'simhub',
     kind: 'branch',
     path: 'M300 230 L440 158 H600',
     chip: { x: 600, y: 158 },
     labelPos: { x: 622, y: 154, sub: 172, anchor: 'start' },
-    rowStops: 'Sim Hub 경유'
-  },
-  {
-    code: 'T',
-    nameKo: 'Taxi District Lab',
-    nameEn: 'Taxi',
-    lineClass: 'line-t',
-    page: 'taxi',
-    kind: 'branch',
-    path: 'M300 230 L440 302 H600',
-    chip: { x: 600, y: 302 },
-    labelPos: { x: 622, y: 298, sub: 316, anchor: 'start' },
-    rowStops: 'Sim Hub 경유'
+    rowStops: '격납고 2대 대기'
   },
   {
     code: 'P',

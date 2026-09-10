@@ -5,11 +5,29 @@ import JunctionMap from './components/JunctionMap.vue'
 import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import VoyageView from './components/VoyageView.vue'
+import WritingStudio from './components/WritingStudio.vue'
 import { LINES } from './data/lines.js'
+import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
+import { VOYAGE } from './data/voyage.js'
+import {
+  buildLivePath,
+  normalizeBasePath,
+  readLiveRoute,
+  stripBasePath,
+  withBasePath
+} from './staticRouting.js'
+import {
+  BLOG_POST_STORAGE_KEY,
+  downloadWritingBackup,
+  safeWriteJson
+} from './staticWritingState.js'
 
 const SPLASH_DURATION_MS = 10000
-const TEST_ROUTE_PATH = '/test'
-const VERSIONED_TEST_ROUTE_PATH = '/test/v0-5-0'
+const APP_BASE_PATH = normalizeBasePath(import.meta.env.BASE_URL)
+const TEST_ROUTE_PATH = withBasePath('/test', APP_BASE_PATH)
+const VERSIONED_TEST_ROUTE_PATH = withBasePath('/test/v0-5-0', APP_BASE_PATH)
+const isStaticMode = import.meta.env.VITE_STATIC_MODE === 'true' || APP_BASE_PATH !== '/'
+const STATIC_UNAVAILABLE_PAGES = new Set(['simhub', 'elevator', 'taxi', 'work', 'runtime', 'ops', 'signals'])
 const LIVE_PAGES = [
   'junction',
   'simhub',
@@ -29,10 +47,10 @@ const BOARD_READY_STORAGE_KEY = 'workaround-ready-lane'
 const THEME_STORAGE_KEY = 'workaround-theme'
 const TOKEN_STORAGE_KEY = 'workaround-work-manager-token'
 const TOKEN_EXPIRY_STORAGE_KEY = 'workaround-work-manager-token-expires-at'
-const BLOG_POST_STORAGE_KEY = 'workaround-blog-posts'
 const BLOG_ACTIVE_SLUG_STORAGE_KEY = 'workaround-blog-active-slug'
 const BLOG_STUDIO_VIEW_STORAGE_KEY = 'workaround-blog-studio-view'
 const BLOG_STUDIO_POST_STORAGE_KEY = 'workaround-blog-studio-post'
+const VOYAGE_ARCHIVE_STORAGE_KEY = `workaround-voyage-archive:${VOYAGE.id}`
 let fallbackEntityIdCounter = 0
 const TARGET_VERSION_OPTIONS = ['v0.4.0', 'v0.5.0', 'v0.5.1', 'v0.6.0', 'infra', 'chore']
 const WORK_ROADMAP_ITEMS = [
@@ -295,6 +313,9 @@ const studioPostId = ref(readStoredStudioPostId())
 const studioState = ref(createEmptyStudioState())
 const studioDirty = ref(false)
 const studioLastSavedAt = ref('')
+const studioSavePhase = ref('saved')
+const writingBackupMessage = ref('')
+const staticModeMessage = ref('')
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
 const splashBoardRows = ref([])
@@ -522,6 +543,8 @@ const signalCards = [
   }
 ]
 
+const simHubLine = LINES.find((line) => line.page === 'simhub')
+
 const lineCards = computed(() => {
   const elevatorSummary = elevatorState.value.summary || fallbackElevatorState.summary
   const backlogCount = countWorkTicketsByStatus('backlog')
@@ -534,14 +557,14 @@ const lineCards = computed(() => {
     {
       key: 'simhub',
       page: 'simhub',
-      lineNo: '9',
-      lineCode: 'Line S',
-      name: 'Sim Hub',
-      summary: '엘리베이터와 택시 시뮬레이터 환승 허브',
-      detail: `${elevatorCars.value.length}대 elevator · ${taxiState.value.activeRequests.length}건 taxi 요청 진행`,
-      status: 'v0.5.0 live',
-      accent: 'line-p',
-      cta: '시뮬 허브 열기',
+      lineNo: simHubLine.code,
+      lineCode: `Line ${simHubLine.code}`,
+      name: simHubLine.nameKo,
+      summary: simHubLine.rowStops,
+      detail: '엘리베이터 · 택시',
+      status: simHubLine.subtitle,
+      accent: simHubLine.lineClass,
+      cta: '격납고 열기',
       tickets: ['TKT-024', 'TKT-025']
     },
     {
@@ -613,16 +636,25 @@ const lineCards = computed(() => {
 })
 
 const junctionRoundels = LINES
-const junctionGateLabel = computed(() => (healthState.value.status === 'ok' ? '게이트 정상' : `gateway ${healthState.value.status || 'unknown'}`))
+const junctionGateLabel = computed(() => {
+  if (isStaticMode) {
+    return '정적 공개본'
+  }
+  return healthState.value.status === 'ok' ? '게이트 정상' : `gateway ${healthState.value.status || 'unknown'}`
+})
 const junctionLineStates = computed(() => {
-  const elevatorSummary = elevatorState.value.summary || fallbackElevatorState.summary
+  if (isStaticMode) {
+    return {
+      B: { status: '정적 이용 가능', summary: `${publishedBlogPosts.value.length}편 공개 · ${draftBlogPosts.value.length}편 초안` },
+      V: { status: '정적 이용 가능', summary: '체크리스트 · 일정 · 도시 기록' },
+      S: { status: '정적 공개본에서는 사용할 수 없음', summary: simHubLine.subtitle },
+      W: { status: '정적 공개본에서는 사용할 수 없음', summary: '' },
+      R: { status: '정적 공개본에서는 사용할 수 없음', summary: '' }
+    }
+  }
   return {
     B: { status: '운행 중', summary: `${publishedBlogPosts.value.length}편 공개 · ${draftBlogPosts.value.length}편 초안` },
-    E: {
-      status: elevatorState.value.mode === 'live-traffic-loop' ? '실시간 운행' : '저하 운행',
-      summary: `${elevatorSummary.waitingPassengers ?? 0}명 대기 · ${elevatorCars.value.length}대 운행 · Sim Hub 경유`
-    },
-    T: { status: '프런트 코어', summary: `${taxiState.value.activeRequests.length}건 요청 진행 · Sim Hub 경유` },
+    S: { status: simHubLine.subtitle, summary: simHubLine.rowStops },
     W: {
       status: workBoardState.value.actions?.commandBridgeReady ? '명령 브리지 준비' : '조회 전용',
       summary: `Backlog ${countWorkTicketsByStatus('backlog')} · Ready ${readyColumnTickets.value.length} · Started ${countWorkTicketsByStatus('started')}`
@@ -669,7 +701,7 @@ const activeTestCheckpoints = computed(() => {
 
 const TOPBAR_LINES = {
   junction: ['line-w', 'W'],
-  simhub: ['', 'S'],
+  simhub: [simHubLine.lineClass, simHubLine.code],
   elevator: ['line-e', 'E'],
   taxi: ['line-t', 'T'],
   bloghub: ['line-b', 'B'],
@@ -736,9 +768,9 @@ const currentRoute = computed(() => {
 
   if (page.value === 'simhub') {
     return {
-      line: 'Line S / Sim Hub',
-      title: 'simulation transfer hall',
-      description: '메인 허브에서 시뮬레이션만 분리해 Elevator 와 Taxi 로 갈라지는 중간 환승면입니다.'
+      line: `Line S / ${simHubLine.nameEn}`,
+      title: simHubLine.nameKo,
+      description: simHubLine.subtitle
     }
   }
 
@@ -874,41 +906,22 @@ const simHubCards = computed(() => [
   {
     key: 'elevator',
     page: 'elevator',
-    lineNo: '4',
-    lineCode: 'Line E',
+    lineNo: 'E',
     name: 'Elevator Station',
-    summary: `${elevatorSummary.value.waitingPassengers}명 대기 · ${elevatorCars.value.length}대 운행`,
-    detail: '23층 수직 보드, 수요 프리셋, car 수 조절, 연속 위치 확인',
+    summary: '23층 승객 운송',
     status: elevatorState.value.mode === 'live-traffic-loop' ? '실시간 루프' : '저하 운행',
     accent: 'line-e',
-    cta: '엘리베이터 열기',
-    tickets: ['TKT-049']
+    cta: '엘리베이터 열기'
   },
   {
     key: 'taxi',
     page: 'taxi',
-    lineNo: '9',
-    lineCode: 'Line T',
+    lineNo: 'T',
     name: 'Taxi District Lab',
-    summary: `${taxiState.value.activeRequests.length}건 진행 · reward ${formatSignedValue(taxiRewardSummary.value.net)}`,
-    detail: '9구역 수요, 랜덤/수동 호출, 배차와 리워드를 같은 보드에서 본다.',
-    status: 'frontend core',
-    accent: 'line-p',
-    cta: '택시 승강장 열기',
-    tickets: ['TKT-024', 'TKT-025']
-  },
-  {
-    key: 'blog',
-    page: 'bloghub',
-    lineNo: 'B',
-    lineCode: 'Line B',
-    name: 'Blog District',
-    summary: `${publishedBlogPosts.value.length}편 공개 · draft ${draftBlogPosts.value.length}편`,
-    detail: '공개 아카이브, 글 상세, Writing Studio 를 한 라인으로 잇는다.',
-    status: 'seed archive',
-    accent: 'line-b',
-    cta: '블로그 라인 열기',
-    tickets: ['TKT-050', 'TKT-051', 'TKT-052']
+    summary: '9구역 택시 배차',
+    status: '운행 중',
+    accent: 'line-t',
+    cta: '택시 승강장 열기'
   }
 ])
 
@@ -1019,20 +1032,9 @@ const standalonePublishedBlogPosts = computed(() =>
   publishedBlogPosts.value.filter((post) => !post.tags.some(isBlogSeriesTag))
 )
 const studioPreviewHtml = computed(() => renderMarkdownToHtml(studioState.value.bodyMarkdown))
-const studioWordCount = computed(() => countWords(studioState.value.bodyMarkdown))
-const studioReadingMinutes = computed(() => Math.max(1, Math.ceil(studioWordCount.value / 230)))
 const activeBlogReadingMinutes = computed(() =>
   activeBlogPost.value ? Math.max(1, Math.ceil(countWords(activeBlogPost.value.bodyMarkdown) / 230)) : 0
 )
-const studioSaveStatus = computed(() => {
-  if (studioDirty.value) {
-    return '미저장 변경 있음'
-  }
-  if (studioLastSavedAt.value) {
-    return `저장됨 ${formatTimestamp(studioLastSavedAt.value)}`
-  }
-  return '저장 대기'
-})
 
 const workWorkerSummary = computed(() => {
   const summary = workBoardState.value.workerSummary
@@ -1198,7 +1200,11 @@ let splashAnimationTimers = []
 
 watch(theme, (nextTheme) => {
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
+    } catch (error) {
+      // 테마 저장 실패는 현재 화면 사용을 막지 않는다.
+    }
   }
 })
 
@@ -1212,7 +1218,9 @@ watch(
 )
 
 watch(blogPosts, (nextPosts) => {
-  persistBlogPosts(nextPosts)
+  if (!persistBlogPosts(nextPosts) && page.value === 'writingStudio') {
+    studioSavePhase.value = 'error'
+  }
 }, { deep: true })
 
 watch(activeBlogSlug, (nextSlug) => {
@@ -1525,23 +1533,22 @@ onMounted(async () => {
     clockText.value = formatClock()
   }, 1000)
 
-  await loadPortalData()
-  if (page.value === 'elevator') {
-    await activateElevatorPage()
-  }
   initializeBlogWorkspace()
-
-  portalRefreshTimer = window.setInterval(() => {
-    loadPortalData({ refreshElevator: false })
-  }, 8000)
-
-  elevatorRefreshTimer = window.setInterval(() => {
-    loadElevatorState()
-  }, 900)
-
-  taxiSimulationTimer = window.setInterval(() => {
-    advanceTaxiSimulation()
-  }, 1200)
+  if (!isStaticMode) {
+    await loadPortalData()
+    if (page.value === 'elevator') {
+      await activateElevatorPage()
+    }
+    portalRefreshTimer = window.setInterval(() => {
+      loadPortalData({ refreshElevator: false })
+    }, 8000)
+    elevatorRefreshTimer = window.setInterval(() => {
+      loadElevatorState()
+    }, 900)
+    taxiSimulationTimer = window.setInterval(() => {
+      advanceTaxiSimulation()
+    }, 1200)
+  }
 })
 
 onBeforeUnmount(() => {
@@ -1694,54 +1701,10 @@ function advanceTaxiSimulation() {
   nextState.clock.elapsedSeconds += 1.2
 
   if (shouldSpawnAutoTaxiRequest(nextState)) {
-    spawnTaxiRequest(nextState, {
-      source: 'auto'
-    })
+    spawnTaxiRequest(nextState, { source: 'auto' })
   }
 
-  assignPendingTaxiRequests(nextState)
-
-  for (const taxi of nextState.taxis) {
-    if (taxi.route.length === 0) {
-      if (taxi.status === 'pickup' && taxi.assignedRequestId) {
-        const request = nextState.activeRequests.find((item) => item.id === taxi.assignedRequestId)
-        if (request) {
-          request.status = 'onboard'
-          request.pickedUpAt = nextState.clock.elapsedSeconds
-          taxi.status = 'dropoff'
-          taxi.passengerCount = request.passengers
-          taxi.targetZoneId = request.destinationId
-          taxi.route = buildTaxiRoute(taxi.zoneId, request.destinationId).slice(1)
-        }
-      } else if (taxi.status === 'dropoff' && taxi.assignedRequestId) {
-        completeTaxiRequest(nextState, taxi)
-      } else {
-        taxi.status = 'idle'
-      }
-      continue
-    }
-
-    taxi.progress += 1
-    if (taxi.progress < taxi.stepDuration) {
-      continue
-    }
-
-    taxi.progress = 0
-    const nextZone = taxi.route.shift()
-    if (!nextZone) {
-      continue
-    }
-    taxi.zoneId = nextZone
-    taxi.positionLabel = findTaxiZone(nextZone)?.name || nextZone
-
-    if (taxi.status === 'to-origin' && taxi.zoneId === taxi.targetZoneId) {
-      taxi.status = 'pickup'
-    } else if (taxi.status === 'dropoff' && taxi.zoneId === taxi.targetZoneId && taxi.route.length === 0) {
-      completeTaxiRequest(nextState, taxi)
-    }
-  }
-
-  taxiState.value = nextState
+  taxiState.value = advanceTaxiFleet(nextState)
 }
 
 function submitManualTaxiRequest() {
@@ -1757,8 +1720,7 @@ function submitManualTaxiRequest() {
     passengers: Number(taxiManualPassengers.value),
     source: 'manual'
   })
-  assignPendingTaxiRequests(nextState)
-  taxiState.value = nextState
+  taxiState.value = assignPendingTaxiRequests(nextState)
   taxiMessage.value = '수동 호출을 추가했습니다.'
 }
 
@@ -1769,8 +1731,7 @@ function addTaxiFleetUnit() {
   nextState.score.penalty += 12
   nextState.eventLog.unshift(`차량 추가 배치 · ${homeZone.name} · penalty -12`)
   nextState.eventLog = nextState.eventLog.slice(0, 12)
-  assignPendingTaxiRequests(nextState)
-  taxiState.value = nextState
+  taxiState.value = assignPendingTaxiRequests(nextState)
   taxiMessage.value = '차량을 추가했고 운영 패널티를 반영했습니다.'
 }
 
@@ -1837,6 +1798,15 @@ function populateStudio(post) {
 function setStudioSlug(value) {
   studioState.value.slugLocked = true
   studioState.value.slug = slugify(value)
+}
+
+function updateStudioField(field, value) {
+  blogMessage.value = ''
+  if (field === 'slug') {
+    setStudioSlug(value)
+  } else if (['title', 'bodyMarkdown', 'summary', 'tags'].includes(field)) {
+    studioState.value[field] = value
+  }
 }
 
 function saveStudioDraft() {
@@ -1912,6 +1882,7 @@ function unpublishStudioPost() {
 }
 
 function persistStudioPost(nextStatus, options = {}) {
+  studioSavePhase.value = 'saving'
   const nowIso = new Date().toISOString()
   const title = studioState.value.title.trim()
   const summary = studioState.value.summary.trim()
@@ -1919,12 +1890,14 @@ function persistStudioPost(nextStatus, options = {}) {
   const current = blogPosts.value.find((post) => post.id === studioState.value.id)
   const status = nextStatus || current?.status || studioState.value.status || 'draft'
   if (!title) {
+    studioSavePhase.value = 'error'
     if (!options.silent) {
       blogMessage.value = '제목을 입력하면 저장할 수 있습니다.'
     }
     return null
   }
   if (status === 'published' && (!summary || !bodyMarkdown)) {
+    studioSavePhase.value = 'error'
     if (!options.silent) {
       blogMessage.value = '발행하려면 요약과 본문을 입력해 주세요.'
     }
@@ -1964,8 +1937,15 @@ function persistStudioPost(nextStatus, options = {}) {
     nextPosts.unshift(nextPost)
   }
 
-  persistBlogPosts(nextPosts)
-  persistStudioPostId(nextPost.id)
+  const postsSaved = persistBlogPosts(nextPosts)
+  const targetSaved = persistStudioPostId(nextPost.id)
+  if (!postsSaved || !targetSaved) {
+    studioSavePhase.value = 'error'
+    if (!options.silent) {
+      blogMessage.value = '브라우저 저장 공간을 확인해 주세요.'
+    }
+    return null
+  }
   blogPosts.value = nextPosts
   populateStudio(nextPost)
   return nextPost
@@ -1990,6 +1970,7 @@ function markStudioSaved(savedAt, state = studioState.value) {
   studioSavedSnapshot = createStudioEditableSnapshot(state)
   studioDirty.value = false
   studioLastSavedAt.value = savedAt
+  studioSavePhase.value = 'saved'
 }
 
 function scheduleStudioAutosave() {
@@ -1997,6 +1978,7 @@ function scheduleStudioAutosave() {
     return
   }
   window.clearTimeout(studioAutosaveTimer)
+  studioSavePhase.value = 'saving'
   studioAutosaveTimer = window.setTimeout(() => {
     flushStudioAutosave()
   }, 800)
@@ -2009,6 +1991,20 @@ function flushStudioAutosave() {
   window.clearTimeout(studioAutosaveTimer)
   const saved = persistStudioPost(studioState.value.status || 'draft', { silent: true })
   return Boolean(saved)
+}
+
+function backupLocalWriting() {
+  writingBackupMessage.value = ''
+  if (studioDirty.value && !flushStudioAutosave()) {
+    writingBackupMessage.value = '저장 실패를 해결한 뒤 다시 시도해 주세요.'
+    return
+  }
+  try {
+    downloadWritingBackup(window.localStorage, VOYAGE_ARCHIVE_STORAGE_KEY)
+    writingBackupMessage.value = '백업 파일을 내려받았습니다.'
+  } catch (error) {
+    writingBackupMessage.value = '백업 파일을 만들지 못했습니다.'
+  }
 }
 
 function prepareStudioTransition() {
@@ -2248,6 +2244,15 @@ function replaySplashFlap() {
 }
 
 function openPage(nextPage) {
+  if (isStaticMode && STATIC_UNAVAILABLE_PAGES.has(nextPage)) {
+    staticModeMessage.value = '정적 공개본에서는 사용할 수 없음'
+    if (page.value !== 'junction') {
+      page.value = 'junction'
+      syncBrowserLocation()
+    }
+    return
+  }
+  staticModeMessage.value = ''
   if (page.value === 'writingStudio' && nextPage !== 'writingStudio' && !prepareStudioTransition()) {
     return
   }
@@ -2401,19 +2406,6 @@ function createTaxiRequest({
   }
 }
 
-function cloneTaxiState(state) {
-  return {
-    ...state,
-    clock: { ...state.clock },
-    zones: state.zones.map((zone) => ({ ...zone })),
-    taxis: state.taxis.map((taxi) => ({ ...taxi, route: [...taxi.route] })),
-    activeRequests: state.activeRequests.map((request) => ({ ...request })),
-    completedRequests: state.completedRequests.map((request) => ({ ...request })),
-    score: { ...state.score },
-    eventLog: [...state.eventLog]
-  }
-}
-
 function clamp(value, minimum, maximum) {
   return Math.max(minimum, Math.min(maximum, value))
 }
@@ -2448,94 +2440,6 @@ function pickTaxiZoneId(state, excludedIds = []) {
   const candidates = state.zones.filter((zone) => !excluded.has(zone.id))
   const sequence = state.sequence % candidates.length
   return candidates[sequence]?.id || state.zones[0].id
-}
-
-function assignPendingTaxiRequests(state) {
-  const pending = state.activeRequests
-    .filter((request) => request.status === 'pending')
-    .sort((left, right) => right.passengers - left.passengers || left.createdTick - right.createdTick)
-
-  for (const request of pending) {
-    const availableTaxi = pickBestTaxi(state, request)
-    if (!availableTaxi) {
-      continue
-    }
-
-    availableTaxi.assignedRequestId = request.id
-    availableTaxi.status = 'to-origin'
-    availableTaxi.targetZoneId = request.originId
-    availableTaxi.route = buildTaxiRoute(availableTaxi.zoneId, request.originId).slice(1)
-    availableTaxi.progress = 0
-    request.status = 'assigned'
-    request.assignedTaxiId = availableTaxi.id
-  }
-}
-
-function pickBestTaxi(state, request) {
-  return [...state.taxis]
-    .filter((taxi) => taxi.status === 'idle' && taxi.seats >= request.passengers)
-    .sort((left, right) => {
-      const leftDistance = buildTaxiRoute(left.zoneId, request.originId).length
-      const rightDistance = buildTaxiRoute(right.zoneId, request.originId).length
-      return leftDistance - rightDistance || left.id.localeCompare(right.id)
-    })[0]
-}
-
-function buildTaxiRoute(originId, destinationId) {
-  if (originId === destinationId) {
-    return [originId]
-  }
-
-  const visited = new Set([originId])
-  const queue = [[originId]]
-  while (queue.length > 0) {
-    const path = queue.shift()
-    const current = path[path.length - 1]
-    const zone = findTaxiZone(current)
-    for (const neighbor of zone?.neighbors || []) {
-      if (visited.has(neighbor)) {
-        continue
-      }
-      const nextPath = [...path, neighbor]
-      if (neighbor === destinationId) {
-        return nextPath
-      }
-      visited.add(neighbor)
-      queue.push(nextPath)
-    }
-  }
-  return [originId, destinationId]
-}
-
-function completeTaxiRequest(state, taxi) {
-  const requestIndex = state.activeRequests.findIndex((item) => item.id === taxi.assignedRequestId)
-  if (requestIndex < 0) {
-    taxi.status = 'idle'
-    taxi.assignedRequestId = ''
-    taxi.passengerCount = 0
-    return
-  }
-
-  const request = state.activeRequests[requestIndex]
-  const completed = {
-    ...request,
-    status: 'completed',
-    completedAt: state.clock.elapsedSeconds,
-    waitSeconds: Number((request.pickedUpAt - request.createdTick).toFixed(1)),
-    tripSeconds: Number((state.clock.elapsedSeconds - request.pickedUpAt).toFixed(1))
-  }
-  const reward = Math.max(8, 42 - completed.waitSeconds - completed.tripSeconds + (completed.passengers * 3))
-  state.score.reward += reward
-  state.completedRequests.push({ ...completed, reward })
-  state.completedRequests = state.completedRequests.slice(-16)
-  state.activeRequests.splice(requestIndex, 1)
-  taxi.status = 'idle'
-  taxi.assignedRequestId = ''
-  taxi.passengerCount = 0
-  taxi.targetZoneId = taxi.zoneId
-  taxi.route = []
-  state.eventLog.unshift(`${taxi.id} 완료 · reward +${reward} · ${findTaxiZone(completed.destinationId)?.name}`)
-  state.eventLog = state.eventLog.slice(0, 12)
 }
 
 function findTaxiZone(zoneId) {
@@ -2921,9 +2825,13 @@ function readInitialTheme() {
     return 'dark'
   }
 
-  const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
-  if (stored === 'light' || stored === 'dark') {
-    return stored
+  try {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
+    if (stored === 'light' || stored === 'dark') {
+      return stored
+    }
+  } catch (error) {
+    return 'dark'
   }
 
   return 'dark'
@@ -2950,9 +2858,16 @@ function readTestRouteMode() {
 }
 
 function readInitialPage() {
+  if (typeof window === 'undefined') {
+    return 'splash'
+  }
   const mode = readTestRouteMode()
   if (mode === 'live') {
-    return readLiveBlogRoute()?.page || 'splash'
+    const route = readLiveRoute(window.location.pathname, APP_BASE_PATH)
+    if (route && isStaticMode && STATIC_UNAVAILABLE_PAGES.has(route.page)) {
+      return 'junction'
+    }
+    return route?.page || 'splash'
   }
   if (mode === 'v050') {
     return normalizeVersionedTestView(readVersionedTestViewParam())
@@ -2961,33 +2876,10 @@ function readInitialPage() {
 }
 
 function readInitialBlogSlug() {
-  if (readTestRouteMode() !== 'live') {
+  if (typeof window === 'undefined' || readTestRouteMode() !== 'live') {
     return ''
   }
-  return readLiveBlogRoute()?.slug || ''
-}
-
-function readLiveBlogRoute() {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  const parts = window.location.pathname.split('/').filter(Boolean)
-  if (parts[0] !== 'blog') {
-    return null
-  }
-  if (parts.length === 1) {
-    return { page: 'blogArchive', slug: '' }
-  }
-  if (parts.length !== 2) {
-    return { page: 'blogPost', slug: '' }
-  }
-
-  try {
-    return { page: 'blogPost', slug: decodeURIComponent(parts[1]) }
-  } catch (error) {
-    return { page: 'blogPost', slug: '' }
-  }
+  return readLiveRoute(window.location.pathname, APP_BASE_PATH)?.slug || ''
 }
 
 function readTestViewParam() {
@@ -3006,7 +2898,7 @@ function readVersionedTestViewParam() {
     return 'junction'
   }
 
-  const parts = window.location.pathname.split('/').filter(Boolean)
+  const parts = stripBasePath(window.location.pathname, APP_BASE_PATH).split('/').filter(Boolean)
   return parts[2] || 'junction'
 }
 
@@ -3050,15 +2942,7 @@ function syncLiveLocation({ replace = false } = {}) {
   }
 
   const nextUrl = new URL(window.location.href)
-  if (page.value === 'blogArchive') {
-    nextUrl.pathname = '/blog'
-  } else if (page.value === 'blogPost') {
-    nextUrl.pathname = activeBlogSlug.value
-      ? `/blog/${encodeURIComponent(activeBlogSlug.value)}`
-      : '/blog/__not-found__'
-  } else {
-    nextUrl.pathname = '/'
-  }
+  nextUrl.pathname = buildLivePath(page.value, activeBlogSlug.value, APP_BASE_PATH)
   nextUrl.search = ''
   nextUrl.hash = ''
 
@@ -3088,10 +2972,12 @@ function handleLocationPopState(event) {
   } else if (nextMode === 'v040') {
     page.value = normalizeTestView(readTestViewParam())
   } else {
-    const liveRoute = readLiveBlogRoute()
+    const liveRoute = readLiveRoute(window.location.pathname, APP_BASE_PATH)
     if (liveRoute) {
       activeBlogSlug.value = liveRoute.slug
-      page.value = liveRoute.page
+      page.value = isStaticMode && STATIC_UNAVAILABLE_PAGES.has(liveRoute.page)
+        ? 'junction'
+        : liveRoute.page
     } else {
       const statePage = normalizeLivePage(event.state?.page)
       page.value = statePage === 'blogArchive' || statePage === 'blogPost' ? 'junction' : statePage
@@ -3133,7 +3019,11 @@ function persistReadyTicketIds(ticketIds) {
   if (typeof window === 'undefined') {
     return
   }
-  window.localStorage.setItem(BOARD_READY_STORAGE_KEY, JSON.stringify(ticketIds))
+  try {
+    window.localStorage.setItem(BOARD_READY_STORAGE_KEY, JSON.stringify(ticketIds))
+  } catch (error) {
+    // 조회 화면의 임시 Ready 상태 저장 실패는 정적 화면을 막지 않는다.
+  }
 }
 
 function readStoredWorkManagerSession() {
@@ -3161,14 +3051,18 @@ function persistWorkManagerSession(token, expiresAt) {
     return
   }
 
-  if (token && !isExpiredWorkManagerSession(expiresAt)) {
-    window.localStorage.setItem(TOKEN_STORAGE_KEY, token)
-    window.localStorage.setItem(TOKEN_EXPIRY_STORAGE_KEY, expiresAt)
-    return
-  }
+  try {
+    if (token && !isExpiredWorkManagerSession(expiresAt)) {
+      window.localStorage.setItem(TOKEN_STORAGE_KEY, token)
+      window.localStorage.setItem(TOKEN_EXPIRY_STORAGE_KEY, expiresAt)
+      return
+    }
 
-  window.localStorage.removeItem(TOKEN_STORAGE_KEY)
-  window.localStorage.removeItem(TOKEN_EXPIRY_STORAGE_KEY)
+    window.localStorage.removeItem(TOKEN_STORAGE_KEY)
+    window.localStorage.removeItem(TOKEN_EXPIRY_STORAGE_KEY)
+  } catch (error) {
+    // 정적 공개본에서는 저장소가 막혀도 여행·글쓰기 읽기를 유지한다.
+  }
 }
 
 function resolveWorkManagerAuthSession(response) {
@@ -3212,59 +3106,86 @@ function readStoredBlogPosts() {
 
 function persistBlogPosts(posts) {
   if (typeof window === 'undefined') {
-    return
+    return true
   }
-  window.localStorage.setItem(BLOG_POST_STORAGE_KEY, JSON.stringify(posts))
+  return safeWriteJson(window.localStorage, BLOG_POST_STORAGE_KEY, posts)
 }
 
 function readStoredBlogSlug() {
   if (typeof window === 'undefined') {
     return ''
   }
-  return window.localStorage.getItem(BLOG_ACTIVE_SLUG_STORAGE_KEY) || ''
+  try {
+    return window.localStorage.getItem(BLOG_ACTIVE_SLUG_STORAGE_KEY) || ''
+  } catch (error) {
+    return ''
+  }
 }
 
 function persistBlogSlug(slug) {
   if (typeof window === 'undefined') {
-    return
+    return true
   }
-  if (slug) {
-    window.localStorage.setItem(BLOG_ACTIVE_SLUG_STORAGE_KEY, slug)
-    return
+  try {
+    if (slug) {
+      window.localStorage.setItem(BLOG_ACTIVE_SLUG_STORAGE_KEY, slug)
+      return true
+    }
+    window.localStorage.removeItem(BLOG_ACTIVE_SLUG_STORAGE_KEY)
+    return true
+  } catch (error) {
+    return false
   }
-  window.localStorage.removeItem(BLOG_ACTIVE_SLUG_STORAGE_KEY)
 }
 
 function readStoredStudioViewMode() {
   if (typeof window === 'undefined') {
-    return 'split'
+    return 'edit'
   }
-  return window.localStorage.getItem(BLOG_STUDIO_VIEW_STORAGE_KEY) || 'split'
+  try {
+    return window.localStorage.getItem(BLOG_STUDIO_VIEW_STORAGE_KEY) === 'preview' ? 'preview' : 'edit'
+  } catch (error) {
+    return 'edit'
+  }
 }
 
 function persistStudioViewMode(mode) {
   if (typeof window === 'undefined') {
-    return
+    return true
   }
-  window.localStorage.setItem(BLOG_STUDIO_VIEW_STORAGE_KEY, mode)
+  try {
+    window.localStorage.setItem(BLOG_STUDIO_VIEW_STORAGE_KEY, mode)
+    return true
+  } catch (error) {
+    return false
+  }
 }
 
 function readStoredStudioPostId() {
   if (typeof window === 'undefined') {
     return ''
   }
-  return window.localStorage.getItem(BLOG_STUDIO_POST_STORAGE_KEY) || ''
+  try {
+    return window.localStorage.getItem(BLOG_STUDIO_POST_STORAGE_KEY) || ''
+  } catch (error) {
+    return ''
+  }
 }
 
 function persistStudioPostId(postId) {
   if (typeof window === 'undefined') {
-    return
+    return true
   }
-  if (postId) {
-    window.localStorage.setItem(BLOG_STUDIO_POST_STORAGE_KEY, postId)
-    return
+  try {
+    if (postId) {
+      window.localStorage.setItem(BLOG_STUDIO_POST_STORAGE_KEY, postId)
+      return true
+    }
+    window.localStorage.removeItem(BLOG_STUDIO_POST_STORAGE_KEY)
+    return true
+  } catch (error) {
+    return false
   }
-  window.localStorage.removeItem(BLOG_STUDIO_POST_STORAGE_KEY)
 }
 </script>
 
@@ -3338,10 +3259,10 @@ function persistStudioPostId(postId) {
         </div>
       </section>
 
-      <main v-else class="portal-stage">
+      <main v-else class="portal-stage" :class="{ 'writing-stage': page === 'writingStudio' }">
         <header class="station-topbar" :class="topbarLineClass">
           <span class="roundel" :class="topbarLineClass">{{ topbarLetter }}</span>
-          <h2>{{ currentRoute.title }}</h2>
+          <h2>{{ page === 'writingStudio' ? '글쓰기' : currentRoute.title }}</h2>
           <div class="topbar-actions">
             <button
               v-if="page !== 'junction'"
@@ -3776,72 +3697,49 @@ function persistStudioPostId(postId) {
               <span class="chip"><span class="dot" aria-hidden="true"></span>{{ junctionGateLabel }}</span>
             </div>
 
-            <JunctionMap :line-states="junctionLineStates" @open="openPage" />
+            <JunctionMap
+              :line-states="junctionLineStates"
+              :disabled-pages="isStaticMode ? Array.from(STATIC_UNAVAILABLE_PAGES) : []"
+              @open="openPage"
+            />
 
-            <p class="junction-note">홀에서는 이동만 — 조작은 각 승강장에서 합니다.</p>
+            <p v-if="staticModeMessage" class="junction-note static-mode-note" role="status">{{ staticModeMessage }}</p>
+            <p v-else class="junction-note">홀에서는 이동만 — 조작은 각 승강장에서 합니다.</p>
           </section>
 
-          <section v-else-if="page === 'simhub'" class="feature-shell">
-            <section class="platform-banner subhub-banner">
-              <div>
-                <p class="eyebrow">Line S / Sim Hub</p>
-                <h3>시뮬레이션만 따로 모은 환승 허브</h3>
-              </div>
+          <section v-else-if="page === 'simhub'" class="feature-shell sim-annex">
+            <StationHeader
+              :line-class="simHubLine.lineClass"
+              station-code="S00"
+              :title="simHubLine.nameKo"
+              :title-en="simHubLine.nameEn"
+              :status="simHubLine.subtitle"
+              next-label=""
+              @exit="openPage('junction')"
+            />
 
-              <div class="banner-stats">
-                <article>
-                  <span>simulation lines</span>
-                  <strong>{{ simHubCards.length }}</strong>
-                </article>
-                <article>
-                  <span>taxi requests</span>
-                  <strong>{{ taxiState.activeRequests.length }}</strong>
-                </article>
-                <article>
-                  <span>elevator cars</span>
-                  <strong>{{ elevatorCars.length }}</strong>
-                </article>
-              </div>
-            </section>
-
-            <section class="section-block">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">Transfer Cards</p>
-                  <h3>시뮬 레일 선택</h3>
+            <div class="line-grid sim-annex-grid" aria-label="격납고">
+              <article
+                v-for="card in simHubCards"
+                :key="card.key"
+                class="line-card"
+                :class="card.accent"
+              >
+                <div class="line-card-top">
+                  <div class="line-mark">
+                    <span class="line-round" :class="card.accent">{{ card.lineNo }}</span>
+                    <h4>{{ card.name }}</h4>
+                  </div>
+                  <span class="status-chip">{{ card.status }}</span>
                 </div>
-                <span>Main Junction 에서는 분기만 보여주고, 실제 상태는 여기에서 한 번 더 요약합니다.</span>
-              </div>
 
-              <div class="line-grid">
-                <article
-                  v-for="card in simHubCards"
-                  :key="card.key"
-                  class="line-card"
-                  :class="card.accent"
-                >
-                  <div class="line-card-top">
-                    <div class="line-mark">
-                      <span class="line-round" :class="card.accent">{{ card.lineNo }}</span>
-                      <div>
-                        <strong>{{ card.lineCode }}</strong>
-                        <p>{{ card.name }}</p>
-                      </div>
-                    </div>
-                    <span class="status-chip">{{ card.status }}</span>
-                  </div>
+                <p>{{ card.summary }}</p>
 
-                  <div class="line-copy">
-                    <h4>{{ card.summary }}</h4>
-                    <p>{{ card.detail }}</p>
-                  </div>
-
-                  <button type="button" class="line-cta" @click="openPage(card.page)">
-                    {{ card.cta }}
-                  </button>
-                </article>
-              </div>
-            </section>
+                <button type="button" class="line-cta" @click="openPage(card.page)">
+                  {{ card.cta }}
+                </button>
+              </article>
+            </div>
           </section>
 
           <VoyageView v-else-if="page === 'voyage'" @exit="openPage('junction')" />
@@ -3855,7 +3753,9 @@ function persistStudioPostId(postId) {
               status="실시간 운행"
               status-tone="live"
               :summary="`23층 · car ${elevatorCars.length}대 · 정원 20명`"
-              @exit="openPage('junction')"
+              :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
+              :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
+              @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
             />
 
             <section class="section-block elevator-live-layout line-e">
@@ -3965,7 +3865,9 @@ function persistStudioPostId(postId) {
               status="프런트 코어 운행"
               status-tone="live"
               summary="9구역 · reward/penalty 누적"
-              @exit="openPage('junction')"
+              :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
+              :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
+              @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
             />
             <section class="station-lead">
                           <div class="banner-stats">
@@ -4282,198 +4184,28 @@ function persistStudioPostId(postId) {
             </article>
           </section>
 
-          <section v-else-if="page === 'writingStudio'" class="feature-shell blog-shell">
-            <StationHeader
-              line-class="line-b"
-              station-code="B02"
-              :title="studioState.title || '새 글 초안'"
-              title-en="WRITING STUDIO"
-              :status="BLOG_STATUS_LABELS[studioState.status]"
-              status-tone="ok"
-              summary="저장 · 미리보기 · 발행 한 모델"
-              @exit="openPage('junction')"
-            />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article>
-              <span>status</span>
-              <strong>{{ BLOG_STATUS_LABELS[studioState.status] }}</strong>
-              </article>
-              <article>
-              <span>words</span>
-              <strong>{{ studioWordCount }}</strong>
-              </article>
-              <article>
-              <span>reading</span>
-              <strong>{{ studioReadingMinutes }} min</strong>
-              </article>
-              </div>
-            </section>
-
-            <section class="section-block studio-shell">
-              <aside class="studio-sidebar">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">Draft Shelf</p>
-                    <h3>초안 목록</h3>
-                  </div>
-                </div>
-
-                <div class="preset-column">
-                  <button type="button" class="command-card" @click="createNewStudioPost(false)">
-                    <strong>새 글 초안</strong>
-                    <p>편집 중인 글은 유지됩니다.</p>
-                  </button>
-                  <button
-                    v-for="post in draftBlogPosts"
-                    :key="post.id"
-                    type="button"
-                    class="command-card"
-                    :class="{ active: studioPostId === post.id }"
-                    @click="openStudioForPost(post.id)"
-                  >
-                    <span class="studio-shelf-meta">
-                      <StatusBadge status="draft" />
-                      <small>{{ formatDate(post.updatedAt) }}</small>
-                    </span>
-                    <strong>{{ post.title }}</strong>
-                    <p>{{ post.summary }}</p>
-                  </button>
-                </div>
-
-                <section class="archive-shelf">
-                  <div class="section-head">
-                    <div>
-                      <p class="eyebrow">Archive Shelf</p>
-                      <h3>보관 글</h3>
-                    </div>
-                    <span>{{ archivedBlogPosts.length }}</span>
-                  </div>
-
-                  <p v-if="archivedBlogPosts.length === 0" class="archive-shelf-empty">보관된 글이 없습니다.</p>
-                  <div v-else class="archive-shelf-list">
-                    <article v-for="post in archivedBlogPosts" :key="post.id" class="archive-shelf-card">
-                      <span class="studio-shelf-meta">
-                        <StatusBadge status="archived" />
-                        <small>{{ formatDate(post.updatedAt) }}</small>
-                      </span>
-                      <strong>{{ post.title }}</strong>
-                      <div class="archive-restore-actions">
-                        <button type="button" class="ghost-button" @click="restoreArchivedPost(post.id, 'draft')">
-                          초안으로 복원
-                        </button>
-                        <button type="button" class="primary-button" @click="restoreArchivedPost(post.id, 'published')">
-                          공개로 복원
-                        </button>
-                      </div>
-                    </article>
-                  </div>
-                </section>
-              </aside>
-
-              <div class="studio-main">
-                <div class="studio-state-flow" aria-label="글 상태 흐름">
-                  <span :class="{ active: studioState.status === 'draft' }" :aria-current="studioState.status === 'draft' ? 'step' : undefined">
-                    <StatusBadge status="draft" />
-                    <small>작성</small>
-                  </span>
-                  <span :class="{ active: studioViewMode === 'preview' }" :aria-current="studioViewMode === 'preview' ? 'step' : undefined">
-                    <StatusBadge status="preview" />
-                    <small>확인</small>
-                  </span>
-                  <span :class="{ active: studioState.status === 'published' }" :aria-current="studioState.status === 'published' ? 'step' : undefined">
-                    <StatusBadge status="published" />
-                    <small>독자 공개</small>
-                  </span>
-                  <span :class="{ active: studioState.status === 'archived' }" :aria-current="studioState.status === 'archived' ? 'step' : undefined">
-                    <StatusBadge status="archived" />
-                    <small>보관</small>
-                  </span>
-                </div>
-
-                <div class="studio-toolbar">
-                  <div class="test-route-actions studio-view-controls" aria-label="편집 화면 모드">
-                    <button type="button" class="ghost-button" :class="{ active: studioViewMode === 'split' }" :aria-pressed="studioViewMode === 'split'" @click="studioViewMode = 'split'">나란히</button>
-                    <button type="button" class="ghost-button" :class="{ active: studioViewMode === 'edit' }" :aria-pressed="studioViewMode === 'edit'" @click="studioViewMode = 'edit'">편집</button>
-                    <button type="button" class="ghost-button" :class="{ active: studioViewMode === 'preview' }" :aria-pressed="studioViewMode === 'preview'" @click="studioViewMode = 'preview'">미리보기</button>
-                  </div>
-
-                  <span class="studio-save-status" :class="{ unsaved: studioDirty }" role="status" aria-live="polite">
-                    {{ studioSaveStatus }}
-                  </span>
-
-                  <div class="command-actions">
-                    <button type="button" class="ghost-button studio-save-button" @click="saveStudioDraft">지금 저장</button>
-                    <button type="button" class="primary-button studio-publish-button" @click="publishStudioPost">공개 발행</button>
-                    <button
-                      v-if="studioState.status === 'published'"
-                      type="button"
-                      class="ghost-button"
-                      @click="unpublishStudioPost"
-                    >
-                      발행 취소
-                    </button>
-                    <button type="button" class="ghost-button studio-archive-button" @click="archiveStudioPost">보관</button>
-                  </div>
-                </div>
-
-                <div class="studio-grid" :data-view="studioViewMode">
-                  <div class="studio-editor">
-                    <label class="input-block">
-                      <span>제목</span>
-                      <input v-model="studioState.title" class="text-input" type="text" placeholder="글 제목" />
-                    </label>
-
-                    <label class="input-block">
-                      <span>slug</span>
-                      <input
-                        :value="studioState.slug"
-                        class="text-input"
-                        type="text"
-                        placeholder="slug"
-                        @input="setStudioSlug($event.target.value)"
-                      />
-                    </label>
-
-                    <label class="input-block">
-                      <span>요약</span>
-                      <textarea v-model="studioState.summary" class="textarea-input" rows="3" placeholder="짧은 요약"></textarea>
-                    </label>
-
-                    <label class="input-block">
-                      <span>태그</span>
-                      <input v-model="studioState.tags" class="text-input" type="text" placeholder="tag1, tag2" />
-                    </label>
-
-                    <label class="input-block">
-                      <span>Markdown 본문</span>
-                      <textarea
-                        v-model="studioState.bodyMarkdown"
-                        class="textarea-input studio-textarea"
-                        rows="18"
-                        placeholder="## 본문"
-                      ></textarea>
-                    </label>
-                  </div>
-
-                  <article class="studio-preview reading-shell">
-                    <div class="post-meta-line">
-                      <span>{{ studioState.slug || 'slug 미정' }}</span>
-                      <StatusBadge :status="studioState.status" />
-                      <span>{{ formatDate(studioState.updatedAt) }}</span>
-                    </div>
-                    <header class="post-header">
-                      <h3>{{ studioState.title || '미리보기 제목' }}</h3>
-                      <p class="post-summary">{{ studioState.summary || '요약을 입력하면 여기에서 보입니다.' }}</p>
-                    </header>
-                    <div class="markdown-body" v-html="studioPreviewHtml"></div>
-                  </article>
-                </div>
-
-                <p v-if="blogMessage" class="status-copy ok">{{ blogMessage }}</p>
-              </div>
-            </section>
-          </section>
+          <WritingStudio
+            v-else-if="page === 'writingStudio'"
+            :state="studioState"
+            :posts="[...draftBlogPosts, ...archivedBlogPosts]"
+            :preview-html="studioPreviewHtml"
+            :view-mode="studioViewMode"
+            :save-phase="studioSavePhase"
+            :saved-at="studioLastSavedAt"
+            :message="blogMessage"
+            :backup-message="writingBackupMessage"
+            @update-field="updateStudioField"
+            @update-view="studioViewMode = $event"
+            @exit="openPage('bloghub')"
+            @publish="publishStudioPost"
+            @archive="archiveStudioPost"
+            @unpublish="unpublishStudioPost"
+            @new-post="createNewStudioPost(false)"
+            @open-post="openStudioForPost"
+            @restore="restoreArchivedPost"
+            @backup="backupLocalWriting"
+            @clear-message="blogMessage = ''"
+          />
 
           <section v-else-if="page === 'work'" class="feature-shell">
             <StationHeader
@@ -4955,7 +4687,7 @@ function persistStudioPostId(postId) {
             </section>
           </section>
 
-          <nav v-if="!isTestRoute" class="mobile-quick-nav" aria-label="빠른 환승">
+          <nav v-if="!isTestRoute" class="mobile-quick-nav" :class="{ static: isStaticMode }" aria-label="빠른 환승">
             <button type="button" :class="{ active: page === 'junction' }" @click="openPage('junction')">노선도</button>
             <button
               type="button"
@@ -4965,6 +4697,7 @@ function persistStudioPostId(postId) {
               아카이브
             </button>
             <button
+              v-if="!isStaticMode"
               type="button"
               :class="{ active: ['simhub', 'elevator', 'taxi'].includes(page) }"
               @click="openPage('simhub')"
