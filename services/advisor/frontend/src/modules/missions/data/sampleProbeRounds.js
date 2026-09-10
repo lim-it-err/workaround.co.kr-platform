@@ -10,6 +10,8 @@
  *   answerKey, resolution, bestProbeKey }
  */
 
+import { extraProbeRounds } from './inflightContent.js'
+
 const probeRounds = [
   {
     id: 'probe-slow-api-01',
@@ -142,4 +144,7 @@ const probeRounds = [
   },
 ];
 
-export default { probeRounds };
+export default {
+  probeRounds: [...probeRounds, ...extraProbeRounds],
+  dailyProbeRounds: probeRounds,
+};

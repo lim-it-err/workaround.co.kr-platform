@@ -4,6 +4,8 @@
  * 저작권 원칙: 원문 인용 없음 — 아이디어와 사실의 짧은 변형적 요약만.
  */
 
+import { extraCinemaCards, extraReadingCards } from './inflightContent.js'
+
 const readingCards = [
   {
     id: 'read-ggs-01',
@@ -351,7 +353,7 @@ const cardForks = {
 };
 
 export default {
-  readingCards,
-  cinemaCards,
+  readingCards: [...readingCards, ...extraReadingCards],
+  cinemaCards: [...cinemaCards, ...extraCinemaCards],
   cardForks,
 };

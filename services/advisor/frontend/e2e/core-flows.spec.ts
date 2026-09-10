@@ -40,19 +40,19 @@ test('미션 완주: 홈에서 제출하고 샘플 리뷰의 핵심 섹션을 �
 
 test('필터: 난이도와 검색을 조합하고 초기화한다', async ({ page }) => {
   const missionCards = page.locator('.mission-card')
-  await expect(missionCards).toHaveCount(33)
+  await expect(missionCards).toHaveCount(39)
 
   await page.getByRole('button', { name: 'Easy', exact: true }).click()
   const easyCount = await missionCards.count()
   expect(easyCount).toBeGreaterThan(0)
-  expect(easyCount).toBeLessThan(33)
+  expect(easyCount).toBeLessThan(39)
 
   await page.getByPlaceholder('제목·도메인으로 찾기').fill('와인')
   await expect(missionCards).toHaveCount(1)
   await expect(page.getByRole('link', { name: new RegExp(WINE_TITLE) })).toBeVisible()
 
   await page.getByRole('button', { name: '필터 초기화' }).click()
-  await expect(missionCards).toHaveCount(33)
+  await expect(missionCards).toHaveCount(39)
 })
 
 test('기획자 모드: 참석자는 보이지만 비공개 관심사는 DOM에 없다', async ({ page }) => {
@@ -391,3 +391,39 @@ test('시즌: 루틴 수동 체크가 교양 +1과 최근 적립 로그에 반�
   await expect(page.getByText('루틴 수동 체크')).toBeVisible()
   await expect(page.getByText('+1', { exact: true })).toBeVisible()
 })
+
+test('기내 모드: 375px에서 설정과 이어보기를 로컬로 복원한다', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.getByRole('link', { name: '기내 모드', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '기내 훈련 팩' })).toBeVisible()
+  await page.getByRole('button', { name: '30분 사건' }).click()
+  await page.getByRole('button', { name: '운영' }).click()
+  await page.locator('.flight-card').first().click()
+  await expect(page.getByText('연습 모드 · 보상/연속 기록 없음')).toBeVisible()
+  await page.reload()
+  await page.getByRole('link', { name: '기내 모드', exact: true }).click()
+  await expect(page.getByRole('link', { name: /이어서 하기/ })).toBeVisible()
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('advisor.practice.v1') ?? '{}'))
+  expect(saved.inflight).toMatchObject({ duration: 30, taste: 'operations' })
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+})
+
+for (const scenario of [
+  { game: 'minimal-repro', heading: '빈 목록에서만 합계가 NaN', choice: /입력을 0개와 1개로 줄이고/ },
+  { game: 'concurrency-sequencing', heading: '재고 1개에 주문 두 건', choice: /원자적 조건 갱신/ },
+  { game: 'bulkheads', heading: '썸네일 장애가 상품 API를 고갈', choice: /이미지 호출의 풀과 타임아웃/ },
+]) {
+  test(`신규 연습 게임 완주: ${scenario.game}`, async ({ page }) => {
+    await page.goto(`/games/practice/${scenario.game}`)
+    await expect(page.getByRole('heading', { name: scenario.heading })).toBeVisible()
+    await page.getByRole('button', { name: scenario.choice }).click()
+    await page.getByRole('button', { name: '선택하고 해설 보기' }).click()
+    await expect(page.getByText('판 뒤집기')).toBeVisible()
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('advisor.practice.v1') ?? '{}'))
+    expect(saved.completed[scenario.game]).toHaveLength(1)
+    const daily = await page.evaluate(() => JSON.parse(localStorage.getItem('advisor.learner.v1') ?? '{}'))
+    expect(daily.swipeSessions ?? {}).toEqual({})
+    expect(daily.probeSessions ?? {}).toEqual({})
+    expect(daily.boundarySessions ?? {}).toEqual({})
+  })
+}

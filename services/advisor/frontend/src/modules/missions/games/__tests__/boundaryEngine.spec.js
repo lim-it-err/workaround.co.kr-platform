@@ -13,7 +13,7 @@ describe('경계선 한 칸 엔진', () => {
     const first = pickBoundaryRound(boundaryData.boundaryRounds, '2026-08-03')
     const second = pickBoundaryRound(boundaryData.boundaryRounds, '2026-08-03')
 
-    expect(first.id).toBe('boundary-transfer-01')
+    expect(boundaryData.boundaryRounds).toContain(first)
     expect(second).toBe(first)
     expect(pickBoundaryRound([], '2026-08-03')).toBeNull()
   })

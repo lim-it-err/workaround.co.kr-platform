@@ -4,6 +4,8 @@
  * 단서에는 미끼(red herring)가 섞여 있다 — 전부 사실이지만 전부 원인은 아니다.
  */
 
+import { extraCaseFiles } from './inflightContent.js'
+
 const caseFiles = [
   {
     id: 'case-vanishing-points-01',
@@ -149,4 +151,4 @@ const caseFiles = [
   },
 ];
 
-export default { caseFiles };
+export default { caseFiles: [...caseFiles, ...extraCaseFiles] };

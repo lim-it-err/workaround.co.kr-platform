@@ -5,6 +5,8 @@
  * 원칙: 문법 오류·노골적 NPE 금지 — 평범한 입력에선 멀쩡하고 경계·운영·프레임워크 의미에서 갈리는 코드만.
  */
 
+import { extraSwipeCards } from './inflightContent.js'
+
 const REASON_TOKENS = ['정확성', '계약', '운영', '가독성', '지금은 아님'];
 
 const swipeCards = [
@@ -204,4 +206,4 @@ public void convertDormant() {
   },
 ];
 
-export default { swipeCards, REASON_TOKENS };
+export default { swipeCards: [...swipeCards, ...extraSwipeCards], REASON_TOKENS };

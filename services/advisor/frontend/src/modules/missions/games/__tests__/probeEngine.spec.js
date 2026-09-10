@@ -12,7 +12,7 @@ describe('한 번만 물어본다면 엔진', () => {
     const first = pickProbeRound(probeData.probeRounds, '2026-08-03')
     const second = pickProbeRound(probeData.probeRounds, '2026-08-03')
 
-    expect(first.id).toBe('probe-slow-api-01')
+    expect(probeData.probeRounds).toContain(first)
     expect(second).toBe(first)
     expect(pickProbeRound([], '2026-08-03')).toBeNull()
   })

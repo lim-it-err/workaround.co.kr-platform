@@ -17,6 +17,16 @@ export const missionRoutes = [
     component: () => import('./pages/GamesPage.vue'),
   },
   {
+    path: '/inflight',
+    name: 'inflight',
+    component: () => import('./pages/InflightPage.vue'),
+  },
+  {
+    path: '/games/practice/:gameId/:roundId?',
+    name: 'practice-game',
+    component: () => import('./pages/PracticeGamePage.vue'),
+  },
+  {
     path: '/games/probe',
     name: 'probe-game',
     component: () => import('./pages/ProbeGamePage.vue'),

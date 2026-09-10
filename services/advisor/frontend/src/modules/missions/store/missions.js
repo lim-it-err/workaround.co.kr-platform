@@ -8,6 +8,7 @@ import boundaryData from '../data/sampleBoundaryRounds.js'
 import caseFileData from '../data/sampleCaseFiles.js'
 import probeData from '../data/sampleProbeRounds.js'
 import seasons from '../data/sampleSeasons.js'
+import { extraMissions } from '../data/inflightContent.js'
 import {
   beginBoundarySession,
   pickBoundaryRound,
@@ -23,6 +24,9 @@ import {
   normalizeSeasonStats,
   recordSeasonGain,
 } from './seasonStats.js'
+
+const dailyProbeRounds = probeData.dailyProbeRounds ?? probeData.probeRounds
+const dailyBoundaryRounds = boundaryData.dailyBoundaryRounds ?? boundaryData.boundaryRounds
 
 const STORAGE_KEY = 'advisor.learner.v1'
 
@@ -612,7 +616,7 @@ const submissionMigrationNeeded = hasLegacySubmission(persisted.submissions)
 let journalUpdatedAt = persisted._sync?.journalUpdatedAt ?? null
 
 const state = reactive({
-  missions: sample.missions,
+  missions: [...sample.missions, ...extraMissions],
   submissions: migrateSubmissions(persisted.submissions), // missionId -> [{ files, submittedAt, by }] (버전별, 재제출 시 append)
   explanations: persisted.explanations ?? {}, // missionId -> { text, submittedAt, by }
   chats: persisted.chats ?? {},               // missionId -> [{ role: 'me'|'agent', text, at }]
@@ -1085,15 +1089,15 @@ export function useMissions() {
 
     probeRoundForDate(dateStr = localDateStr()) {
       const savedRoundId = state.probeSessions[dateStr]?.roundId
-      return probeData.probeRounds.find((round) => round.id === savedRoundId)
-        ?? pickProbeRound(probeData.probeRounds, dateStr)
+      return dailyProbeRounds.find((round) => round.id === savedRoundId)
+        ?? pickProbeRound(dailyProbeRounds, dateStr)
     },
 
     chooseProbe(probeKey) {
       const dateStr = localDateStr()
       if (state.probeSessions[dateStr]) return false
-      const round = probeData.probeRounds.find(
-        (candidate) => candidate.id === pickProbeRound(probeData.probeRounds, dateStr)?.id,
+      const round = dailyProbeRounds.find(
+        (candidate) => candidate.id === pickProbeRound(dailyProbeRounds, dateStr)?.id,
       )
       const session = beginProbeSession(round, probeKey)
       if (!session) return false
@@ -1106,7 +1110,7 @@ export function useMissions() {
     chooseProbeVerdict(verdictKey) {
       const dateStr = localDateStr()
       const session = state.probeSessions[dateStr]
-      const round = probeData.probeRounds.find((candidate) => candidate.id === session?.roundId)
+      const round = dailyProbeRounds.find((candidate) => candidate.id === session?.roundId)
       const settled = settleProbeSession(round, session, verdictKey)
       if (!session || settled === session) return false
 
@@ -1121,14 +1125,14 @@ export function useMissions() {
 
     boundaryRoundForDate(dateStr = localDateStr()) {
       const savedRoundId = state.boundarySessions[dateStr]?.roundId
-      return boundaryData.boundaryRounds.find((round) => round.id === savedRoundId)
-        ?? pickBoundaryRound(boundaryData.boundaryRounds, dateStr)
+      return dailyBoundaryRounds.find((round) => round.id === savedRoundId)
+        ?? pickBoundaryRound(dailyBoundaryRounds, dateStr)
     },
 
     chooseBoundary(boundaryKey) {
       const dateStr = localDateStr()
       if (state.boundarySessions[dateStr]) return false
-      const round = pickBoundaryRound(boundaryData.boundaryRounds, dateStr)
+      const round = pickBoundaryRound(dailyBoundaryRounds, dateStr)
       const session = beginBoundarySession(round, boundaryKey)
       if (!session) return false
 

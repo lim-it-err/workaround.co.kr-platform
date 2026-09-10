@@ -11,6 +11,8 @@
  *   recommendedKey, recommendNote }
  */
 
+import { extraBoundaryRounds } from './inflightContent.js'
+
 const boundaryRounds = [
   {
     id: 'boundary-order-01',
@@ -112,4 +114,7 @@ const boundaryRounds = [
   },
 ];
 
-export default { boundaryRounds };
+export default {
+  boundaryRounds: [...boundaryRounds, ...extraBoundaryRounds],
+  dailyBoundaryRounds: boundaryRounds,
+};
