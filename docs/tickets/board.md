@@ -32,10 +32,13 @@
 - `TKT-078` `P1` `v0.7.0` `진행 가능` `[INFRA]` 화이트채플 아케이드 편입 마감 — 라우팅·매니페스트 (코드 subtree 흡수는 2026-08-16 완료, D-003~005)
 - `TKT-080` `P1` `v0.7.0` `진행 가능` `[BE]` advisor 서비스 계약 마감 — /health·라우트·매니페스트·빌드 게이트
 
+## Need Review
+
+- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 12종 — r2 통과(390px 잘림 해소), **PO 폰 육안 승인 대기**
+
 ## Ready
 
 - `TKT-103` `P1` `v0.7.0` `ready` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함 — workflow·prepare 확장 (079 언블록 선행)
-- `TKT-104` `P2` `advisor` `ready` `[FE]` Inflight pill 접근성 후속 — aria-pressed 바인딩 (REV-098 [중요])
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
@@ -44,7 +47,7 @@
 
 ## Started
 
-- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r1 반려 (writing-studio.html 390px 잘림 1건, 나머지 11개 인정)
+- `TKT-104` `P2` `advisor` `started` `[FE]` Inflight pill aria-pressed 바인딩·선택 상태 회귀 테스트 (codex-1)
 
 - `TKT-079` `P1` `v0.7.0` `blocked` `[FE]` Advisor 정적 진입 — PM 답변 완료: 배포 파트는 TKT-103 [INFRA] 분리, 103 need_review 진입 시 착수
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
@@ -52,6 +55,8 @@
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
+- `TKT-102` `P1` `chore` `need_review` `[목업]` r2 — writing-studio 제목 줄바꿈 수정, 390px 포함 5개 폭·build 통과 (다른 11개 목업 불변)
 
 
 

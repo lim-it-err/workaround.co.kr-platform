@@ -47,3 +47,9 @@
 
 ## PM 판정 (2026-09-10) — **반려 → started (r2 요청)**
 [중요] writing-studio.html 390px 제목 잘림 1건 수정 후 재제출. 이 화면은 톤 전환의 대표 화면이라 PO 육안 승인 전에 결함 0 이어야 한다. 나머지 11개 파일·형식 요건은 전부 인정 — r2 는 해당 파일 수정만 확인한다. PO 폰 검토는 r2 통과 + 커밋·배포 후 진행.
+
+## PM r2 판정 (2026-09-10) — **통과 (PO 육안 승인 대기)**
+
+- 수정 방식 인정: 제목 input→textarea(field-sizing:content, rows=2 fallback). 부관이 5개 뷰포트 실측 + 나머지 11개 SHA-256 동일 검증.
+- PM 직접 재측정 (390×844, dist 빌드): title scrollWidth=clientWidth=350, scrollHeight=clientHeight=75, 페이지 가로 overflow 0 — [중요] 해소 확인. build 그린, dist 12개 복사 확인.
+- finished 전환은 PO 폰 육안 승인 후. 커밋·배포하여 공개 URL 로 검토 요청한다.

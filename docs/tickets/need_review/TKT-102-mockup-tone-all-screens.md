@@ -1,8 +1,8 @@
-문서 상태: 작성완료
+﻿문서 상태: 작성완료
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `started` (r1 반려 2026-09-10 — REV-TKT-102-r1 [중요] 1건: writing-studio.html 390px 제목 잘림 수정 후 재제출)
+- 상태: `need_review` (r2 통과 — PM 2026-09-10, PO 폰 육안 승인 대기)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
@@ -49,3 +49,16 @@
 - 확인 URL: `/mockups/index.html`에서 전체 화면으로 이동. 개별 화면은 `/mockups/<파일명>.html`.
 - 검증: `npm --prefix frontend run build` 통과(Vite 33 modules), `frontend/dist/mockups/`에 12개 복사 확인, 각 파일 고정 배너 1회·viewport 선언·외부 URL/CDN/스크립트 없음 확인.
 - 제약: 앱 코드(`frontend/src/**`)는 수정하지 않았고 정적 목업만 추가했다.
+
+### r2 재작업 인계 (codex-4 전속부관, 2026-09-10)
+
+- 대상: `REV-TKT-102-r1`의 [중요] 1건. 구현 변경은 `frontend/public/mockups/writing-studio.html` 하나뿐이며, 나머지 목업 11개는 재작업 전후 SHA-256 동일함을 검증했다.
+- 원인 재현: Chromium 390×844에서 기존 제목 `input`의 `scrollWidth=367`, `clientWidth=350`으로 내부 17px 잘림 확인. 페이지 전체 overflow는 0이어서 요소 자체 측정이 필요했다.
+- 수정: 같은 제목·30px/34px 글꼴 크기를 유지하며 여러 줄 `textarea`로 전환했다. `field-sizing:content`로 내용에 맞춰 높이를 늘리고, 미지원 환경에는 `rows=2`와 세로 크기 조절을 남겼다. 단어 단위 줄바꿈 및 긴 단어 줄바꿈을 허용했다. 외부 의존성·스크립트·앱 로직 변경 없음.
+- 브라우저 검증: 빌드된 HTML을 Chromium에서 375×812, 390×844, 540×844, 541×844, 1440×844로 직접 열었다. 모두 제목 내부 가로/세로 잘림 0·페이지 가로 overflow 0, primary 1개, 최초 화면 본문 클릭·타이핑 성공. 긴 제목으로 변경 시 높이 자동 확장도 확인했다. 390px 결과는 `clientWidth=scrollWidth=350`, `clientHeight=scrollHeight=75`이며 390px/1440px 스크린샷을 직접 육안 확인했다.
+- 호환성 확인: Chromium에서 `field-sizing:fixed`를 강제로 적용해 2행 fallback에서도 예시 제목 전체 표시를 확인했다. 별도 WebKit 브라우저는 설치되어 있지 않아 Safari 실기 검증은 하지 않았다.
+- 완료 게이트: `npm --prefix frontend run build` 통과(Vite 6.4.3, 36 modules), `frontend/dist/mockups/` 12개와 원본 바이트 일치, 12개 모두 고정 배너 1회·viewport·외부 URL/스크립트 없음, `git diff --check` 통과.
+- 확인 URL: `/mockups/index.html` → `/mockups/writing-studio.html`. 이번 변경은 로컬이며 공개 Pages 반영은 PM 판정·커밋·배포 이후다.
+- 검증 자료: `/private/tmp/tkt102-r2.muTOW1/`의 `verify.cjs`, `before-hashes.json`, `before-results.json`, `after-results.json`, `before-chromium-390.png`, `after-chromium-390.png`, `after-chromium-1440.png` (임시 경로, 정리 시 소실 가능).
+- 재현 명령: Playwright가 설치된 Node 환경에서 `node /private/tmp/tkt102-r2.muTOW1/verify.cjs after`. 이번 실행은 `NODE_PATH=/Users/imjeonghan/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules`를 사용했다.
+- 브랜치: `codex/v0.6.0-line`. git commit·push·배포·PM 최종 판정은 수행하지 않았다.

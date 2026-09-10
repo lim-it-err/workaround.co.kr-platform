@@ -1,8 +1,11 @@
-문서 상태: 작성완료
+﻿문서 상태: 작성완료
 
 # TKT-104 `[FE]` Inflight 필터 pill 접근성 후속 — aria-pressed
 
-- 상태: ready
+## 메타데이터
+
+- 문서 상태: 작성완료
+- 상태: started (2026-09-10 codex-1 인박스 지정 착수)
 - 우선순위: P2 (REV-TKT-098-r1 [중요] 후속)
 - 담당: codex-1 (FE)
 - scope: `services/advisor/frontend/src/modules/missions/pages/InflightPage.vue` (+해당 테스트)
