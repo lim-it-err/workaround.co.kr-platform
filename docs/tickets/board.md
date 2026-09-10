@@ -27,39 +27,44 @@
 - `TKT-066` `P2` `v0.8.0` `v0.8.0 진행 시 가능` 발견 노선 depth 2~3 확장 API + 캐싱
 - `TKT-067` `P2` `v0.9.0` `v0.9.0 진행 시 가능` 취향 노선 - 10선택 규칙 기반 와인/커피 추천
 - `TKT-068` `P2` `infra` `진행 가능` `[INFRA]` RTX5070 Ollama 실제 구동 + 게이트웨이 연결 검증 (하드웨어 단계는 PO 협조 항목으로 분리 기록)
-- `TKT-074` `P1` `chore` `ready` `[SIM]` S4 시뮬 페이지 재구현 — 스펙 완료: `design/sim-taxi-spec.md` (택시 지도), work/runtime 명료화는 [FE] 후속 분할 - 시뮬/운영 페이지 사인 [시안 적용]
+- `TKT-074` `P1` `chore` `blocked/진행 불가` `[SIM]` S4 택시 지도 — 보드 SIM 배정과 PM 직접 수행 기록 충돌, 택시 단독 범위·5개 페이지 완료 기준 정렬 PM 대기 (스펙: `design/sim-taxi-spec.md`)
 - `TKT-075` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S5 - App.vue 컴포넌트 분해 [시안 적용]
 - `TKT-078` `P1` `v0.7.0` `진행 가능` `[INFRA]` 화이트채플 아케이드 편입 마감 — 라우팅·매니페스트 (코드 subtree 흡수는 2026-08-16 완료, D-003~005)
-- `TKT-079` `P1` `v0.7.0` `진행 가능` `[FE]` advisor 사이트 진입 + 디자인·프레임 통합 — **PO 2026-09-09 "창이 없다"** → 승격. 1단계: /advisor 정적 빌드 연결+노선도 A 개통(임시 upcoming 표기는 2026-09-09 선반영), 2단계: 모선 룩앤필
 - `TKT-080` `P1` `v0.7.0` `진행 가능` `[BE]` advisor 서비스 계약 마감 — /health·라우트·매니페스트·빌드 게이트
 
 ## Ready
 
-- `TKT-097` `P0` `voyage` `ready` `[FE]` 정적 모드 글쓰기 UX — localStorage 고지/복원/백업 (codex-1 단독)
-- `TKT-100` `P1` `chore` `ready` `[FE]` Writing Studio 전면 재설계 — "글 쓰는 방" (스펙 `design/writing-studio-spec.md`, 097 need_review 진입 시 착수 가능)
-- `TKT-101` `P1` `chore` `ready` `[FE]` 시뮬 묶음 단일 진입 "미스터리 트레인" — 노선도 E·T 제거→S 지선 1개 (D-012)
-- `TKT-102` `P1` `chore` `ready` `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담, scope=frontend/public/mockups (PO: 전 화면 html)
+- `TKT-103` `P1` `v0.7.0` `ready` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함 — workflow·prepare 확장 (079 언블록 선행)
+- `TKT-104` `P2` `advisor` `ready` `[FE]` Inflight pill 접근성 후속 — aria-pressed 바인딩 (REV-098 [중요])
+
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
 
 
-- `TKT-082` `P1` `chore` `ready` `[SIM]` 택시 디스패치 버그 — 진단 절차: `design/sim-taxi-spec.md` §1 (지도보다 먼저) — 유휴 차량이 큐를 집지 않음 (PO 실사용 보고, TKT-074 와 함께 claude 직접)
 
 ## Started
 
+- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r1 반려 (writing-studio.html 390px 잘림 1건, 나머지 11개 인정)
+
+- `TKT-079` `P1` `v0.7.0` `blocked` `[FE]` Advisor 정적 진입 — PM 답변 완료: 배포 파트는 TKT-103 [INFRA] 분리, 103 need_review 진입 시 착수
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
 
-- `TKT-098` `P1` `advisor` `need_review` `[FE]` Advisor 기내 콘텐츠 팩 — 130개 신규 단위·미션 6·전체 연습, unit 44/E2E 15/build 통과
 
 
 
 
 
 ## Finished
+
+- `TKT-097` `[FE]` 정적 모드 글쓰기 UX — r1 통과 (2026-09-10)
+- `TKT-100` `[FE]` Writing Studio 재설계 "글 쓰는 방" — r1 통과
+- `TKT-101` `[FE]` 미스터리 트레인 S 단일 진입 — r1 통과 (D-012 개통)
+- `TKT-082` `[SIM]` 택시 유휴 재배차 수정 — r1 통과 (E2E 30초 관찰 포함)
+- `TKT-098` `[FE]` Advisor 기내 콘텐츠 팩 — r1 통과, [중요] aria 후속=TKT-104
 
 - `TKT-096` `[INFRA]` GitHub Pages 여행 우선 공개 — **라이브** https://lim-it-err.github.io/workaround.co.kr-platform/ (2026-09-09)
 

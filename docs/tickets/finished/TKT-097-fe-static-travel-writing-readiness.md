@@ -1,5 +1,6 @@
-문서 상태: 작성완료 (PM 추인 2026-09-09 — 대리 발행 초안을 정식 승격)
-﻿# TKT-DRAFT — GitHub Pages용 여행·글쓰기 정적 UX 준비
+﻿문서 상태: 작성완료 (PM 추인 2026-09-09 — 대리 발행 초안을 정식 승격)
+
+# TKT-097 — GitHub Pages용 여행·글쓰기 정적 UX 준비
 
 ## 메타데이터
 
@@ -7,7 +8,7 @@
 - 발행자: codex-4 전속부관 (**PM 대리인**, PO 직접 지시)
 - 발행 시각: 2026-09-08 KST
 - 우선순위: P0 (여행 중 노트북 OFF 열람·작성)
-- 상태: `inbox/draft` — 타이머 비활성 기간, 자동 착수 금지
+- 상태: `finished` (REV-TKT-097-r1 통과, PM 판정 2026-09-10)
 - 담당: `codex-1 화면` `[FE]` 단독
 - 대상: 모선 Vue의 Line V·Blog District 정적 사용성
 - 배포 티켓: TKT-DRAFT-20260908-0336 (`codex-2 플랫폼` 별도 소유)
@@ -57,3 +58,20 @@ GitHub Pages처럼 API가 없는 정적 환경에서도 여행 콘텐츠와 글�
 ## 작업자 전달
 
 - 타이머는 현재 비활성이다. PO가 수동 착수를 지시하면 `codex-1 화면`이 단독 수행한다.
+
+## 구현 결과 (codex-1, 2026-09-09)
+
+- `import.meta.env.BASE_URL`을 기준으로 project base를 보존하는 내부 경로·직접 진입 라우팅을 추가했다. `/voyage`, `/blog-district`, `/blog`, `/blog/:slug`, `/studio`와 기존 검수 경로가 `/workaround.co.kr-platform/` 아래에서도 동작한다.
+- project base 빌드를 정적 모드로 분리해 gateway/API 폴링을 시작하지 않고, Work·Runtime·Elevator·Taxi 진입은 `정적 공개본에서는 사용할 수 없음`으로 표시한다. Line V와 Blog District는 정적 이용 가능 상태로 유지한다.
+- V03 도시 기록과 Writing Studio에 동일한 로컬 저장 고지·손실 조건을 추가하고, `저장 중`/`저장됨`/`저장 실패` 피드백을 실제 localStorage 기록 결과에 연결했다.
+- 여행 스탬프·메모와 블로그 초안을 한 JSON 파일로 내려받는 `내 기록 백업`을 두 글쓰기 화면에 추가했다. 서버 업로드·로그인·계정 동기화는 추가하지 않았다.
+- 여행 메모, 블로그 초안, Writing Studio의 현재 편집 대상 복원을 실제 새로고침으로 확인했다. 9/8·9/9 독립 상세 세션도 정적 project base에서 각각 열었다.
+
+## 완료 게이트
+
+- [x] `node --test frontend/src/staticRouting.test.mjs frontend/src/staticWritingState.test.mjs frontend/src/data/voyageCoverage.test.mjs` — 3/3 통과.
+- [x] `npm --prefix frontend run build` — Vite production build 통과(33 modules).
+- [x] `npm --prefix frontend run build -- --base=/workaround.co.kr-platform/` — Pages base build 통과(33 modules).
+- [x] 실제 Chromium 375×812 다크/라이트에서 V03·Writing Studio 확인 — document/body/scroller 가로 overflow 0, 로컬 저장 고지 노출.
+- [x] 브라우저 실동작 — 1·2일차 상세, 메모 저장→새로고침 복원, 초안 저장→현재 편집 대상 복원, JSON 백업, 정적 서버 노선 차단, 콘솔 `/api` 오류 0.
+- [x] `git diff --check` 통과. 커밋·push 없음.

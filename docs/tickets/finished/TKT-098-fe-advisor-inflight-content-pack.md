@@ -1,5 +1,5 @@
-문서 상태: 작성완료 (PM 추인 2026-09-09 — 대리 발행 초안을 정식 승격)
-﻿# TKT-DRAFT — Developer Advisor 기내 로컬 팩·콘텐츠 대확장
+﻿문서 상태: 작성완료 (PM 추인 2026-09-09 — 대리 발행 초안을 정식 승격)
+# TKT-098 — Developer Advisor 기내 로컬 팩·콘텐츠 대확장
 
 ## 메타데이터
 
@@ -7,7 +7,7 @@
 - 발행자: codex-4 전속부관 (**PM 대리인**, PO 직접 지시)
 - 발행 시각: 2026-09-08 03:35 KST
 - 우선순위: P1 (장거리 비행 활용)
-- 상태: `inbox/draft` — 타이머 비활성 기간, 자동 착수 금지
+- 상태: `finished` (REV-TKT-098-r1 통과, PM 판정 2026-09-10)
 - 담당: `codex-1 화면` `[FE]` 단독 (여행 P0 완료 후 착수, 큰 태스크 사전 분할 의무)
 - 대상: `workaround.co.kr-platform/services/advisor/frontend/**` 로컬 실행
 - 기준 결정: D-004, D-008
@@ -166,3 +166,27 @@
 ## 작업자 전달
 
 - 타이머는 현재 비활성이다. PO가 수동 착수를 지시하면 여행 P0를 끝낸 `codex-1 화면`이 이 티켓을 단독 수행하며, 위 5분할 사양부터 만든다.
+
+## 구현 결과
+
+- `dev-018`~`dev-022` 5개 내부 사양으로 선분할한 뒤 순서대로 구현했다.
+- `/inflight` 기내 팩, `/games` 전체 연습 카탈로그, `advisor.practice.v1` 독립 저장, 사건 파일 자유 열람·스포일러 접기, 신규 게임 3종을 연결했다.
+- 기존 콘텐츠는 독서 20·영화 16·swipe 36·probe 15·boundary 12·사건 파일 8개/40화로 확장했다.
+- 신규 게임은 3종×8판, 신규 단독 미션은 6개(Easy/Normal/Hard 각 2개), 사건 파일을 일차별로 센 전체 신규 학습 단위는 130개다.
+- daily 판정 풀은 기존 날짜 시드를 유지하고 practice만 전체 확장 풀을 사용해 보상 중복과 날짜별 회귀를 막았다.
+- 세부 파일·검증·미완 항목은 `services/advisor/collab/outbox/dev-018-report.md`~`dev-022-report.md`에 기록했다.
+
+## 검증 결과
+
+- `npm run test:unit`: 8 files, 44 tests 통과.
+- `npm run test:e2e`: Chromium 15 tests 통과(기존 11 + 기내 복원 1 + 신규 게임 대표 3).
+- `npm run build`: Vite production build 성공(96 modules).
+- 백엔드 요청 차단 E2E에서 기존 게임 3종·사건 파일·신규 게임 3종과 저장 복원을 확인했다.
+- 375×812에서 `documentElement.scrollWidth <= innerWidth` 통과, 브라우저 육안 확인 및 접근성 트리의 버튼 이름 확인.
+- `git diff --check -- services/advisor/frontend services/advisor/README.md services/advisor/collab`: 통과.
+
+## PR 준비 메모
+
+- 권장 제목: `feat(advisor): add offline inflight pack and full practice catalog`
+- 커밋·push는 수행하지 않았다.
+- `services/advisor/service/**`, `infra/public-site/**`, 모선 `frontend/**`의 기존 미커밋 변경은 건드리지 않았다.

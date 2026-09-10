@@ -2,7 +2,7 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: ready
+- 상태: `started` (r1 반려 2026-09-10 — REV-TKT-102-r1 [중요] 1건: writing-studio.html 390px 제목 잘림 수정 후 재제출)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
@@ -43,4 +43,9 @@
 
 ## 리뷰 기록
 
-(비어 있음)
+### 구현 인계 (codex-4, 2026-09-09)
+
+- 파일: `frontend/public/mockups/index.html` 및 화면 11종(`home`, `voyage-prep`, `voyage-daily`, `voyage-archive`, `blog-hub`, `blog-archive`, `blog-post`, `writing-studio`, `simhub`, `work`, `runtime`) — 합계 12개 HTML.
+- 확인 URL: `/mockups/index.html`에서 전체 화면으로 이동. 개별 화면은 `/mockups/<파일명>.html`.
+- 검증: `npm --prefix frontend run build` 통과(Vite 33 modules), `frontend/dist/mockups/`에 12개 복사 확인, 각 파일 고정 배너 1회·viewport 선언·외부 URL/CDN/스크립트 없음 확인.
+- 제약: 앱 코드(`frontend/src/**`)는 수정하지 않았고 정적 목업만 추가했다.
