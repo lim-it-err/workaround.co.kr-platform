@@ -200,7 +200,7 @@ function chooseCity(city) {
           <p v-if="!visibleCandidates.length" class="empty-result">이 조건의 후보는 없습니다.</p>
         </div>
 
-        <a class="source-link" :href="VOYAGE.sourceNote.url" target="_blank" rel="noreferrer">설계 대화 원문 보기</a>
+        <a v-if="VOYAGE.sourceNote.url" class="source-link" :href="VOYAGE.sourceNote.url" target="_blank" rel="noreferrer">설계 대화 원문 보기</a>
       </div>
     </details>
   </section>

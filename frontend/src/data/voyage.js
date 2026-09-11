@@ -142,7 +142,7 @@ export const VOYAGE = {
 
   sourceNote: {
     title: '2026년 7월 여행 설계 대화',
-    url: 'https://claude.ai/share/62c3c876-4a3e-4075-93b6-0eade9626cc7',
+    url: null, // 공개 번들에서 외부 공유 대화 링크 제거 (AS-R006 발견 1, 2026-09-11). 원문 참조는 docs/ 내부 기록에만.
     label: '당시 검토안',
     checkedAt: '2026-08-17',
     notice: '가격·별점·영업시간은 당시 비교값입니다. 예약과 출발 직전에 공식 채널에서 다시 확인하세요.'
