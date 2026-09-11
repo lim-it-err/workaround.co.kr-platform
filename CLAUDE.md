@@ -15,7 +15,7 @@
 - `need_review` 티켓을 **직접 검증**으로 리뷰한다: frontend `npm --prefix frontend run build`, gateway `mvn -q package`(+ 기동·`/api/health` 응답), 컨테이너 변경 시 compose 기동.
 - UI/UX 작업 전 `design/` 기준선 문서를 읽는다. 디자이너 트랙 산출물(`design/orchestrator_review/`, `design/review_done/`)은 보존한다.
 - 프로덕션 코드는 직접 수정하지 않는다 — 예외: PO 직접 지시.
-- 커밋 주체는 Claude. push는 PO 지시 시에만 (Q-004 확정 전까지 로컬 커밋 기본).
+- 커밋 주체는 Claude. push는 PO 지시 시에만 (Q-004 확정 전까지 로컬 커밋 기본). **트렁크 `codex/v0.6.0-line` push 는 PO 승인(2026-09-09) — Pages 자동 배포.** 여러 티켓을 한 커밋에 묶을 때는 본문에 티켓별 파일 목록을 적는다 (AS-R007).
 - 의사결정은 `docs/decisions.md`에 PO 발언 인용과 함께 기록하고, 작업은 `docs/history/YYYY-MM-DD.md`에 남긴다.
 
 ## 세션 시작 시퀀스

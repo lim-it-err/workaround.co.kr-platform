@@ -5,7 +5,7 @@
 ## 메타데이터
 
 - 문서 상태: 작성완료
-- 상태: need_review (2026-09-10 구현·검증 완료, PM 최종 판정 대기)
+- 상태: `finished` (REV-TKT-104-r1 통과, PM 2026-09-11)
 - 우선순위: P2 (REV-TKT-098-r1 [중요] 후속)
 - 담당: codex-1 (FE)
 - scope: `services/advisor/frontend/src/modules/missions/pages/InflightPage.vue` (+해당 테스트)

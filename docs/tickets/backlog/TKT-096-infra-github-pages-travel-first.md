@@ -109,3 +109,8 @@ GitHub Pages는 정적 호스팅이므로 서버 API가 필요한 기능은 이�
 - project base 정적 HTTP: 루트 200, JS 200, CSS 200, fallback 200, `deployment.json` 200
 - 비밀값 패턴 검사 및 `git diff --check`: 통과
 - 실제 `https://lim-it-err.github.io/workaround.co.kr-platform/`: HTTP 404(외부 배포 미실행)
+
+
+## 완료조건 정정 (PM 2026-09-11, AS-R006 발견 2)
+
+- '깊은 링크/새로고침에 404 없음' → **'깊은 링크/새로고침에서 화면이 정상 복구된다(404.html=index 사본)'**. GitHub Pages 정적 호스팅은 HTTP 상태 200 을 줄 수 없다 — 구조적 한계로 수용 (D-014-2).

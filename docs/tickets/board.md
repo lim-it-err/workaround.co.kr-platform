@@ -38,7 +38,7 @@
 
 ## Ready
 
-- `TKT-103` `P1` `v0.7.0` `ready` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함 — workflow·prepare 확장 (079 언블록 선행)
+- `TKT-103` `P1` `v0.7.0` `ready` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함 — **codex-2 미착수(09-10~11 활동 없음, 틱 확인 필요)**
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
@@ -67,6 +67,8 @@
 
 
 ## Finished
+
+- `TKT-104` `[FE]` Inflight pill aria-pressed — r1 통과 (2026-09-11)
 
 - `TKT-097` `[FE]` 정적 모드 글쓰기 UX — r1 통과 (2026-09-10)
 - `TKT-100` `[FE]` Writing Studio 재설계 "글 쓰는 방" — r1 통과
