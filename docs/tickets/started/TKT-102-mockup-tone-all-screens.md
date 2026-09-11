@@ -2,7 +2,7 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `need_review` (r2 통과 — PM 2026-09-10, PO 폰 육안 승인 대기)
+- 상태: `started` (r3 — PO 방향 지시 2건 반영: 홈 간단 노선도 + 카테고리 위계 목록. 원칙 5·6 참조)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
@@ -62,3 +62,12 @@
 - 검증 자료: `/private/tmp/tkt102-r2.muTOW1/`의 `verify.cjs`, `before-hashes.json`, `before-results.json`, `after-results.json`, `before-chromium-390.png`, `after-chromium-390.png`, `after-chromium-1440.png` (임시 경로, 정리 시 소실 가능).
 - 재현 명령: Playwright가 설치된 Node 환경에서 `node /private/tmp/tkt102-r2.muTOW1/verify.cjs after`. 이번 실행은 `NODE_PATH=/Users/imjeonghan/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules`를 사용했다.
 - 브랜치: `codex/v0.6.0-line`. git commit·push·배포·PM 최종 판정은 수행하지 않았다.
+
+
+## r3 지시 (PM, 2026-09-11 — PO 목업 검토 피드백)
+
+대상: `home.html` 1개 파일 (+ 필요 시 `index.html` 목차 문구). 나머지 10개는 무변경 (SHA 유지).
+
+1. **간단 노선도 삽입** — 점선 플레이스홀더 자리에 인라인 SVG 약도. 원칙 6: 색 라인+노선명만, 상태·부제·통계 금지, 미개통(발견·취향·배움 미개통분)은 저채도 점선, 선 두께 얇게. 실좌표는 frontend/src/data/lines.js 를 참고하되 목업은 단순화 허용.
+2. **목록을 카테고리 위계로** — 원칙 5 의 6묶음(글쓰기/여행/배움/놀이/운영/개통 예정). 노선 동급 나열 금지. 글쓰기 카테고리 안에 공개 아카이브·글 상세·Writing Studio 가 들어간다.
+3. 검증: 390px 잘림 0·오버플로 0 (r2 와 동일 절차), 변경 파일 외 SHA 동일.
