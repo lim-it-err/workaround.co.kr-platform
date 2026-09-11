@@ -60,11 +60,11 @@ function update(key, value) {
     <section class="controls card" aria-label="기내 콘텐츠 설정">
       <div class="control-row">
         <span class="label">시간</span>
-        <button v-for="duration in durations" :key="duration" class="pill" :class="{ active: prefs.duration === duration }" @click="update('duration', duration)">{{ durationLabels[duration] }}</button>
+        <button v-for="duration in durations" :key="duration" class="pill" :class="{ active: prefs.duration === duration }" :aria-pressed="prefs.duration === duration" @click="update('duration', duration)">{{ durationLabels[duration] }}</button>
       </div>
       <div class="control-row">
         <span class="label">취향</span>
-        <button v-for="taste in tastes" :key="taste.id" class="pill" :class="{ active: prefs.taste === taste.id }" @click="update('taste', taste.id)">{{ taste.label }}</button>
+        <button v-for="taste in tastes" :key="taste.id" class="pill" :class="{ active: prefs.taste === taste.id }" :aria-pressed="prefs.taste === taste.id" @click="update('taste', taste.id)">{{ taste.label }}</button>
       </div>
       <div class="control-row compact">
         <label><input :checked="prefs.showSeen" type="checkbox" @change="update('showSeen', $event.target.checked)" /> 본 콘텐츠 포함</label>
