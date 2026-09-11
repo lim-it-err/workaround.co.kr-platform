@@ -53,3 +53,9 @@
 - 수정 방식 인정: 제목 input→textarea(field-sizing:content, rows=2 fallback). 부관이 5개 뷰포트 실측 + 나머지 11개 SHA-256 동일 검증.
 - PM 직접 재측정 (390×844, dist 빌드): title scrollWidth=clientWidth=350, scrollHeight=clientHeight=75, 페이지 가로 overflow 0 — [중요] 해소 확인. build 그린, dist 12개 복사 확인.
 - finished 전환은 PO 폰 육안 승인 후. 커밋·배포하여 공개 URL 로 검토 요청한다.
+
+## PM r3 판정 (2026-09-11) — **통과 (PO 최종 육안 승인 대기)**
+
+- home.html: 인라인 SVG 약도(8지선, 배지+노선명만, A·D·P 저채도 점선) + 카테고리 6묶음(글쓰기/여행/배움/놀이/운영/개통 예정) 시각표 행. index.html 은 원칙 5·6 문구만.
+- PM 직접 측정(390×844, dist): 페이지 overflow 0, SVG 335×278 우측 370(<390), 면 채움 요소 = 배너 1개뿐. 육안: 원칙 1·2·5·6 충족, 조잡하지 않음.
+- 부관 검증(6개 폭·링크 10개 클릭·글자 200%) 인정. 나머지 10개 SHA 동일.

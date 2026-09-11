@@ -2,7 +2,7 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `started` (r3 — PO 방향 지시 2건 반영: 홈 간단 노선도 + 카테고리 위계 목록. 원칙 5·6 참조)
+- 상태: `need_review` (r3 통과 — PM 2026-09-11, PO 최종 육안 승인 대기)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
@@ -71,3 +71,16 @@
 1. **간단 노선도 삽입** — 점선 플레이스홀더 자리에 인라인 SVG 약도. 원칙 6: 색 라인+노선명만, 상태·부제·통계 금지, 미개통(발견·취향·배움 미개통분)은 저채도 점선, 선 두께 얇게. 실좌표는 frontend/src/data/lines.js 를 참고하되 목업은 단순화 허용.
 2. **목록을 카테고리 위계로** — 원칙 5 의 6묶음(글쓰기/여행/배움/놀이/운영/개통 예정). 노선 동급 나열 금지. 글쓰기 카테고리 안에 공개 아카이브·글 상세·Writing Studio 가 들어간다.
 3. 검증: 390px 잘림 0·오버플로 0 (r2 와 동일 절차), 변경 파일 외 SHA 동일.
+
+### r3 재작업 인계 (codex-4 전속부관, 2026-09-11)
+
+- 구현 변경 파일: `frontend/public/mockups/home.html`, `frontend/public/mockups/index.html`(원칙 5·6 요약 문구만). 다른 목업 10개는 착수 시 SHA-256과 동일하며, r2의 `writing-studio.html` 수정도 그대로 보존했다.
+- 홈 노선도: `lines.js`의 중앙 환승점과 좌우 8개 지선을 모바일용 인라인 SVG로 단순화했다. 경로는 2px 선, B·V·S·W·R은 실토큰 색, 미개통 A·D·P는 저채도 점선이다. 그림에는 노선명·원형 문자 배지만 표시하고 상태·부제·통계는 넣지 않았다. 접근성용 제목/설명과 상단 원형 배지를 유지했다.
+- 목록: 글쓰기 / 여행 / 배움 / 놀이 / 운영 / 개통 예정의 6개 카테고리 아래 시각표 행으로 묶었다. 글쓰기 안에 공개 아카이브·글 상세·Writing Studio, 여행 안에 중부유럽 순환선과 준비·일일 안내·기록 진입을 배치했다. 운영 2개 행은 보호 구역, Advisor는 연결 준비 중, 발견·취향은 준비 중으로 표시한다. 미개통 항목은 작동하는 척하는 링크 없이 비활성 텍스트로 둔다.
+- 브라우저 검증: 빌드된 HTML을 Chromium 151.0.7922.34에서 320/375/390/540/541/1440×844로 검증했다. 6개 폭 모두 페이지 가로 overflow 0, 요소 내부 가로 잘림 0, SVG 라벨 화면 밖 잘림 0, 라벨 간 겹침 0이다. 390px/1440px 전체 스크린샷을 직접 육안 확인했다.
+- 이동 검증: 홈의 링크 10개를 실제 클릭해 목적 HTML로 이동 확인, 목차→홈 복귀 확인, Tab→공개 아카이브→Enter 이동 확인. 390px 루트 글자 200%에서도 가로 overflow·요소 내부 잘림 0. 브라우저 오류 0. 미개통 링크 0·내용 행 배경 채움 0·A/D/P 점선 확인.
+- 완료 게이트: `npm --prefix frontend run build` 통과(Vite 6.4.3, 36 modules), `frontend/dist/mockups/`의 12개 HTML이 원본과 바이트 단위 일치. 모든 파일에 고정 배너 1회·viewport 존재, 외부 의존성/스크립트 없음, 로컬 링크 대상 존재. `git diff --check` 통과.
+- 확인 URL 경로: `/mockups/index.html` → `/mockups/home.html`. 이번 수정은 로컬 목업만이며 공개 Pages 반영은 PM 판정·커밋·배포 이후다. 스플래시와 실제 앱(`frontend/src/**`)은 무변경.
+- 검증 자료: `/private/tmp/tkt102-r3.ixTEnq/verify.cjs`, `results.json`, `home-390.png`, `home-1440.png`, `home-390-text-200.png`(임시 파일, 정리 시 소실 가능). 결과 JSON에 전체 파일 SHA-256·뷰포트별 측정치를 포함했다.
+- 재현: `NODE_PATH=/Users/imjeonghan/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules node /private/tmp/tkt102-r3.ixTEnq/verify.cjs`. 로컬 임시 브라우저만 사용했다. macOS sandbox의 브라우저 기동 제한은 해당 검증 명령에 한해 승인된 실행으로 해결했다.
+- 제약: Safari/WebKit 실기 미검증. PowerShell 부재로 수정 문서 3개의 BOM/UTF-8은 Node의 fatal UTF-8 decoder와 BOM 바이트 검사로 확인했다. 최종 판정·commit·push·배포는 하지 않았다. 브랜치 `codex/v0.6.0-line`.

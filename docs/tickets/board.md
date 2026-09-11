@@ -34,11 +34,11 @@
 
 ## Need Review
 
+- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 12종 — r3 통과(홈 약도+카테고리), **PO 최종 육안 승인 대기**
+
 
 
 ## Ready
-
-- `TKT-103` `P1` `v0.7.0` `ready` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함 — **codex-2 미착수(09-10~11 활동 없음, 틱 확인 필요)**
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
@@ -47,7 +47,7 @@
 
 ## Started
 
-- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r3 (PO 지시: 홈 간단 노선도 + 카테고리 위계 목록, home.html 만)
+- `TKT-103` `P1` `v0.7.0` `started` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함
 
 
 - `TKT-079` `P1` `v0.7.0` `blocked` `[FE]` Advisor 정적 진입 — PM 답변 완료: 배포 파트는 TKT-103 [INFRA] 분리, 103 need_review 진입 시 착수
@@ -59,7 +59,7 @@
 
 - `TKT-104` `P2` `advisor` `need_review` `[FE]` Inflight pill aria-pressed — 9개 선택·키보드·복원 검증, E2E 17/17·unit 44/44·build·375px 통과
 
-- `TKT-102` `P1` `chore` `need_review` `[목업]` r2 — writing-studio 제목 줄바꿈 수정, 390px 포함 5개 폭·build 통과 (다른 11개 목업 불변)
+- `TKT-102` `P1` `chore` `need_review` `[목업]` r3 — 홈 SVG 노선도 + 6개 카테고리 위계, 390px 포함 6개 폭·링크·build 통과 (home/index 외 10개 목업 불변)
 
 
 

@@ -1,8 +1,8 @@
-문서 상태: 작성완료
+문서 상태: 수정중
 
 # TKT-103 `[INFRA]` GitHub Pages 산출물에 advisor 정적 빌드 포함
 
-- 상태: ready
+- 상태: started
 - 우선순위: P1 (TKT-079 언블록 선행 — PO "접속 창이 없다" 계보)
 - 담당: codex-2 (INFRA)
 - 의존: 없음
