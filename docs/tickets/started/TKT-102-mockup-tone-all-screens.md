@@ -2,7 +2,7 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `need_review` (r3 통과 — PM 2026-09-11, PO 최종 육안 승인 대기)
+- 상태: `started` (r4 — PO 요청: 스플래시 초입부 목업 추가. r3 12개는 통과 확정)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
@@ -84,3 +84,15 @@
 - 검증 자료: `/private/tmp/tkt102-r3.ixTEnq/verify.cjs`, `results.json`, `home-390.png`, `home-1440.png`, `home-390-text-200.png`(임시 파일, 정리 시 소실 가능). 결과 JSON에 전체 파일 SHA-256·뷰포트별 측정치를 포함했다.
 - 재현: `NODE_PATH=/Users/imjeonghan/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules node /private/tmp/tkt102-r3.ixTEnq/verify.cjs`. 로컬 임시 브라우저만 사용했다. macOS sandbox의 브라우저 기동 제한은 해당 검증 명령에 한해 승인된 실행으로 해결했다.
 - 제약: Safari/WebKit 실기 미검증. PowerShell 부재로 수정 문서 3개의 BOM/UTF-8은 Node의 fatal UTF-8 decoder와 BOM 바이트 검사로 확인했다. 최종 판정·commit·push·배포는 하지 않았다. 브랜치 `codex/v0.6.0-line`.
+
+
+## r4 지시 (PM, 2026-09-12 — PO "초입부도 mock 이쁘게")
+
+대상: 신규 `splash.html` 1개 + `index.html` 목차에 링크 추가. 기존 12개 무변경(SHA 유지).
+
+**컨셉 — "문이 열리기 전 10초"**: 지하철역 진입 의식. 톤 원칙 문서의 "지키는 것" 3항 준수:
+1. **10초 인트로 유지** — CSS 애니메이션(keyframes)만으로 10초 진행을 표현 (얇은 라인 프로그레스 또는 숫자 카운트다운, 면 채움 금지). 외부 스크립트 금지 원칙 유지 — 인라인 JS 도 쓰지 않는다(순수 CSS).
+2. **지하철 원형 번호 배지가 주인공** — 큰 원형 배지 + `workaround.co.kr` 워드마크 + 한 줄 안내문("곧 문이 열립니다" 수준, 자기해설 금지). 화면당 주인공 1.
+3. **split-flap 플랩 보드는 선택** — 새 톤에서 무거우면 넣지 않는다. 넣는다면 한 줄(역명 한 개)만, 통계·상태 없이. 두 안이 갈리면 `splash.html`(플랩 없음)과 `splash-flap.html`(플랩 1줄) 둘 다 제출해도 좋다 — PO 가 고른다.
+4. 10초 끝에 "문 열림" 전환 힌트(좌우로 갈라지는 얇은 두 선 정도)를 CSS 로만.
+5. 검증: 390·1440px 오버플로 0, 애니메이션 `prefers-reduced-motion` 시 정지, 파일 규칙(배너·viewport·외부 의존 0) 동일.

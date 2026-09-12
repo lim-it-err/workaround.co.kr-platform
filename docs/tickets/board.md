@@ -34,7 +34,9 @@
 
 ## Need Review
 
-- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 12종 — r3 통과(홈 약도+카테고리), **PO 최종 육안 승인 대기**
+- `TKT-079` `P1` `v0.7.0` `need_review` `[FE]` Advisor 디자인·역명판 통합 — 기본/Pages build·unit 61/61·E2E 21/21·service 34/34·375px 다크/라이트·진입/복귀 통과
+- `TKT-103` `P1` `v0.7.0` `need_review` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함 — advisor 96 modules·unit 44/44·E2E 17/17·모선 11/11·로컬 HTTP/404 복구 통과
+
 
 
 
@@ -47,10 +49,8 @@
 
 ## Started
 
-- `TKT-103` `P1` `v0.7.0` `started` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함
+- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r4 스플래시 초입부 추가 (r3 12개는 통과)
 
-
-- `TKT-079` `P1` `v0.7.0` `blocked` `[FE]` Advisor 정적 진입 — PM 답변 완료: 배포 파트는 TKT-103 [INFRA] 분리, 103 need_review 진입 시 착수
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
