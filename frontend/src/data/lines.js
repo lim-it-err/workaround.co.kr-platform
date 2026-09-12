@@ -28,9 +28,11 @@ export const LINES = [
     nameEn: 'Advisor',
     lineClass: 'line-a',
     page: null,
+    entryPath: '/advisor/',
+    render: 'static',
+    status: '정적 이용 가능',
     kind: 'branch',
-    upcoming: true,
-    targetVersion: '연결 준비 중',
+    upcoming: false,
     path: 'M300 230 L180 78 H96',
     chip: { x: 96, y: 78 },
     labelPos: { x: 96, y: 46, sub: 64, anchor: 'middle' }

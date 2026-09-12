@@ -49,7 +49,7 @@ function removeFile(i) {
 .file-head { display: flex; gap: 8px; margin-bottom: 8px; }
 .path {
   flex: 1;
-  background: var(--code-bg);
+  background: var(--bg-soft);
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--fg);
@@ -69,7 +69,7 @@ function removeFile(i) {
   background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
-  color: var(--fg);
+  color: var(--code-text);
   padding: 12px;
   font-size: 13px;
   line-height: 1.55;

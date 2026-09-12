@@ -8,8 +8,12 @@ test.beforeEach(async ({ page }) => {
   // The E2E suite intentionally exercises the keyless, backend-off prototype path.
   await page.route('http://localhost:8080/**', (route) => route.abort())
   await page.goto('/')
+  // A document load can finish before Vue's initial routine persistence.
+  // Wait for the mounted home before clearing/seeding browser-local fixtures.
+  await expect(page.locator('.mission-card')).toHaveCount(39)
   await page.evaluate(() => localStorage.clear())
   await page.reload()
+  await expect(page.locator('.mission-card')).toHaveCount(39)
 })
 
 test.afterEach(async ({ page }) => {
@@ -151,7 +155,7 @@ test('루틴: 평일 노코드 슬롯과 주말 프로젝트 슬롯을 요일별
   await expect(page.getByTestId('ongoing-case-banner')).toContainText('수사 진행 중 — Day 1 단서 열기')
   await expect(page.getByText('✓ 완료')).toBeVisible()
 
-  await page.getByRole('link', { name: /Developer Advisor/ }).click()
+  await page.getByRole('link', { name: '미션 목록', exact: true }).click()
   await expect(page.getByText('오늘의 훈련 1/3')).toBeVisible()
 
   await page.getByRole('link', { name: '오늘의 훈련', exact: true }).click()

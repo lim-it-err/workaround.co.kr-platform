@@ -146,7 +146,7 @@ code { font-size: 12.5px; line-height: 1.55; }
 .reason-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .choice { min-height: 46px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-soft); color: var(--fg); font: inherit; font-weight: 700; cursor: pointer; }
 .choice.reason { min-height: 42px; padding: 0 14px; font-size: 13px; }
-.choice:hover:not(:disabled), .choice.selected { border-color: var(--accent); color: var(--accent); background: rgba(122, 162, 247, 0.12); }
+.choice:hover:not(:disabled), .choice.selected { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .choice:disabled { cursor: default; opacity: 0.72; }
 .choice.selected:disabled { opacity: 1; }
 .explanation { margin-top: 18px; padding: 18px; border-radius: 16px; }

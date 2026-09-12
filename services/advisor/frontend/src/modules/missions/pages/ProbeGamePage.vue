@@ -180,13 +180,13 @@ function displayDate(date) {
 .hypothesis:not(.eliminated):disabled, .probe-button:disabled:not(.selected) { opacity: 0.68; }
 .hypothesis.selected:disabled, .probe-button.selected:disabled { opacity: 1; color: var(--accent); }
 .locked-note, .next-hint, .past-note { margin: 9px 0 0; color: var(--fg-dim); font-size: 12px; }
-.observation { margin-top: 18px; padding: 18px; border-color: rgba(122, 162, 247, 0.45); }
+.observation { margin-top: 18px; padding: 18px; border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
 .observation h2 { margin: 5px 0 9px; font-size: 15px; }
 .next-hint { color: var(--accent); font-weight: 700; }
 .resolution { margin-top: 20px; padding: 20px; }
 .result { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 800; }
-.result.correct { color: var(--good); background: rgba(158, 206, 106, 0.12); }
-.result.missed { color: var(--bad); background: rgba(247, 118, 142, 0.12); }
+.result.correct { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
+.result.missed { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
 .answer { margin-top: 10px !important; color: var(--accent); font-weight: 700; }
 .resolution > h2 { margin: 20px 0 8px; font-size: 17px; }
 .info-note { margin-top: 20px; padding: 16px; border-radius: 12px; background: var(--bg-soft); }

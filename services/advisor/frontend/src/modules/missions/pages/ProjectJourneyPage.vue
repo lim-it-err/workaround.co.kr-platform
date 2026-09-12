@@ -264,7 +264,7 @@ h1 { font-size: 22px; margin: 0 0 6px; }
   color: var(--fg-dim);
   flex-shrink: 0;
 }
-.node-icon.done { background: rgba(158, 206, 106, 0.15); border-color: var(--good); color: var(--good); }
+.node-icon.done { background: color-mix(in srgb, var(--good) 15%, transparent); border-color: var(--good); color: var(--good); }
 .node-icon.current { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
 .node-icon.locked { opacity: 0.6; }
 .node-connector {
@@ -291,8 +291,8 @@ h1 { font-size: 22px; margin: 0 0 6px; }
   opacity: 0.5;
   cursor: not-allowed;
 }
-.node-card.current { border-color: rgba(122, 162, 247, 0.4); }
-.node-card.done { border-color: rgba(158, 206, 106, 0.3); }
+.node-card.current { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+.node-card.done { border-color: color-mix(in srgb, var(--good) 30%, transparent); }
 .node-card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 4px; }
 .node-title { font-weight: 700; font-size: 15px; }
 .node-minutes { font-size: 12px; color: var(--fg-dim); white-space: nowrap; }
@@ -307,7 +307,7 @@ h1 { font-size: 22px; margin: 0 0 6px; }
   padding: 10px 14px;
   border: 1px dashed var(--warn);
   border-radius: 10px;
-  background: rgba(224, 175, 104, 0.08);
+  background: color-mix(in srgb, var(--warn) 8%, transparent);
   color: var(--warn);
   font-size: 13.5px;
 }

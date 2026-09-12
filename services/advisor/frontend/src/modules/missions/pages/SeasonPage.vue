@@ -6,10 +6,10 @@ const store = useMissions()
 const overview = computed(() => store.seasonOverview())
 
 const stats = [
-  { key: 'vision', emoji: '👁', label: '안목', color: '#7aa2f7' },
-  { key: 'voice', emoji: '🗣', label: '언어화', color: '#bb9af7' },
-  { key: 'judgment', emoji: '🧭', label: '판단', color: '#e0af68' },
-  { key: 'culture', emoji: '📚', label: '교양', color: '#9ece6a' },
+  { key: 'vision', emoji: '👁', label: '안목', color: 'var(--accent-text)' },
+  { key: 'voice', emoji: '🗣', label: '언어화', color: 'var(--line-d-text)' },
+  { key: 'judgment', emoji: '🧭', label: '판단', color: 'var(--warn)' },
+  { key: 'culture', emoji: '📚', label: '교양', color: 'var(--good)' },
 ]
 
 const largestStat = computed(() => Math.max(1, ...stats.map((stat) => overview.value.totals[stat.key])))
@@ -108,11 +108,11 @@ function displayDate(date) {
 .eyebrow { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: 0.04em; }
 .hero h1 { margin: 4px 0 5px; font-size: 25px; }
 .hero p { margin: 0; color: var(--fg-dim); font-size: 13px; }
-.day-badge { flex: 0 0 auto; min-width: 84px; padding: 11px 14px; text-align: center; border: 1px solid rgba(122, 162, 247, 0.45); border-radius: 14px; background: var(--accent-soft); }
+.day-badge { flex: 0 0 auto; min-width: 84px; padding: 11px 14px; text-align: center; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 14px; background: var(--accent-soft); }
 .day-badge strong, .day-badge span { display: block; }
 .day-badge strong { color: var(--accent); font-size: 18px; }
 .day-badge span { margin-top: 2px; color: var(--fg-dim); font-size: 11.5px; }
-.day-badge.ended { border-color: rgba(158, 206, 106, 0.45); background: rgba(158, 206, 106, 0.08); }
+.day-badge.ended { border-color: color-mix(in srgb, var(--good) 45%, transparent); background: color-mix(in srgb, var(--good) 8%, transparent); }
 .stat-card { padding: 20px; border-radius: 16px; }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .section-head h2 { margin: 0; font-size: 16px; }
@@ -134,7 +134,7 @@ function displayDate(date) {
 .gain-body small { color: var(--fg-dim); font-size: 11.5px; }
 .gain-amount { color: var(--good); font-size: 15px; }
 .empty { padding: 18px; color: var(--fg-dim); font-size: 13.5px; text-align: center; }
-.ending { margin-top: 24px; padding: 24px; border-color: rgba(122, 162, 247, 0.4); border-radius: 16px; background: linear-gradient(180deg, rgba(122, 162, 247, 0.08), transparent 45%), var(--bg-card); }
+.ending { margin-top: 24px; padding: 24px; border-color: color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 16px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--bg-card); }
 .ending-mark { font-size: 38px; }
 .ending h2 { margin: 6px 0; font-size: 21px; }
 .epigraph { margin: 0; color: var(--accent); font-size: 13px; font-weight: 700; }

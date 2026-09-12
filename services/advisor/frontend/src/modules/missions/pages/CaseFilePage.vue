@@ -139,8 +139,8 @@ function chooseVerdict(key) {
 .verdict-button.selected:disabled { opacity: 1; color: var(--accent); }
 .resolution { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
 .result { display: inline-block; padding: 3px 11px; border-radius: 999px; font-size: 13px; }
-.result.correct { color: var(--good); background: rgba(158, 206, 106, 0.12); }
-.result.missed { color: var(--bad); background: rgba(247, 118, 142, 0.12); }
+.result.correct { color: var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); }
+.result.missed { color: var(--bad); background: color-mix(in srgb, var(--bad) 12%, transparent); }
 .answer { color: var(--accent); font-size: 13px; font-weight: 700; }
 .resolution h3 { margin: 20px 0 4px; font-size: 15px; }
 .resolution :deep(.md) { font-size: 14px; }

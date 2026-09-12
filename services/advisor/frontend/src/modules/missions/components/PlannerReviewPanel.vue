@@ -104,7 +104,7 @@ function onNicknameCancelled() {
 .deliverable-input {
   width: 100%;
   min-height: 320px;
-  background: var(--code-bg);
+  background: var(--bg-soft);
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--fg);
@@ -119,8 +119,8 @@ function onNicknameCancelled() {
 .dim { color: var(--fg-dim); font-size: 13.5px; }
 .confirm {
   margin-top: 14px;
-  background: rgba(158, 206, 106, 0.08);
-  border-color: rgba(158, 206, 106, 0.3);
+  background: color-mix(in srgb, var(--good) 8%, transparent);
+  border-color: color-mix(in srgb, var(--good) 30%, transparent);
   color: var(--good);
   font-size: 13.5px;
   padding: 12px 16px;

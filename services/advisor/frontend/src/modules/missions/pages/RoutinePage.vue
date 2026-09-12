@@ -123,7 +123,7 @@ function check(slot) {
 .hero h1 { font-size: 22px; margin: 0 0 8px; }
 .hero-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .hero-date { color: var(--fg-dim); font-size: 14px; }
-.streak-badge { background: rgba(224, 175, 104, 0.15); color: var(--warn); font-weight: 700; }
+.streak-badge { background: color-mix(in srgb, var(--warn) 15%, transparent); color: var(--warn); font-weight: 700; }
 .weekday-tabs {
   display: flex;
   gap: 6px;
@@ -144,7 +144,7 @@ function check(slot) {
 .weekday-tab.active {
   border-color: var(--accent);
   color: var(--accent);
-  background: rgba(122, 162, 247, 0.12);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 .preview-note { font-size: 12.5px; margin: 8px 0 0; }
 .hero-theme {
@@ -162,7 +162,7 @@ function check(slot) {
   gap: 12px;
   margin: -4px 0 14px;
   padding: 11px 14px;
-  border-color: rgba(224, 175, 104, 0.4);
+  border-color: color-mix(in srgb, var(--warn) 40%, transparent);
   color: var(--fg);
   text-decoration: none;
 }
@@ -183,9 +183,9 @@ function check(slot) {
 }
 .slot.active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent), 0 0 24px rgba(122, 162, 247, 0.18);
+  box-shadow: 0 0 0 1px var(--accent), 0 0 24px color-mix(in srgb, var(--accent) 18%, transparent);
 }
-.slot.done { border-color: rgba(158, 206, 106, 0.4); }
+.slot.done { border-color: color-mix(in srgb, var(--good) 40%, transparent); }
 
 .slot-top {
   display: flex;

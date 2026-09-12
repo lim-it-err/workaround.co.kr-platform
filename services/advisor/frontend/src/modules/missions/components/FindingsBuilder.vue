@@ -148,7 +148,7 @@ watch(
 .field-label { font-size: 12.5px; font-weight: 700; color: var(--fg-dim); }
 .optional { font-weight: 400; }
 .field input {
-  background: var(--code-bg);
+  background: var(--bg-soft);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--fg);

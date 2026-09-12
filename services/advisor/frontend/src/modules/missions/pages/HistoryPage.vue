@@ -175,9 +175,9 @@ function formatDate(iso) {
 .entry-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .entry-domain { font-size: 13px; color: var(--fg-dim); }
 .chips { display: flex; gap: 6px; }
-.chip.diff-easy { background: rgba(158, 206, 106, 0.15); color: var(--good); }
+.chip.diff-easy { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); }
 .chip.diff-normal { background: var(--accent-soft); color: var(--accent); }
-.chip.diff-hard { background: rgba(247, 118, 142, 0.15); color: var(--bad); }
+.chip.diff-hard { background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); }
 .chip.kind { background: var(--bg-soft); color: var(--fg-dim); }
 .entry-title {
   display: block;

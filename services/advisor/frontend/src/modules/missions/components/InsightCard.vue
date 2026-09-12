@@ -115,8 +115,8 @@ function chooseFork(key) {
 .fork-choice:hover, .fork-choice.selected { border-color: var(--accent); background: var(--accent-soft); }
 .fork-choice.muted { opacity: 0.42; }
 .fork-choice.muted:hover { opacity: 0.8; }
-.fork-response { position: relative; margin: 14px 0 0 !important; padding: 13px 14px; border: 1px solid rgba(122, 162, 247, 0.4); border-radius: 4px 12px 12px 12px; background: var(--accent-soft); overflow-wrap: anywhere; }
-.fork-response::before { content: ''; position: absolute; top: -7px; left: 16px; width: 12px; height: 12px; border-top: 1px solid rgba(122, 162, 247, 0.4); border-left: 1px solid rgba(122, 162, 247, 0.4); background: #181e2c; transform: rotate(45deg); }
+.fork-response { position: relative; margin: 14px 0 0 !important; padding: 13px 14px; border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 4px 12px 12px 12px; background: var(--accent-soft); overflow-wrap: anywhere; }
+.fork-response::before { content: ''; position: absolute; top: -7px; left: 16px; width: 12px; height: 12px; border-top: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-left: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); background: color-mix(in srgb, var(--accent) 14%, var(--bg-card)); transform: rotate(45deg); }
 
 @media (max-width: 420px) {
   .fork-choices { grid-template-columns: 1fr; }

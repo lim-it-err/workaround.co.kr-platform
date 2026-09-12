@@ -233,15 +233,15 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
 .proto-note {
   color: var(--warn);
   font-size: 13px;
-  background: rgba(224, 175, 104, 0.08);
-  border: 1px solid rgba(224, 175, 104, 0.3);
+  background: color-mix(in srgb, var(--warn) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warn) 30%, transparent);
   border-radius: 8px;
   padding: 8px 12px;
 }
 .proto-note.real {
   color: var(--good);
-  background: rgba(158, 206, 106, 0.08);
-  border-color: rgba(158, 206, 106, 0.3);
+  background: color-mix(in srgb, var(--good) 8%, transparent);
+  border-color: color-mix(in srgb, var(--good) 30%, transparent);
 }
 .version-pills { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0; }
 .version-pill {
@@ -267,7 +267,7 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
 .evidence {
   margin: 0 0 8px;
   padding: 10px 12px;
-  background: var(--code-bg);
+  background: var(--bg-soft);
   border-left: 3px solid var(--accent);
   border-radius: 0 8px 8px 0;
   font-size: 12.5px;
@@ -293,8 +293,8 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
 .fb-label { font-weight: 700; font-size: 13px; color: var(--accent); margin-bottom: 6px; }
 .fb p { margin: 0; font-size: 13.5px; }
 .improved {
-  background: rgba(158, 206, 106, 0.07);
-  border: 1px solid rgba(158, 206, 106, 0.25);
+  background: color-mix(in srgb, var(--good) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--good) 25%, transparent);
   border-radius: 10px;
   padding: 4px 16px;
 }
@@ -312,9 +312,9 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
 .stamp-label { color: var(--fg-dim); font-size: 12px; white-space: nowrap; }
 .stamp-title { font-weight: 800; font-size: 15px; }
 .stamp-unlock { color: var(--accent); font-size: 13px; font-weight: 700; }
-.ending-stamp.calm { border-color: rgba(158, 206, 106, 0.4); }
-.ending-stamp.hotfix { border-color: rgba(224, 175, 104, 0.4); }
-.ending-stamp.dawn { border-color: rgba(247, 118, 142, 0.4); }
+.ending-stamp.calm { border-color: color-mix(in srgb, var(--good) 40%, transparent); }
+.ending-stamp.hotfix { border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
+.ending-stamp.dawn { border-color: color-mix(in srgb, var(--bad) 40%, transparent); }
 .ending-stamp.hidden { border-color: var(--accent); }
 .predict-result {
   font-size: 13px;
@@ -326,12 +326,12 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
 }
 .predict-result.hit {
   color: var(--good);
-  border-color: rgba(158, 206, 106, 0.4);
+  border-color: color-mix(in srgb, var(--good) 40%, transparent);
   border-style: solid;
 }
 .scenario {
-  border-color: rgba(122, 162, 247, 0.35);
-  background: linear-gradient(180deg, rgba(122, 162, 247, 0.05), transparent 40%), var(--bg-card);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, transparent), transparent 40%), var(--bg-card);
 }
 .quest {
   border: 1px dashed var(--fg-dim);
@@ -345,12 +345,12 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
 .quest-text { margin: 0; font-size: 14px; line-height: 1.7; }
 .hc-list { display: flex; flex-direction: column; gap: 10px; }
 .hc {
-  border: 1px solid rgba(247, 118, 142, 0.35);
+  border: 1px solid color-mix(in srgb, var(--bad) 35%, transparent);
   border-radius: 10px;
   padding: 12px 14px;
   background: var(--bg-soft);
 }
-.hc.pass { border-color: rgba(158, 206, 106, 0.35); }
+.hc.pass { border-color: color-mix(in srgb, var(--good) 35%, transparent); }
 .hc-head { display: flex; gap: 10px; align-items: center; }
 .hc-mark { font-size: 13px; font-weight: 700; white-space: nowrap; }
 .hc-title { font-weight: 600; font-size: 14px; }

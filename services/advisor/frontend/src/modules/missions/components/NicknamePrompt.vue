@@ -92,7 +92,7 @@ function cancel() {
 .input {
   display: block;
   width: 100%;
-  background: var(--code-bg);
+  background: var(--bg-soft);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--fg);

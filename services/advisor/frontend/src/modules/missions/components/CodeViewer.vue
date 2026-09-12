@@ -80,7 +80,7 @@ async function copyActive() {
 }
 .tab.active {
   background: var(--code-bg);
-  color: var(--fg);
+  color: var(--code-text);
   border-color: var(--border);
 }
 .copy {

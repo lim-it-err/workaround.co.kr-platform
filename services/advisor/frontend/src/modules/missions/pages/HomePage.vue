@@ -222,8 +222,8 @@ const stagesByPartFiltered = computed(() =>
   color: var(--fg);
   margin-bottom: 30px;
   padding: 14px 20px;
-  border-color: rgba(122, 162, 247, 0.35);
-  background: linear-gradient(90deg, rgba(122, 162, 247, 0.08), transparent 60%), var(--bg-card);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 60%), var(--bg-card);
   transition: border-color 0.15s;
 }
 .project-banner:hover { border-color: var(--accent); }
@@ -248,7 +248,7 @@ const stagesByPartFiltered = computed(() =>
 .chip-toggle.active { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
 .filter-search { flex: 1 1 200px; }
 .search-input {
-  background: var(--code-bg);
+  background: var(--bg-soft);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--fg);
@@ -320,9 +320,9 @@ const stagesByPartFiltered = computed(() =>
 .mc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .mc-domain { font-size: 13px; color: var(--fg-dim); }
 .chips { display: flex; gap: 6px; }
-.chip.diff-easy { background: rgba(158, 206, 106, 0.15); color: var(--good); }
+.chip.diff-easy { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); }
 .chip.diff-normal { background: var(--accent-soft); color: var(--accent); }
-.chip.diff-hard { background: rgba(247, 118, 142, 0.15); color: var(--bad); }
+.chip.diff-hard { background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); }
 .mc-title { font-weight: 600; font-size: 15px; margin-bottom: 12px; line-height: 1.4; }
 .mc-bottom { display: flex; justify-content: space-between; align-items: center; }
 .mc-status { font-size: 12.5px; color: var(--fg-dim); }

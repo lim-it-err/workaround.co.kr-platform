@@ -203,7 +203,7 @@ const upcoming = [
   font-weight: 600;
   cursor: pointer;
 }
-.deck-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(122, 162, 247, 0.12); }
+.deck-tab.active { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 
 .card-list, .snack-list, .play-list, .upcoming-list { display: flex; flex-direction: column; gap: 10px; }
 
@@ -217,14 +217,14 @@ const upcoming = [
   color: var(--fg);
 }
 .snack:hover { border-color: var(--accent); }
-.game-live { border-color: rgba(122, 162, 247, 0.45); }
+.game-live { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
 .play-arrow { margin-left: auto; color: var(--accent); font-size: 12.5px; font-weight: 700; white-space: nowrap; }
 .snack-emoji { font-size: 24px; flex-shrink: 0; }
 .snack-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .snack-type { font-size: 11.5px; color: var(--fg-dim); font-weight: 600; }
 .snack-title { font-size: 14.5px; font-weight: 700; line-height: 1.4; }
 .dim { color: var(--fg-dim); }
-.mode-note { margin-top: 18px; border-color: rgba(158, 206, 106, .35); }.mode-note p { margin: 4px 0 0; color: var(--fg-dim); font-size: 12.5px; }
+.mode-note { margin-top: 18px; border-color: color-mix(in srgb, var(--good) 35%, transparent); }.mode-note p { margin: 4px 0 0; color: var(--fg-dim); font-size: 12.5px; }
 .catalog-title { display: flex; justify-content: space-between; align-items: baseline; }.catalog-title a { font-size: 13px; text-decoration: none; }
 .catalog-controls { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }.catalog-controls input[type="search"] { min-width: 0; flex: 1; min-height: 42px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg-soft); color: var(--fg); padding: 8px 11px; }.catalog-controls label { color: var(--fg-dim); font-size: 12px; white-space: nowrap; }
 .catalog-grid { display: grid; gap: 10px; }.catalog-card { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 15px; }.catalog-icon { font-size: 25px; }.catalog-copy { min-width: 0; }.catalog-copy h3 { margin: 0; font-size: 15px; }.catalog-copy p { margin: 2px 0; color: var(--fg-dim); font-size: 12px; }.catalog-copy small { color: var(--accent); font-size: 11px; }.clear-practice { grid-column: 2 / -1; justify-self: end; border: 0; background: transparent; color: var(--bad); font-size: 11px; }

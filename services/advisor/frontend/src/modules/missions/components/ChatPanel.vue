@@ -107,7 +107,7 @@ async function send() {
   bottom: 24px;
   z-index: 50;
   background: var(--accent);
-  color: #10131c;
+  color: var(--accent-ink);
   border: none;
   border-radius: 999px;
   padding: 12px 20px;
@@ -116,7 +116,7 @@ async function send() {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
 }
 .count {
-  background: #10131c;
+  background: var(--bg-card);
   color: var(--accent);
   border-radius: 999px;
   padding: 1px 7px;
@@ -167,7 +167,7 @@ async function send() {
 .msg.me {
   align-self: flex-end;
   background: var(--accent);
-  color: #10131c;
+  color: var(--accent-ink);
   border-bottom-right-radius: 4px;
 }
 .msg.agent {
@@ -204,7 +204,7 @@ async function send() {
 }
 .input-row textarea {
   flex: 1;
-  background: var(--code-bg);
+  background: var(--bg-soft);
   border: 1px solid var(--border);
   border-radius: 8px;
   color: var(--fg);

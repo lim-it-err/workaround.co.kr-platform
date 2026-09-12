@@ -97,7 +97,7 @@ function update(key, value) {
 
 <style scoped>
 .inflight { max-width: 760px; margin: 0 auto; font-size: calc(1rem * var(--flight-font)); line-height: var(--flight-line); }
-.flight-hero { display: flex; justify-content: space-between; gap: 20px; background: linear-gradient(135deg, #17213a, #1c2029); }
+.flight-hero { display: flex; justify-content: space-between; gap: 20px; background: linear-gradient(135deg, var(--accent-soft), transparent), var(--bg-card); }
 .flight-hero h1 { margin: 4px 0; font-size: 26px; }.flight-hero p { margin: 0; color: var(--fg-dim); }.eyebrow { color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .12em; }
 .remaining { align-self: flex-start; white-space: nowrap; background: var(--accent-soft); color: var(--accent); border-radius: 99px; padding: 6px 11px; font-size: 12px; }
 .resume { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; margin-top: 12px; text-decoration: none; color: var(--fg); align-items: center; }.resume span:first-child { color: var(--good); font-size: 12px; font-weight: 700; }

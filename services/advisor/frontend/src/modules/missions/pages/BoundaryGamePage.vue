@@ -173,12 +173,12 @@ function chooseBoundary(key) {
 .step-number { position: absolute; left: -28px; display: grid; width: 22px; height: 22px; place-items: center; border: 2px solid var(--border); border-radius: 50%; background: var(--bg); color: var(--fg-dim); font-size: 10px; font-weight: 800; }
 .step-card strong { min-width: 0; font-size: 13.5px; line-height: 1.45; }
 .step-card small { margin-left: auto; color: var(--accent); font-size: 10.5px; white-space: nowrap; }
-.flow-step.grouped .step-card { border-color: rgba(122, 162, 247, 0.65); background: var(--accent-soft); box-shadow: inset 4px 0 var(--accent); }
+.flow-step.grouped .step-card { border-color: color-mix(in srgb, var(--accent) 65%, transparent); background: var(--accent-soft); box-shadow: inset 4px 0 var(--accent); }
 .flow-step.grouped .step-number { border-color: var(--accent); color: var(--accent); }
-.timeout-event { margin-top: 10px; padding: 12px 14px; border: 1px solid rgba(247, 118, 142, 0.45); border-radius: 10px; background: rgba(247, 118, 142, 0.08); animation: timeout-in 0.25s ease-out; }
+.timeout-event { margin-top: 10px; padding: 12px 14px; border: 1px solid color-mix(in srgb, var(--bad) 45%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--bad) 8%, transparent); animation: timeout-in 0.25s ease-out; }
 .timeout-event span { color: var(--bad); font-size: 12px; font-weight: 800; }
 .timeout-event p { margin: 5px 0 0; font-size: 12.5px; line-height: 1.6; }
-.grouping-note { margin-top: 14px; padding: 15px 16px; border-color: rgba(122, 162, 247, 0.45); }
+.grouping-note { margin-top: 14px; padding: 15px 16px; border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
 .grouping-note strong { display: block; margin-bottom: 4px; color: var(--accent); font-size: 12px; }
 .boundary-list { display: grid; gap: 9px; margin-top: 12px; }
 .boundary-button { display: flex; width: 100%; min-width: 0; min-height: 52px; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 11px; background: var(--bg-soft); color: var(--fg); font: inherit; font-size: 13.5px; font-weight: 700; line-height: 1.5; text-align: left; cursor: pointer; }
@@ -189,13 +189,13 @@ function chooseBoundary(key) {
 .outcomes { display: grid; gap: 12px; }
 .outcomes > h2 { margin-bottom: 0; }
 .outcome-card { min-width: 0; padding: 18px; border-radius: 16px; }
-.outcome-card.primary { border-color: rgba(122, 162, 247, 0.55); }
+.outcome-card.primary { border-color: color-mix(in srgb, var(--accent) 55%, transparent); }
 .outcome-head > span { color: var(--accent); font-size: 11px; font-weight: 800; }
 .outcome-head h3 { margin: 4px 0 14px; font-size: 15px; line-height: 1.5; }
 .outcome-card dl { display: grid; gap: 9px; margin: 0; }
 .outcome-card dl > div { padding: 12px; border-radius: 10px; }
-.outcome-card dl .kept { background: rgba(158, 206, 106, 0.09); }
-.outcome-card dl .lost { background: rgba(247, 118, 142, 0.08); }
+.outcome-card dl .kept { background: color-mix(in srgb, var(--good) 9%, transparent); }
+.outcome-card dl .lost { background: color-mix(in srgb, var(--bad) 8%, transparent); }
 .outcome-card dt { margin-bottom: 4px; font-size: 11px; font-weight: 800; }
 .kept dt { color: var(--good); }
 .lost dt { color: var(--bad); }
@@ -203,7 +203,7 @@ function chooseBoundary(key) {
 .scenario { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
 .scenario strong { font-size: 12px; }
 .scenario p { margin: 5px 0 0; font-size: 13.5px; line-height: 1.75; }
-.recommendation { padding: 20px; border-color: rgba(224, 175, 104, 0.55); border-radius: 16px; background: linear-gradient(180deg, rgba(224, 175, 104, 0.08), transparent), var(--bg-card); }
+.recommendation { padding: 20px; border-color: color-mix(in srgb, var(--warn) 55%, transparent); border-radius: 16px; background: linear-gradient(180deg, color-mix(in srgb, var(--warn) 8%, transparent), transparent), var(--bg-card); }
 .recommend-label { color: var(--warn); font-size: 11.5px; font-weight: 800; }
 .recommendation h2 { margin: 5px 0 10px; font-size: 16px; line-height: 1.5; }
 

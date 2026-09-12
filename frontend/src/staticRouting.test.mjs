@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { LINES } from './data/lines.js'
 import {
   buildLivePath,
   normalizeBasePath,
@@ -21,3 +22,9 @@ assert.equal(buildLivePath('voyage', '', projectBase), '/workaround.co.kr-platfo
 assert.equal(buildLivePath('blogPost', '프라하 첫날', projectBase), '/workaround.co.kr-platform/blog/%ED%94%84%EB%9D%BC%ED%95%98%20%EC%B2%AB%EB%82%A0')
 
 console.log('static routing: project base and deep links pass')
+
+const advisor = LINES.find(line => line.code === 'A')
+assert.equal(advisor.upcoming, false)
+assert.equal(advisor.render, 'static')
+assert.equal(withBasePath(advisor.entryPath, projectBase), '/workaround.co.kr-platform/advisor/')
+assert.equal(withBasePath(advisor.entryPath, '/'), '/advisor/')

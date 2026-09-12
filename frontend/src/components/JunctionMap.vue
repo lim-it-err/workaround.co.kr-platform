@@ -3,6 +3,7 @@
 // 블로그 = 굵은 본선, 기능 = 지선, 노란 링은 현재 위치(환승 홀)에만.
 // SVG 는 시각 요약이고, 아래 .route-rows 목록이 접근성·모바일 폴백이자 실제 이동 링크다.
 import { JUNCTION, LINES } from '../data/lines.js'
+import { withBasePath } from '../staticRouting.js'
 
 // lineStates: { [code]: { status, summary } } — 동적 상태는 부모(App)가 주입
 const props = defineProps({
@@ -18,14 +19,22 @@ const rows = [trunk, ...branches]
 
 function stateOf(line) {
   if (line.upcoming) return { status: `예정 · ${line.targetVersion}`, summary: '' }
-  return props.lineStates[line.code] ?? { status: '', summary: '' }
+  return props.lineStates[line.code] ?? { status: line.status || '', summary: '' }
 }
 
 function isUnavailable(line) {
   return Boolean(line.page && props.disabledPages.includes(line.page))
 }
 
+function entryHref(line) {
+  return line.entryPath ? withBasePath(line.entryPath, import.meta.env.BASE_URL) : undefined
+}
+
 function go(line) {
+  if (!line.upcoming && line.entryPath) {
+    window.location.assign(entryHref(line))
+    return
+  }
   if (!line.upcoming && line.page) emit('open', line.page)
 }
 </script>
@@ -96,14 +105,15 @@ function go(line) {
     <!-- 이동 목록 (접근성·모바일 폴백 + 실제 링크) -->
     <div class="route-rows">
       <component
-        :is="line.upcoming ? 'div' : 'button'"
+        :is="line.upcoming ? 'div' : line.entryPath ? 'a' : 'button'"
         v-for="line in rows"
         :key="`r-${line.code}`"
         class="route-row"
         :class="{ primary: line.kind === 'trunk', upcoming: line.upcoming || isUnavailable(line) }"
         :style="{ '--tick': `var(--${line.lineClass})` }"
-        type="button"
-        @click="go(line)"
+        :type="!line.upcoming && !line.entryPath ? 'button' : undefined"
+        :href="!line.upcoming ? entryHref(line) : undefined"
+        @click="line.entryPath ? undefined : go(line)"
       >
         <span class="tick" aria-hidden="true"></span>
         <span class="rr-main">
@@ -119,3 +129,7 @@ function go(line) {
     </div>
   </section>
 </template>
+
+<style scoped>
+a.route-row { text-decoration: none; }
+</style>

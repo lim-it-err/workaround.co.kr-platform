@@ -1,7 +1,19 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import StationHeader from '../../../../../frontend/src/components/StationHeader.vue'
 import { useMissions } from '../modules/missions/store/missions.js'
 import NicknamePrompt from '../modules/missions/components/NicknamePrompt.vue'
+import { platformHomePath } from './platformNavigation.js'
+import { usePlatformTheme } from './platformTheme.js'
+
+const platformHome = platformHomePath(import.meta.env.BASE_URL)
+const router = useRouter()
+const { theme, toggleTheme } = usePlatformTheme()
+function exitAdvisor() {
+  if (platformHome) window.location.assign(platformHome)
+  else router.push('/missions')
+}
 
 const store = useMissions()
 const nickname = computed(() => store.state.learner.nickname)
@@ -22,20 +34,24 @@ function onNicknameCancelled() {
 </script>
 
 <template>
-  <div class="shell">
+  <div class="shell" :data-theme="theme">
     <header class="shell-header">
-      <router-link to="/missions" class="brand">
-        <span class="brand-mark">◆</span>
-        <span class="brand-name">Developer Advisor</span>
-      </router-link>
-      <span class="brand-tag">세상을 거대한 디지털 구조로 본다</span>
-      <nav class="nav">
-        <button
-          v-if="nickname"
-          class="chip neutral nickname-chip"
-          title="닉네임 변경"
-          @click="openNicknamePrompt"
-        >👤 {{ nickname }}</button>
+      <StationHeader
+        line-class="line-a"
+        station-code="A"
+        title="Developer Advisor"
+        :prev-label="platformHome ? '← 환승 홀' : '← 미션 목록'"
+        :exit-label="platformHome ? '환승 홀로 나가기' : '미션 목록으로'"
+        next-label=""
+        @exit="exitAdvisor"
+      >
+        <template #actions>
+          <button type="button" class="btn theme-toggle" @click="toggleTheme">{{ theme === 'dark' ? '밝게 보기' : '어둡게 보기' }}</button>
+          <button v-if="nickname" type="button" class="btn nickname-chip" title="닉네임 변경" @click="openNicknamePrompt">👤 {{ nickname }}</button>
+        </template>
+      </StationHeader>
+      <nav class="nav" aria-label="Advisor 메뉴">
+        <router-link to="/missions" class="nav-link" exact-active-class="current">미션 목록</router-link>
         <router-link to="/routine" class="nav-link">오늘의 훈련</router-link>
         <router-link to="/inflight" class="nav-link">기내 모드</router-link>
         <router-link to="/season" class="nav-link">시즌</router-link>
@@ -67,57 +83,39 @@ function onNicknameCancelled() {
   flex-direction: column;
 }
 .shell-header {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  padding: 18px 28px;
-  border-bottom: 1px solid var(--border);
-}
-.brand {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  text-decoration: none;
-  color: var(--fg);
-  font-weight: 700;
-  font-size: 17px;
-  flex-shrink: 0;
-}
-.brand-mark { color: var(--accent); }
-.brand-tag {
-  color: var(--fg-dim);
-  font-size: 13px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
+  width: 100%;
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 18px 28px 0;
 }
 .nav {
-  margin-left: auto;
-  flex-shrink: 0;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  border-bottom: 1px solid var(--line);
 }
 .nickname-chip {
-  border: none;
-  font-family: inherit;
-  cursor: pointer;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
-.nickname-chip:hover { filter: brightness(1.15); }
 .nav-link {
   color: var(--fg-dim);
   text-decoration: none;
-  font-size: 13.5px;
+  font-size: .875rem;
+  padding: 8px 12px;
+  border-bottom: 3px solid transparent;
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
+  min-height: 44px;
 }
 .nav-link:hover {
-  color: var(--accent);
+  color: var(--accent-text);
 }
-.nav-link.router-link-active {
-  color: var(--accent);
+.nav-link.router-link-exact-active, .nav-link.current {
+  color: var(--accent-text);
+  border-bottom-color: var(--accent);
   font-weight: 600;
 }
 .shell-main {
@@ -132,34 +130,20 @@ function onNicknameCancelled() {
   padding: 14px 28px;
   border-top: 1px solid var(--border);
   color: var(--fg-dim);
-  font-size: 12px;
+  font-size: .75rem;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
   .shell-header {
-    padding: 14px 16px;
-    gap: 10px;
-    flex-wrap: wrap;
+    padding: 14px 16px 0;
   }
-  .brand-name { font-size: 15px; }
-  .brand-tag {
-    display: none;
-  }
-  .nav {
-    flex-wrap: wrap;
-    row-gap: 6px;
-    column-gap: 10px;
-  }
-  .nav-link {
-    font-size: 12.5px;
-    min-height: 32px;
-  }
+  .nav { gap: 2px; }
+  .nav-link { padding-inline: 10px; }
   .shell-main {
     padding: 16px;
   }
   .shell-footer {
     padding: 12px 16px;
-    font-size: 11px;
   }
 }
 </style>
