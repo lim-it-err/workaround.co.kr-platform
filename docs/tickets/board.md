@@ -34,6 +34,8 @@
 
 ## Need Review
 
+- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 13종(스플래시 포함) — r4 통과, **PO 최종 육안 승인 대기**
+
 
 
 
@@ -47,8 +49,6 @@
 
 ## Started
 
-- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r4 스플래시 초입부 추가 (r3 12개는 통과)
-
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -57,7 +57,7 @@
 
 - `TKT-104` `P2` `advisor` `need_review` `[FE]` Inflight pill aria-pressed — 9개 선택·키보드·복원 검증, E2E 17/17·unit 44/44·build·375px 통과
 
-- `TKT-102` `P1` `chore` `need_review` `[목업]` r3 — 홈 SVG 노선도 + 6개 카테고리 위계, 390px 포함 6개 폭·링크·build 통과 (home/index 외 10개 목업 불변)
+- `TKT-102` `P1` `chore` `need_review` `[목업]` r4 — CSS-only 10초 스플래시·한 줄 플랩·현행 멘트·문 열림 힌트, 390/1440px·reduced-motion·build 통과
 
 
 

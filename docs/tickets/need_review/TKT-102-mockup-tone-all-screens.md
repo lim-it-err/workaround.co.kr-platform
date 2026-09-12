@@ -2,7 +2,7 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `started` (r4 — PO 요청: 스플래시 초입부 목업 추가. r3 12개는 통과 확정)
+- 상태: `need_review` (r4 통과 — PM 2026-09-12, 13개 완성, PO 최종 육안 승인 대기)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
@@ -97,3 +97,13 @@
 3-1. **멘트는 유지** — 현행 스플래시의 notice 티커 문구(`frontend/src/App.vue` `tickerPool`, 예: "에스컬레이터 방향 다수결로 정하는 중…")를 그대로 쓴다. 새 문구 창작 금지, "10초 후 자동 전환" 안내도 유지.
 4. 10초 끝에 "문 열림" 전환 힌트(좌우로 갈라지는 얇은 두 선 정도)를 CSS 로만.
 5. 검증: 390·1440px 오버플로 0, 애니메이션 `prefers-reduced-motion` 시 정지, 파일 규칙(배너·viewport·외부 의존 0) 동일.
+
+### r4 구현 인계 (codex-4 전속부관, 2026-09-12)
+
+- 구현: `frontend/public/mockups/splash.html`을 새로 만들고 `index.html` 목차에 `/mockups/splash.html` 링크를 추가했다. 큰 W 원형 배지와 워드마크를 단일 주인공으로 두고, 얇은 10초 진행선과 종료 시 좌우로 열리는 두 선을 CSS keyframes만으로 표현했다.
+- 정정 반영: 한 줄 `WORKAROUND` 플랩 10칸을 순수 CSS `rotateX` 애니메이션으로 넣었다. 현행 `tickerPool` 첫 문구 `에스컬레이터 방향 다수결로 정하는 중…`와 `10초 후 자동 전환` 안내를 그대로 사용했다. 인라인·외부 스크립트와 외부 의존성은 없다.
+- 브라우저 검증: 빌드 산출물을 Chromium 151.0.7922.34에서 390×860, 1440×860으로 직접 열어 초기·10.3초 후를 검사했다. 두 폭 모두 가로 overflow 0, 배너 1회, viewport 존재, 외부 의존·script 0이다. 10초 후 진행선은 100%이고 중앙의 두 선은 각각 111.5px 좌우로 이동했다.
+- 모션 감소: `prefers-reduced-motion: reduce`에서 진행선·문 열림·원형 링·플랩 애니메이션의 계산값이 모두 `animation-name: none`이며 600ms 뒤 위치 변화가 없음을 확인했다.
+- 완료 게이트: `npm --prefix frontend run build` 통과(Vite 6.4.3, 37 modules), 목차 링크의 source/dist 대상 존재 확인, `git diff --check` 통과. r3 산출물 중 목차를 제외한 기존 화면 11개 SHA-256은 착수 시점과 동일하다.
+- 육안 확인: 390px/1440px의 초기·문 열림 완료 스크린샷을 확인했다. 검증 자료는 `/private/tmp/tkt102-r4.ocG5Ob/`의 `verify.cjs`, `390-start.png`, `390-open.png`, `1440-start.png`, `1440-open.png`에 있다(임시 경로라 정리 시 소실 가능).
+- 제약: 정적 승인 목업이므로 실제 10초 라우팅은 구현하지 않았다. 앱 코드(`frontend/src/**`)는 읽기만 했고 수정하지 않았다. Safari/WebKit 실기·실배포는 미검증이며 commit·push·배포·최종 판정은 수행하지 않았다.
