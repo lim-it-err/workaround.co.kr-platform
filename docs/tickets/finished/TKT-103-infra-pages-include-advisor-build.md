@@ -2,7 +2,7 @@
 
 # TKT-103 `[INFRA]` GitHub Pages 산출물에 advisor 정적 빌드 포함
 
-- 상태: need_review
+- 상태: `finished` (REV-TKT-103-r1 통과, PM 2026-09-12)
 - 우선순위: P1 (TKT-079 언블록 선행 — PO "접속 창이 없다" 계보)
 - 담당: codex-2 (INFRA)
 - 의존: 없음

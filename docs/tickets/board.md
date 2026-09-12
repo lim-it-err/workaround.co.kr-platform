@@ -34,8 +34,6 @@
 
 ## Need Review
 
-- `TKT-079` `P1` `v0.7.0` `need_review` `[FE]` Advisor 디자인·역명판 통합 — 기본/Pages build·unit 61/61·E2E 21/21·service 34/34·375px 다크/라이트·진입/복귀 통과
-- `TKT-103` `P1` `v0.7.0` `need_review` `[INFRA]` Pages 산출물에 advisor 정적 빌드 포함 — advisor 96 modules·unit 44/44·E2E 17/17·모선 11/11·로컬 HTTP/404 복구 통과
 
 
 
@@ -67,6 +65,9 @@
 
 
 ## Finished
+
+- `TKT-103` `[INFRA]` Pages 산출물에 advisor 빌드 포함 — r1 통과 (2026-09-12)
+- `TKT-079` `[FE]` Advisor 사이트 진입 + 프레임 통합 — r1 통과, A 노선 개통 (2026-09-12)
 
 - `TKT-104` `[FE]` Inflight pill aria-pressed — r1 통과 (2026-09-11)
 
