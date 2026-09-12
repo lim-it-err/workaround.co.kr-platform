@@ -31,7 +31,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            frontend/package-lock.json
+            services/advisor/frontend/package-lock.json
 
       - name: Configure GitHub Pages
         id: pages
@@ -40,8 +42,14 @@ jobs:
       - name: Install frontend dependencies
         run: npm --prefix frontend ci
 
+      - name: Install advisor frontend dependencies
+        run: npm --prefix services/advisor/frontend ci
+
       - name: Build frontend for the project Pages base
         run: npm --prefix frontend run build -- --base="$GITHUB_PAGES_BASE"
+
+      - name: Build advisor frontend for the nested Pages base
+        run: npm --prefix services/advisor/frontend run build -- --base="${GITHUB_PAGES_BASE}advisor/"
 
       - name: Prepare and verify GitHub Pages artifact
         env:
@@ -49,6 +57,7 @@ jobs:
         run: >-
           node infra/public-site/prepare-github-pages.mjs
           --dist frontend/dist
+          --advisor-dist services/advisor/frontend/dist
           --base "$GITHUB_PAGES_BASE"
           --sha "$BUILD_SHA"
 
@@ -61,6 +70,7 @@ jobs:
             echo "- Commit: \`${GITHUB_SHA}\`"
             echo "- Base: \`${GITHUB_PAGES_BASE}\`"
             echo "- Artifact: \`frontend/dist\`"
+            echo "- Advisor: \`${GITHUB_PAGES_BASE}advisor/\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload GitHub Pages artifact
