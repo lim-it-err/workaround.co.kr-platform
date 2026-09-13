@@ -10,6 +10,7 @@ import { SiteLoopSymbol } from './components/tone/index.js'
 import { LINES } from './data/lines.js'
 import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
 import { VOYAGE } from './data/voyage.js'
+import { migrateLegacyVoyageStorage, voyageStorageKey } from './data/voyageStorage.js'
 import {
   buildLivePath,
   normalizeBasePath,
@@ -51,7 +52,7 @@ const TOKEN_EXPIRY_STORAGE_KEY = 'workaround-work-manager-token-expires-at'
 const BLOG_ACTIVE_SLUG_STORAGE_KEY = 'workaround-blog-active-slug'
 const BLOG_STUDIO_VIEW_STORAGE_KEY = 'workaround-blog-studio-view'
 const BLOG_STUDIO_POST_STORAGE_KEY = 'workaround-blog-studio-post'
-const VOYAGE_ARCHIVE_STORAGE_KEY = `workaround-voyage-archive:${VOYAGE.id}`
+const VOYAGE_ARCHIVE_STORAGE_KEY = voyageStorageKey(VOYAGE.id, 'archive')
 let fallbackEntityIdCounter = 0
 const TARGET_VERSION_OPTIONS = ['v0.4.0', 'v0.5.0', 'v0.5.1', 'v0.6.0', 'infra', 'chore']
 const WORK_ROADMAP_ITEMS = [
@@ -778,8 +779,8 @@ const currentRoute = computed(() => {
   if (page.value === 'voyage') {
     return {
       line: 'Line V / Voyage',
-      title: '동유럽 여행 노선',
-      description: '출발 전 체크리스트와 일정, 예산을 한 흐름에서 확인합니다.'
+      title: '여행 노선',
+      description: '진행 중인 여행과 지난 여행의 기록을 한 흐름에서 확인합니다.'
     }
   }
 
@@ -1451,6 +1452,7 @@ function playSplashFlap() {
 }
 
 onMounted(async () => {
+  migrateLegacyVoyageStorage(window.localStorage)
   window.addEventListener('beforeunload', handleStudioBeforeUnload)
   window.addEventListener('popstate', handleLocationPopState)
   if (typeof window.matchMedia === 'function') {

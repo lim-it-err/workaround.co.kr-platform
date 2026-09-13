@@ -2,9 +2,13 @@
 import { computed, nextTick, ref } from 'vue'
 import StationHeader from './StationHeader.vue'
 import VoyageDaySession from './voyage/VoyageDaySession.vue'
-import { VOYAGE } from '../data/voyage.js'
 
 defineEmits(['back', 'exit', 'open-archive'])
+
+const props = defineProps({
+  voyage: { type: Object, required: true }
+})
+const VOYAGE = props.voyage
 
 function localDateKey(date = new Date()) {
   const year = date.getFullYear()

@@ -5,6 +5,7 @@ import { after, before, test } from 'node:test'
 import { createRequire } from 'node:module'
 import { readFile } from 'node:fs/promises'
 import { VOYAGE } from '../data/voyage.js'
+import { voyageStorageKey } from '../data/voyageStorage.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const base = process.env.STUDIO_TEST_URL || 'http://127.0.0.1:4174/workaround.co.kr-platform/'
@@ -343,7 +344,7 @@ test('097: local storage disclosure, loss conditions and combined JSON download 
   assert.match(await page.locator('.writer-storage').textContent(), /이 브라우저에만 저장됩니다. 다른 기기와 동기화되지 않습니다/)
   await body(page).fill('백업할 초안')
   await saved(page)
-  await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ notes: { prague: '여행 기록' }, stamps: ['prague'] })), `workaround-voyage-archive:${VOYAGE.id}`)
+  await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ notes: { prague: '여행 기록' }, stamps: ['prague'] })), voyageStorageKey(VOYAGE.id, 'archive'))
   await page.getByRole('button', { name: '저장 안내와 백업' }).click()
   assert.match(await sheet(page).textContent(), /브라우저 데이터를 지우거나 시크릿 모드/)
   const downloading = page.waitForEvent('download')

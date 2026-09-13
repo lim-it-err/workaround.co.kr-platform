@@ -2,11 +2,16 @@
 import { computed, ref, watch } from 'vue'
 import StationHeader from './StationHeader.vue'
 import VoyagePlanningSections from './voyage/VoyagePlanningSections.vue'
-import { VOYAGE } from '../data/voyage.js'
+import { voyageStorageKey } from '../data/voyageStorage.js'
 
 defineEmits(['exit', 'open-daily', 'open-archive'])
 
-const CHECKLIST_STORAGE_KEY = `workaround-voyage-checklist:${VOYAGE.id}`
+const props = defineProps({
+  voyage: { type: Object, required: true }
+})
+const VOYAGE = props.voyage
+
+const CHECKLIST_STORAGE_KEY = voyageStorageKey(VOYAGE.id, 'checklist')
 const validChecklistIds = new Set(VOYAGE.checklist.map((item) => item.id))
 
 function readChecklistState() {
@@ -149,7 +154,7 @@ function setChecklistItem(id, checked) {
       <p class="voyage-rationale">{{ VOYAGE.flights.rationale }}</p>
     </section>
 
-    <VoyagePlanningSections />
+    <VoyagePlanningSections :voyage="VOYAGE" />
 
     <section class="section-block voyage-checklist" aria-labelledby="voyage-checklist-title">
       <div class="section-head voyage-section-head">

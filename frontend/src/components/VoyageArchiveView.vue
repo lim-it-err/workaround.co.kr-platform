@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import StationHeader from './StationHeader.vue'
-import { VOYAGE } from '../data/voyage.js'
+import { voyageStorageKey } from '../data/voyageStorage.js'
 import {
   LOCAL_WRITING_HELP,
   LOCAL_WRITING_NOTICE,
@@ -15,7 +15,12 @@ import {
 
 defineEmits(['exit', 'open-daily', 'open-prep'])
 
-const ARCHIVE_STORAGE_KEY = `workaround-voyage-archive:${VOYAGE.id}`
+const props = defineProps({
+  voyage: { type: Object, required: true }
+})
+const VOYAGE = props.voyage
+
+const ARCHIVE_STORAGE_KEY = voyageStorageKey(VOYAGE.id, 'archive')
 
 function localDateKey(date = new Date()) {
   const year = date.getFullYear()

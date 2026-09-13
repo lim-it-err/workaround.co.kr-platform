@@ -3,7 +3,11 @@
 // 신규 노선(D/P 등) 추가·좌표 조정은 이 파일 한 곳만 수정한다.
 // 좌표계: viewBox 0 0 1000 460, 환승 홀 노드 = (300, 230).
 
+import { VOYAGES } from './voyage.js'
+
 export const JUNCTION = { x: 300, y: 230 }
+
+const currentVoyage = VOYAGES.find((voyage) => voyage.status === 'boarding') || VOYAGES[0]
 
 export const LINES = [
   {
@@ -70,7 +74,7 @@ export const LINES = [
     path: 'M300 230 L180 382 H96',
     chip: { x: 96, y: 382 },
     labelPos: { x: 96, y: 418, sub: 436, anchor: 'middle' },
-    rowStops: '중부유럽 순환선'
+    rowStops: currentVoyage.title
   },
   {
     code: 'D',

@@ -1,6 +1,10 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { VOYAGE } from '../../data/voyage.js'
+
+const props = defineProps({
+  voyage: { type: Object, required: true }
+})
+const VOYAGE = props.voyage
 
 const selectedCity = ref('')
 const selectedBudget = ref('all')
