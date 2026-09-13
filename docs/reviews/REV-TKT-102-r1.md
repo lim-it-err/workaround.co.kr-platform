@@ -72,3 +72,10 @@
 - 실렌더(PM): home 390 overflow 0 / 1440 에서 SVG 135→840px·목록 888px~ 2단 확인. studio 1440 중앙 컬럼+우측 도구 패널. archive 390 DAY 6 주인공·지나온 정류장. splash 9초 시점 좌우 패널 갈라짐+doors opening.
 - **[중요·구현 메모, 목업 비차단]** 모바일(390)에서 가로형 노선도가 154px 높이로 눌려 라벨이 빽빽함 — 구현(FE) 시 규칙: 모바일은 **개통 노선만 이름 표시, 미개통은 배지만**, 라벨 폰트 하한 11px, 필요 시 지도 높이 220px 이상 확보. 톤 원칙 6 에 추가.
 - home-alt(선택)는 미제출 — 문제 없음.
+
+## PM r6 판정 (2026-09-14) — **통과 (PO 형태 선택 대기: 순환선 vs 3노선)**
+
+- home.html(순환선, D-015 B안): viewBox 700×700, 3구간 색 호(경험/학습·놀이/운영)·역 8·미개통 D·P 점선 호·12시 환승 홀. 390px svg 335px·overflow 0, 1440 좌 원·우 목록 2단. 목록 = 구간 헤더(경험 구간 · 환승 홀→B→V) + 역 행 + 인라인 서브링크. **PM 권고안.**
+- home-alt.html(3노선 교차, A안): 십자 교차 형태, 동일 목록. 비교안으로 유효.
+- splash.html: 플랩 4단계(WORKAROUND→WORKING AROUND→MIND THE GAP→DOORS OPENING) + 티커 3종 확인. voyage-archive.html: 실제 경과·Hertz·누적 523만원/856 헤더 반영 확인.
+- 지적: 없음. PO 가 형태를 고르면 TKT-111 노선도 부분 확정 → TKT-102 finished.

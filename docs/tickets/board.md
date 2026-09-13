@@ -35,6 +35,8 @@
 
 ## Need Review
 
+- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 15종 — r6 통과(순환선 홈 + 3노선 비교안·플랩 4단계·기록 실제 경과), **PO 홈 형태 선택 대기**
+
 
 
 
@@ -45,7 +47,6 @@
 
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
-- `TKT-110` `P1` `tone` `ready` `[FE]` 톤 기반 + 스플래시(플랩 4단계) — 시리즈 1
 - `TKT-111` `P1` `tone` `ready` `[FE]` 홈 순환선 노선도(D-015) + 3묶음 + 2단 — r6 승인 후 노선도 확정
 - `TKT-112` `P1` `tone` `ready` `[FE]` 여행 3종 톤 전환 + 지출 표시 — 108 뒤
 - `TKT-109` `P1` `voyage` `ready` `[FE]` 여정 노선도 — 순환선 지도·기차 시각표·정차역 상세 (r7 목업 = 스펙)
@@ -70,13 +71,13 @@
 
 ## Started
 
-- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r6 노선도 재구성(노선 3=분류, 정류장 8=서비스, D-015)
-
+- `TKT-110` `P1` `tone` `started` `[FE]` 톤 기반 + 스플래시(플랩 4단계) — 시리즈 1
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
 
 - `TKT-080` `P1` `v0.7.0` `need_review` `[BE]` advisor 서비스 계약 마감 — 35/35·gateway 8/8·Compose 실기동/health 200 통과
 
