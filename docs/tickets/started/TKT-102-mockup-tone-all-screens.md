@@ -177,5 +177,5 @@
 ## r9 지시 (PM, 2026-09-14 — 담당 codex-8, r8 뒤) — 순환선 심볼 시안 + 스플래시 현행 UI 기반 정적 프레임
 
 1. **순환선 심볼 시안 3개** → `design/proposals/2026-09-14-loop-symbol.html` (한 페이지에 3안 나란히, 각 24/48/96px + 상단바 배치 예 + 파비콘 16px 예). 조건: 단색 링 + 12시 기점 점을 기본으로 변주(선 두께·기점 표현·끊김 등), 텍스트 없음, 색은 안전 노랑(`--safety`)/흰색 2가지로 렌더. **취향이 드러나는 과제 — 근거 한 줄씩.**
-2. **`splash.html` 재작성**: 현행 스플래시 UI(`frontend/src/App.vue` splash 섹션·styles.css 의 split-flap 보드)를 **정적 프레임 2장**으로 옮긴다 — ①시작 프레임(플랩 `WORKING AROUND` — 첫 WORKAROUND 없음, 티커 1문구, 10초 안내) ②종반 프레임(`DOORS OPENING`). 애니메이션·CSS 플립·좌우 패널 연출 **전부 제거**. 배지는 1번 시안 중 PM 이 고른 것(그 전엔 1안). 통계 타일·군더더기 행 제거 외 현행 구조 유지.
+2. **`splash.html` 플립 CSS 개선 (PO 정정: 애니메이션 유지, 품질을 현행 수준으로)**: 현행 사이트의 split-flap(`frontend/src/App.vue` splash 섹션 + `styles.css` 플랩 클래스, TKT-070/077 정합 결과)을 **읽고 그 동작을 순수 CSS 로 재현**한다 — 셀은 상·하 두 반쪽, 상단 반쪽이 앞으로 접히며(rotateX, backface-visibility) 다음 글자의 하단 반쪽이 드러남, 셀별 시차(좌→우 30~50ms), 끝에 살짝 바운스, 글자 반쪽 정합(line-height/clip 정확), 힌지 선 1px. 문구 시퀀스 3단계 `WORKING AROUND → MIND THE GAP → DOORS OPENING`(14칸 고정). 좌우 패널 갈라짐 연출은 유지하되 플랩보다 튀지 않게. 배경·보드 구조·10초·티커 3회는 현행 UI 기준. 배지는 1번 시안 중 1안(PM 선택 전).
 3. 검증은 r5 절차. `index.html` 링크 갱신.
