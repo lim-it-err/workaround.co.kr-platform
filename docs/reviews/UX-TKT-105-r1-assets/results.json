@@ -1,0 +1,6534 @@
+{
+  "url": "http://127.0.0.1:4188/workaround.co.kr-platform/",
+  "checkedAt": "2026-09-13T20:19:21.440Z",
+  "cases": [
+    {
+      "width": 375,
+      "theme": "dark",
+      "baseline": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 426.46875,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 426,
+          "clientHeight": 426
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "제목",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 25,
+            "y": 110.78125,
+            "width": 32,
+            "height": 43.59375,
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 42,
+            "clientHeight": 42
+          },
+          {
+            "text": "미리보기",
+            "x": 157.296875,
+            "y": 112.578125,
+            "width": 61.1875,
+            "height": 40,
+            "scrollWidth": 59,
+            "clientWidth": 59,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 222.484375,
+            "y": 112.578125,
+            "width": 37.59375,
+            "height": 40,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 도구",
+            "x": 264.078125,
+            "y": 112.578125,
+            "width": 37.921875,
+            "height": 40,
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "글 메뉴",
+            "x": 306,
+            "y": 110.9375,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 318,
+            "y": 177.375,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "블로그",
+            "x": 25,
+            "y": 110.78125,
+            "width": 32,
+            "height": 43.59375,
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 42,
+            "clientHeight": 42
+          },
+          {
+            "text": "발행",
+            "x": 222.484375,
+            "y": 112.578125,
+            "width": 37.59375,
+            "height": 40,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 도구",
+            "x": 264.078125,
+            "y": 112.578125,
+            "width": 37.921875,
+            "height": 40,
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 318,
+            "y": 177.375,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          }
+        ]
+      },
+      "tools": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 426.46875,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 426,
+          "clientHeight": 426
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "사진 첨부",
+        "primary": 0,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 314,
+            "y": 526.296875,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "사진 첨부",
+            "x": 21,
+            "y": 593.5625,
+            "width": 333,
+            "height": 53.8125,
+            "scrollWidth": 331,
+            "clientWidth": 331,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "H1",
+            "x": 21,
+            "y": 665.375,
+            "width": 105.65625,
+            "height": 53.8125,
+            "scrollWidth": 104,
+            "clientWidth": 104,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "H2",
+            "x": 134.65625,
+            "y": 665.375,
+            "width": 105.671875,
+            "height": 53.8125,
+            "scrollWidth": 104,
+            "clientWidth": 104,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "H3",
+            "x": 248.328125,
+            "y": 665.375,
+            "width": 105.65625,
+            "height": 53.8125,
+            "scrollWidth": 104,
+            "clientWidth": 104,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 만들기",
+            "x": 21,
+            "y": 737.1875,
+            "width": 333,
+            "height": 53.8125,
+            "scrollWidth": 331,
+            "clientWidth": 331,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          }
+        ],
+        "smallTargets": []
+      },
+      "tableTwoColumns": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 426.46875,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 426,
+          "clientHeight": 426
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": {
+          "x": 21,
+          "y": 577.1875,
+          "width": 333,
+          "height": 142,
+          "scrollWidth": 420,
+          "clientWidth": 333,
+          "scrollHeight": 142,
+          "clientHeight": 142
+        },
+        "tableInputs": [
+          {
+            "label": "열 1 제목",
+            "x": 28,
+            "y": 584.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 2 제목",
+            "x": 237.5,
+            "y": 584.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 1열",
+            "x": 28,
+            "y": 631.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 2열",
+            "x": 237.5,
+            "y": 631.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 1열",
+            "x": 28,
+            "y": 678.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 2열",
+            "x": 237.5,
+            "y": 678.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "active": "1행 2열",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 314,
+            "y": 278.234375,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "행 추가",
+            "x": 21,
+            "y": 443.5625,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "행 삭제",
+            "x": 191.5,
+            "y": 443.5625,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 추가",
+            "x": 21,
+            "y": 505.375,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 삭제",
+            "x": 191.5,
+            "y": 505.375,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "취소",
+            "x": 198.953125,
+            "y": 737.1875,
+            "width": 65.5,
+            "height": 53.8125,
+            "scrollWidth": 64,
+            "clientWidth": 64,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 삽입",
+            "x": 272.453125,
+            "y": 737.1875,
+            "width": 81.546875,
+            "height": 53.8125,
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "scrollHeight": 54,
+            "clientHeight": 54
+          }
+        ],
+        "smallTargets": []
+      },
+      "tableThreeColumns": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 426.46875,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 426,
+          "clientHeight": 426
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": {
+          "x": 21,
+          "y": 577.1875,
+          "width": 333,
+          "height": 142,
+          "scrollWidth": 420,
+          "clientWidth": 333,
+          "scrollHeight": 142,
+          "clientHeight": 142
+        },
+        "tableInputs": [
+          {
+            "label": "열 1 제목",
+            "x": 28,
+            "y": 584.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 2 제목",
+            "x": 167.65625,
+            "y": 584.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 3 제목",
+            "x": 307.3125,
+            "y": 584.1875,
+            "width": 126.6875,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 1열",
+            "x": 28,
+            "y": 631.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 2열",
+            "x": 167.65625,
+            "y": 631.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 3열",
+            "x": 307.3125,
+            "y": 631.1875,
+            "width": 126.6875,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 1열",
+            "x": 28,
+            "y": 678.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 2열",
+            "x": 167.65625,
+            "y": 678.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 3열",
+            "x": 307.3125,
+            "y": 678.1875,
+            "width": 126.6875,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "active": "열 추가",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 314,
+            "y": 278.234375,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "행 추가",
+            "x": 21,
+            "y": 443.5625,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "행 삭제",
+            "x": 191.5,
+            "y": 443.5625,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 추가",
+            "x": 21,
+            "y": 505.375,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 삭제",
+            "x": 191.5,
+            "y": 505.375,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "취소",
+            "x": 198.953125,
+            "y": 737.1875,
+            "width": 65.5,
+            "height": 53.8125,
+            "scrollWidth": 64,
+            "clientWidth": 64,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 삽입",
+            "x": 272.453125,
+            "y": 737.1875,
+            "width": 81.546875,
+            "height": 53.8125,
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "scrollHeight": 54,
+            "clientHeight": 54
+          }
+        ],
+        "smallTargets": []
+      },
+      "insertedTable": {
+        "body": "오늘의 기록\n\n이 문장은 UX 검수용 가상 본문입니다.\n\n사진과 표를 넣은 뒤 다음 문단을 이어 씁니다.\n\n[[studio-table:table-844b24ad-c595-4a82-8869-9b471cc28fa0]]",
+        "metrics": {
+          "viewport": {
+            "width": 375,
+            "height": 812
+          },
+          "theme": "dark",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 25,
+            "y": 100.78125,
+            "width": 325,
+            "height": 691,
+            "scrollWidth": 325,
+            "clientWidth": 325,
+            "scrollHeight": 691,
+            "clientHeight": 691
+          },
+          "writer": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 499.40625,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 499,
+            "clientHeight": 499
+          },
+          "body": {
+            "x": 25,
+            "y": 306.3125,
+            "width": 321,
+            "height": 394.78125,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 395,
+            "clientHeight": 395
+          },
+          "title": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 56.9375,
+            "scrollWidth": 372,
+            "clientWidth": 321,
+            "scrollHeight": 57,
+            "clientHeight": 57
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "본문",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "미리보기",
+              "x": 157.296875,
+              "y": 112.578125,
+              "width": 61.1875,
+              "height": 40,
+              "scrollWidth": 59,
+              "clientWidth": 59,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "글 메뉴",
+              "x": 306,
+              "y": 110.9375,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ]
+        }
+      },
+      "photo": {
+        "fixtureBytes": 1823,
+        "bodyCharacters": 2588,
+        "metrics": {
+          "viewport": {
+            "width": 375,
+            "height": 812
+          },
+          "theme": "dark",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 25,
+            "y": 100.78125,
+            "width": 325,
+            "height": 691,
+            "scrollWidth": 325,
+            "clientWidth": 325,
+            "scrollHeight": 691,
+            "clientHeight": 691
+          },
+          "writer": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 499.40625,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 499,
+            "clientHeight": 499
+          },
+          "body": {
+            "x": 25,
+            "y": 306.3125,
+            "width": 321,
+            "height": 394.78125,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 2413,
+            "clientHeight": 395
+          },
+          "title": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 56.9375,
+            "scrollWidth": 372,
+            "clientWidth": 321,
+            "scrollHeight": 57,
+            "clientHeight": 57
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "본문",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "미리보기",
+              "x": 157.296875,
+              "y": 112.578125,
+              "width": 61.1875,
+              "height": 40,
+              "scrollWidth": 59,
+              "clientWidth": 59,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "글 메뉴",
+              "x": 306,
+              "y": 110.9375,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ]
+        }
+      },
+      "continueWriting": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 394.78125,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 2472,
+          "clientHeight": 395
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "본문",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 25,
+            "y": 110.78125,
+            "width": 32,
+            "height": 43.59375,
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 42,
+            "clientHeight": 42
+          },
+          {
+            "text": "미리보기",
+            "x": 157.296875,
+            "y": 112.578125,
+            "width": 61.1875,
+            "height": 40,
+            "scrollWidth": 59,
+            "clientWidth": 59,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 222.484375,
+            "y": 112.578125,
+            "width": 37.59375,
+            "height": 40,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 도구",
+            "x": 264.078125,
+            "y": 112.578125,
+            "width": 37.921875,
+            "height": 40,
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "글 메뉴",
+            "x": 306,
+            "y": 110.9375,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 318,
+            "y": 177.375,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "블로그",
+            "x": 25,
+            "y": 110.78125,
+            "width": 32,
+            "height": 43.59375,
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 42,
+            "clientHeight": 42
+          },
+          {
+            "text": "발행",
+            "x": 222.484375,
+            "y": 112.578125,
+            "width": 37.59375,
+            "height": 40,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 도구",
+            "x": 264.078125,
+            "y": 112.578125,
+            "width": 37.921875,
+            "height": 40,
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 318,
+            "y": 177.375,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          }
+        ]
+      },
+      "preview": {
+        "tables": 1,
+        "images": 1,
+        "metrics": {
+          "viewport": {
+            "width": 375,
+            "height": 812
+          },
+          "theme": "dark",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 25,
+            "y": 100.78125,
+            "width": 325,
+            "height": 915.90625,
+            "scrollWidth": 325,
+            "clientWidth": 325,
+            "scrollHeight": 916,
+            "clientHeight": 916
+          },
+          "writer": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 724.3125,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 724,
+            "clientHeight": 724
+          },
+          "body": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollWidth": 0,
+            "clientWidth": 0,
+            "scrollHeight": 0,
+            "clientHeight": 0
+          },
+          "title": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollWidth": 0,
+            "clientWidth": 0,
+            "scrollHeight": 0,
+            "clientHeight": 0
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "편집",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "편집",
+              "x": 178.890625,
+              "y": 112.578125,
+              "width": 39.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "글 메뉴",
+              "x": 306,
+              "y": 110.9375,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "편집",
+              "x": 178.890625,
+              "y": 112.578125,
+              "width": 39.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ]
+        }
+      },
+      "restore": {
+        "tables": 1,
+        "images": 1
+      },
+      "escapeFocus": "글 도구"
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "baseline": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 426.46875,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 426,
+          "clientHeight": 426
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "제목",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 25,
+            "y": 110.78125,
+            "width": 32,
+            "height": 43.59375,
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 42,
+            "clientHeight": 42
+          },
+          {
+            "text": "미리보기",
+            "x": 157.296875,
+            "y": 112.578125,
+            "width": 61.1875,
+            "height": 40,
+            "scrollWidth": 59,
+            "clientWidth": 59,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 222.484375,
+            "y": 112.578125,
+            "width": 37.59375,
+            "height": 40,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 도구",
+            "x": 264.078125,
+            "y": 112.578125,
+            "width": 37.921875,
+            "height": 40,
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "글 메뉴",
+            "x": 306,
+            "y": 110.9375,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 318,
+            "y": 177.375,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "블로그",
+            "x": 25,
+            "y": 110.78125,
+            "width": 32,
+            "height": 43.59375,
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 42,
+            "clientHeight": 42
+          },
+          {
+            "text": "발행",
+            "x": 222.484375,
+            "y": 112.578125,
+            "width": 37.59375,
+            "height": 40,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 도구",
+            "x": 264.078125,
+            "y": 112.578125,
+            "width": 37.921875,
+            "height": 40,
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 318,
+            "y": 177.375,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          }
+        ]
+      },
+      "tools": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 426.46875,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 426,
+          "clientHeight": 426
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "사진 첨부",
+        "primary": 0,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 314,
+            "y": 526.296875,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "사진 첨부",
+            "x": 21,
+            "y": 593.5625,
+            "width": 333,
+            "height": 53.8125,
+            "scrollWidth": 331,
+            "clientWidth": 331,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "H1",
+            "x": 21,
+            "y": 665.375,
+            "width": 105.65625,
+            "height": 53.8125,
+            "scrollWidth": 104,
+            "clientWidth": 104,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "H2",
+            "x": 134.65625,
+            "y": 665.375,
+            "width": 105.671875,
+            "height": 53.8125,
+            "scrollWidth": 104,
+            "clientWidth": 104,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "H3",
+            "x": 248.328125,
+            "y": 665.375,
+            "width": 105.65625,
+            "height": 53.8125,
+            "scrollWidth": 104,
+            "clientWidth": 104,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 만들기",
+            "x": 21,
+            "y": 737.1875,
+            "width": 333,
+            "height": 53.8125,
+            "scrollWidth": 331,
+            "clientWidth": 331,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          }
+        ],
+        "smallTargets": []
+      },
+      "tableTwoColumns": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 426.46875,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 426,
+          "clientHeight": 426
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": {
+          "x": 21,
+          "y": 577.1875,
+          "width": 333,
+          "height": 142,
+          "scrollWidth": 420,
+          "clientWidth": 333,
+          "scrollHeight": 142,
+          "clientHeight": 142
+        },
+        "tableInputs": [
+          {
+            "label": "열 1 제목",
+            "x": 28,
+            "y": 584.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 2 제목",
+            "x": 237.5,
+            "y": 584.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 1열",
+            "x": 28,
+            "y": 631.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 2열",
+            "x": 237.5,
+            "y": 631.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 1열",
+            "x": 28,
+            "y": 678.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 2열",
+            "x": 237.5,
+            "y": 678.1875,
+            "width": 196.5,
+            "height": 34,
+            "scrollWidth": 196,
+            "clientWidth": 197,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "active": "1행 2열",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 314,
+            "y": 278.234375,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "행 추가",
+            "x": 21,
+            "y": 443.5625,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "행 삭제",
+            "x": 191.5,
+            "y": 443.5625,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 추가",
+            "x": 21,
+            "y": 505.375,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 삭제",
+            "x": 191.5,
+            "y": 505.375,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "취소",
+            "x": 198.953125,
+            "y": 737.1875,
+            "width": 65.5,
+            "height": 53.8125,
+            "scrollWidth": 64,
+            "clientWidth": 64,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 삽입",
+            "x": 272.453125,
+            "y": 737.1875,
+            "width": 81.546875,
+            "height": 53.8125,
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "scrollHeight": 54,
+            "clientHeight": 54
+          }
+        ],
+        "smallTargets": []
+      },
+      "tableThreeColumns": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 426.46875,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 426,
+          "clientHeight": 426
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": {
+          "x": 21,
+          "y": 577.1875,
+          "width": 333,
+          "height": 142,
+          "scrollWidth": 420,
+          "clientWidth": 333,
+          "scrollHeight": 142,
+          "clientHeight": 142
+        },
+        "tableInputs": [
+          {
+            "label": "열 1 제목",
+            "x": 28,
+            "y": 584.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 2 제목",
+            "x": 167.65625,
+            "y": 584.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 3 제목",
+            "x": 307.3125,
+            "y": 584.1875,
+            "width": 126.6875,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 1열",
+            "x": 28,
+            "y": 631.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 2열",
+            "x": 167.65625,
+            "y": 631.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 3열",
+            "x": 307.3125,
+            "y": 631.1875,
+            "width": 126.6875,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 1열",
+            "x": 28,
+            "y": 678.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 2열",
+            "x": 167.65625,
+            "y": 678.1875,
+            "width": 126.65625,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 3열",
+            "x": 307.3125,
+            "y": 678.1875,
+            "width": 126.6875,
+            "height": 34,
+            "scrollWidth": 126,
+            "clientWidth": 127,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "active": "열 추가",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 314,
+            "y": 278.234375,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "행 추가",
+            "x": 21,
+            "y": 443.5625,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "행 삭제",
+            "x": 191.5,
+            "y": 443.5625,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 추가",
+            "x": 21,
+            "y": 505.375,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 삭제",
+            "x": 191.5,
+            "y": 505.375,
+            "width": 162.5,
+            "height": 53.8125,
+            "scrollWidth": 161,
+            "clientWidth": 161,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "취소",
+            "x": 198.953125,
+            "y": 737.1875,
+            "width": 65.5,
+            "height": 53.8125,
+            "scrollWidth": 64,
+            "clientWidth": 64,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 삽입",
+            "x": 272.453125,
+            "y": 737.1875,
+            "width": 81.546875,
+            "height": 53.8125,
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "scrollHeight": 54,
+            "clientHeight": 54
+          }
+        ],
+        "smallTargets": []
+      },
+      "insertedTable": {
+        "body": "오늘의 기록\n\n이 문장은 UX 검수용 가상 본문입니다.\n\n사진과 표를 넣은 뒤 다음 문단을 이어 씁니다.\n\n[[studio-table:table-bae35953-7c03-4df1-b3ff-e3e56de2c702]]",
+        "metrics": {
+          "viewport": {
+            "width": 375,
+            "height": 812
+          },
+          "theme": "light",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 25,
+            "y": 100.78125,
+            "width": 325,
+            "height": 691,
+            "scrollWidth": 325,
+            "clientWidth": 325,
+            "scrollHeight": 691,
+            "clientHeight": 691
+          },
+          "writer": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 499.40625,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 499,
+            "clientHeight": 499
+          },
+          "body": {
+            "x": 25,
+            "y": 306.3125,
+            "width": 321,
+            "height": 394.78125,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 395,
+            "clientHeight": 395
+          },
+          "title": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 56.9375,
+            "scrollWidth": 372,
+            "clientWidth": 321,
+            "scrollHeight": 57,
+            "clientHeight": 57
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "본문",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "미리보기",
+              "x": 157.296875,
+              "y": 112.578125,
+              "width": 61.1875,
+              "height": 40,
+              "scrollWidth": 59,
+              "clientWidth": 59,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "글 메뉴",
+              "x": 306,
+              "y": 110.9375,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ]
+        }
+      },
+      "photo": {
+        "fixtureBytes": 1823,
+        "bodyCharacters": 2588,
+        "metrics": {
+          "viewport": {
+            "width": 375,
+            "height": 812
+          },
+          "theme": "light",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 25,
+            "y": 100.78125,
+            "width": 325,
+            "height": 691,
+            "scrollWidth": 325,
+            "clientWidth": 325,
+            "scrollHeight": 691,
+            "clientHeight": 691
+          },
+          "writer": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 499.40625,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 499,
+            "clientHeight": 499
+          },
+          "body": {
+            "x": 25,
+            "y": 306.3125,
+            "width": 321,
+            "height": 394.78125,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 2413,
+            "clientHeight": 395
+          },
+          "title": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 56.9375,
+            "scrollWidth": 372,
+            "clientWidth": 321,
+            "scrollHeight": 57,
+            "clientHeight": 57
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "본문",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "미리보기",
+              "x": 157.296875,
+              "y": 112.578125,
+              "width": 61.1875,
+              "height": 40,
+              "scrollWidth": 59,
+              "clientWidth": 59,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "글 메뉴",
+              "x": 306,
+              "y": 110.9375,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ]
+        }
+      },
+      "continueWriting": {
+        "viewport": {
+          "width": 375,
+          "height": 812
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 25,
+          "y": 100.78125,
+          "width": 325,
+          "height": 691,
+          "scrollWidth": 325,
+          "clientWidth": 325,
+          "scrollHeight": 691,
+          "clientHeight": 691
+        },
+        "writer": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 499.40625,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 499,
+          "clientHeight": 499
+        },
+        "body": {
+          "x": 25,
+          "y": 306.3125,
+          "width": 321,
+          "height": 394.78125,
+          "scrollWidth": 321,
+          "clientWidth": 321,
+          "scrollHeight": 2472,
+          "clientHeight": 395
+        },
+        "title": {
+          "x": 25,
+          "y": 233.375,
+          "width": 321,
+          "height": 56.9375,
+          "scrollWidth": 372,
+          "clientWidth": 321,
+          "scrollHeight": 57,
+          "clientHeight": 57
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "본문",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 25,
+            "y": 110.78125,
+            "width": 32,
+            "height": 43.59375,
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 42,
+            "clientHeight": 42
+          },
+          {
+            "text": "미리보기",
+            "x": 157.296875,
+            "y": 112.578125,
+            "width": 61.1875,
+            "height": 40,
+            "scrollWidth": 59,
+            "clientWidth": 59,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 222.484375,
+            "y": 112.578125,
+            "width": 37.59375,
+            "height": 40,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 도구",
+            "x": 264.078125,
+            "y": 112.578125,
+            "width": 37.921875,
+            "height": 40,
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "글 메뉴",
+            "x": 306,
+            "y": 110.9375,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 318,
+            "y": 177.375,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "블로그",
+            "x": 25,
+            "y": 110.78125,
+            "width": 32,
+            "height": 43.59375,
+            "scrollWidth": 30,
+            "clientWidth": 30,
+            "scrollHeight": 42,
+            "clientHeight": 42
+          },
+          {
+            "text": "발행",
+            "x": 222.484375,
+            "y": 112.578125,
+            "width": 37.59375,
+            "height": 40,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 도구",
+            "x": 264.078125,
+            "y": 112.578125,
+            "width": 37.921875,
+            "height": 40,
+            "scrollWidth": 36,
+            "clientWidth": 36,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 318,
+            "y": 177.375,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          }
+        ]
+      },
+      "preview": {
+        "tables": 1,
+        "images": 1,
+        "metrics": {
+          "viewport": {
+            "width": 375,
+            "height": 812
+          },
+          "theme": "light",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 25,
+            "y": 100.78125,
+            "width": 325,
+            "height": 787.90625,
+            "scrollWidth": 325,
+            "clientWidth": 325,
+            "scrollHeight": 788,
+            "clientHeight": 788
+          },
+          "writer": {
+            "x": 25,
+            "y": 233.375,
+            "width": 321,
+            "height": 596.3125,
+            "scrollWidth": 321,
+            "clientWidth": 321,
+            "scrollHeight": 596,
+            "clientHeight": 596
+          },
+          "body": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollWidth": 0,
+            "clientWidth": 0,
+            "scrollHeight": 0,
+            "clientHeight": 0
+          },
+          "title": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollWidth": 0,
+            "clientWidth": 0,
+            "scrollHeight": 0,
+            "clientHeight": 0
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "편집",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "편집",
+              "x": 178.890625,
+              "y": 112.578125,
+              "width": 39.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "글 메뉴",
+              "x": 306,
+              "y": 110.9375,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "블로그",
+              "x": 25,
+              "y": 110.78125,
+              "width": 32,
+              "height": 43.59375,
+              "scrollWidth": 30,
+              "clientWidth": 30,
+              "scrollHeight": 42,
+              "clientHeight": 42
+            },
+            {
+              "text": "편집",
+              "x": 178.890625,
+              "y": 112.578125,
+              "width": 39.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 222.484375,
+              "y": 112.578125,
+              "width": 37.59375,
+              "height": 40,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 도구",
+              "x": 264.078125,
+              "y": 112.578125,
+              "width": 37.921875,
+              "height": 40,
+              "scrollWidth": 36,
+              "clientWidth": 36,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 318,
+              "y": 177.375,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ]
+        }
+      },
+      "restore": {
+        "tables": 1,
+        "images": 1
+      },
+      "escapeFocus": "글 도구"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "baseline": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 512.515625,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 513,
+          "clientHeight": 513
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "제목",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 41,
+            "y": 128.40625,
+            "width": 74.46875,
+            "height": 40,
+            "scrollWidth": 72,
+            "clientWidth": 72,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "미리보기",
+            "x": 1218.40625,
+            "y": 128.40625,
+            "width": 73.0625,
+            "height": 40,
+            "scrollWidth": 71,
+            "clientWidth": 71,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 1299.46875,
+            "y": 128.40625,
+            "width": 47.53125,
+            "height": 40,
+            "scrollWidth": 48,
+            "clientWidth": 48,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 메뉴",
+            "x": 1355,
+            "y": 126.78125,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          }
+        ]
+      },
+      "tools": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 512.515625,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 513,
+          "clientHeight": 513
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "본문",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 41,
+            "y": 128.40625,
+            "width": 74.46875,
+            "height": 40,
+            "scrollWidth": 72,
+            "clientWidth": 72,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "미리보기",
+            "x": 1218.40625,
+            "y": 128.40625,
+            "width": 73.0625,
+            "height": 40,
+            "scrollWidth": 71,
+            "clientWidth": 71,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 1299.46875,
+            "y": 128.40625,
+            "width": 47.53125,
+            "height": 40,
+            "scrollWidth": 48,
+            "clientWidth": 48,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 메뉴",
+            "x": 1355,
+            "y": 126.78125,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          }
+        ]
+      },
+      "tableTwoColumns": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 512.515625,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 513,
+          "clientHeight": 513
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": {
+          "x": 385,
+          "y": 461.65625,
+          "width": 670,
+          "height": 142,
+          "scrollWidth": 670,
+          "clientWidth": 670,
+          "scrollHeight": 142,
+          "clientHeight": 142
+        },
+        "tableInputs": [
+          {
+            "label": "열 1 제목",
+            "x": 392,
+            "y": 468.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 2 제목",
+            "x": 726.5,
+            "y": 468.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 1열",
+            "x": 392,
+            "y": 515.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 2열",
+            "x": 726.5,
+            "y": 515.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 1열",
+            "x": 392,
+            "y": 562.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 2열",
+            "x": 726.5,
+            "y": 562.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "active": "1행 2열",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 1015,
+            "y": 224.515625,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "행 추가",
+            "x": 385,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "행 삭제",
+            "x": 554.5,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 추가",
+            "x": 724,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 삭제",
+            "x": 893.5,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "취소",
+            "x": 899.953125,
+            "y": 621.65625,
+            "width": 65.5,
+            "height": 53.8125,
+            "scrollWidth": 64,
+            "clientWidth": 64,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 삽입",
+            "x": 973.453125,
+            "y": 621.65625,
+            "width": 81.546875,
+            "height": 53.8125,
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "scrollHeight": 54,
+            "clientHeight": 54
+          }
+        ],
+        "smallTargets": []
+      },
+      "tableThreeColumns": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 512.515625,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 513,
+          "clientHeight": 513
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": {
+          "x": 385,
+          "y": 461.65625,
+          "width": 670,
+          "height": 142,
+          "scrollWidth": 670,
+          "clientWidth": 670,
+          "scrollHeight": 142,
+          "clientHeight": 142
+        },
+        "tableInputs": [
+          {
+            "label": "열 1 제목",
+            "x": 392,
+            "y": 468.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 2 제목",
+            "x": 615,
+            "y": 468.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 3 제목",
+            "x": 838,
+            "y": 468.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 1열",
+            "x": 392,
+            "y": 515.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 2열",
+            "x": 615,
+            "y": 515.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 3열",
+            "x": 838,
+            "y": 515.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 1열",
+            "x": 392,
+            "y": 562.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 2열",
+            "x": 615,
+            "y": 562.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 3열",
+            "x": 838,
+            "y": 562.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "active": "열 추가",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 1015,
+            "y": 224.515625,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "행 추가",
+            "x": 385,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "행 삭제",
+            "x": 554.5,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 추가",
+            "x": 724,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 삭제",
+            "x": 893.5,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "취소",
+            "x": 899.953125,
+            "y": 621.65625,
+            "width": 65.5,
+            "height": 53.8125,
+            "scrollWidth": 64,
+            "clientWidth": 64,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 삽입",
+            "x": 973.453125,
+            "y": 621.65625,
+            "width": 81.546875,
+            "height": 53.8125,
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "scrollHeight": 54,
+            "clientHeight": 54
+          }
+        ],
+        "smallTargets": []
+      },
+      "insertedTable": {
+        "body": "오늘의 기록\n\n이 문장은 UX 검수용 가상 본문입니다.\n\n사진과 표를 넣은 뒤 다음 문단을 이어 씁니다.\n\n[[studio-table:table-8263d81a-9314-4261-b0d5-57b22e9bbb6f]]",
+        "metrics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "theme": "dark",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 41,
+            "y": 116.78125,
+            "width": 1358,
+            "height": 742.21875,
+            "scrollWidth": 1358,
+            "clientWidth": 1358,
+            "scrollHeight": 742,
+            "clientHeight": 742
+          },
+          "writer": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 613.953125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 614,
+            "clientHeight": 614
+          },
+          "body": {
+            "x": 358,
+            "y": 346.484375,
+            "width": 720,
+            "height": 480.828125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 481,
+            "clientHeight": 481
+          },
+          "title": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 77.4375,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 77,
+            "clientHeight": 77
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "본문",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 41,
+              "y": 128.40625,
+              "width": 74.46875,
+              "height": 40,
+              "scrollWidth": 72,
+              "clientWidth": 72,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "미리보기",
+              "x": 1218.40625,
+              "y": 128.40625,
+              "width": 73.0625,
+              "height": 40,
+              "scrollWidth": 71,
+              "clientWidth": 71,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 1299.46875,
+              "y": 128.40625,
+              "width": 47.53125,
+              "height": 40,
+              "scrollWidth": 48,
+              "clientWidth": 48,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 메뉴",
+              "x": 1355,
+              "y": 126.78125,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            },
+            {
+              "text": "사진",
+              "x": 1106,
+              "y": 273.46875,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H1",
+              "x": 1106,
+              "y": 317.0625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H2",
+              "x": 1106,
+              "y": 360.65625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H3",
+              "x": 1106,
+              "y": 404.25,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "표",
+              "x": 1106,
+              "y": 447.84375,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "검수용 일정 편집",
+              "x": 1106,
+              "y": 491.4375,
+              "width": 116,
+              "height": 34,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 34,
+              "clientHeight": 34
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            },
+            {
+              "text": "사진",
+              "x": 1106,
+              "y": 273.46875,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H1",
+              "x": 1106,
+              "y": 317.0625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H2",
+              "x": 1106,
+              "y": 360.65625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H3",
+              "x": 1106,
+              "y": 404.25,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "표",
+              "x": 1106,
+              "y": 447.84375,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "검수용 일정 편집",
+              "x": 1106,
+              "y": 491.4375,
+              "width": 116,
+              "height": 34,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 34,
+              "clientHeight": 34
+            }
+          ]
+        }
+      },
+      "photo": {
+        "fixtureBytes": 1823,
+        "bodyCharacters": 2588,
+        "metrics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "theme": "dark",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 41,
+            "y": 116.78125,
+            "width": 1358,
+            "height": 742.21875,
+            "scrollWidth": 1358,
+            "clientWidth": 1358,
+            "scrollHeight": 742,
+            "clientHeight": 742
+          },
+          "writer": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 613.953125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 614,
+            "clientHeight": 614
+          },
+          "body": {
+            "x": 358,
+            "y": 346.484375,
+            "width": 720,
+            "height": 480.828125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 1200,
+            "clientHeight": 481
+          },
+          "title": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 77.4375,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 77,
+            "clientHeight": 77
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "본문",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 41,
+              "y": 128.40625,
+              "width": 74.46875,
+              "height": 40,
+              "scrollWidth": 72,
+              "clientWidth": 72,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "미리보기",
+              "x": 1218.40625,
+              "y": 128.40625,
+              "width": 73.0625,
+              "height": 40,
+              "scrollWidth": 71,
+              "clientWidth": 71,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 1299.46875,
+              "y": 128.40625,
+              "width": 47.53125,
+              "height": 40,
+              "scrollWidth": 48,
+              "clientWidth": 48,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 메뉴",
+              "x": 1355,
+              "y": 126.78125,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            },
+            {
+              "text": "사진",
+              "x": 1106,
+              "y": 273.46875,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H1",
+              "x": 1106,
+              "y": 317.0625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H2",
+              "x": 1106,
+              "y": 360.65625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H3",
+              "x": 1106,
+              "y": 404.25,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "표",
+              "x": 1106,
+              "y": 447.84375,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "검수용 일정 편집",
+              "x": 1106,
+              "y": 491.4375,
+              "width": 116,
+              "height": 34,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 34,
+              "clientHeight": 34
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            },
+            {
+              "text": "사진",
+              "x": 1106,
+              "y": 273.46875,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H1",
+              "x": 1106,
+              "y": 317.0625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H2",
+              "x": 1106,
+              "y": 360.65625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H3",
+              "x": 1106,
+              "y": 404.25,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "표",
+              "x": 1106,
+              "y": 447.84375,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "검수용 일정 편집",
+              "x": 1106,
+              "y": 491.4375,
+              "width": 116,
+              "height": 34,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 34,
+              "clientHeight": 34
+            }
+          ]
+        }
+      },
+      "continueWriting": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "dark",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 480.828125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 1259,
+          "clientHeight": 481
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "본문",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 41,
+            "y": 128.40625,
+            "width": 74.46875,
+            "height": 40,
+            "scrollWidth": 72,
+            "clientWidth": 72,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "미리보기",
+            "x": 1218.40625,
+            "y": 128.40625,
+            "width": 73.0625,
+            "height": 40,
+            "scrollWidth": 71,
+            "clientWidth": 71,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 1299.46875,
+            "y": 128.40625,
+            "width": 47.53125,
+            "height": 40,
+            "scrollWidth": 48,
+            "clientWidth": 48,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 메뉴",
+            "x": 1355,
+            "y": 126.78125,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "검수용 일정 편집",
+            "x": 1106,
+            "y": 491.4375,
+            "width": 116,
+            "height": 34,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "검수용 일정 편집",
+            "x": 1106,
+            "y": 491.4375,
+            "width": 116,
+            "height": 34,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ]
+      },
+      "preview": {
+        "tables": 1,
+        "images": 1,
+        "metrics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "theme": "dark",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 41,
+            "y": 116.78125,
+            "width": 1358,
+            "height": 742.21875,
+            "scrollWidth": 1358,
+            "clientWidth": 1358,
+            "scrollHeight": 742,
+            "clientHeight": 742
+          },
+          "writer": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 613.953125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 614,
+            "clientHeight": 614
+          },
+          "body": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollWidth": 0,
+            "clientWidth": 0,
+            "scrollHeight": 0,
+            "clientHeight": 0
+          },
+          "title": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollWidth": 0,
+            "clientWidth": 0,
+            "scrollHeight": 0,
+            "clientHeight": 0
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "편집",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 41,
+              "y": 128.40625,
+              "width": 74.46875,
+              "height": 40,
+              "scrollWidth": 72,
+              "clientWidth": 72,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "편집",
+              "x": 1241.9375,
+              "y": 128.40625,
+              "width": 49.53125,
+              "height": 40,
+              "scrollWidth": 48,
+              "clientWidth": 48,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 1299.46875,
+              "y": 128.40625,
+              "width": 47.53125,
+              "height": 40,
+              "scrollWidth": 48,
+              "clientWidth": 48,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 메뉴",
+              "x": 1355,
+              "y": 126.78125,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ]
+        }
+      },
+      "restore": {
+        "tables": 1,
+        "images": 1
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "baseline": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 512.515625,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 513,
+          "clientHeight": 513
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "제목",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 41,
+            "y": 128.40625,
+            "width": 74.46875,
+            "height": 40,
+            "scrollWidth": 72,
+            "clientWidth": 72,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "미리보기",
+            "x": 1218.40625,
+            "y": 128.40625,
+            "width": 73.0625,
+            "height": 40,
+            "scrollWidth": 71,
+            "clientWidth": 71,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 1299.46875,
+            "y": 128.40625,
+            "width": 47.53125,
+            "height": 40,
+            "scrollWidth": 48,
+            "clientWidth": 48,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 메뉴",
+            "x": 1355,
+            "y": 126.78125,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          }
+        ]
+      },
+      "tools": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 512.515625,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 513,
+          "clientHeight": 513
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "본문",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 41,
+            "y": 128.40625,
+            "width": 74.46875,
+            "height": 40,
+            "scrollWidth": 72,
+            "clientWidth": 72,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "미리보기",
+            "x": 1218.40625,
+            "y": 128.40625,
+            "width": 73.0625,
+            "height": 40,
+            "scrollWidth": 71,
+            "clientWidth": 71,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 1299.46875,
+            "y": 128.40625,
+            "width": 47.53125,
+            "height": 40,
+            "scrollWidth": 48,
+            "clientWidth": 48,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 메뉴",
+            "x": 1355,
+            "y": 126.78125,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          }
+        ]
+      },
+      "tableTwoColumns": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 512.515625,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 513,
+          "clientHeight": 513
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": {
+          "x": 385,
+          "y": 461.65625,
+          "width": 670,
+          "height": 142,
+          "scrollWidth": 670,
+          "clientWidth": 670,
+          "scrollHeight": 142,
+          "clientHeight": 142
+        },
+        "tableInputs": [
+          {
+            "label": "열 1 제목",
+            "x": 392,
+            "y": 468.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 2 제목",
+            "x": 726.5,
+            "y": 468.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 1열",
+            "x": 392,
+            "y": 515.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 2열",
+            "x": 726.5,
+            "y": 515.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 1열",
+            "x": 392,
+            "y": 562.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 2열",
+            "x": 726.5,
+            "y": 562.65625,
+            "width": 321.5,
+            "height": 34,
+            "scrollWidth": 321,
+            "clientWidth": 322,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "active": "1행 2열",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 1015,
+            "y": 224.515625,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "행 추가",
+            "x": 385,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "행 삭제",
+            "x": 554.5,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 추가",
+            "x": 724,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 삭제",
+            "x": 893.5,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "취소",
+            "x": 899.953125,
+            "y": 621.65625,
+            "width": 65.5,
+            "height": 53.8125,
+            "scrollWidth": 64,
+            "clientWidth": 64,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 삽입",
+            "x": 973.453125,
+            "y": 621.65625,
+            "width": 81.546875,
+            "height": 53.8125,
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "scrollHeight": 54,
+            "clientHeight": 54
+          }
+        ],
+        "smallTargets": []
+      },
+      "tableThreeColumns": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 512.515625,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 513,
+          "clientHeight": 513
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": {
+          "x": 385,
+          "y": 461.65625,
+          "width": 670,
+          "height": 142,
+          "scrollWidth": 670,
+          "clientWidth": 670,
+          "scrollHeight": 142,
+          "clientHeight": 142
+        },
+        "tableInputs": [
+          {
+            "label": "열 1 제목",
+            "x": 392,
+            "y": 468.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 2 제목",
+            "x": 615,
+            "y": 468.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "열 3 제목",
+            "x": 838,
+            "y": 468.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 1열",
+            "x": 392,
+            "y": 515.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 2열",
+            "x": 615,
+            "y": 515.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "1행 3열",
+            "x": 838,
+            "y": 515.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 1열",
+            "x": 392,
+            "y": 562.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 2열",
+            "x": 615,
+            "y": 562.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          },
+          {
+            "label": "2행 3열",
+            "x": 838,
+            "y": 562.65625,
+            "width": 210,
+            "height": 34,
+            "scrollWidth": 210,
+            "clientWidth": 210,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "active": "열 추가",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "닫기",
+            "x": 1015,
+            "y": 224.515625,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "행 추가",
+            "x": 385,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "행 삭제",
+            "x": 554.5,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 추가",
+            "x": 724,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "열 삭제",
+            "x": 893.5,
+            "y": 389.84375,
+            "width": 161.5,
+            "height": 53.8125,
+            "scrollWidth": 160,
+            "clientWidth": 160,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "취소",
+            "x": 899.953125,
+            "y": 621.65625,
+            "width": 65.5,
+            "height": 53.8125,
+            "scrollWidth": 64,
+            "clientWidth": 64,
+            "scrollHeight": 52,
+            "clientHeight": 52
+          },
+          {
+            "text": "표 삽입",
+            "x": 973.453125,
+            "y": 621.65625,
+            "width": 81.546875,
+            "height": 53.8125,
+            "scrollWidth": 82,
+            "clientWidth": 82,
+            "scrollHeight": 54,
+            "clientHeight": 54
+          }
+        ],
+        "smallTargets": []
+      },
+      "insertedTable": {
+        "body": "오늘의 기록\n\n이 문장은 UX 검수용 가상 본문입니다.\n\n사진과 표를 넣은 뒤 다음 문단을 이어 씁니다.\n\n[[studio-table:table-cfaec5a9-a51c-4b06-8ba0-2afbe33ef0f4]]",
+        "metrics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "theme": "light",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 41,
+            "y": 116.78125,
+            "width": 1358,
+            "height": 742.21875,
+            "scrollWidth": 1358,
+            "clientWidth": 1358,
+            "scrollHeight": 742,
+            "clientHeight": 742
+          },
+          "writer": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 613.953125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 614,
+            "clientHeight": 614
+          },
+          "body": {
+            "x": 358,
+            "y": 346.484375,
+            "width": 720,
+            "height": 480.828125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 481,
+            "clientHeight": 481
+          },
+          "title": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 77.4375,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 77,
+            "clientHeight": 77
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "본문",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 41,
+              "y": 128.40625,
+              "width": 74.46875,
+              "height": 40,
+              "scrollWidth": 72,
+              "clientWidth": 72,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "미리보기",
+              "x": 1218.40625,
+              "y": 128.40625,
+              "width": 73.0625,
+              "height": 40,
+              "scrollWidth": 71,
+              "clientWidth": 71,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 1299.46875,
+              "y": 128.40625,
+              "width": 47.53125,
+              "height": 40,
+              "scrollWidth": 48,
+              "clientWidth": 48,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 메뉴",
+              "x": 1355,
+              "y": 126.78125,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            },
+            {
+              "text": "사진",
+              "x": 1106,
+              "y": 273.46875,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H1",
+              "x": 1106,
+              "y": 317.0625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H2",
+              "x": 1106,
+              "y": 360.65625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H3",
+              "x": 1106,
+              "y": 404.25,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "표",
+              "x": 1106,
+              "y": 447.84375,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "검수용 일정 편집",
+              "x": 1106,
+              "y": 491.4375,
+              "width": 116,
+              "height": 34,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 34,
+              "clientHeight": 34
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            },
+            {
+              "text": "사진",
+              "x": 1106,
+              "y": 273.46875,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H1",
+              "x": 1106,
+              "y": 317.0625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H2",
+              "x": 1106,
+              "y": 360.65625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H3",
+              "x": 1106,
+              "y": 404.25,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "표",
+              "x": 1106,
+              "y": 447.84375,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "검수용 일정 편집",
+              "x": 1106,
+              "y": 491.4375,
+              "width": 116,
+              "height": 34,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 34,
+              "clientHeight": 34
+            }
+          ]
+        }
+      },
+      "photo": {
+        "fixtureBytes": 1823,
+        "bodyCharacters": 2588,
+        "metrics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "theme": "light",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 41,
+            "y": 116.78125,
+            "width": 1358,
+            "height": 742.21875,
+            "scrollWidth": 1358,
+            "clientWidth": 1358,
+            "scrollHeight": 742,
+            "clientHeight": 742
+          },
+          "writer": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 613.953125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 614,
+            "clientHeight": 614
+          },
+          "body": {
+            "x": 358,
+            "y": 346.484375,
+            "width": 720,
+            "height": 480.828125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 1200,
+            "clientHeight": 481
+          },
+          "title": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 77.4375,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 77,
+            "clientHeight": 77
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "본문",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 41,
+              "y": 128.40625,
+              "width": 74.46875,
+              "height": 40,
+              "scrollWidth": 72,
+              "clientWidth": 72,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "미리보기",
+              "x": 1218.40625,
+              "y": 128.40625,
+              "width": 73.0625,
+              "height": 40,
+              "scrollWidth": 71,
+              "clientWidth": 71,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 1299.46875,
+              "y": 128.40625,
+              "width": 47.53125,
+              "height": 40,
+              "scrollWidth": 48,
+              "clientWidth": 48,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 메뉴",
+              "x": 1355,
+              "y": 126.78125,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            },
+            {
+              "text": "사진",
+              "x": 1106,
+              "y": 273.46875,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H1",
+              "x": 1106,
+              "y": 317.0625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H2",
+              "x": 1106,
+              "y": 360.65625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H3",
+              "x": 1106,
+              "y": 404.25,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "표",
+              "x": 1106,
+              "y": 447.84375,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "검수용 일정 편집",
+              "x": 1106,
+              "y": 491.4375,
+              "width": 116,
+              "height": 34,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 34,
+              "clientHeight": 34
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            },
+            {
+              "text": "사진",
+              "x": 1106,
+              "y": 273.46875,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H1",
+              "x": 1106,
+              "y": 317.0625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H2",
+              "x": 1106,
+              "y": 360.65625,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "H3",
+              "x": 1106,
+              "y": 404.25,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "표",
+              "x": 1106,
+              "y": 447.84375,
+              "width": 116,
+              "height": 37.59375,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "검수용 일정 편집",
+              "x": 1106,
+              "y": 491.4375,
+              "width": 116,
+              "height": 34,
+              "scrollWidth": 114,
+              "clientWidth": 114,
+              "scrollHeight": 34,
+              "clientHeight": 34
+            }
+          ]
+        }
+      },
+      "continueWriting": {
+        "viewport": {
+          "width": 1440,
+          "height": 900
+        },
+        "theme": "light",
+        "documentOverflow": 0,
+        "scroller": {
+          "x": 41,
+          "y": 116.78125,
+          "width": 1358,
+          "height": 742.21875,
+          "scrollWidth": 1358,
+          "clientWidth": 1358,
+          "scrollHeight": 742,
+          "clientHeight": 742
+        },
+        "writer": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 613.953125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 614,
+          "clientHeight": 614
+        },
+        "body": {
+          "x": 358,
+          "y": 346.484375,
+          "width": 720,
+          "height": 480.828125,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 1259,
+          "clientHeight": 481
+        },
+        "title": {
+          "x": 358,
+          "y": 245.046875,
+          "width": 720,
+          "height": 77.4375,
+          "scrollWidth": 720,
+          "clientWidth": 720,
+          "scrollHeight": 77,
+          "clientHeight": 77
+        },
+        "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+        "tableScroll": null,
+        "tableInputs": [],
+        "active": "본문",
+        "primary": 1,
+        "buttons": [
+          {
+            "text": "블로그",
+            "x": 41,
+            "y": 128.40625,
+            "width": 74.46875,
+            "height": 40,
+            "scrollWidth": 72,
+            "clientWidth": 72,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "미리보기",
+            "x": 1218.40625,
+            "y": 128.40625,
+            "width": 73.0625,
+            "height": 40,
+            "scrollWidth": 71,
+            "clientWidth": 71,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "발행",
+            "x": 1299.46875,
+            "y": 128.40625,
+            "width": 47.53125,
+            "height": 40,
+            "scrollWidth": 48,
+            "clientWidth": 48,
+            "scrollHeight": 40,
+            "clientHeight": 40
+          },
+          {
+            "text": "글 메뉴",
+            "x": 1355,
+            "y": 126.78125,
+            "width": 40,
+            "height": 43.265625,
+            "scrollWidth": 38,
+            "clientWidth": 38,
+            "scrollHeight": 41,
+            "clientHeight": 41
+          },
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "검수용 일정 편집",
+            "x": 1106,
+            "y": 491.4375,
+            "width": 116,
+            "height": 34,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ],
+        "smallTargets": [
+          {
+            "text": "저장 안내와 백업",
+            "x": 343.25,
+            "y": 189.046875,
+            "width": 28,
+            "height": 28,
+            "scrollWidth": 26,
+            "clientWidth": 26,
+            "scrollHeight": 26,
+            "clientHeight": 26
+          },
+          {
+            "text": "사진",
+            "x": 1106,
+            "y": 273.46875,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H1",
+            "x": 1106,
+            "y": 317.0625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H2",
+            "x": 1106,
+            "y": 360.65625,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "H3",
+            "x": 1106,
+            "y": 404.25,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "표",
+            "x": 1106,
+            "y": 447.84375,
+            "width": 116,
+            "height": 37.59375,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 38,
+            "clientHeight": 38
+          },
+          {
+            "text": "검수용 일정 편집",
+            "x": 1106,
+            "y": 491.4375,
+            "width": 116,
+            "height": 34,
+            "scrollWidth": 114,
+            "clientWidth": 114,
+            "scrollHeight": 34,
+            "clientHeight": 34
+          }
+        ]
+      },
+      "preview": {
+        "tables": 1,
+        "images": 1,
+        "metrics": {
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "theme": "light",
+          "documentOverflow": 0,
+          "scroller": {
+            "x": 41,
+            "y": 116.78125,
+            "width": 1358,
+            "height": 742.21875,
+            "scrollWidth": 1358,
+            "clientWidth": 1358,
+            "scrollHeight": 742,
+            "clientHeight": 742
+          },
+          "writer": {
+            "x": 358,
+            "y": 245.046875,
+            "width": 720,
+            "height": 613.953125,
+            "scrollWidth": 720,
+            "clientWidth": 720,
+            "scrollHeight": 614,
+            "clientHeight": 614
+          },
+          "body": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollWidth": 0,
+            "clientWidth": 0,
+            "scrollHeight": 0,
+            "clientHeight": 0
+          },
+          "title": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0,
+            "scrollWidth": 0,
+            "clientWidth": 0,
+            "scrollHeight": 0,
+            "clientHeight": 0
+          },
+          "titleText": "길 위에서 기록을 이어 쓰는 작은 방법",
+          "tableScroll": null,
+          "tableInputs": [],
+          "active": "편집",
+          "primary": 1,
+          "buttons": [
+            {
+              "text": "블로그",
+              "x": 41,
+              "y": 128.40625,
+              "width": 74.46875,
+              "height": 40,
+              "scrollWidth": 72,
+              "clientWidth": 72,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "편집",
+              "x": 1241.9375,
+              "y": 128.40625,
+              "width": 49.53125,
+              "height": 40,
+              "scrollWidth": 48,
+              "clientWidth": 48,
+              "scrollHeight": 38,
+              "clientHeight": 38
+            },
+            {
+              "text": "발행",
+              "x": 1299.46875,
+              "y": 128.40625,
+              "width": 47.53125,
+              "height": 40,
+              "scrollWidth": 48,
+              "clientWidth": 48,
+              "scrollHeight": 40,
+              "clientHeight": 40
+            },
+            {
+              "text": "글 메뉴",
+              "x": 1355,
+              "y": 126.78125,
+              "width": 40,
+              "height": 43.265625,
+              "scrollWidth": 38,
+              "clientWidth": 38,
+              "scrollHeight": 41,
+              "clientHeight": 41
+            },
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ],
+          "smallTargets": [
+            {
+              "text": "저장 안내와 백업",
+              "x": 343.25,
+              "y": 189.046875,
+              "width": 28,
+              "height": 28,
+              "scrollWidth": 26,
+              "clientWidth": 26,
+              "scrollHeight": 26,
+              "clientHeight": 26
+            }
+          ]
+        }
+      },
+      "restore": {
+        "tables": 1,
+        "images": 1
+      }
+    }
+  ],
+  "errors": [],
+  "browser": "151.0.7922.34"
+}

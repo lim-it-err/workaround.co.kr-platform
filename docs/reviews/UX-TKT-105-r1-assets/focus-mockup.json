@@ -1,0 +1,36 @@
+[
+  {
+    "width": 375,
+    "wrapForward": "닫기",
+    "wrapBack": "표 삽입",
+    "escape": {
+      "label": "글 도구",
+      "text": "＋",
+      "dialogOpen": false
+    },
+    "mockupTitle": {
+      "tag": "TEXTAREA",
+      "width": 335,
+      "scrollWidth": 335,
+      "height": 75,
+      "scrollHeight": 75
+    }
+  },
+  {
+    "width": 1440,
+    "wrapForward": "닫기",
+    "wrapBack": "표 삽입",
+    "escape": {
+      "label": null,
+      "text": "표",
+      "dialogOpen": false
+    },
+    "mockupTitle": {
+      "tag": "TEXTAREA",
+      "width": 720,
+      "scrollWidth": 720,
+      "height": 43,
+      "scrollHeight": 43
+    }
+  }
+]

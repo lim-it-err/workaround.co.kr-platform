@@ -35,7 +35,6 @@
 
 ## Need Review
 
-- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 15종 — r6 통과(순환선 홈 + 3노선 비교안·플랩 4단계·기록 실제 경과), **PO 홈 형태 선택 대기**
 
 
 
@@ -70,6 +69,8 @@
 
 
 ## Started
+
+- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r8 홈 노선도 안 C(순환선+환승 지선), codex-8 디자이너 첫 과제
 
 - `TKT-110` `P1` `tone` `started` `[FE]` 톤 기반 + 스플래시(플랩 4단계) — 시리즈 1
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
