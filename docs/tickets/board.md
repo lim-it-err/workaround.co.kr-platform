@@ -34,7 +34,6 @@
 
 ## Need Review
 
-- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 13종 — r5 통과(PO 리뷰 5건 반영), **PO 최종 육안 승인 대기**
 
 
 
@@ -52,6 +51,8 @@
 
 
 ## Started
+
+- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r6 노선도 재구성(노선 3=분류, 정류장 8=서비스, D-015)
 
 - `TKT-105` `P1` `chore` `started` `[FE]` Writing Studio 도구 메뉴 — 사진·h1~h3·기능형 표 (스펙 §6, PO 직접 요청)
 
