@@ -10,6 +10,7 @@ app:
     api-key: ${PLATFORM_API_KEY:dev-key}
     elevator-service-url: ${ELEVATOR_SERVICE_URL:http://localhost:8003}
     sample-spring-service-url: ${SAMPLE_SPRING_SERVICE_URL:http://localhost:8002}
+    advisor-service-url: ${ADVISOR_SERVICE_URL:http://localhost:8081}
   work-manager:
     password-sha256: ${WORK_MANAGER_PASSWORD_SHA256:8e0894262a5710556e3a186ff6476306c62c8c91f9853249fb878bf4f2826176}
     session-ttl-minutes: ${WORK_MANAGER_SESSION_TTL_MINUTES:30}

@@ -33,6 +33,17 @@ services:
     ports:
       - "8002:8002"
 
+  advisor:
+    build:
+      context: ../services/advisor/service
+    environment:
+      SPRING_PROFILES_ACTIVE: ${ADVISOR_PROFILE:-mock}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ADVISOR_AUTH_TOKEN: ${ADVISOR_AUTH_TOKEN:-}
+      ADVISOR_CORS_ALLOWED_ORIGINS: ${ADVISOR_CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+    volumes:
+      - advisor-data:/app/data
+
   gateway:
     build:
       context: ../gateway
@@ -43,10 +54,13 @@ services:
         condition: service_started
       sample-spring-service:
         condition: service_started
+      advisor:
+        condition: service_started
     environment:
       PLATFORM_API_KEY: ${PLATFORM_API_KEY:-dev-key}
       ELEVATOR_SERVICE_URL: http://elevator-service:8003
       SAMPLE_SPRING_SERVICE_URL: http://sample-spring-service:8002
+      ADVISOR_SERVICE_URL: http://advisor:8080
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
     ports:
       - "8080:8080"
@@ -77,3 +91,6 @@ services:
       REDIS_CONSUMER_GROUP: ${REDIS_CONSUMER_GROUP:-platform-workers}
       REDIS_CONSUMER_NAME: ${REDIS_CONSUMER_NAME:-ion2-worker}
       REDIS_READ_BLOCK_MS: ${REDIS_READ_BLOCK_MS:-1000}
+
+volumes:
+  advisor-data:
