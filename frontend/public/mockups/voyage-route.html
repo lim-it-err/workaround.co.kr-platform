@@ -19,11 +19,11 @@ svg.route{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
 .leg.thin{stroke-width:3}.leg.thick{stroke-width:7}
 .leg.todo{stroke:#7C8AA0;stroke-width:3;stroke-dasharray:8 8}
 a.seg:hover .leg,a.seg:focus .leg{stroke:#F3C544}
-a.seg .tip{opacity:0;transition:.15s}a.seg:hover .tip,a.seg:focus .tip{opacity:1}
+a.seg .tip{opacity:0;transition:.15s;pointer-events:none}a.seg path{pointer-events:stroke}a.seg:hover .tip,a.seg:focus .tip{opacity:1}
 .tip rect{fill:#1A212D;stroke:rgba(255,255,255,.16)}.tip text{fill:#F3F6FB;font-size:15px;font-weight:600}
 .st{fill:#0D131C;stroke:#F3F6FB;stroke-width:3}.st.done{stroke:#55738F}.st.todo{stroke:#7C8AA0;stroke-dasharray:3 3}
 .st2{fill:none;stroke:#55738F;stroke-width:2}
-.lb{fill:#F3F6FB;font-size:17px;font-weight:700}.lb.todo{fill:#7C8AA0;font-weight:500}.lb small{font-weight:400}
+.lb{fill:#F3F6FB;font-size:17px;font-weight:700}.lb.todo{fill:#7C8AA0;font-weight:500}.lb .sm{font-weight:400;fill:#F3C544}
 .sub{fill:#7C8AA0;font-size:12px}
 .pulse{fill:#F3C544;opacity:.35;animation:p 1.8s infinite}@keyframes p{0%{r:12;opacity:.45}100%{r:30;opacity:0}}
 @media(prefers-reduced-motion:reduce){.pulse{animation:none;r:16}}
@@ -90,12 +90,11 @@ table.tt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 <section class="gauges">
   <div class="g"><div class="l"><span>달린 거리</span><b>740 km <small>/ 약 1,520 km</small></b></div><div class="bar"><i style="width:49%"></i></div></div>
   <div class="g"><div class="l"><span>지출</span><b>523만원 <small>= 사전 450 + 여행 중 73 · 미확인 5건 제외 / 계획 856</small></b></div><div class="bar"><i class="y" style="width:61%"></i></div></div>
-  <p class="hint">거리는 도시 좌표에서 계산. 지출은 일차별 요금 합계의 누적 — ❓ 미확인 건은 채워지면 자동 반영.</p>
 </section>
 
 <div class="wrap">
 <section class="mapbox">
-  <div class="k">순환선 · 실거리·방향 유지 (위경도 그대로)</div>
+  <div class="k">순환선</div>
   <svg class="route" viewBox="0 0 1000 700" role="img" aria-label="중부유럽 순환선 여정 노선도">
     <a class="seg" href="#day-7"><title>DAY 7 · 비엔나 → 부다페스트 · 운전 2h40 · 245km</title><path class="leg todo" d="M553.6 476.1 L934.6 630.3"/></a>
     <a class="seg" href="#day-9"><title>DAY 9 · 부다페스트 → 브르노 → 프라하 · 운전 5h20 · 530km</title><path class="leg todo" d="M934.6 630.3 L586.9 261.7 L276.9 70.5"/></a>
@@ -105,17 +104,15 @@ table.tt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
       <g class="tip" transform="translate(190 470)"><rect width="330" height="34" rx="6"/><text x="12" y="23">DAY 4 · 운전 3h30 · 275km · 156,100원</text></g></a>
     <a class="seg" href="#day-5"><title>DAY 5 · 잘츠부르크 → 멜크 → 뒤른슈타인 → 비엔나 · 운전 3h15 · 295km · 183,950원</title><path class="leg" d="M79.3 562.6 L404.7 471.9 L553.6 476.1"/>
       <g class="tip" transform="translate(330 400)"><rect width="330" height="34" rx="6"/><text x="12" y="23">DAY 5 · 운전 3h15 · 295km · 183,950원</text></g></a>
-    <g><circle class="st done" cx="276.9" cy="70.5" r="11"/><circle class="st2" cx="276.9" cy="70.5" r="17"/><text class="lb" x="300" y="66">프라하</text><text class="sub" x="300" y="84">DAY 1–2 · 9/16 복귀 · 9/17 반납·귀국</text><path class="dish" d="M300 100 a7 7 0 0 1 14 0 z"/><text class="sub" x="318" y="107">Dvorek pod Hradem · 콜레뇨</text></g>
+    <g><circle class="st done" cx="276.9" cy="70.5" r="11"/><circle class="st2" cx="276.9" cy="70.5" r="17"/><text class="lb" x="300" y="66">프라하</text><text class="sub" x="300" y="84">DAY 1–2 · 9/16 복귀 · 9/17 시내 반납 → 택시 → 귀국</text><path class="dish" d="M300 100 a7 7 0 0 1 14 0 z"/><text class="sub" x="318" y="107">Dvorek pod Hradem · 콜레뇨</text></g>
     <g><circle class="st done" cx="259.7" cy="344.7" r="11"/><text class="lb" x="282" y="341">체스키크룸로프</text><text class="sub" x="282" y="359">DAY 3</text><path class="dish" d="M300 372 a7 7 0 0 1 14 0 z"/><text class="sub" x="318" y="379">Papa's · 스비치코바</text></g>
     <g><circle class="st done" cx="164.2" cy="616.4" r="11"/><text class="lb" x="186" y="640">할슈타트</text><text class="sub" x="186" y="658">DAY 4 경유 · Zum Bader 호수생선</text></g>
     <g><circle class="st done" cx="79.3" cy="562.6" r="11"/><text class="lb" x="20" y="538" text-anchor="start">잘츠부르크</text><text class="sub" x="20" y="520">DAY 4 · 호엔잘츠부르크 성</text></g>
     <g><circle class="st done" cx="404.7" cy="471.9" r="11"/><text class="lb" x="392" y="512" text-anchor="middle">멜크</text><text class="sub" x="392" y="530" text-anchor="middle">DAY 5 경유 (외관만)</text></g>
-    <g><circle class="pulse" cx="553.6" cy="476.1" r="12"/><circle class="st done" cx="553.6" cy="476.1" r="11"/><circle class="st2" cx="553.6" cy="476.1" r="17"/><text class="lb" x="578" y="472">비엔나 <small>· 지금</small></text><text class="sub" x="578" y="490">DAY 5–6 · 무운전</text><path class="dish" d="M578 505 a7 7 0 0 1 14 0 z"/><text class="sub" x="596" y="512">Figlmüller · 슈니첼</text></g>
+    <g><circle class="pulse" cx="553.6" cy="476.1" r="12"/><circle class="st done" cx="553.6" cy="476.1" r="11"/><circle class="st2" cx="553.6" cy="476.1" r="17"/><text class="lb" x="578" y="472">비엔나 <tspan class="sm">· 지금</tspan></text><text class="sub" x="578" y="490">DAY 5–6 · 무운전</text><path class="dish" d="M578 505 a7 7 0 0 1 14 0 z"/><text class="sub" x="596" y="512">Figlmüller · 슈니첼</text></g>
     <g><circle class="st todo" cx="934.6" cy="630.3" r="11"/><text class="lb todo" x="880" y="668" text-anchor="middle">부다페스트</text><text class="sub" x="880" y="686" text-anchor="middle">DAY 7–8</text></g>
     <g><circle class="st todo" cx="586.9" cy="261.7" r="11"/><text class="lb todo" x="608" y="258">브르노</text><text class="sub" x="608" y="276">DAY 9 경유</text></g>
   </svg>
-  <div class="legend"><span><i></i>지나온 구간 (굵기 = 운전 시간)</span><span><i class="d"></i>남은 구간</span><span><i class="y"></i>선택 중</span><span>◐ 그날의 한 접시</span><span>◎ 정차(무운전)</span></div>
-  <p class="hint">구간에 마우스를 올리면 요약, 누르면 그날 시각표. 역을 누르면 그 도시 전부.</p>
 </section>
 
 <section class="days">
@@ -213,8 +210,8 @@ table.tt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
 
   <article class="day" id="day-7"><h2>DAY 7 · 비엔나 → 부다페스트<span>9월 14일 월 · 예정</span></h2><p class="goal">벨베데레는 이미 봤으니 → 출발 → 체크인 → 다뉴브 야경 크루즈.</p></article>
   <article class="day" id="day-8"><h2>DAY 8 · 부다페스트<span>9월 15일 화 · 예정</span></h2><p class="goal">세체니 온천(08~09시 입장) → 어부의 요새·왕궁 언덕.</p></article>
-  <article class="day" id="day-9"><h2>DAY 9 · 브르노 경유 → 프라하<span>9월 16일 수 · 예정</span></h2><p class="goal">09:00 출발 → 브르노 점심 → 프라하. 렌터카는 9/17 반납으로 연장됨 — 반납 장소·시간 확인 필요.</p></article>
-  <article class="day" id="day-10"><h2>DAY 10 · 반납 · 귀국<span>9월 17일 목 · 예정</span></h2><p class="goal">렌터카 반납 → 공항 → 18:50 OZ546.</p></article>
+  <article class="day" id="day-9"><h2>DAY 9 · 브르노 경유 → 프라하<span>9월 16일 수 · 예정</span></h2><p class="goal">09:00 출발 → 브르노 점심 → 프라하 복귀 · 숙소 주차. 차는 다음 날 시내 반납.</p></article>
+  <article class="day" id="day-10"><h2>DAY 10 · 반납 · 귀국<span>9월 17일 목 · 예정</span></h2><p class="goal">시내 렌터카 반납 → 택시 → 공항 → 18:50 OZ546.</p></article>
 </section>
 </div>
 </main>
