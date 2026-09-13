@@ -85,7 +85,6 @@
 ## Need Review
 
 
-- `TKT-105` `P1` `chore` `need_review` `[FE]` Writing Studio 도구 메뉴 r2 — 표·사진 인라인 블록, 내부 참조 비노출, 40px 타깃·모바일 제목 보정, Studio E2E 9/9
 
 
 
@@ -99,6 +98,8 @@
 
 
 ## Finished
+
+- `TKT-105` `[FE]` Writing Studio 도구 메뉴 — 인라인 표·사진 블록, r2 통과 (2026-09-14)
 
 - `TKT-080` `[BE]` advisor 서비스 계약 마감 — /health·레지스트리·compose·README, r1 통과 (2026-09-14, D-017)
 
