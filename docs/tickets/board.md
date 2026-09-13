@@ -52,6 +52,13 @@
 - `TKT-113` `P2` `tone` `ready` `[FE]` 블로그 3종 톤 전환
 - `TKT-114` `P2` `tone` `ready` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime
 - `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
+- `TKT-117` `P1` `voyage` `ready` `[FE]` 정차역 상세 편집(식당·금액·사진·지도, 정적 모드) — 109 뒤 · codex-6
+- `TKT-116` `P2` `voyage` `ready` `[FE]` 여정 노선도 회고 모드(열차 점 재생) — 109 뒤 · codex-6
+- `TKT-121` `P2` `advisor` `ready` `[FE]` Advisor 화면 톤 정합 · codex-6
+- `TKT-118` `P2` `tone` `ready` `[FE]` 라이트 테마 톤 토큰 매핑 — 110 뒤
+- `TKT-119` `P2` `tone` `ready` `[FE]` 접근성 패스(키보드·aria·시트 포커스 트랩)
+- `TKT-120` `P2` `tone` `ready` `[SIM]` 시뮬 2화면 톤 전환 — 110·114 뒤
+- `TKT-122` `P2` `advisor` `ready` `[PM]` Advisor 시즌 수명주기 스펙
 
 - `TKT-108` `P1` `voyage` `ready` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드 (스펙 voyage-collection-spec.md)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
