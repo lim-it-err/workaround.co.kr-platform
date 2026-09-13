@@ -70,6 +70,8 @@
 
 ## Started
 
+- `TKT-105` `P1` `chore` `started` `[FE]` Writing Studio 도구 메뉴 — **r1 반려**(표·사진 인라인 블록으로, UX-105 블로커) → 재작업
+
 - `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r8 홈 노선도 안 C(순환선+환승 지선), codex-8 디자이너 첫 과제
 
 - `TKT-110` `P1` `tone` `started` `[FE]` 톤 기반 + 스플래시(플랩 4단계) — 시리즈 1
@@ -82,7 +84,6 @@
 
 - `TKT-080` `P1` `v0.7.0` `need_review` `[BE]` advisor 서비스 계약 마감 — 35/35·gateway 8/8·Compose 실기동/health 200 통과
 
-- `TKT-105` `P1` `chore` `need_review` `[FE]` Writing Studio 도구 메뉴 — 사진·h1~h3·기능형 표, E2E 9/9·build·375px 통과
 
 - `TKT-104` `P2` `advisor` `need_review` `[FE]` Inflight pill aria-pressed — 9개 선택·키보드·복원 검증, E2E 17/17·unit 44/44·build·375px 통과
 
