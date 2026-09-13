@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -25,6 +26,14 @@ class ControllerSliceTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    void healthIsAvailableOutsideAdvisorApiAndAuthGuard() throws Exception {
+        mockMvc.perform(get("/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("ok"))
+                .andExpect(jsonPath("$.service").value("advisor"));
+    }
 
     @Test
     void createTrackReturns201() throws Exception {

@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Developer Advisor 백엔드 시작 스크립트
 # 용법:  ./run.sh test           — 전체 테스트
-#        ./run.sh start [프로필]  — 서버 기동 (:8000). 프로필 생략 시 mock (API 키 불필요)
+#        ./run.sh start [프로필]  — 서버 기동 (:8080). 프로필 생략 시 mock (API 키 불필요)
 #                                   예) ./run.sh start claude  — 실제 Claude 호출 (ANTHROPIC_API_KEY 필요)
 #        ./run.sh demo           — 떠 있는 서버에 트랙→미션→제출→리뷰 사이클 curl
 set -e

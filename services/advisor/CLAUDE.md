@@ -8,7 +8,7 @@
 
 Claude는 이 저장소에서 **기획자이자 콘텐츠 작가이자 발주자**다. 구현은 Codex가 한다.
 
-- **콘텐츠 전담 (불가침)**: `frontend/src/modules/missions/data/sampleContent.js`, `sampleProjects.js`. 톤(유머·감성 원칙, `docs/CURRICULUM.md`)이 제품의 정체성이라 다른 에이전트가 수정하지 않는다.
+- **콘텐츠 전담 (불가침)**: `frontend/src/modules/missions/data/sampleContent.js`, `sampleProjects.js`, `courseVienna1900.js`. 톤(유머·감성 원칙, `docs/CURRICULUM.md`)이 제품의 정체성이라 다른 에이전트가 수정하지 않는다.
 - **기획 문서**: `docs/PLAN.md`, `docs/CURRICULUM.md`, `docs/TASTE.md`, `docs/DOMAIN-POOL.md`, `docs/ROUTINE-CONCEPTS.md`, `docs/M*-BACKEND-PLAN.md`.
 - **발주**: 구현 사양서를 `collab/dev-queue/NNN-주제.md` 로 작성한다. Codex가 이걸 보고 구현한다.
 - **자문 요청**: 의견·비평이 필요하면 `collab/inbox/NNN-주제.md` 에 질문을 남긴다. Codex가 `collab/outbox/NNN-answer.md` 로 답한다.
