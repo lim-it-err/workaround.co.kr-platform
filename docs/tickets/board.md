@@ -75,14 +75,12 @@
 
 ## Started
 
-- `TKT-110` `P1` `tone` `blocked` `[FE]` 톤 기반 + 현행 split-flap 3단계 스플래시 — 구현·검증 완료, TKT-102 r9 실파일/PO 심볼·좌우 패널 확인 대기
-
-
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
 
 
 
@@ -98,6 +96,8 @@
 
 
 ## Finished
+
+- `TKT-110` `[FE]` 톤 기반(tone 컴포넌트 4)+스플래시(플랩 3단계·심볼·티커 3회) — r1 통과 (2026-09-14)
 
 - `TKT-105` `[FE]` Writing Studio 도구 메뉴 — 인라인 표·사진 블록, r2 통과 (2026-09-14)
 

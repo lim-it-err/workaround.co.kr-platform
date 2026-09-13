@@ -1,0 +1,1175 @@
+[
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "file": "splash",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "cells": 14,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "t": 3300,
+    "animation": {
+      "ticker": [
+        "에스컬레이터 방향 다수결로 정하는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.446938, -0.894565, 0, 0, 0.894565, 0.446938, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix(1, 0, 0, 1, 0, 0)",
+      "hinge": "1px",
+      "progress": "matrix(0.33, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 375,
+    "t": 4400,
+    "animation": {
+      "ticker": [
+        "지연 시간을 정성껏 반올림하는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.44, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 375,
+    "t": 7200,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.72, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 375,
+    "t": 8100,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.81, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 375,
+    "t": 10050,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(1, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "file": "loop-symbol",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      }
+    ],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "file": "index",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 0,
+    "glyphMismatch": 0,
+    "symbolSizes": [],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "file": "splash",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "cells": 14,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "file": "loop-symbol",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      }
+    ],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "file": "index",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 0,
+    "glyphMismatch": 0,
+    "symbolSizes": [],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "colorScheme": "dark",
+    "file": "splash",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "cells": 14,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "t": 3300,
+    "animation": {
+      "ticker": [
+        "에스컬레이터 방향 다수결로 정하는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.446938, -0.894565, 0, 0, 0.894565, 0.446938, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix(1, 0, 0, 1, 0, 0)",
+      "hinge": "1px",
+      "progress": "matrix(0.33, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 390,
+    "t": 4400,
+    "animation": {
+      "ticker": [
+        "지연 시간을 정성껏 반올림하는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.44, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 390,
+    "t": 7200,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.72, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 390,
+    "t": 8100,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.81, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 390,
+    "t": 10050,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(1, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 390,
+    "colorScheme": "dark",
+    "file": "loop-symbol",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      }
+    ],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "colorScheme": "dark",
+    "file": "index",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 0,
+    "glyphMismatch": 0,
+    "symbolSizes": [],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "colorScheme": "light",
+    "file": "splash",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 44,
+        "height": 44
+      }
+    ],
+    "cells": 14,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "colorScheme": "light",
+    "file": "loop-symbol",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      }
+    ],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "colorScheme": "light",
+    "file": "index",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 0,
+    "glyphMismatch": 0,
+    "symbolSizes": [],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "file": "splash",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 72,
+        "height": 72
+      }
+    ],
+    "cells": 14,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "t": 3300,
+    "animation": {
+      "ticker": [
+        "에스컬레이터 방향 다수결로 정하는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.446938, -0.894565, 0, 0, 0.894565, 0.446938, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix(1, 0, 0, 1, 0, 0)",
+      "hinge": "1px",
+      "progress": "matrix(0.33, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 1440,
+    "t": 4400,
+    "animation": {
+      "ticker": [
+        "지연 시간을 정성껏 반올림하는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.44, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 1440,
+    "t": 7200,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.72, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 1440,
+    "t": 8100,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(0.81, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 1440,
+    "t": 10050,
+    "animation": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "firstTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "lastTop": "matrix3d(1, 0, 0, 0, 0, 0.00349065, -0.999994, 0, 0, 0.999994, 0.00349065, 0, 0, 0, 0, 1)",
+      "hinge": "1px",
+      "progress": "matrix(1, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "file": "loop-symbol",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      }
+    ],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "file": "index",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 0,
+    "glyphMismatch": 0,
+    "symbolSizes": [],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "file": "splash",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 72,
+        "height": 72
+      }
+    ],
+    "cells": 14,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "file": "loop-symbol",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 1,
+    "glyphMismatch": 0,
+    "symbolSizes": [
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 48,
+        "height": 48
+      },
+      {
+        "width": 96,
+        "height": 96
+      },
+      {
+        "width": 24,
+        "height": 24
+      },
+      {
+        "width": 16,
+        "height": 16
+      }
+    ],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "file": "index",
+    "overflow": 0,
+    "scripts": 0,
+    "smallLinks": [],
+    "banner": 0,
+    "glyphMismatch": 0,
+    "symbolSizes": [],
+    "cells": 0,
+    "errors": []
+  },
+  {
+    "reducedMotion": {
+      "animations": 0,
+      "changeDisplay": "none",
+      "ticker": "1"
+    }
+  },
+  {
+    "link": "시작 화면 상하판 플립 r9",
+    "status": "시작 화면 — split-flap 목업 r9",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/splash.html"
+  },
+  {
+    "link": "순환선 심볼 3안 비교",
+    "status": "순환선 심볼 3안 — 디자인 제안",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/loop-symbol.html"
+  },
+  {
+    "link": "홈 순환선 주안",
+    "status": "환승 홀 — 순환선과 환승 지선 목업",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/home.html"
+  },
+  {
+    "link": "홈 비교안 3노선 교차",
+    "status": "환승 홀 3노선 비교안 — 톤 목업",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/home-alt.html"
+  },
+  {
+    "link": "여행 준비 체크",
+    "status": "여행 준비",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/voyage-prep.html"
+  },
+  {
+    "link": "오늘의 여행 일정",
+    "status": "오늘의 여행",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/voyage-daily.html"
+  },
+  {
+    "link": "여행 기록 실제 DAY 1–6 · 지출",
+    "status": "중부유럽 순환선 — 실제 운행 기록",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/voyage-archive.html"
+  },
+  {
+    "link": "여정 노선도 지도·시각표",
+    "status": "여정 노선도 — 중부유럽 순환선",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/voyage-route.html"
+  },
+  {
+    "link": "글 허브 읽기",
+    "status": "글 허브",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/blog-hub.html"
+  },
+  {
+    "link": "글 보관함 목록",
+    "status": "글 보관함",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/blog-archive.html"
+  },
+  {
+    "link": "글 상세 본문",
+    "status": "글 상세",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/blog-post.html"
+  },
+  {
+    "link": "글쓰기 도구 메뉴",
+    "status": "글쓰기 — 톤 목업",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/writing-studio.html"
+  },
+  {
+    "link": "시뮬레이션 미션",
+    "status": "시뮬레이션",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/simhub.html"
+  },
+  {
+    "link": "작업실 진행",
+    "status": "작업실",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/work.html"
+  },
+  {
+    "link": "런타임 상태",
+    "status": "런타임",
+    "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/runtime.html"
+  },
+  {
+    "keyboard": {
+      "focused": "시작 화면에서 보기 →",
+      "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/loop-symbol.html"
+    }
+  },
+  {
+    "realtime": 3,
+    "values": {
+      "ticker": [
+        "에스컬레이터 방향 다수결로 정하는 중…"
+      ],
+      "second": "hidden",
+      "third": "hidden",
+      "progress": "matrix(0, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "realtime": 4413,
+    "values": {
+      "ticker": [
+        "지연 시간을 정성껏 반올림하는 중…"
+      ],
+      "second": "visible",
+      "third": "hidden",
+      "progress": "matrix(0.440938, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "realtime": 8102,
+    "values": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "second": "visible",
+      "third": "visible",
+      "progress": "matrix(0.809187, 0, 0, 1, 0, 0)"
+    }
+  },
+  {
+    "realtime": 10101,
+    "values": {
+      "ticker": [
+        "출구 번호에 서열 매기는 중…"
+      ],
+      "second": "visible",
+      "third": "visible",
+      "progress": "matrix(1, 0, 0, 1, 0, 0)"
+    }
+  }
+]
