@@ -17,10 +17,23 @@ export const EAST_EUROPE_2026 = {
     { id: 'wachau', name: '바하우', lat: 48.3656, lon: 15.414 },
     { id: 'vienna', name: '비엔나', lat: 48.2082, lon: 16.3738 },
     { id: 'budapest', name: '부다페스트', lat: 47.4979, lon: 19.0402 },
-    { id: 'brno', name: '브르노', lat: 49.1951, lon: 16.6068 }
+    { id: 'brno', name: '브르노', lat: 49.1951, lon: 16.6068 },
+    { id: 'prague-return', name: '프라하', lat: 50.0755, lon: 14.4378 }
   ],
-  legs: [],
-  prepaid: [],
+  legs: [
+    { dayIndex: 2, from: 'prague', to: 'cesky-krumlov', driveMin: 120, km: 170 },
+    { dayIndex: 3, from: 'cesky-krumlov', to: 'hallstatt', driveMin: 130, km: 200 },
+    { dayIndex: 3, from: 'hallstatt', to: 'salzburg', driveMin: 80, km: 75 },
+    { dayIndex: 4, from: 'salzburg', to: 'wachau', driveMin: 135, km: 205 },
+    { dayIndex: 4, from: 'wachau', to: 'vienna', driveMin: 60, km: 90 },
+    { dayIndex: 6, from: 'vienna', to: 'budapest', driveMin: 160, km: 245 },
+    { dayIndex: 8, from: 'budapest', to: 'brno', driveMin: 200, km: 326 },
+    { dayIndex: 8, from: 'brno', to: 'prague-return', driveMin: 135, km: 204 }
+  ],
+  prepaid: [
+    { label: '항공', amount: 340 },
+    { label: '렌터카', amount: 110 }
+  ],
 
   flights: {
     outbound: { code: 'OZ545', from: 'ICN', to: 'PRG', date: '2026-09-08', dep: '10:45', arr: '16:45', note: '직항 13시간 · 인천 T2 → 프라하 T1' },
@@ -51,42 +64,120 @@ export const EAST_EUROPE_2026 = {
       am: '기내',
       pm: '16:45 프라하 도착 → 숙소 체크인',
       eve: '가벼운 저녁, 일찍 휴식 — 시차 적응이 이날의 유일한 임무',
-      tip: '야경 욕심은 내지 않는다. 첫날 일찍 자는 것이 나머지 8일을 산다.'
+      tip: '야경 욕심은 내지 않는다. 첫날 일찍 자는 것이 나머지 8일을 산다.',
+      meals: [],
+      spend: {
+        items: [{ label: 'eSIM', amount: 4.5 }],
+        total: 4.5
+      },
+      photos: []
     },
     {
       date: '2026-09-09', dow: '수', city: '프라하', stay: '프라하', driveMin: 10,
       am: '트램 22번으로 프라하성 위쪽 진입 → 프라하성·성 비투스 대성당 (개장 직후, 내리막 동선)',
       pm: '말라스트라나 점심 → 카페 휴식 90분 → 카를교·구시가 (낮엔 통과하는 느낌으로)',
       eve: '16:30 렌터카 인수 → 숙소 주차 → 휴식·저녁 → 19:15 야경: 강변 매직아워 → 20:00 카를교',
-      tip: '일몰 19:20. 매직아워(19:20~19:50)가 완전 야경보다 예쁘다 — 하늘의 푸른빛 + 조명.'
+      tip: '일몰 19:20. 매직아워(19:20~19:50)가 완전 야경보다 예쁘다 — 하늘의 푸른빛 + 조명.',
+      meals: [
+        { slot: '아침', place: 'Bageterie Boulevard', dish: '샌드위치 ×2', amount: 507, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Bageterie%20Boulevard%20Prague', photo: null },
+        { slot: '점심', place: 'Dvorek pod Hradem', dish: '콜레뇨', amount: 1204, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Dvorek%20pod%20Hradem', photo: null }
+      ],
+      spend: {
+        items: [
+          { label: 'Bageterie Boulevard', amount: 3.7 },
+          { label: '물리 SIM', amount: 2.17 },
+          { label: 'Dvorek pod Hradem', amount: 7.77 }
+        ],
+        total: 13.64
+      },
+      photos: []
     },
     {
       date: '2026-09-10', dow: '목', city: '체스키크룸로프', stay: '체스키크룸로프', driveMin: 150,
       am: '08:00 짐 싣고 출발 (운전 2시간 30분)',
       pm: '체크인 → 체스키크룸로프 성·망토 다리 전망',
       eve: '구시가 골목·블타바 강변 — 당일치기 단체가 빠지는 18시 이후가 마법의 시간',
-      tip: '숙박자의 특권은 저녁이다.'
+      tip: '숙박자의 특권은 저녁이다.',
+      meals: [
+        { slot: '점심', place: "Papa's", dish: '스비치코바 + 립 + 코젤', amount: 1031, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Papa%27s%20Living%20Restaurant%20Cesky%20Krumlov', photo: null },
+        { slot: '카페', place: 'Starbucks 라트란점', dish: '아이스 아메리카노', amount: 119, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Starbucks%20Latran%20Cesky%20Krumlov', photo: null },
+        { slot: '저녁', place: 'My Saigon', dish: '쌀국수 + 볶음밥', amount: 567, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=My%20Saigon%20Cesky%20Krumlov', photo: null }
+      ],
+      spend: {
+        items: [
+          { label: "Papa's", amount: 6.65 },
+          { label: 'Starbucks 라트란점', amount: 0.77 },
+          { label: 'My Saigon', amount: 3.66 }
+        ],
+        total: 11.08
+      },
+      photos: []
     },
     {
       date: '2026-09-11', dow: '금', city: '할슈타트 → 잘츠부르크', stay: '잘츠부르크', driveMin: 210,
       am: '07:30 출발 → 09:30 할슈타트 도착 (운전 2시간 10분) — 호수·마을, 단체 관광 전 시간대',
       pm: '점심 후 잘츠부르크 이동 (1시간 20분) → 체크인 → 미라벨 정원',
       eve: '구시가·게트라이데 거리, 잘자흐 강변 저녁',
-      tip: '할슈타트는 경유가 정답 — 왕복 별도 방문 대비 운전 1시간 45분 절약. 주차 중 짐은 트렁크에, 겉에서 안 보이게.'
+      tip: '할슈타트는 경유가 정답 — 왕복 별도 방문 대비 운전 1시간 45분 절약. 주차 중 짐은 트렁크에, 겉에서 안 보이게.',
+      meals: [
+        { slot: '아침', place: 'Eni 주유소', dish: '크루아상 + 캔커피 ×2', amount: 11.67, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Eni%20Austria', photo: null },
+        { slot: '점심', place: 'Zum Bader', dish: '호수생선 + 슈니첼', amount: 50.6, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Zum%20Bader%20Hallstatt', photo: null }
+      ],
+      spend: {
+        items: [
+          { label: 'Eni 주유소', amount: 1.76 },
+          { label: '할슈타트 주차', amount: 1.51 },
+          { label: 'Zum Bader', amount: 7.64 },
+          { label: '잘츠부르크 주차', amount: 0.83 },
+          { label: '호엔잘츠부르크 성', amount: 3.87 }
+        ],
+        total: 15.61
+      },
+      photos: []
     },
     {
       date: '2026-09-12', dow: '토', city: '바하우 → 비엔나', stay: '비엔나', driveMin: 195,
       am: '카페 토마셀리 등에서 잘츠부르크 마무리 → 11:00 출발',
       pm: '멜크(바하우 밸리) 점심·강변 산책 (2시간 15분 + 1시간) → 비엔나 도착·체크인, 차량은 호텔 주차 후 이틀간 봉인',
       eve: '케른트너 거리·링 야경 산책',
-      tip: '바하우 점심은 멜크 수도원 부지 내면 차와 가깝고 체류가 짧다.'
+      tip: '바하우 점심은 멜크 수도원 부지 내면 차와 가깝고 체류가 짧다.',
+      meals: [
+        { slot: '아침', place: 'Billa', dish: 'Kartoffelburek · 피자 · 초콜릿', amount: 32.8, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Billa%20Salzburg', photo: null },
+        { slot: '저녁', place: 'Figlmüller (Wollzeile)', dish: '돼지고기 슈니첼 + 감자샐러드 + 필스너 2', amount: 44.06, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Figlmuller%20Wollzeile%20Vienna', photo: null },
+        { slot: '카페', place: 'Starbucks Singerstraße', dish: '아이스 아메리카노', amount: 5, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Starbucks%20Singerstrasse%20Vienna', photo: null }
+      ],
+      spend: {
+        items: [
+          { label: 'Billa', amount: 4.95 },
+          { label: '비엔나 주차', amount: 6.04 },
+          { label: 'Figlmüller', amount: 6.65 },
+          { label: 'Starbucks Singerstraße', amount: 0.755 }
+        ],
+        total: 18.395
+      },
+      photos: []
     },
     {
       date: '2026-09-13', dow: '일', city: '비엔나', stay: '비엔나', driveMin: 0,
       am: '쇤브룬 궁전 — 서두르지 않고, 정원 열차 포함. 내부가 붐비면 정원 위주',
       pm: '카페 슈페를 또는 프뤼켈 (자허·첸트랄의 줄 대신) → 숙소 휴식',
       eve: '링 주변 산책 또는 일찍 휴식 — 운전 없는 날',
-      tip: '쇤브룬 내부는 개장 직후 첫 타임이 답. 정원은 무료·넓어서 사람이 흩어진다.'
+      tip: '쇤브룬 내부는 개장 직후 첫 타임이 답. 정원은 무료·넓어서 사람이 흩어진다.',
+      meals: [
+        { slot: '아침', place: 'Anker Hauptbahnhof', dish: '베이커리', amount: null, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Anker%20Hauptbahnhof%20Vienna', photo: null },
+        { slot: '점심', place: 'Pan Kee', dish: '치킨볶음면 + 사시미롤 스페셜', amount: 32.4, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Pan%20Kee%20Vienna', photo: null },
+        { slot: '카페', place: 'Café Gloriette', dish: '카이저맥주 + 아이스커피 + 라자냐', amount: 32.1, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Cafe%20Gloriette%20Vienna', photo: null }
+      ],
+      spend: {
+        items: [
+          { label: 'Pan Kee', amount: 4.89 },
+          { label: 'Café Gloriette', amount: 4.85 },
+          { label: '대중교통', amount: 0.906 }
+        ],
+        total: 10.646,
+        pendingCount: 3
+      },
+      photos: []
     },
     {
       date: '2026-09-14', dow: '월', city: '비엔나 → 부다페스트', stay: '부다페스트', driveMin: 160,

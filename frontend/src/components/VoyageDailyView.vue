@@ -2,6 +2,7 @@
 import { computed, nextTick, ref } from 'vue'
 import StationHeader from './StationHeader.vue'
 import VoyageDaySession from './voyage/VoyageDaySession.vue'
+import VoyageRouteMap from './voyage/VoyageRouteMap.vue'
 
 defineEmits(['back', 'exit', 'open-archive'])
 
@@ -37,6 +38,7 @@ const todayIndex = VOYAGE.days.findIndex((day) => day.date === localDateKey())
 const guideStatus = todayIndex >= 0 ? '오늘 운행' : '일정 미리보기'
 const selectedIndex = ref(todayIndex >= 0 ? todayIndex : 0)
 const activeSession = ref(null)
+const routeMapOpen = ref(false)
 const savedScrollTop = ref(0)
 const selectedDay = computed(() => VOYAGE.days[selectedIndex.value])
 const selectedSession = computed(() => VOYAGE.daySessions.find((session) => session.dayIndex === selectedIndex.value))
@@ -74,11 +76,39 @@ async function closeSession() {
     window.scrollTo({ top: restoreTop })
   }
 }
+
+async function openRouteMap() {
+  const scroller = document.querySelector('.page-scroller')
+  savedScrollTop.value = scroller?.scrollTop || window.scrollY || 0
+  routeMapOpen.value = true
+  await nextTick()
+  scroller?.scrollTo({ top: 0 })
+}
+
+async function closeRouteMap() {
+  const restoreTop = savedScrollTop.value
+  routeMapOpen.value = false
+  await nextTick()
+  const scroller = document.querySelector('.page-scroller')
+  if (scroller) {
+    scroller.scrollTo({ top: restoreTop })
+  } else {
+    window.scrollTo({ top: restoreTop })
+  }
+}
 </script>
 
 <template>
+  <VoyageRouteMap
+    v-if="routeMapOpen"
+    :voyage="VOYAGE"
+    :initial-day-index="selectedIndex"
+    @back="closeRouteMap"
+    @exit="$emit('exit')"
+    @select-day="selectDay"
+  />
   <VoyageDaySession
-    v-if="activeSession"
+    v-else-if="activeSession"
     :session="activeSession"
     :day-number="activeSession.dayIndex + 1"
     @back="closeSession"
@@ -96,6 +126,7 @@ async function closeSession() {
       @exit="$emit('exit')"
     >
       <template #actions>
+        <button type="button" class="btn btn-ghost" @click="openRouteMap">여정 노선도</button>
         <button type="button" class="btn btn-ghost" @click="$emit('back')">여행 준비</button>
         <button type="button" class="btn btn-ghost" @click="$emit('open-archive')">여행 기록</button>
       </template>
