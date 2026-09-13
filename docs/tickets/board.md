@@ -88,7 +88,6 @@
 - `TKT-105` `P1` `chore` `need_review` `[FE]` Writing Studio 도구 메뉴 r2 — 표·사진 인라인 블록, 내부 참조 비노출, 40px 타깃·모바일 제목 보정, Studio E2E 9/9
 
 
-- `TKT-080` `P1` `v0.7.0` `need_review` `[BE]` advisor 서비스 계약 마감 — 35/35·gateway 8/8·Compose 실기동/health 200 통과
 
 
 - `TKT-104` `P2` `advisor` `need_review` `[FE]` Inflight pill aria-pressed — 9개 선택·키보드·복원 검증, E2E 17/17·unit 44/44·build·375px 통과
@@ -100,6 +99,8 @@
 
 
 ## Finished
+
+- `TKT-080` `[BE]` advisor 서비스 계약 마감 — /health·레지스트리·compose·README, r1 통과 (2026-09-14, D-017)
 
 - `TKT-123` `[PM]` 코스 '비엔나 1900' 12 미션 집필 — 완료 (2026-09-14)
 
