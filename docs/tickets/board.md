@@ -6,7 +6,6 @@
 
 ## Backlog
 
-- `TKT-109` `P1` `voyage` `backlog` `[FE]` 여정 노선도 — 지리 충실형 순환선·구간 클릭 카드 (r7 목업 승인 + 108 뒤)
 
 
 - `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
@@ -43,6 +42,16 @@
 
 
 ## Ready
+
+> **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
+
+- `TKT-110` `P1` `tone` `ready` `[FE]` 톤 기반 + 스플래시(플랩 4단계) — 시리즈 1
+- `TKT-111` `P1` `tone` `ready` `[FE]` 홈 순환선 노선도(D-015) + 3묶음 + 2단 — r6 승인 후 노선도 확정
+- `TKT-112` `P1` `tone` `ready` `[FE]` 여행 3종 톤 전환 + 지출 표시 — 108 뒤
+- `TKT-109` `P1` `voyage` `ready` `[FE]` 여정 노선도 — 순환선 지도·기차 시각표·정차역 상세 (r7 목업 = 스펙)
+- `TKT-113` `P2` `tone` `ready` `[FE]` 블로그 3종 톤 전환
+- `TKT-114` `P2` `tone` `ready` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime
+- `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
 
 - `TKT-108` `P1` `voyage` `ready` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드 (스펙 voyage-collection-spec.md)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
