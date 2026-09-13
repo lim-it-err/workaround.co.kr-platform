@@ -2,7 +2,7 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `need_review` (r4 통과 — PM 2026-09-12, 13개 완성, PO 최종 육안 승인 대기)
+- 상태: `started` (r5 — PO 목업 리뷰 피드백 4건 반영)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
@@ -107,3 +107,13 @@
 - 완료 게이트: `npm --prefix frontend run build` 통과(Vite 6.4.3, 37 modules), 목차 링크의 source/dist 대상 존재 확인, `git diff --check` 통과. r3 산출물 중 목차를 제외한 기존 화면 11개 SHA-256은 착수 시점과 동일하다.
 - 육안 확인: 390px/1440px의 초기·문 열림 완료 스크린샷을 확인했다. 검증 자료는 `/private/tmp/tkt102-r4.ocG5Ob/`의 `verify.cjs`, `390-start.png`, `390-open.png`, `1440-start.png`, `1440-open.png`에 있다(임시 경로라 정리 시 소실 가능).
 - 제약: 정적 승인 목업이므로 실제 10초 라우팅은 구현하지 않았다. 앱 코드(`frontend/src/**`)는 읽기만 했고 수정하지 않았다. Safari/WebKit 실기·실배포는 미검증이며 commit·push·배포·최종 판정은 수행하지 않았다.
+
+
+## r5 지시 (PM, 2026-09-13 — PO 최종 리뷰 피드백)
+
+대상 4개 파일: `splash.html` `home.html` `writing-studio.html` `index.html`. 나머지 무변경(SHA).
+
+1. **splash.html** (PO "너무 좋아") — ①티커 멘트가 10초 동안 **3회 교체**(순수 CSS keyframes, tickerPool 문구 3개 순환) ②문 열림을 **느끼게**: 마지막 ~1.5초에 좌우 패널 2장이 갈라지며 배지가 드러나는 CSS 연출 + 소문자 `doors opening` 한 줄. 투머치 금지 — 패널은 단색 면, 그림자·글로우 없음.
+2. **home.html** — ①노선도를 **현행 가로형(lines.js 1000×460 좌표) 기준**으로 다시: 톤 다이어트만(선 2px, 배지+노선명, 상태 없음, 미개통 점선). 글꼴 크기·선 두께 비율을 데스크톱/모바일 각각 CSS 로 ②**데스크톱(≥900px) 2단**: 좌 노선도 · 우 목록 ③목록을 **3묶음**으로: 경험(B·V) / 학습·놀이(A·S·D·P, 미개통 흐리게) / 운영(W·R). 노선당 행 1개, 하위 진입은 행 안 인라인 서브링크. '개통 예정' 섹션 삭제 ④가능하면 `home-alt.html` 로 노선도 모양을 바꾼 비교안 1개(선택).
+3. **writing-studio.html** — ①데스크톱에서 본문 컬럼 중앙 정렬 max-width 720px(현재 우측 치우침 결함) ②우측 도구 메뉴 목업: 사진 첨부 · h1/h2/h3 · 표 삽입(기능형 — 행/열 버튼) ③`←` 라벨을 `← 블로그`로.
+4. **index.html** 목차 문구 갱신. 검증은 r3/r4 절차(390·1440 오버플로 0, 링크, 배너, script 0 — splash 만 CSS 애니).

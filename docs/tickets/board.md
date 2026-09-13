@@ -6,6 +6,8 @@
 
 ## Backlog
 
+- `TKT-105` `P2` `chore` `backlog` `[FE]` Writing Studio 도구 메뉴 — 사진·h1~h3·기능형 표 (102 승인 후, 053 연계)
+
 - `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
 - `TKT-012` `P1` `v0.2.1` `진행 가능` `[BE]` 테스트 코드 확장과 커버리지 측정 기반 (PM 게이트 해제 2026-08-17)
 - `TKT-011` `P2` `v0.3.0` `진행 가능` 엘리베이터 시뮬레이터 통합 프리뷰 연결
@@ -34,7 +36,6 @@
 
 ## Need Review
 
-- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 13종(스플래시 포함) — r4 통과, **PO 최종 육안 승인 대기**
 
 
 
@@ -42,12 +43,16 @@
 
 ## Ready
 
+- `TKT-106` `P1` `voyage` `ready` `[PM]` Line V 컬렉션 전환 스펙 + 지난 여행(스페인·아이슬란드) — D-013 실행, PO 콘텐츠 대기
+
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
 
 
 
 ## Started
+
+- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r5 (PO 리뷰: 스플래시 티커 3회·문 열림, 홈 노선도 현행형·3묶음·데스크톱 2단, 스튜디오 도구 메뉴)
 
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
