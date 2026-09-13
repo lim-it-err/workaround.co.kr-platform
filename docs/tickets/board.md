@@ -59,6 +59,9 @@
 - `TKT-119` `P2` `tone` `ready` `[FE]` 접근성 패스(키보드·aria·시트 포커스 트랩)
 - `TKT-120` `P2` `tone` `ready` `[SIM]` 시뮬 2화면 톤 전환 — 110·114 뒤
 - `TKT-122` `P2` `advisor` `ready` `[PM]` Advisor 시즌 수명주기 스펙
+- `TKT-123` `P1` `advisor` `ready` `[PM]` 코스 '비엔나 1900' 12 미션 집필 (코딩 6·게임 5·시뮬 1)
+- `TKT-124` `P1` `advisor` `ready` `[FE]` Advisor 코스 컨테이너 — 코스=정류장, 형식 배지 (121 뒤)
+- `TKT-125` `P1` `voyage` `ready` `[FE]` 경험↔배움 환승 링크 — 정차역↔미션 (109·124 뒤)
 
 - `TKT-108` `P1` `voyage` `ready` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드 (스펙 voyage-collection-spec.md)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
@@ -70,11 +73,11 @@
 
 ## Started
 
+- `TKT-110` `P1` `tone` `blocked` `[FE]` 톤 기반 + 현행 split-flap 3단계 스플래시 — 구현·검증 완료, TKT-102 r9 실파일/PO 심볼·좌우 패널 확인 대기
 - `TKT-105` `P1` `chore` `started` `[FE]` Writing Studio 도구 메뉴 — **r1 반려**(표·사진 인라인 블록으로, UX-105 블로커) → 재작업
 
 - `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r8 홈 노선도 안 C(순환선+환승 지선), codex-8 디자이너 첫 과제
 
-- `TKT-110` `P1` `tone` `started` `[FE]` 톤 기반 + 스플래시(플랩 4단계) — 시리즈 1
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
