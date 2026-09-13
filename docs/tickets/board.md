@@ -48,6 +48,8 @@
 
 ## Ready
 
+- `TKT-126` `P1` `tone` `ready` `[FE]` 순환선 심볼 C안 + 파비콘 + 스플래시 보드 높이 (D-018, 소형)
+
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
 - `TKT-111` `P1` `tone` `ready` `[FE]` 홈 순환선 노선도(D-015) + 3묶음 + 2단 — r6 승인 후 노선도 확정
@@ -66,7 +68,6 @@
 - `TKT-124` `P1` `advisor` `ready` `[FE]` Advisor 코스 컨테이너 — 코스=정류장, 형식 배지 (121 뒤)
 - `TKT-125` `P1` `voyage` `ready` `[FE]` 경험↔배움 환승 링크 — 정차역↔미션 (109·124 뒤)
 
-- `TKT-108` `P1` `voyage` `ready` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드 (스펙 voyage-collection-spec.md)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
@@ -76,6 +77,7 @@
 
 ## Started
 
+- `TKT-108` `P1` `voyage` `started` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트

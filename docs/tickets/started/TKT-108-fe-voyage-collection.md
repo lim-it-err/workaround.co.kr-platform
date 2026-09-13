@@ -1,8 +1,8 @@
-문서 상태: 작성완료
+문서 상태: 수정중
 
 # TKT-108 `[FE]` Line V 컬렉션 전환 — VOYAGES[] + 여행 목록 화면 + 지난 여행 2건
 
-- 상태: ready
+- 상태: started
 - 우선순위: P1
 - 담당: codex-1 (FE)
 - 관련 스펙: `design/voyage-collection-spec.md` (단일 진실)

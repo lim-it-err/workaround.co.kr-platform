@@ -193,3 +193,17 @@
 - **게이트**: 최종 Pages-base Vite build 성공(37 modules), source/dist home 바이트 동일, script·외부 의존·SVG text 안 HTML 태그 0. 375/390/1440×900 다크·라이트 6조합에서 라벨 겹침·지도 밖 이탈·페이지 가로 overflow 0. 최소 지도 글자 11.43/11.96/24.12px. HTML 목적지 12개 클릭, Tab→목차→Enter 확인. 다른 목업 14개 SHA 불변·git diff --check 통과.
 - **근거**: `docs/reviews/UX-TKT-102-r8.md` 및 `docs/reviews/UX-TKT-102-r8-assets/`(스크린샷·측정 JSON·전후 SHA·재현 스크립트). 확인 URL `/mockups/home.html`.
 - **제약/후속**: 앱 코드·다른 목업·원칙·결정 무변경, commit·push·배포·PM 판정 없음. Safari/WebKit·실배포·기존 Advisor 앱 목적지는 미검증. 상단 W 심볼과 스플래시·Studio 목업은 각각 후속 r9·r10 범위로 남겼다.
+
+### r9 구현 인계 (codex-8 디자이너, 2026-09-14)
+
+- 심볼 3안 제안 `design/proposals/2026-09-14-loop-symbol.html` + Pages용 `frontend/public/mockups/loop-symbol.html`, `splash.html` 상하판 플립, `index.html` 링크 갱신. A 권고·임시 적용, 최종 선택은 PM·PO.
+- 14칸·3문구·40ms 시차·상판 접힘/하판 정착·힌지 1px, 10초·티커 3개. 현행 배경·보드 유지, 좌우 패널 생략. 앱 무변경.
+- 자기 체크: 주인공 안내판 1·영어 간판 0·노선색 선/심볼·375 넘침 0·44px 링크·지정 카피·10초·라이트/reduced-motion 확인. 물리 보드와 심볼 색 표본은 명시된 비교/현행 유지 예외.
+- 게이트: 최종 Pages-base build 45 modules, 375/390/1440 다크·라이트 18조합 overflow 0·글자 정합, 15개 목차 링크·Tab/Enter·실제 10초 관찰. 16개 목업 source/dist 일치·script/외부 의존 0, 다른 13개 기존 목업 SHA 불변, diff --check 통과.
+- 근거: `docs/reviews/UX-TKT-102-r9.md`(제작자 자기점검)·동명 assets. 제안 원본/Pages 사본은 링크만 다르다. 목업은 자동 라우팅 없이 환승 홀 링크로 탐색하며 실제 자동 진입은 앱 TKT-110에서 검증.
+- PM의 r8/r9 선행 판정·보드 상태는 보존했다. r10은 다음 목업 회차. Safari/WebKit·실배포 미검증.
+
+
+## r11 — PM 직접 재작업 (2026-09-14, PO "너가 수정해볼래") — home.html 순환선 시각 수준 상향 + splash 보드 높이
+
+- 링을 주인공으로(9px 단색), 환승역 8 배지 + 이름은 링 안쪽(모바일은 이름만), 지선 길게·정류장 점 간격 확보, 정류장 이름은 데스크톱 전용(`.lbl-stop`), 구간명은 링 안쪽 수평, 환승 홀 = C 심볼(D-018). 라이트 테마 토큰. splash 보드 `min-height` → 한 줄+여백.

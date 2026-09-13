@@ -127,3 +127,8 @@
 ## D-017 advisor 서버측 LLM 직접 호출 예외 · 확정 (PM 2026-09-14, TKT-080 질문 답변)
 
 - 원칙 D-009(공개 LLM 기능은 gateway 경유)는 **브라우저→공개망** 경로에 적용. advisor `service/` 가 서버측에서 Anthropic 을 직접 호출하는 구조(D-008 편입 당시)는 예외로 허용: ①기본 프로필 `mock`(외부 호출 0) ②`claude` 프로필은 환경 변수로만 키 주입 ③호출 실패 시 mock provider 로 격리 ④브라우저 공개 경로는 `/api/services/advisor/**` gateway 프록시. 근거·환경 변수 표는 `services/advisor/README.md`.
+
+## D-018 순환선 심볼 = C안 "열린 기점" · 확정 (PO 2026-09-14 "순환선 심볼은 C안으로 가자")
+
+- 단색 링에 12시 기점 양옆을 비운 형태(문이 열리는 순간 암시). 상단바 24px·스플래시 대형·파비콘 16px 공통. 시안: `frontend/public/mockups/loop-symbol.html`(codex-8 r9). 구현: TKT-126(`SiteLoopSymbol.vue` 교체 + 파비콘).
+- PM 메모: 16px 에서 끊긴 링으로 읽힐 위험은 기점 점을 남기고 틈을 좁게(≈36°) 두어 완화 — 126 에서 파비콘 실측.
