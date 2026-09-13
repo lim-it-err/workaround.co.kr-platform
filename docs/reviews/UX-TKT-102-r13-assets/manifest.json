@@ -1,0 +1,135 @@
+{
+  "capturedAt": "2026-09-13T23:22:20.458Z",
+  "build": "Node24.19.0 / Vite6.4.3 / 57 modules / Pages base",
+  "source": [
+    {
+      "file": "home.html",
+      "sha256": "989d90a06eb5eda934d6fac31b47caa57694916cc3dbd06af7b79cddd3947818",
+      "currentSame": true,
+      "distSame": true
+    },
+    {
+      "file": "splash.html",
+      "sha256": "96d4b81a52d3600deb25ea95a0fe0135544fe8c4859353bd0c436b42a12e0d94",
+      "currentSame": true,
+      "distSame": true
+    }
+  ],
+  "home375": {
+    "map": {
+      "x": 37,
+      "y": 157.296875,
+      "w": 318,
+      "h": 251.046875
+    },
+    "nav": {
+      "x": 20,
+      "y": 476.9375,
+      "w": 335,
+      "h": 722.984375
+    },
+    "previousNavY": 543.890625,
+    "linkSizes": [
+      {
+        "text": "공개 아카이브",
+        "href": "blog-archive.html",
+        "x": 73,
+        "y": 573.125,
+        "w": 71.0625,
+        "h": 21.140625
+      },
+      {
+        "text": "글 상세",
+        "href": "blog-post.html",
+        "x": 158.0625,
+        "y": 573.125,
+        "w": 37.328125,
+        "h": 21.140625
+      },
+      {
+        "text": "Writing Studio",
+        "href": "writing-studio.html",
+        "x": 209.390625,
+        "y": 573.125,
+        "w": 85.875,
+        "h": 21.140625
+      },
+      {
+        "text": "여행 준비",
+        "href": "voyage-prep.html",
+        "x": 73,
+        "y": 657.265625,
+        "w": 48.5625,
+        "h": 21.140625
+      },
+      {
+        "text": "오늘",
+        "href": "voyage-daily.html",
+        "x": 135.5625,
+        "y": 657.265625,
+        "w": 22.5,
+        "h": 21.140625
+      },
+      {
+        "text": "기록",
+        "href": "voyage-archive.html",
+        "x": 172.0625,
+        "y": 657.265625,
+        "w": 22.5,
+        "h": 21.140625
+      },
+      {
+        "text": "노선도",
+        "href": "voyage-route.html",
+        "x": 208.5625,
+        "y": 657.265625,
+        "w": 33.75,
+        "h": 21.140625
+      },
+      {
+        "text": "격납고",
+        "href": "simhub.html",
+        "x": 73,
+        "y": 863.59375,
+        "w": 33.75,
+        "h": 21.140625
+      },
+      {
+        "text": "엘리베이터",
+        "href": "simhub.html",
+        "x": 120.75,
+        "y": 863.59375,
+        "w": 56.234375,
+        "h": 21.140625
+      },
+      {
+        "text": "택시",
+        "href": "simhub.html",
+        "x": 190.984375,
+        "y": 863.59375,
+        "w": 22.5,
+        "h": 21.140625
+      },
+      {
+        "text": "화이트채플",
+        "href": "simhub.html",
+        "x": 227.484375,
+        "y": 863.59375,
+        "w": 56.234375,
+        "h": 21.140625
+      }
+    ]
+  },
+  "linksUnchanged": true,
+  "splashOnlyChangeTickerDot": true,
+  "lightAuto": {
+    "color": "rgb(69, 83, 106)",
+    "x": 16,
+    "y": 841.25,
+    "w": 100,
+    "h": 16.5
+  },
+  "scriptCount": 0,
+  "finalCheckedAt": "2026-09-13T23:24:05.003Z",
+  "finalSourceUnchanged": true
+}
