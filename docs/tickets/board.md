@@ -77,7 +77,6 @@
 
 ## Started
 
-- `TKT-108` `P1` `voyage` `started` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -99,6 +98,8 @@
 
 
 ## Finished
+
+- `TKT-108` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건·저장키 이행, r1 통과 (2026-09-14)
 
 - `TKT-110` `[FE]` 톤 기반(tone 컴포넌트 4)+스플래시(플랩 3단계·심볼·티커 3회) — r1 통과 (2026-09-14)
 
