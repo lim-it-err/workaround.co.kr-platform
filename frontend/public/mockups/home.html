@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>환승 홀 — 순환선 목업 r12</title><style>
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>환승 홀 — 교차형 목업 r13</title><style>
 :root{--bg:#0A0F16;--card:#0D131C;--tx:#F3F6FB;--tx2:#AEB8C8;--mut:#7C8AA0;--hair:rgba(255,255,255,.09);--hair2:rgba(255,255,255,.16);--ring:#E9EDF3;--safety:#F3C544;
 --exp:#E14D78;--learn:#7C89F0;--ops:#35C275;--dim:#7C8AA0}
 @media(prefers-color-scheme:light){:root{--bg:#EDF1F6;--card:#F7F9FC;--tx:#16202E;--tx2:#4B5A70;--mut:#6B7A90;--hair:rgba(10,20,40,.10);--hair2:rgba(10,20,40,.18);--ring:#16202E;--safety:#B8860B;--exp:#C0264F;--learn:#3D4EC0;--ops:#1F8A4C;--dim:#8A97AA}}
@@ -43,7 +43,7 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
 .sub{display:flex;flex-wrap:wrap;gap:14px;padding:0 0 12px 36px;font-size:13px;color:var(--tx2)}
 .sub a{border-bottom:1px solid var(--hair2)}
 </style>
-<header class="banner">MOCKUP — 실화면 아님 · tone r12c · 순환선 + 기록선·실험선·기지선 (PM)</header>
+<header class="banner">MOCKUP — 실화면 아님 · tone r13 · 환승 홀 교차형 (PM)</header>
 <main>
 <div class="top">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.7 4.4 A9 9 0 1 1 8.3 4.4" fill="none" stroke="var(--safety)" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="3.4" r="1.4" fill="var(--safety)"/></svg>
@@ -52,48 +52,47 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
 
 <div class="wrap">
 <section class="mapbox">
-  <div class="k">순환선 · 기록선 · 실험선 · 기지선</div>
-  <svg class="map" viewBox="0 0 760 760" role="img" aria-label="workaround 순환선 — 환승역 경험·학습놀이·운영, 각 노선의 역과 화면">
-    <circle class="ring" cx="380" cy="380" r="180"/>
+  <div class="k">환승 홀 · 기록선 · 실험선 · 기지선</div>
+  <svg class="map" viewBox="0 0 760 600" role="img" aria-label="workaround 환승 홀 — 기록선·실험선·기지선이 만나는 환승역">
+    <!-- 기록선 (동): 환승 홀 → 블로그(아카이브·글·스튜디오) → 여행(준비·오늘·기록) -->
+    <path class="line" d="M380 180 L750 180" stroke="var(--exp)"/>
+    <text class="xname" x="404" y="152" fill="var(--exp)">기록선</text>
+    <circle class="stn" cx="470" cy="180" r="12" stroke="var(--exp)"/><text class="code" x="470" y="180">B</text><text class="nm" x="470" y="214" text-anchor="middle">블로그</text>
+    <circle class="pstop" cx="505" cy="180" r="4.5" stroke="var(--exp)"/><text class="pg" x="505" y="164" text-anchor="middle">아카이브</text>
+    <circle class="pstop" cx="533" cy="180" r="4.5" stroke="var(--exp)"/><text class="pg" x="533" y="150" text-anchor="middle">글 상세</text>
+    <circle class="pstop" cx="561" cy="180" r="4.5" stroke="var(--exp)"/><text class="pg" x="561" y="164" text-anchor="middle">스튜디오</text>
+    <circle class="stn" cx="620" cy="180" r="12" stroke="var(--exp)"/><text class="code" x="620" y="180">V</text><text class="nm" x="620" y="214" text-anchor="middle">여행</text>
+    <circle class="pstop" cx="655" cy="180" r="4.5" stroke="var(--exp)"/><text class="pg" x="655" y="164" text-anchor="middle">준비</text>
+    <circle class="pstop" cx="683" cy="180" r="4.5" stroke="var(--exp)"/><text class="pg" x="683" y="150" text-anchor="middle">오늘</text>
+    <circle class="pstop" cx="711" cy="180" r="4.5" stroke="var(--exp)"/><text class="pg" x="711" y="164" text-anchor="middle">기록</text>
 
-    <!-- 기록선 (동쪽): 환승역 → 블로그(아카이브·글·스튜디오) → 여행(준비·오늘·기록) -->
-    <path class="line" d="M560 380 L758 380" stroke="var(--exp)"/>
-    <circle class="stn" cx="596" cy="380" r="12" stroke="var(--exp)"/><text class="code" x="596" y="380">B</text><text class="nm" x="596" y="349" text-anchor="middle">블로그</text>
-    <circle class="pstop" cx="626" cy="380" r="4.5" stroke="var(--exp)"/><text class="pg" x="626" y="402" text-anchor="middle">아카이브</text>
-    <circle class="pstop" cx="650" cy="380" r="4.5" stroke="var(--exp)"/><text class="pg" x="650" y="418" text-anchor="middle">글 상세</text>
-    <circle class="pstop" cx="674" cy="380" r="4.5" stroke="var(--exp)"/><text class="pg" x="674" y="402" text-anchor="middle">스튜디오</text>
-    <circle class="stn" cx="710" cy="380" r="12" stroke="var(--exp)"/><text class="code" x="710" y="380">V</text><text class="nm" x="710" y="349" text-anchor="middle">여행</text>
-    <circle class="pstop" cx="740" cy="380" r="4.5" stroke="var(--exp)"/><text class="pg" x="740" y="402" text-anchor="middle">준비·오늘·기록</text>
+    <!-- 기지선 (서): 환승 홀 → Work → Runtime (보호 구역) -->
+    <path class="line" d="M380 180 L20 180" stroke="var(--ops)"/>
+    <text class="xname" x="356" y="152" text-anchor="end" fill="var(--ops)">기지선</text>
+    <circle class="stn" cx="290" cy="180" r="12" stroke="var(--ops)"/><text class="code" x="290" y="180">W</text><text class="nm" x="290" y="214" text-anchor="middle">Work</text>
+    <circle class="pstop" cx="250" cy="180" r="4.5" stroke="var(--ops)"/><text class="pg" x="250" y="164" text-anchor="middle">작업 흐름</text>
+    <circle class="stn" cx="190" cy="180" r="12" stroke="var(--ops)"/><text class="code" x="190" y="180">R</text><text class="nm" x="190" y="214" text-anchor="middle">Runtime</text>
+    <circle class="pstop" cx="150" cy="180" r="4.5" stroke="var(--ops)"/><text class="pg" x="150" y="164" text-anchor="middle">실행 상태</text>
+    <text class="pg" x="60" y="214" text-anchor="middle">보호 구역</text>
 
-    <!-- 실험선 (남쪽): 환승역 → Advisor(코스·미션) → 미스터리 트레인(격납고·엘베·택시·화이트채플) → 발견 → 취향 -->
-    <path class="line" d="M380 560 L380 728" stroke="var(--learn)"/>
-    <path class="line todo" d="M380 728 L380 752" stroke="var(--learn)"/>
-    <circle class="stn" cx="380" cy="596" r="12" stroke="var(--learn)"/><text class="code" x="380" y="596">A</text><text class="nm" x="402" y="601">Advisor</text>
-    <circle class="pstop" cx="380" cy="620" r="4.5" stroke="var(--learn)"/><text class="pg" x="394" y="624">코스 · 미션</text>
-    <circle class="stn" cx="380" cy="648" r="12" stroke="var(--learn)"/><text class="code" x="380" y="648">S</text><text class="nm" x="402" y="653">미스터리 트레인</text>
-    <circle class="pstop" cx="380" cy="672" r="4.5" stroke="var(--learn)"/><text class="pg" x="394" y="676">격납고 · 엘베 · 택시 · 화이트채플</text>
-    <circle class="stn todo" cx="380" cy="700" r="12" stroke="var(--learn)"/><text class="code todo" x="380" y="700">D</text><text class="nm todo" x="402" y="705">발견</text>
-    <circle class="stn todo" cx="380" cy="740" r="12" stroke="var(--learn)"/><text class="code todo" x="380" y="740">P</text><text class="nm todo" x="402" y="745">취향</text>
+    <!-- 실험선 (남): 환승 홀 → Advisor → 미스터리 트레인 → 발견 → 취향 -->
+    <path class="line" d="M380 180 L380 540" stroke="var(--learn)"/>
+    <path class="line todo" d="M380 540 L380 580" stroke="var(--learn)"/>
+    <text class="xname" x="404" y="250" fill="var(--learn)">실험선</text>
+    <circle class="stn" cx="380" cy="290" r="12" stroke="var(--learn)"/><text class="code" x="380" y="290">A</text><text class="nm" x="402" y="295">Advisor</text>
+    <circle class="pstop" cx="380" cy="318" r="4.5" stroke="var(--learn)"/><text class="pg" x="394" y="322">코스 · 미션</text>
+    <circle class="stn" cx="380" cy="360" r="12" stroke="var(--learn)"/><text class="code" x="380" y="360">S</text><text class="nm" x="402" y="365">미스터리 트레인</text>
+    <circle class="pstop" cx="380" cy="388" r="4.5" stroke="var(--learn)"/><text class="pg" x="394" y="392">격납고 · 엘베 · 택시 · 화이트채플</text>
+    <circle class="stn todo" cx="380" cy="440" r="12" stroke="var(--learn)"/><text class="code todo" x="380" y="440">D</text><text class="nm todo" x="402" y="445">발견</text>
+    <circle class="stn todo" cx="380" cy="500" r="12" stroke="var(--learn)"/><text class="code todo" x="380" y="500">P</text><text class="nm todo" x="402" y="505">취향</text>
 
-    <!-- 기지선 (서쪽): 환승역 → Work → Runtime (보호 구역) -->
-    <path class="line" d="M200 380 L25 380" stroke="var(--ops)"/>
-    <circle class="stn" cx="148" cy="380" r="12" stroke="var(--ops)"/><text class="code" x="148" y="380">W</text><text class="nm" x="148" y="349" text-anchor="middle">Work</text>
-    <circle class="pstop" cx="118" cy="380" r="4.5" stroke="var(--ops)"/><text class="pg" x="118" y="402" text-anchor="middle">작업 흐름</text>
-    <circle class="stn" cx="70" cy="380" r="12" stroke="var(--ops)"/><text class="code" x="70" y="380">R</text><text class="nm" x="70" y="349" text-anchor="middle">Runtime</text>
-    <circle class="pstop" cx="40" cy="380" r="4.5" stroke="var(--ops)"/><text class="pg" x="40" y="402" text-anchor="middle">실행 상태</text>
-
-    <!-- 환승역 3 (링 위) -->
-    <g><circle class="xfer" cx="560" cy="380" r="18"/><circle class="xfer-in" cx="560" cy="380" r="11"/><text class="xname" x="532" y="418" text-anchor="end">기록선</text></g>
-    <g><circle class="xfer" cx="380" cy="560" r="18"/><circle class="xfer-in" cx="380" cy="560" r="11"/><text class="xname" x="352" y="594" text-anchor="end">실험선</text></g>
-    <g><circle class="xfer" cx="200" cy="380" r="18"/><circle class="xfer-in" cx="200" cy="380" r="11"/><text class="xname" x="228" y="418">기지선</text></g>
-
-    <!-- 환승 홀 (기점, C 심볼) -->
-    <circle cx="380" cy="200" r="24" fill="var(--card)"/>
-    <path class="hub" d="M387.5 177.2 A24 24 0 1 1 372.5 177.2"/>
-    <circle class="hubdot" cx="380" cy="176" r="3.2"/>
-    <text class="hubname" x="380" y="246">환승 홀</text>
+    <!-- 환승 홀 (세 노선이 만나는 환승역, C 심볼) -->
+    <circle cx="380" cy="180" r="26" fill="var(--card)" stroke="var(--ring)" stroke-width="5"/>
+    <path class="hub" d="M388.2 155.4 A26 26 0 1 1 371.8 155.4"/>
+    <circle class="hubdot" cx="380" cy="154" r="3.4"/>
+    <text class="hubname" x="380" y="128">환승 홀</text>
   </svg>
-  <p class="legend">링 = 사이트 · 환승역 = 노선 · 큰 역 = 서비스 · 작은 역 = 화면</p>
+  <p class="legend">환승 홀에서 세 노선이 갈라진다 · 큰 역 = 서비스 · 작은 역 = 화면</p>
 </section>
 
 <nav class="lines" aria-label="노선별 이동">
