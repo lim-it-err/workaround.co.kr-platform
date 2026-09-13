@@ -2,7 +2,7 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `need_review` (r8 통과 — PM 2026-09-14, PO 홈 형태 최종 확인 후 finished; r9·r10 은 후속 라운드)
+- 상태: `need_review` (r8·r9 통과 — PO 확인 2건: 홈 형태 확정 · 순환선 심볼 A/B/C 선택. r10 표 UX 는 후속)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-8 디자이너 (r8 이후; r1~r6 제작 이력은 codex-4)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
