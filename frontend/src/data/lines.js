@@ -1,118 +1,181 @@
-// 노선 단일 소스 (스펙 §3.3 / TKT-072·S2)
-// JunctionMap(SVG)·route-rows 가 이 배열 하나를 공유한다.
-// 신규 노선(D/P 등) 추가·좌표 조정은 이 파일 한 곳만 수정한다.
-// 좌표계: viewBox 0 0 1000 460, 환승 홀 노드 = (300, 230).
+// 환승 홀 단일 소스 (D-015 / TKT-111)
+// 세 노선의 지도 좌표와 실제 이동 목록이 이 구조를 함께 사용한다.
 
 import { VOYAGES } from './voyage.js'
 
-export const JUNCTION = { x: 300, y: 230 }
+export const JUNCTION = { x: 360, y: 360 }
 
 const currentVoyage = VOYAGES.find((voyage) => voyage.status === 'boarding') || VOYAGES[0]
 
-export const LINES = [
+export const JUNCTION_LINES = [
   {
-    code: 'B',
-    nameKo: '블로그 본선',
-    nameEn: 'Blog District',
-    lineClass: 'line-b',
-    page: 'bloghub',
-    kind: 'trunk',
-    path: 'M300 230 H852',
-    cap: 'M840 214 V246',
-    stops: [
-      { x: 472, y: 230, label: '공개 아카이브', page: 'blogArchive' },
-      { x: 620, y: 230, label: '글 상세', page: 'bloghub' },
-      { x: 772, y: 230, label: 'Writing Studio', terminus: true, page: 'writingStudio' }
+    id: 'archive',
+    nameKo: '기록선',
+    colorToken: 'junction-archive',
+    order: '환승 홀 → 블로그 → 여행',
+    label: { x: 612, y: 220, anchor: 'start' },
+    paths: ['M386 345 L576.5 235', 'M388 370 L594.9 445.5'],
+    stations: [
+      {
+        code: 'B',
+        nameKo: '블로그 본선',
+        mapName: '블로그',
+        lineClass: 'line-b',
+        page: 'blogArchive',
+        status: '읽고 쓰는 기록',
+        map: { x: 455.3, y: 305, labelX: 471, labelY: 270, anchor: 'start' },
+        mapStops: [
+          { x: 498.6, y: 280, labelX: 506, labelY: 300, label: '아카이브', anchor: 'start' },
+          { x: 533.2, y: 260, labelX: 541, labelY: 280, label: '글 상세', anchor: 'start' },
+          { x: 567.8, y: 240, labelX: 576, labelY: 260, label: '스튜디오', anchor: 'start' }
+        ],
+        sublinks: [
+          { label: '공개 아카이브', page: 'blogArchive' },
+          { label: '글 상세', page: 'blogPost' },
+          { label: 'Writing Studio', page: 'writingStudio' }
+        ]
+      },
+      {
+        code: 'V',
+        nameKo: '여행 노선',
+        mapName: '여행',
+        lineClass: 'line-v',
+        page: 'voyage',
+        status: '여정과 기억',
+        rowStops: currentVoyage.title,
+        map: { x: 463.4, y: 397.6, labelX: 482, labelY: 428, anchor: 'start' },
+        mapStops: [
+          { x: 510.4, y: 414.7, labelX: 520, labelY: 436, label: '준비', anchor: 'start' },
+          { x: 548, y: 428.4, labelX: 558, labelY: 410, label: '노선도', anchor: 'start' },
+          { x: 585.6, y: 442.1, labelX: 595, labelY: 480, label: '기록', anchor: 'start' }
+        ],
+        sublinks: [
+          { label: '준비', page: 'voyage' },
+          { label: '노선도', page: 'voyage' },
+          { label: '기록', page: 'voyage' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'lab',
+    nameKo: '실험선',
+    colorToken: 'junction-lab',
+    order: 'Advisor → 미스터리 트레인 → 발견 → 취향',
+    label: { x: 400, y: 640, anchor: 'start' },
+    paths: [
+      'M375 388 L460 533.2',
+      'M356 390 L316.6 606.2',
+      'M340 380 L239.8 480.2',
+      'M332 367 L195.8 404'
     ],
-    rowStops: '공개 아카이브 → 글 상세 → Writing Studio'
+    stations: [
+      {
+        code: 'A',
+        nameKo: 'Developer Advisor',
+        mapName: 'Advisor',
+        lineClass: 'line-d',
+        page: null,
+        entryPath: '/advisor/',
+        render: 'static',
+        status: '코스 · 미션',
+        upcoming: false,
+        map: { x: 415, y: 455.3, labelX: 433, labelY: 462, anchor: 'start' },
+        mapStops: [
+          { x: 440, y: 498.6, labelX: 452, labelY: 504, label: '코스 · 미션', anchor: 'start' }
+        ]
+      },
+      {
+        code: 'S',
+        nameKo: '미스터리 트레인',
+        mapName: '미스터리 트레인',
+        lineClass: 'line-s',
+        page: 'simhub',
+        status: '격납고',
+        subtitle: '심야 임시 운행',
+        rowStops: '격납고 2대 대기',
+        map: { x: 340.9, y: 468.3, labelX: 316, labelY: 476, anchor: 'end' },
+        mapStops: [
+          { x: 332.2, y: 517.6, labelX: 316, labelY: 526, label: '격납고', anchor: 'end' },
+          { x: 325.2, y: 557, labelX: 315, labelY: 561, label: '엘베 · 택시', anchor: 'end' },
+          { x: 318.3, y: 596.4, labelX: 308, labelY: 600, label: '화이트채플', anchor: 'end' }
+        ],
+        sublinks: [
+          { label: '격납고', page: 'simhub' },
+          { label: '엘리베이터', page: 'elevator' },
+          { label: '택시', page: 'taxi' },
+          { label: '화이트채플', page: 'simhub' }
+        ]
+      },
+      {
+        code: 'D',
+        nameKo: '발견',
+        mapName: '발견',
+        lineClass: 'line-d',
+        page: null,
+        status: '연장 예정',
+        upcoming: true,
+        targetVersion: 'v0.8.0',
+        pathIndex: 2,
+        map: { x: 282.2, y: 437.8, labelX: 266, labelY: 420, anchor: 'end' }
+      },
+      {
+        code: 'P',
+        nameKo: '취향',
+        mapName: '취향',
+        lineClass: 'line-p',
+        page: null,
+        status: '연장 예정',
+        upcoming: true,
+        targetVersion: 'v0.9.0',
+        pathIndex: 3,
+        map: { x: 253.7, y: 388.5, labelX: 236, labelY: 378, anchor: 'end' }
+      }
+    ]
   },
   {
-    code: 'A',
-    nameKo: 'Developer Advisor',
-    nameEn: 'Advisor',
-    lineClass: 'line-a',
-    page: null,
-    entryPath: '/advisor/',
-    render: 'static',
-    status: '정적 이용 가능',
-    kind: 'branch',
-    upcoming: false,
-    path: 'M300 230 L180 78 H96',
-    chip: { x: 96, y: 78 },
-    labelPos: { x: 96, y: 46, sub: 64, anchor: 'middle' }
-  },
-  {
-    code: 'W',
-    nameKo: 'Work Manager',
-    nameEn: 'Work Manager',
-    lineClass: 'line-w',
-    page: 'work',
-    kind: 'branch',
-    path: 'M300 230 L180 140 H96',
-    chip: { x: 96, y: 140 },
-    labelPos: { x: 96, y: 108, sub: 126, anchor: 'middle' }
-  },
-  {
-    code: 'R',
-    nameKo: 'Runtime Board',
-    nameEn: 'Runtime',
-    lineClass: 'line-r',
-    page: 'runtime',
-    kind: 'branch',
-    path: 'M300 230 L180 320 H96',
-    chip: { x: 96, y: 320 },
-    labelPos: { x: 96, y: 356, sub: 374, anchor: 'middle' }
-  },
-  {
-    code: 'V',
-    nameKo: '여행 노선',
-    nameEn: 'Voyage',
-    lineClass: 'line-v',
-    page: 'voyage',
-    kind: 'branch',
-    upcoming: false,
-    path: 'M300 230 L180 382 H96',
-    chip: { x: 96, y: 382 },
-    labelPos: { x: 96, y: 418, sub: 436, anchor: 'middle' },
-    rowStops: currentVoyage.title
-  },
-  {
-    code: 'D',
-    nameKo: '발견 노선',
-    nameEn: 'Discovery',
-    lineClass: 'line-d',
-    page: null,
-    kind: 'branch',
-    upcoming: true,
-    targetVersion: 'v0.8.0',
-    path: 'M300 230 L440 96 H600',
-    chip: { x: 600, y: 96 },
-    labelPos: { x: 622, y: 92, sub: 110, anchor: 'start' }
-  },
-  {
-    code: 'S',
-    nameKo: '미스터리 트레인',
-    nameEn: 'Mystery Train',
-    subtitle: '심야 임시 운행',
-    lineClass: 'line-s',
-    page: 'simhub',
-    kind: 'branch',
-    path: 'M300 230 L440 158 H600',
-    chip: { x: 600, y: 158 },
-    labelPos: { x: 622, y: 154, sub: 172, anchor: 'start' },
-    rowStops: '격납고 2대 대기'
-  },
-  {
-    code: 'P',
-    nameKo: '취향 노선',
-    nameEn: 'Palate',
-    lineClass: 'line-p',
-    page: null,
-    kind: 'branch',
-    upcoming: true,
-    targetVersion: 'v0.9.0',
-    path: 'M300 230 L440 364 H600',
-    chip: { x: 600, y: 364 },
-    labelPos: { x: 622, y: 360, sub: 378, anchor: 'start' }
+    id: 'depot',
+    nameKo: '기지선',
+    colorToken: 'junction-depot',
+    order: 'Work → Runtime · 보호 구역',
+    label: { x: 150, y: 232, anchor: 'end' },
+    paths: ['M335 346 L186.8 260', 'M350 333 L291.6 172'],
+    stations: [
+      {
+        code: 'W',
+        nameKo: 'Work Manager',
+        mapName: 'Work',
+        lineClass: 'line-w',
+        page: 'work',
+        status: '보호 구역',
+        map: { x: 264.7, y: 305, labelX: 248, labelY: 292, anchor: 'end' },
+        mapStops: [
+          { x: 221.4, y: 280, labelX: 246, labelY: 332, label: '작업 흐름', anchor: 'end' }
+        ]
+      },
+      {
+        code: 'R',
+        nameKo: 'Runtime Board',
+        mapName: 'Runtime',
+        lineClass: 'line-r',
+        page: 'runtime',
+        status: '보호 구역',
+        map: { x: 322.4, y: 256.6, labelX: 306, labelY: 243, anchor: 'end' },
+        mapStops: [
+          { x: 305.3, y: 209.6, labelX: 296, labelY: 200, label: '실행 상태', anchor: 'end' }
+        ]
+      }
+    ]
   }
 ]
+
+// 기존 App/staticRouting 소비자 호환용 평탄 목록.
+export const LINES = JUNCTION_LINES.flatMap((line) =>
+  line.stations.map((station) => ({
+    ...station,
+    kind: 'station',
+    groupId: line.id,
+    groupName: line.nameKo,
+    groupColorToken: line.colorToken
+  }))
+)

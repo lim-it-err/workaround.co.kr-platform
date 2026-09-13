@@ -597,35 +597,6 @@ const lineCards = computed(() => {
   ]
 })
 
-const junctionRoundels = LINES
-const junctionGateLabel = computed(() => {
-  if (isStaticMode) {
-    return '정적 공개본'
-  }
-  return healthState.value.status === 'ok' ? '게이트 정상' : `gateway ${healthState.value.status || 'unknown'}`
-})
-const junctionLineStates = computed(() => {
-  if (isStaticMode) {
-    return {
-      B: { status: '정적 이용 가능', summary: `${publishedBlogPosts.value.length}편 공개 · ${draftBlogPosts.value.length}편 초안` },
-      V: { status: '정적 이용 가능', summary: '체크리스트 · 일정 · 도시 기록' },
-      S: { status: '정적 공개본에서는 사용할 수 없음', summary: simHubLine.subtitle },
-      W: { status: '정적 공개본에서는 사용할 수 없음', summary: '' },
-      R: { status: '정적 공개본에서는 사용할 수 없음', summary: '' }
-    }
-  }
-  return {
-    B: { status: '운행 중', summary: `${publishedBlogPosts.value.length}편 공개 · ${draftBlogPosts.value.length}편 초안` },
-    S: { status: simHubLine.subtitle, summary: simHubLine.rowStops },
-    W: {
-      status: workBoardState.value.actions?.commandBridgeReady ? '명령 브리지 준비' : '조회 전용',
-      summary: `Backlog ${countWorkTicketsByStatus('backlog')} · Ready ${readyColumnTickets.value.length} · Started ${countWorkTicketsByStatus('started')}`
-    },
-    R: { status: runtimeState.value.ollama?.status === 'ok' ? '정상' : '부분 저하', summary: 'ion2 · rtx5070 · gateway' },
-    V: { status: '여행 준비', summary: '체크리스트 · 일정 · 예산' }
-  }
-})
-
 const heroMetrics = computed(() => [
   { label: 'services', value: String(servicesState.value.length || 0) },
   { label: 'queued tickets', value: String(healthState.value.tickets?.queued ?? 0) },
@@ -3649,25 +3620,12 @@ function persistStudioPostId(postId) {
           </template>
 
           <section v-else-if="page === 'junction'" class="junction-shell">
-            <div class="wayfinding">
-              <span class="here">현재 위치 · 환승 홀</span>
-              <span class="sep">|</span>
-              <span class="transfer">
-                환승 가능
-                <span v-for="line in junctionRoundels" :key="line.code" class="roundel sm" :class="[line.lineClass, { upcoming: line.upcoming }]">{{ line.code }}</span>
-              </span>
-              <span class="sep">|</span>
-              <span class="chip"><span class="dot" aria-hidden="true"></span>{{ junctionGateLabel }}</span>
-            </div>
-
             <JunctionMap
-              :line-states="junctionLineStates"
               :disabled-pages="isStaticMode ? Array.from(STATIC_UNAVAILABLE_PAGES) : []"
               @open="openPage"
             />
 
             <p v-if="staticModeMessage" class="junction-note static-mode-note" role="status">{{ staticModeMessage }}</p>
-            <p v-else class="junction-note">홀에서는 이동만 — 조작은 각 승강장에서 합니다.</p>
           </section>
 
           <section v-else-if="page === 'simhub'" class="feature-shell sim-annex">

@@ -1,135 +1,136 @@
 <script setup>
-// 환승 홀 노선도 (스펙 §3.3 / TKT-072·S2, 시안 C 이식)
-// 블로그 = 굵은 본선, 기능 = 지선, 노란 링은 현재 위치(환승 홀)에만.
-// SVG 는 시각 요약이고, 아래 .route-rows 목록이 접근성·모바일 폴백이자 실제 이동 링크다.
-import { JUNCTION, LINES } from '../data/lines.js'
+import { JUNCTION, JUNCTION_LINES } from '../data/lines.js'
 import { withBasePath } from '../staticRouting.js'
 
-// lineStates: { [code]: { status, summary } } — 동적 상태는 부모(App)가 주입
 const props = defineProps({
-  lineStates: { type: Object, default: () => ({}) },
   disabledPages: { type: Array, default: () => [] }
 })
 
 const emit = defineEmits(['open'])
 
-const trunk = LINES.find((l) => l.kind === 'trunk')
-const branches = LINES.filter((l) => l.kind === 'branch')
-const rows = [trunk, ...branches]
-
-function stateOf(line) {
-  if (line.upcoming) return { status: `예정 · ${line.targetVersion}`, summary: '' }
-  return props.lineStates[line.code] ?? { status: line.status || '', summary: '' }
+function isUnavailable(destination) {
+  return Boolean(destination?.page && props.disabledPages.includes(destination.page))
 }
 
-function isUnavailable(line) {
-  return Boolean(line.page && props.disabledPages.includes(line.page))
+function entryHref(destination) {
+  return destination?.entryPath
+    ? withBasePath(destination.entryPath, import.meta.env.BASE_URL)
+    : undefined
 }
 
-function entryHref(line) {
-  return line.entryPath ? withBasePath(line.entryPath, import.meta.env.BASE_URL) : undefined
+function destinationTag(destination) {
+  if (destination.upcoming) return 'div'
+  if (destination.entryPath) return 'a'
+  return 'button'
 }
 
-function go(line) {
-  if (!line.upcoming && line.entryPath) {
-    window.location.assign(entryHref(line))
-    return
-  }
-  if (!line.upcoming && line.page) emit('open', line.page)
+function go(destination) {
+  if (destination.upcoming || destination.entryPath || !destination.page) return
+  emit('open', destination.page)
 }
 </script>
 
 <template>
-  <section class="map-panel" aria-label="환승 홀 노선도">
-    <!-- SVG 만 가로 스크롤 — 행 목록은 뷰포트 폭에 남는다 (모바일 재배치, S6 선행) -->
-    <div class="map-scroll">
-    <svg class="route-map" viewBox="0 0 1000 460" role="img" aria-hidden="true">
-      <!-- 지선 -->
-      <path
-        v-for="line in branches"
-        :key="`p-${line.code}`"
-        class="rl"
-        :class="{ upcoming: line.upcoming }"
-        :d="line.path"
-        :style="{ stroke: `var(--${line.lineClass})` }"
-      />
-      <!-- 본선 (굵게, 지선 위) -->
-      <path class="rl rl-b" :d="trunk.path" :style="{ stroke: `var(--${trunk.lineClass})` }" />
-      <path class="rl rl-b" :d="trunk.cap" :style="{ stroke: `var(--${trunk.lineClass})` }" />
-
-      <!-- 본선 정차역 (라벨 클릭 = 이동) -->
-      <g
-        v-for="stop in trunk.stops"
-        :key="stop.label"
-        class="g-click"
-        role="link"
-        @click="emit('open', stop.page || trunk.page)"
+  <section class="junction-overview" aria-label="환승 홀 노선과 이동 목록">
+    <section class="junction-map-box" aria-labelledby="junction-map-title">
+      <h3 id="junction-map-title">환승 홀 · 기록선 · 실험선 · 기지선</h3>
+      <svg
+        class="junction-map"
+        viewBox="120 130 540 540"
+        role="img"
+        aria-label="환승 홀에서 기록선, 실험선, 기지선으로 이어지는 여덟 정류장"
       >
-        <circle
-          class="stn"
-          :class="{ term: stop.terminus }"
-          :cx="stop.x"
-          :cy="stop.y"
-          :r="stop.terminus ? 11 : 7.5"
-          :style="{ stroke: `var(--${trunk.lineClass})` }"
-        />
-        <circle v-if="stop.terminus" :cx="stop.x" :cy="stop.y" r="4" :style="{ fill: `var(--${trunk.lineClass})` }" />
-        <text class="name name-c" :x="stop.x" :y="stop.y + 38">{{ stop.label }}</text>
-      </g>
+        <g
+          v-for="line in JUNCTION_LINES"
+          :key="line.id"
+          class="junction-map-line"
+          :style="{ '--route-color': `var(--${line.colorToken})` }"
+        >
+          <path
+            v-for="(path, pathIndex) in line.paths"
+            :key="`${line.id}-path-${pathIndex}`"
+            class="junction-branch"
+            :class="{ upcoming: line.stations.some((station) => station.upcoming && station.pathIndex === pathIndex) }"
+            :d="path"
+          />
 
-      <!-- 지선 종점 문자 배지 + 라벨 -->
-      <g
-        v-for="line in branches"
-        :key="`c-${line.code}`"
-        :class="{ 'g-upcoming': line.upcoming || isUnavailable(line), 'g-click': !line.upcoming }"
-        :role="line.upcoming ? undefined : 'link'"
-        @click="go(line)"
+          <g
+            v-for="station in line.stations"
+            :key="station.code"
+            class="junction-station"
+            :class="{ upcoming: station.upcoming }"
+          >
+            <circle class="junction-station-dot" :cx="station.map.x" :cy="station.map.y" r="12" />
+            <text class="junction-station-code" :x="station.map.x" :y="station.map.y">{{ station.code }}</text>
+            <text
+              class="junction-station-name"
+              :x="station.map.labelX"
+              :y="station.map.labelY"
+              :text-anchor="station.map.anchor"
+            >{{ station.mapName }}</text>
+
+            <g v-for="stop in station.mapStops || []" :key="`${station.code}-${stop.label}`" class="junction-page-stop">
+              <circle :cx="stop.x" :cy="stop.y" r="4.5" />
+              <text :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
+            </g>
+          </g>
+
+          <text
+            class="junction-line-name"
+            :x="line.label.x"
+            :y="line.label.y"
+            :text-anchor="line.label.anchor"
+          >{{ line.nameKo }}</text>
+        </g>
+
+        <g class="junction-hub">
+          <circle class="junction-hub-ring" :cx="JUNCTION.x" :cy="JUNCTION.y" r="28" />
+          <path class="junction-hub-mark" d="M368.8 333.4 A28 28 0 1 1 351.2 333.4" />
+          <circle class="junction-hub-dot" :cx="JUNCTION.x" cy="332" r="3.4" />
+          <text class="junction-hub-name" :x="JUNCTION.x" y="308">환승 홀</text>
+        </g>
+      </svg>
+      <p class="junction-map-legend">큰 역은 서비스 · 작은 역은 세부 화면</p>
+    </section>
+
+    <nav class="junction-lines" aria-label="노선별 이동">
+      <section
+        v-for="line in JUNCTION_LINES"
+        :key="`${line.id}-list`"
+        class="junction-route-group"
+        :style="{ '--route-color': `var(--${line.colorToken})` }"
       >
-        <circle class="lchip" :cx="line.chip.x" :cy="line.chip.y" r="13" :style="{ fill: `var(--${line.lineClass})` }" />
-        <text class="lchip-txt" :x="line.chip.x" :y="line.chip.y + 4.5">{{ line.code }}</text>
-        <text class="name" :x="line.labelPos.x" :y="line.labelPos.y" :text-anchor="line.labelPos.anchor">{{ line.nameKo }}</text>
-        <text class="sub" :x="line.labelPos.x" :y="line.labelPos.sub" :text-anchor="line.labelPos.anchor">
-          {{ stateOf(line).status }}
-        </text>
-      </g>
+        <h3>{{ line.nameKo }}</h3>
+        <p>{{ line.order }}</p>
 
-      <!-- 현재 위치: 환승 홀 -->
-      <circle class="pulse" :cx="JUNCTION.x" :cy="JUNCTION.y" r="17" />
-      <circle class="xfer" :cx="JUNCTION.x" :cy="JUNCTION.y" r="12" />
-      <circle :cx="JUNCTION.x" :cy="JUNCTION.y" r="3.5" style="fill: var(--text)" />
-      <text class="name name-c" :x="JUNCTION.x" :y="JUNCTION.y - 52">환승 홀</text>
-      <text class="sub sub-c" :x="JUNCTION.x" :y="JUNCTION.y - 34">Main Junction</text>
-    </svg>
-    </div>
+        <div v-for="station in line.stations" :key="`${station.code}-row`" class="junction-route-entry">
+          <component
+            :is="destinationTag(station)"
+            class="junction-route-row"
+            :class="{ upcoming: station.upcoming, unavailable: isUnavailable(station) }"
+            :type="destinationTag(station) === 'button' ? 'button' : undefined"
+            :href="entryHref(station)"
+            :aria-disabled="station.upcoming ? 'true' : undefined"
+            @click="go(station)"
+          >
+            <span class="junction-route-badge" aria-hidden="true">{{ station.code }}</span>
+            <span class="junction-route-name">{{ station.nameKo }}</span>
+            <span class="junction-route-status">{{ station.status }}</span>
+          </component>
 
-    <!-- 이동 목록 (접근성·모바일 폴백 + 실제 링크) -->
-    <div class="route-rows">
-      <component
-        :is="line.upcoming ? 'div' : line.entryPath ? 'a' : 'button'"
-        v-for="line in rows"
-        :key="`r-${line.code}`"
-        class="route-row"
-        :class="{ primary: line.kind === 'trunk', upcoming: line.upcoming || isUnavailable(line) }"
-        :style="{ '--tick': `var(--${line.lineClass})` }"
-        :type="!line.upcoming && !line.entryPath ? 'button' : undefined"
-        :href="!line.upcoming ? entryHref(line) : undefined"
-        @click="line.entryPath ? undefined : go(line)"
-      >
-        <span class="tick" aria-hidden="true"></span>
-        <span class="rr-main">
-          <strong>
-            <span class="roundel sm" :class="line.lineClass">{{ line.code }}</span>
-            {{ line.nameKo }}
-          </strong>
-          <small>{{ stateOf(line).summary || line.rowStops || '' }}</small>
-        </span>
-        <span class="rr-status">{{ stateOf(line).status }}</span>
-        <span class="rr-go" aria-hidden="true">{{ line.upcoming ? '' : '→' }}</span>
-      </component>
-    </div>
+          <div v-if="station.sublinks?.length" class="junction-sublinks">
+            <component
+              :is="destinationTag(link)"
+              v-for="link in station.sublinks"
+              :key="`${station.code}-${link.label}`"
+              :type="destinationTag(link) === 'button' ? 'button' : undefined"
+              :href="entryHref(link)"
+              :class="{ unavailable: isUnavailable(link) }"
+              @click="go(link)"
+            >{{ link.label }}</component>
+          </div>
+        </div>
+      </section>
+    </nav>
   </section>
 </template>
-
-<style scoped>
-a.route-row { text-decoration: none; }
-</style>
