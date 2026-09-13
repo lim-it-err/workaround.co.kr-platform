@@ -1,5 +1,5 @@
 const {chromium}=require('playwright');const fs=require('node:fs/promises');const path=require('node:path');
-const base='http://127.0.0.1:4188/workaround.co.kr-platform/';const out=path.join(__dirname,'evidence');
+const base=process.env.STUDIO_TEST_URL || 'http://127.0.0.1:4188/workaround.co.kr-platform/';const out=path.join(__dirname,'evidence');
 (async()=>{const browser=await chromium.launch({headless:true});const result=[];
 try{for(const width of [375,1440]){
  const context=await browser.newContext({viewport:{width,height:width===375?812:900}});const page=await context.newPage();

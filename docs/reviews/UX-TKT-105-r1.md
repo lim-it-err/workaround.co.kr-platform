@@ -1,8 +1,8 @@
-﻿문서 상태: 수정중
+﻿문서 상태: 작성완료 (디자이너 검수 초안 — 최종 판정은 PM)
 
 # UX-TKT-105-r1 — Writing Studio 도구 메뉴 검수 초안
 
-- 작성: codex-8 디자이너 · 2026-09-13 22:19~22:26 CEST. **심각도는 디자이너 초안이며 최종 판정·후속 배정은 PM(Claude)**.
+- 작성: codex-8 디자이너 · 2026-09-13 22:19~22:25 CEST. **심각도는 디자이너 초안이며 최종 판정·후속 배정은 PM(Claude)**.
 - 대상: `docs/tickets/need_review/TKT-105-fe-studio-tools-table-image.md`, `design/writing-studio-spec.md` §2·§5·§6, 톤 원칙, 카피 원칙, `frontend/public/mockups/writing-studio.html`.
 - 검수 범위: Studio 진입 → 도구 → 표·사진 삽입 → 이어 쓰기 → 미리보기 → 저장·새로고침 복원. 375×812 / 1440×900, 다크·라이트, Chromium 151.0.7922.34.
 - 결과: **[블로커] 1 · [중요] 2 · [제안] 2**. 표·사진의 기능 동작은 확인됐으나, 저장용 문자열이 편집 본문에 드러나는 문제가 쓰기 경험을 훼손한다. 제목 잘림은 기존 구현에서 이어진 사항으로 구분한다.
@@ -45,7 +45,7 @@
 **기존 구현에서 이어진 결함이며 TKT-105 신규 회귀로 단정하지 않는다.** 가상 제목 `길 위에서 기록을 이어 쓰는 작은 방법`은 375px에서 마지막 부분이 보이지 않는다. 단일 행 input 내부는 `scrollWidth=372`, `clientWidth=321`로 **51px 넘친다**. 페이지 전체 overflow가 0이어도 제목 가시성은 확보되지 않는다. 1440px에서는 전체가 보인다.
 
 - 소스: `frontend/src/components/WritingStudio.vue:296`, `:455`, `:456`.
-- 목업 대조: `frontend/public/mockups/writing-studio.html:22`, `:43`의 여러 줄 제목에 같은 가상 제목을 입력하면 375px에서 `scrollWidth=clientWidth=335`, `scrollHeight=clientHeight=75`로 전체가 보인다. 목업 r2 제목 잘림 수정은 `REV-TKT-102-r1.md`에도 이미 기록돼 있다. TKT-105는 목업 배치가 참고 사항이므로, 목업과 픽셀 단위로 다르다는 이유로 지적한 것은 아니다.
+- 목업 대조: `frontend/public/mockups/writing-studio.html:21`, `:40`의 여러 줄 제목에 같은 가상 제목을 입력하면 375px에서 `scrollWidth=clientWidth=335`, `scrollHeight=clientHeight=75`로 전체가 보인다. 목업 r2 제목 잘림 수정은 `REV-TKT-102-r1.md`에도 이미 기록돼 있다. TKT-105는 목업 배치가 참고 사항이므로, 목업과 픽셀 단위로 다르다는 이유로 지적한 것은 아니다.
 - 근거: [실화면 375px](UX-TKT-105-r1-assets/375-light-baseline.png), [같은 제목의 목업 375px](UX-TKT-105-r1-assets/375-mockup-title.png).
 - 디자이너 권고: 전체 제목을 편집 중에 읽을 수 있도록 여러 줄 표시를 검토한다. TKT-105에 함께 반영할지 후속 톤 전환에서 처리할지는 PM 배정 사항이다.
 
