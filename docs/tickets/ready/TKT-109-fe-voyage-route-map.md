@@ -1,8 +1,8 @@
-문서 상태: 작성완료
+﻿문서 상태: 수정중
 
 # TKT-109 `[FE]` 여정 노선도 — 지리 충실형 순환선 + 구간 클릭 일차 카드
 
-- 상태: ready (PO 2026-09-14 "홈페이지 다 목업으로 대체" — r7 목업 `mockups/voyage-route.html` 이 스펙, 브랜치 codex/v0.7.0-tone; TKT-108 need_review 진입 시 착수)
+- 상태: started (PO 2026-09-14 "홈페이지 다 목업으로 대체" — r7 목업 `mockups/voyage-route.html` 이 스펙, 브랜치 codex/v0.7.0-tone; TKT-108 finished 후 착수)
 - 우선순위: P1
 - 담당: codex-1 (FE)
 - 관련 스펙: `design/voyage-route-map-spec.md` (단일 진실), `design/voyage-collection-spec.md` §1-2

@@ -1,0 +1,18 @@
+{
+  "todayOptions": [
+    "사라지는 적립금 · Day 1",
+    "오늘의 판정 5장",
+    "정리하는 뇌"
+  ],
+  "todayDestination": "http://127.0.0.1:4191/workaround.co.kr-platform/advisor/games/case/case-vanishing-points-01",
+  "todayBack": "http://127.0.0.1:4191/workaround.co.kr-platform/advisor/games",
+  "emptyBefore": "조건에 맞는 미열람 콘텐츠가 없습니다. ‘본 콘텐츠 포함’을 켜 보세요.",
+  "emptyAfter": "조건에 맞는 미열람 콘텐츠가 없습니다. ‘본 콘텐츠 포함’을 켜 보세요.",
+  "practiceLink": "/workaround.co.kr-platform/advisor/games/practice/probe/probe-slow-api-01",
+  "practiceBack": "http://127.0.0.1:4191/workaround.co.kr-platform/advisor/games",
+  "journeyHref": "/workaround.co.kr-platform/advisor/projects/p-bike-01",
+  "firstNodeY": 1559.359375,
+  "lockedBefore": 5,
+  "lockedAfter": 4,
+  "reviewNext": "http://127.0.0.1:4191/workaround.co.kr-platform/advisor/missions"
+}
