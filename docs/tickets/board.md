@@ -56,13 +56,13 @@
 
 - `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r6 노선도 재구성(노선 3=분류, 정류장 8=서비스, D-015)
 
-- `TKT-080` `P1` `v0.7.0` `started` `[BE]` advisor 서비스 계약 마감 — /health·라우트·매니페스트·빌드 게이트
-
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
+- `TKT-080` `P1` `v0.7.0` `need_review` `[BE]` advisor 서비스 계약 마감 — 35/35·gateway 8/8·Compose 실기동/health 200 통과
 
 - `TKT-105` `P1` `chore` `need_review` `[FE]` Writing Studio 도구 메뉴 — 사진·h1~h3·기능형 표, E2E 9/9·build·375px 통과
 
