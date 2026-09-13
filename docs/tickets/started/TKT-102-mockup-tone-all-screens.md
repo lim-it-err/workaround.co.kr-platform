@@ -146,6 +146,6 @@
 8. **(r6 추가, PO 2026-09-14) splash.html 플랩 문구 시퀀스** — 한 줄 플랩 보드가 10초 동안 4단계로 바뀐다(순수 CSS): `WORKAROUND` → `WORKING AROUND`(14) → `MIND THE GAP`(12, PM 선정 — 런던 지하철 안내 방송이자 '틈을 우회한다'는 workaround 의 말장난) → `DOORS OPENING`(13, 문 열림 연출과 동기). 셀 14칸 고정, 짧은 문구는 양쪽 빈 셀. 각 전환은 플립 애니메이션, 티커 멘트 3회 교체와 박자를 맞춘다. 현행 `doors opening` 소문자 텍스트 줄은 플랩이 대신하므로 제거 가능.
 
 
-## r7 지시 (PM, 2026-09-14 — r6 need_review 이후 착수) — 여정 노선도 목업
+## r7 — PM 직접 제작 (2026-09-14, PO "너가 기획하고 만들고 목업에 바로 반영") — 여정 노선도 목업 `voyage-route.html` 완료. 부관은 r7 대신 **r6 항목 9**: `voyage-archive.html` 을 `design/voyage-log-draft-2026-09-13.md` "실제 경과" 절로 갱신(문구 그대로).
 
 신규 `voyage-route.html` 1개 (+ index 링크). 요구 전문: `design/voyage-route-map-spec.md` §5. 핵심: 실좌표 9도시 지리 충실형 순환선, 구간=일차, hover 툴팁·:target 카드(DAY 2·3·4 실콘텐츠), 접시 아이콘, 계기판 헤더, 무스크립트, 모바일 세로/데스크톱 2단.

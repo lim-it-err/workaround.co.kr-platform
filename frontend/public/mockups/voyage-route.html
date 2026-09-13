@@ -1,0 +1,246 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>여정 노선도 — 중부유럽 순환선</title><style>
+*{box-sizing:border-box}body{margin:0;background:#0A0F16;color:#F3F6FB;font:15px/1.55 system-ui;-webkit-font-smoothing:antialiased}
+header.banner{position:fixed;inset:0 0 auto;z-index:20;padding:7px;text-align:center;background:#F3C544;color:#111;font-size:12px;font-weight:800}
+a{color:inherit;text-decoration:none}
+main{max-width:1120px;margin:auto;padding:58px 20px 80px}
+.top{display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.09);font-weight:700}
+.badge{width:22px;height:22px;border-radius:50%;background:#55738F;color:#0D131C;display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+.top small{margin-left:auto;color:#7C8AA0;font-weight:400;font-size:12px}
+.gauges{display:grid;gap:14px;margin:22px 0 8px}
+.g .l{display:flex;justify-content:space-between;font-size:12px;color:#AEB8C8;gap:10px}.g .l b{color:#F3F6FB;font-variant-numeric:tabular-nums;text-align:right}.g .l b small{color:#7C8AA0;font-weight:400}
+.g .bar{height:2px;background:rgba(255,255,255,.12);margin-top:6px;position:relative}.g .bar i{position:absolute;inset:0 auto 0 0;background:#55738F}.g .bar i.y{background:#F3C544}
+.hint{color:#7C8AA0;font-size:12px;margin:6px 0 0}
+.wrap{display:grid;gap:28px;margin-top:22px}
+@media(min-width:900px){.wrap{grid-template-columns:1fr 1fr;align-items:start}.mapbox{position:sticky;top:76px}}
+.mapbox{border-left:3px solid #55738F;padding-left:14px}
+.mapbox .k{font-size:11px;letter-spacing:.14em;color:#7C8AA0;font-weight:700}
+svg.route{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
+.leg{stroke:#55738F;stroke-width:5;fill:none;stroke-linecap:round}
+.leg.thin{stroke-width:3}.leg.thick{stroke-width:7}
+.leg.todo{stroke:#7C8AA0;stroke-width:3;stroke-dasharray:8 8}
+a.seg:hover .leg,a.seg:focus .leg{stroke:#F3C544}
+a.seg .tip{opacity:0;transition:.15s}a.seg:hover .tip,a.seg:focus .tip{opacity:1}
+.tip rect{fill:#1A212D;stroke:rgba(255,255,255,.16)}.tip text{fill:#F3F6FB;font-size:15px;font-weight:600}
+.st{fill:#0D131C;stroke:#F3F6FB;stroke-width:3}.st.done{stroke:#55738F}.st.todo{stroke:#7C8AA0;stroke-dasharray:3 3}
+.st2{fill:none;stroke:#55738F;stroke-width:2}
+.lb{fill:#F3F6FB;font-size:17px;font-weight:700}.lb.todo{fill:#7C8AA0;font-weight:500}.lb small{font-weight:400}
+.sub{fill:#7C8AA0;font-size:12px}
+.pulse{fill:#F3C544;opacity:.35;animation:p 1.8s infinite}@keyframes p{0%{r:12;opacity:.45}100%{r:30;opacity:0}}
+@media(prefers-reduced-motion:reduce){.pulse{animation:none;r:16}}
+.dish{fill:#F3C544}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;color:#7C8AA0;font-size:12px}.legend i{display:inline-block;width:18px;height:0;border-top:3px solid #55738F;vertical-align:middle;margin-right:5px}.legend i.d{border-top-style:dashed;border-color:#7C8AA0}.legend i.y{border-color:#F3C544}
+.days{min-width:0}
+.dayhead{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.dayhead a{font-size:12px;padding:5px 9px;border:1px solid rgba(255,255,255,.16);border-radius:999px;color:#AEB8C8}
+.dayhead a.today{border-color:#F3C544;color:#F3C544}
+.day{display:none;scroll-margin-top:64px}.day:target{display:block}
+body:not(:has(.day:target)):not(:has(.sheet:target)) .day.default{display:block}
+body:has(#stop-2-lunch:target) #day-2,body:has(#stop-3-lunch:target) #day-3,body:has(#stop-5-dinner:target) #day-5,body:has(#stop-6-cafe:target) #day-6{display:block}
+@media(min-width:900px){body:has(.sheet:target) main{padding-right:400px}}
+.day h2{font-size:20px;margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.day h2 span{color:#7C8AA0;font-size:12px;font-weight:400;white-space:nowrap}
+.day .goal{color:#AEB8C8;font-size:13px;margin:4px 0 16px}
+table.tt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tt th{font-size:11px;letter-spacing:.12em;color:#7C8AA0;font-weight:700;text-align:left;padding:0 6px 8px 0;border-bottom:1px solid rgba(255,255,255,.12)}
+.tt th.r,.tt td.r{text-align:right;padding-right:0}
+.tt td{padding:0 6px 0 0;vertical-align:top}
+.tt td.t{width:46px;color:#AEB8C8;font-size:13px;padding-top:10px;white-space:nowrap}
+.tt td.t.dim{color:#5B6B80}
+.tt td.n{position:relative;padding:10px 6px 10px 26px}
+.tt td.n::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:3px;background:#55738F}
+.tt tr.first td.n::before{top:16px}.tt tr.last td.n::before{bottom:auto;height:16px}
+.tt td.n::after{content:"";position:absolute;left:3px;top:14px;width:9px;height:9px;border-radius:50%;background:#0D131C;border:2px solid #F3F6FB}
+.tt tr.meal td.n::after{border-color:#F3C544;background:linear-gradient(90deg,#F3C544 50%,#0D131C 50%)}
+.tt tr.hero td.n::after{box-shadow:0 0 0 3px #0D131C,0 0 0 5px #F3F6FB}
+.tt tr.move td.n::before{background:#55738F;width:7px;left:6px}
+.tt tr.move.walk td.n::before{width:2px;left:8.5px}
+.tt tr.rest td.n::before{background:repeating-linear-gradient(#55738F 0 5px,transparent 5px 10px);width:3px}
+.tt tr.move td.n::after,.tt tr.rest td.n::after{display:none}
+.tt tr.move td.n,.tt tr.rest td.n{color:#AEB8C8;font-size:13px;padding-top:6px;padding-bottom:6px}
+.tt tr.branch td.n{color:#7C8AA0;font-size:13px;padding-top:2px;padding-bottom:6px}
+.tt tr.branch td.n::after{display:none}.tt tr.branch td.n b{color:#AEB8C8;font-weight:600}
+.tt tr.branch td.n i{position:absolute;left:8px;top:8px;width:14px;height:2px;background:#7C8AA0}
+.tt td.n a{border-bottom:1px solid rgba(255,255,255,.25)}
+.tt td.n small{display:block;color:#7C8AA0;font-size:12px;font-weight:400}
+.tt td.r{width:84px;color:#AEB8C8;font-size:13px;padding-top:10px;white-space:nowrap;line-height:1.3}
+.tt td.r small{display:block;color:#5B6B80;font-size:11px}
+.tt td.r.na{color:#5B6B80}.tt td.r.q{color:#F0A02D}
+.tt tfoot td{border-top:1px solid rgba(255,255,255,.12);padding-top:10px;font-weight:700}
+.tt tfoot td.r{color:#F3F6FB}.tt tfoot small{color:#7C8AA0;font-weight:400}
+.day q{display:block;margin-top:14px;color:#AEB8C8;font-style:italic;quotes:"“" "”"}
+.sheet{display:none;position:fixed;z-index:30;background:#111721;border-top:1px solid rgba(255,255,255,.16);box-shadow:0 -18px 44px rgba(2,6,12,.5)}
+.sheet:target{display:block}
+.sheet{inset:auto 0 0 0;max-height:70vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px 20px 28px}
+.sheet .grab{width:38px;height:4px;border-radius:2px;background:rgba(255,255,255,.25);margin:0 auto 12px}
+@media(min-width:900px){.sheet{inset:0 0 0 auto;width:380px;max-height:none;border-radius:0;border-top:0;border-left:1px solid rgba(255,255,255,.16);padding:76px 24px 24px;box-shadow:-18px 0 44px rgba(2,6,12,.5)}.sheet .grab{display:none}}
+.sheet .k{font-size:11px;letter-spacing:.14em;color:#F3C544;font-weight:700}
+.sheet h3{margin:4px 0 2px;font-size:20px}.sheet .m{color:#7C8AA0;font-size:12px}
+.sheet dl{display:grid;grid-template-columns:64px 1fr;gap:6px 12px;margin:16px 0;font-size:14px}.sheet dt{color:#7C8AA0}.sheet dd{margin:0}
+.sheet .photo{height:120px;border:1px dashed rgba(255,255,255,.2);border-radius:10px;display:grid;place-items:center;color:#7C8AA0;font-size:12px;margin:12px 0}
+.sheet .act{display:flex;gap:10px;margin-top:14px}
+.sheet .act a{flex:1;text-align:center;padding:11px;border-radius:12px;border:1px solid rgba(255,255,255,.16);color:#AEB8C8;font-size:13px}
+.sheet .act a.p{background:#F3C544;color:#201A05;font-weight:800;border-color:#F3C544}
+.sheet .close{position:absolute;top:12px;right:16px;color:#7C8AA0;font-size:22px}
+@media(min-width:900px){.sheet .close{top:64px}}
+</style>
+<header class="banner">MOCKUP — 실화면 아님 · tone r7 · 여정 노선도</header>
+<main>
+<div class="top"><span class="badge">V</span>중부유럽 순환선 · 여정 노선도<small>DAY 6 / 11 · 비엔나</small></div>
+
+<section class="gauges">
+  <div class="g"><div class="l"><span>달린 거리</span><b>740 km <small>/ 약 1,520 km</small></b></div><div class="bar"><i style="width:49%"></i></div></div>
+  <div class="g"><div class="l"><span>지출</span><b>523만원 <small>= 사전 450 + 여행 중 73 · 미확인 5건 제외 / 계획 856</small></b></div><div class="bar"><i class="y" style="width:61%"></i></div></div>
+  <p class="hint">거리는 도시 좌표에서 계산. 지출은 일차별 요금 합계의 누적 — ❓ 미확인 건은 채워지면 자동 반영.</p>
+</section>
+
+<div class="wrap">
+<section class="mapbox">
+  <div class="k">순환선 · 실거리·방향 유지 (위경도 그대로)</div>
+  <svg class="route" viewBox="0 0 1000 700" role="img" aria-label="중부유럽 순환선 여정 노선도">
+    <a class="seg" href="#day-7"><title>DAY 7 · 비엔나 → 부다페스트 · 운전 2h40 · 245km</title><path class="leg todo" d="M553.6 476.1 L934.6 630.3"/></a>
+    <a class="seg" href="#day-9"><title>DAY 9 · 부다페스트 → 브르노 → 프라하 · 운전 5h20 · 530km</title><path class="leg todo" d="M934.6 630.3 L586.9 261.7 L276.9 70.5"/></a>
+    <a class="seg" href="#day-3"><title>DAY 3 · 프라하 → 체스키크룸로프 · 운전 2h · 170km · 110,800원</title><path class="leg" d="M276.9 70.5 L259.7 344.7"/>
+      <g class="tip" transform="translate(290 190)"><rect width="330" height="34" rx="6"/><text x="12" y="23">DAY 3 · 운전 2h · 170km · 110,800원</text></g></a>
+    <a class="seg" href="#day-4"><title>DAY 4 · 체스키크룸로프 → 할슈타트 → 잘츠부르크 · 운전 3h30 · 275km · 156,100원</title><path class="leg thick" d="M259.7 344.7 L164.2 616.4 L79.3 562.6"/>
+      <g class="tip" transform="translate(190 470)"><rect width="330" height="34" rx="6"/><text x="12" y="23">DAY 4 · 운전 3h30 · 275km · 156,100원</text></g></a>
+    <a class="seg" href="#day-5"><title>DAY 5 · 잘츠부르크 → 멜크 → 뒤른슈타인 → 비엔나 · 운전 3h15 · 295km · 183,950원</title><path class="leg" d="M79.3 562.6 L404.7 471.9 L553.6 476.1"/>
+      <g class="tip" transform="translate(330 400)"><rect width="330" height="34" rx="6"/><text x="12" y="23">DAY 5 · 운전 3h15 · 295km · 183,950원</text></g></a>
+    <g><circle class="st done" cx="276.9" cy="70.5" r="11"/><circle class="st2" cx="276.9" cy="70.5" r="17"/><text class="lb" x="300" y="66">프라하</text><text class="sub" x="300" y="84">DAY 1–2 · 9/16 복귀 · 9/17 반납·귀국</text><path class="dish" d="M300 100 a7 7 0 0 1 14 0 z"/><text class="sub" x="318" y="107">Dvorek pod Hradem · 콜레뇨</text></g>
+    <g><circle class="st done" cx="259.7" cy="344.7" r="11"/><text class="lb" x="282" y="341">체스키크룸로프</text><text class="sub" x="282" y="359">DAY 3</text><path class="dish" d="M300 372 a7 7 0 0 1 14 0 z"/><text class="sub" x="318" y="379">Papa's · 스비치코바</text></g>
+    <g><circle class="st done" cx="164.2" cy="616.4" r="11"/><text class="lb" x="186" y="640">할슈타트</text><text class="sub" x="186" y="658">DAY 4 경유 · Zum Bader 호수생선</text></g>
+    <g><circle class="st done" cx="79.3" cy="562.6" r="11"/><text class="lb" x="20" y="538" text-anchor="start">잘츠부르크</text><text class="sub" x="20" y="520">DAY 4 · 호엔잘츠부르크 성</text></g>
+    <g><circle class="st done" cx="404.7" cy="471.9" r="11"/><text class="lb" x="392" y="512" text-anchor="middle">멜크</text><text class="sub" x="392" y="530" text-anchor="middle">DAY 5 경유 (외관만)</text></g>
+    <g><circle class="pulse" cx="553.6" cy="476.1" r="12"/><circle class="st done" cx="553.6" cy="476.1" r="11"/><circle class="st2" cx="553.6" cy="476.1" r="17"/><text class="lb" x="578" y="472">비엔나 <small>· 지금</small></text><text class="sub" x="578" y="490">DAY 5–6 · 무운전</text><path class="dish" d="M578 505 a7 7 0 0 1 14 0 z"/><text class="sub" x="596" y="512">Figlmüller · 슈니첼</text></g>
+    <g><circle class="st todo" cx="934.6" cy="630.3" r="11"/><text class="lb todo" x="880" y="668" text-anchor="middle">부다페스트</text><text class="sub" x="880" y="686" text-anchor="middle">DAY 7–8</text></g>
+    <g><circle class="st todo" cx="586.9" cy="261.7" r="11"/><text class="lb todo" x="608" y="258">브르노</text><text class="sub" x="608" y="276">DAY 9 경유</text></g>
+  </svg>
+  <div class="legend"><span><i></i>지나온 구간 (굵기 = 운전 시간)</span><span><i class="d"></i>남은 구간</span><span><i class="y"></i>선택 중</span><span>◐ 그날의 한 접시</span><span>◎ 정차(무운전)</span></div>
+  <p class="hint">구간에 마우스를 올리면 요약, 누르면 그날 시각표. 역을 누르면 그 도시 전부.</p>
+</section>
+
+<section class="days">
+  <nav class="dayhead"><a href="#day-1">1</a><a href="#day-2">2</a><a href="#day-3">3</a><a href="#day-4">4</a><a href="#day-5">5</a><a href="#day-6" class="today">6 · 오늘</a><a href="#day-7">7</a><a href="#day-8">8</a><a href="#day-9">9</a><a href="#day-10">10</a></nav>
+
+  <article class="day default" id="day-6">
+    <h2>DAY 6 · 비엔나 둘째 날<span>9월 13일 일</span></h2>
+    <p class="goal">운전 없는 날. 궁전 둘, 카페 하나.</p>
+    <table class="tt"><thead><tr><th>도착</th><th>출발</th><th>정차역</th><th class="r">요금</th></tr></thead><tbody>
+      <tr class="first meal"><td class="t dim">—</td><td class="t">아침</td><td class="n">Hauptbahnhof 베이커리 (Anker)</td><td class="r q">미확인 ❓</td></tr>
+      <tr class="move walk"><td class="t"></td><td class="t"></td><td class="n">트램</td><td class="r"></td></tr>
+      <tr><td class="t">11:45</td><td class="t">13:30</td><td class="n">벨베데레 궁전 관람</td><td class="r q">입장권 미확인 ❓</td></tr>
+      <tr class="meal"><td class="t">14:00</td><td class="t">15:00</td><td class="n">Pan Kee — 치킨볶음면 + 사시미롤 스페셜</td><td class="r">48,900원<small>€32.40</small></td></tr>
+      <tr class="move walk"><td class="t"></td><td class="t"></td><td class="n">U4</td><td class="r"></td></tr>
+      <tr class="hero"><td class="t">16:00</td><td class="t">18:00</td><td class="n">쇤부른 궁전 관람</td><td class="r q">입장권 미확인 ❓</td></tr>
+      <tr class="meal"><td class="t">18:09</td><td class="t">19:30</td><td class="n"><a href="#stop-6-cafe">Café Gloriette — 카이저맥주 + 아이스커피 + 라자냐</a><small>쇤부른 언덕 위</small></td><td class="r">48,500원<small>€32.10</small></td></tr>
+      <tr class="move walk last"><td class="t">18:25~</td><td class="t dim">—</td><td class="n">S80 / 트램 · 1회권 2매</td><td class="r">9,060원<small>€6.00</small></td></tr>
+    </tbody><tfoot><tr><td colspan="3">이 날 요금 합계 <small>· 확인분 3건 · 미확인 3건</small></td><td class="r">106,460원<small>+ ❓</small></td></tr></tfoot></table>
+    <q>(오늘의 한 줄 — 비어 있음)</q>
+  </article>
+
+  <article class="day" id="day-5">
+    <h2>DAY 5 · 잘츠부르크 → 바하우 → 비엔나<span>9월 12일 토</span></h2>
+    <p class="goal">점심은 건너뛰고 슈니첼로 직행한 날.</p>
+    <table class="tt"><thead><tr><th>도착</th><th>출발</th><th>정차역</th><th class="r">요금</th></tr></thead><tbody>
+      <tr class="first meal"><td class="t dim">—</td><td class="t">09:00</td><td class="n">Billa — Kartoffelburek · 피자 · 초콜릿(1+1)</td><td class="r">49,500원<small>€32.80</small></td></tr>
+      <tr class="move"><td class="t"></td><td class="t"></td><td class="n">운전 · 멜크(외관만) → 바하우 밸리 → 뒤른슈타인</td><td class="r"></td></tr>
+      <tr class="branch"><td class="t"></td><td class="t"></td><td class="n"><i></i><b>점심</b> → 스킵</td><td class="r"></td></tr>
+      <tr class="move"><td class="t"></td><td class="t"></td><td class="n">운전 → 비엔나</td><td class="r"></td></tr>
+      <tr><td class="t">15:16</td><td class="t">16:30</td><td class="n">Motel One Wien-Hbf 체크인<small>주차 2박</small></td><td class="r">60,400원<small>€40 주차</small></td></tr>
+      <tr class="hero meal"><td class="t">17:00</td><td class="t">17:45</td><td class="n"><a href="#stop-5-dinner">Figlmüller (Wollzeile) — 돼지고기 슈니첼 + 감자샐러드 + 필스너 2</a></td><td class="r">66,500원<small>€44.06</small></td></tr>
+      <tr class="meal"><td class="t">17:49</td><td class="t">18:10</td><td class="n">Starbucks (Singerstraße) — Iced Americano</td><td class="r">7,550원<small>€5.00</small></td></tr>
+      <tr class="move walk"><td class="t"></td><td class="t"></td><td class="n">도보</td><td class="r"></td></tr>
+      <tr><td class="t">저녁</td><td class="t dim">—</td><td class="n">슈테판 대성당 · 콜마르크트 산책 · Heldenplatz 추수감사축제</td><td class="r q">구매 미확인 ❓</td></tr>
+      <tr class="branch last"><td class="t"></td><td class="t"></td><td class="n"><i></i><b>저녁 음악회</b> → 결국 예약 안 함</td><td class="r"></td></tr>
+    </tbody><tfoot><tr><td colspan="3">이 날 요금 합계 <small>· 확인분 4건 · 미확인 1건</small></td><td class="r">183,950원<small>+ ❓</small></td></tr></tfoot></table>
+    <q>운전이 끝나는 도시에 들어오면 발이 가벼워진다.</q>
+  </article>
+
+  <article class="day" id="day-4">
+    <h2>DAY 4 · 할슈타트 → 잘츠부르크<span>9월 11일 금</span></h2>
+    <p class="goal">주유소 크루아상으로 시작해 성으로 끝난 날.</p>
+    <table class="tt"><thead><tr><th>도착</th><th>출발</th><th>정차역</th><th class="r">요금</th></tr></thead><tbody>
+      <tr class="first meal"><td class="t dim">—</td><td class="t">출발 전</td><td class="n">Eni 주유소 — 크루아상 + 캔커피 ×2</td><td class="r">17,600원<small>€11.67</small></td></tr>
+      <tr class="move"><td class="t"></td><td class="t"></td><td class="n">운전 2h10 · 200km · 오스트리아 국경</td><td class="r"></td></tr>
+      <tr><td class="t">오전</td><td class="t"></td><td class="n">할슈타트 · 주차</td><td class="r">15,100원<small>€10</small></td></tr>
+      <tr class="meal"><td class="t">점심</td><td class="t"></td><td class="n">Zum Bader — 호수생선 + 슈니첼</td><td class="r">76,400원<small>€50.60</small></td></tr>
+      <tr class="move"><td class="t"></td><td class="t"></td><td class="n">운전 1h20 · 75km</td><td class="r"></td></tr>
+      <tr><td class="t">오후</td><td class="t"></td><td class="n">잘츠부르크 · 주차</td><td class="r">8,300원<small>€5.50</small></td></tr>
+      <tr class="hero"><td class="t">19시 전</td><td class="t"></td><td class="n">호엔잘츠부르크 성 입장 ×2</td><td class="r">38,700원<small>€25.60</small></td></tr>
+      <tr class="last"><td class="t">밤</td><td class="t dim">—</td><td class="n">게트라이데 거리 야식 탐색 (Mr. Wen 등)</td><td class="r q">미결제 · 미확인 ❓</td></tr>
+    </tbody><tfoot><tr><td colspan="3">이 날 요금 합계 <small>· 확인분 5건 · 미확인 1건</small></td><td class="r">156,100원<small>+ ❓</small></td></tr></tfoot></table>
+    <q>이날의 성패는 출발 시각이었고, 지켰다.</q>
+  </article>
+
+  <article class="day" id="day-3">
+    <h2>DAY 3 · 프라하 → 체스키크룸로프<span>9월 10일 목</span></h2>
+    <p class="goal">첫 장거리 운전을 오전에 끝내고, 저녁의 빈 구시가를 얻는다.</p>
+    <table class="tt"><thead><tr><th>도착</th><th>출발</th><th>정차역</th><th class="r">요금</th></tr></thead><tbody>
+      <tr class="first"><td class="t dim">—</td><td class="t">10:00</td><td class="n">프라하 출발<small>Grandium Hotel 체크아웃</small></td><td class="r na">—</td></tr>
+      <tr class="move"><td class="t"></td><td class="t"></td><td class="n">운전 2h · 170km</td><td class="r"></td></tr>
+      <tr><td class="t">12시 전</td><td class="t"></td><td class="n">Pension Pod Skalkou 체크인</td><td class="r na">—</td></tr>
+      <tr class="hero meal"><td class="t">점심</td><td class="t"></td><td class="n"><a href="#stop-3-lunch">Papa's — 스비치코바 + 립 + 코젤</a></td><td class="r">66,500원<small>937+팁94 CZK</small></td></tr>
+      <tr class="rest meal"><td class="t">오후</td><td class="t"></td><td class="n">스타벅스 라트란점 — 아이스아메리카노</td><td class="r">7,700원<small>119 CZK</small></td></tr>
+      <tr class="meal last"><td class="t">저녁</td><td class="t dim">—</td><td class="n">My Saigon — 쌀국수 + 볶음밥</td><td class="r">36,600원<small>567 CZK</small></td></tr>
+    </tbody><tfoot><tr><td colspan="3">이 날 요금 합계 <small>· 정차 5 · 운전 2h</small></td><td class="r">110,800원</td></tr></tfoot></table>
+    <q>숙박자의 특권은 저녁이라는 말이 맞았다.</q>
+  </article>
+
+  <article class="day" id="day-2">
+    <h2>DAY 2 · 프라하 풀데이<span>9월 9일 수</span></h2>
+    <p class="goal">성은 정원과 외관만, 대신 콜레뇨와 차.</p>
+    <table class="tt"><thead><tr><th>도착</th><th>출발</th><th>정차역</th><th class="r">요금</th></tr></thead><tbody>
+      <tr class="first meal"><td class="t dim">—</td><td class="t">아침</td><td class="n">Bageterie Boulevard ×2</td><td class="r">37,000원<small>507 CZK</small></td></tr>
+      <tr class="move walk"><td class="t"></td><td class="t"></td><td class="n">도보 · 카를교 → 구시가</td><td class="r"></td></tr>
+      <tr><td class="t">오전</td><td class="t"></td><td class="n">프라하성<small>구왕궁 특별전시 — 정원·외관만</small></td><td class="r">21,700원<small>물리유심 299 CZK</small></td></tr>
+      <tr class="meal"><td class="t">점심</td><td class="t"></td><td class="n"><a href="#stop-2-lunch">Dvorek pod Hradem — 콜레뇨</a></td><td class="r">77,700원<small>1,104+팁100 CZK</small></td></tr>
+      <tr class="hero last"><td class="t">17:30</td><td class="t dim">—</td><td class="n">Hertz 렌터카 인수 — Corolla 1.8 Hybrid<small>반납 9/17로 연장</small></td><td class="r na">—</td></tr>
+    </tbody><tfoot><tr><td colspan="3">이 날 요금 합계 <small>· 정차 4</small></td><td class="r">136,400원</td></tr></tfoot></table>
+    <q>완전한 밤보다 하늘이 푸른 30분이 더 좋았다.</q>
+  </article>
+
+  <article class="day" id="day-1">
+    <h2>DAY 1 · 인천 → 프라하<span>9월 8일 화</span></h2>
+    <p class="goal">도착과 휴식만.</p>
+    <table class="tt"><thead><tr><th>도착</th><th>출발</th><th>정차역</th><th class="r">요금</th></tr></thead><tbody>
+      <tr class="first"><td class="t dim">—</td><td class="t">06:10</td><td class="n">동탄 버스 출발</td><td class="r na">—</td></tr>
+      <tr class="move"><td class="t"></td><td class="t"></td><td class="n">OZ545 · B777-200ER · 13시간 · 와이파이 없음</td><td class="r"></td></tr>
+      <tr><td class="t">16:45</td><td class="t"></td><td class="n">프라하 도착<small>EES 지문 등록 입국심사 · ATM 환전</small></td><td class="r">45,000원<small>이심</small></td></tr>
+      <tr class="move walk"><td class="t"></td><td class="t"></td><td class="n">우버</td><td class="r"></td></tr>
+      <tr class="hero last"><td class="t">저녁</td><td class="t dim">—</td><td class="n">Grandium Hotel Prague 체크인 · 휴식</td><td class="r na">—</td></tr>
+    </tbody><tfoot><tr><td colspan="3">이 날 요금 합계</td><td class="r">45,000원</td></tr></tfoot></table>
+    <q>첫날 일찍 자는 게 나머지 8일을 산다는 계획을 그대로 따랐다.</q>
+  </article>
+
+  <article class="day" id="day-7"><h2>DAY 7 · 비엔나 → 부다페스트<span>9월 14일 월 · 예정</span></h2><p class="goal">벨베데레는 이미 봤으니 → 출발 → 체크인 → 다뉴브 야경 크루즈.</p></article>
+  <article class="day" id="day-8"><h2>DAY 8 · 부다페스트<span>9월 15일 화 · 예정</span></h2><p class="goal">세체니 온천(08~09시 입장) → 어부의 요새·왕궁 언덕.</p></article>
+  <article class="day" id="day-9"><h2>DAY 9 · 브르노 경유 → 프라하<span>9월 16일 수 · 예정</span></h2><p class="goal">09:00 출발 → 브르노 점심 → 프라하. 렌터카는 9/17 반납으로 연장됨 — 반납 장소·시간 확인 필요.</p></article>
+  <article class="day" id="day-10"><h2>DAY 10 · 반납 · 귀국<span>9월 17일 목 · 예정</span></h2><p class="goal">렌터카 반납 → 공항 → 18:50 OZ546.</p></article>
+</section>
+</div>
+</main>
+
+<aside class="sheet" id="stop-2-lunch"><a class="close" href="#day-2" aria-label="닫기">×</a><div class="grab"></div>
+  <div class="k">DAY 2 · 점심</div><h3>Dvorek pod Hradem</h3><div class="m">프라하 · 성 아래</div>
+  <dl><dt>먹은 것</dt><dd>콜레뇨</dd><dt>금액</dt><dd>77,700원 (1,104 CZK + 팁 100)</dd><dt>메모</dt><dd>성에서 내려오며.</dd></dl>
+  <div class="photo">사진 · 첨부 전</div>
+  <div class="act"><a class="p" href="#day-2">구글 지도에서 열기 ↗</a><a href="#day-2">사진 첨부</a></div>
+</aside>
+<aside class="sheet" id="stop-3-lunch"><a class="close" href="#day-3" aria-label="닫기">×</a><div class="grab"></div>
+  <div class="k">DAY 3 · 점심</div><h3>Papa's</h3><div class="m">체스키크룸로프 구시가</div>
+  <dl><dt>먹은 것</dt><dd>스비치코바 + 립 + 코젤</dd><dt>금액</dt><dd>66,500원 (937 CZK + 팁 94)</dd><dt>메모</dt><dd>그날의 한 접시.</dd></dl>
+  <div class="photo">사진 · 첨부 전</div>
+  <div class="act"><a class="p" href="#day-3">구글 지도에서 열기 ↗</a><a href="#day-3">사진 첨부</a></div>
+</aside>
+<aside class="sheet" id="stop-5-dinner"><a class="close" href="#day-5" aria-label="닫기">×</a><div class="grab"></div>
+  <div class="k">DAY 5 · 17:00</div><h3>Figlmüller (Wollzeile)</h3><div class="m">비엔나 1구</div>
+  <dl><dt>먹은 것</dt><dd>돼지고기 슈니첼 + 감자샐러드 + 필스너 2</dd><dt>금액</dt><dd>66,500원 (€44.06)</dd><dt>메모</dt><dd>점심을 건너뛴 값.</dd></dl>
+  <div class="photo">사진 · 첨부 전</div>
+  <div class="act"><a class="p" href="#day-5">구글 지도에서 열기 ↗</a><a href="#day-5">사진 첨부</a></div>
+</aside>
+<aside class="sheet" id="stop-6-cafe"><a class="close" href="#day-6" aria-label="닫기">×</a><div class="grab"></div>
+  <div class="k">DAY 6 · 18:09</div><h3>Café Gloriette</h3><div class="m">비엔나 · 쇤부른 언덕</div>
+  <dl><dt>먹은 것</dt><dd>카이저맥주 + 아이스커피 + 라자냐</dd><dt>금액</dt><dd>48,500원 (€32.10)</dd><dt>메모</dt><dd>궁전을 내려다보는 자리.</dd></dl>
+  <div class="photo">사진 · 첨부 전</div>
+  <div class="act"><a class="p" href="#day-6">구글 지도에서 열기 ↗</a><a href="#day-6">사진 첨부</a></div>
+</aside>
+</html>
