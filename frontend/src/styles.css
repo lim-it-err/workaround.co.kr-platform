@@ -2183,6 +2183,43 @@ button {
   border-radius: 14px;
 }
 
+.markdown-body .studio-table {
+  margin: 24px 0;
+}
+
+.markdown-body .studio-table figcaption {
+  margin-bottom: 8px;
+  color: var(--text-2);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.markdown-body .studio-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.markdown-body .studio-table table {
+  width: 100%;
+  min-width: 360px;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.markdown-body .studio-table th,
+.markdown-body .studio-table td {
+  border: 1px solid var(--line-strong);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.markdown-body .studio-table th {
+  background: var(--panel-2);
+  font-weight: 750;
+}
+
 .markdown-body blockquote {
   padding: 12px 16px;
   border-left: 4px solid var(--line-b);
@@ -2724,16 +2761,9 @@ button {
 /* ── StationHeader — 승강장 역명판 (스펙 §3.1, TKT-071/S1) ───────────── */
 
 .station-sign {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  box-shadow: var(--shadow);
-}
-
-.station-sign .band {
-  height: 8px;
-  background: var(--accent, var(--line-strong));
+  border-left: 3px solid var(--accent, var(--line-strong));
+  border-bottom: 1px solid var(--line-strong);
+  background: transparent;
 }
 
 .station-sign-in {
@@ -2749,6 +2779,18 @@ button {
   min-width: 7.5em;
   color: var(--muted);
   font-size: 0.8rem;
+}
+
+.station-prev {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.station-prev:hover {
+  color: var(--text);
 }
 
 .station-next {
@@ -2786,14 +2828,6 @@ button {
   letter-spacing: -0.02em;
 }
 
-.station-center small {
-  display: block;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-size: 0.66rem;
-}
-
 .station-sub {
   display: flex;
   align-items: center;
@@ -2801,7 +2835,7 @@ button {
   gap: 10px;
   padding: 10px clamp(14px, 2.4vw, 24px);
   border-top: 1px solid var(--line);
-  background: var(--panel-2);
+  background: transparent;
   font-size: 0.8rem;
   color: var(--text-2);
 }
@@ -2814,9 +2848,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  padding: 0;
   color: var(--text-2);
 }
 
@@ -3448,3 +3480,106 @@ button.station-prev:hover {
 .app-shell[data-theme='light'] { --line-a: #3D4EC0; --line-a-text: #32409E; }
 .line-a { --accent: var(--line-a); --accent-text: var(--line-a-text); }
 .line-round.line-a, .station-badge.line-a { background: var(--line-a); color: #f2f4ff; }
+
+/* TKT-110 — 현행 스플릿 플랩을 유지한 톤 기반 */
+.site-loop-symbol {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  aspect-ratio: 1;
+  border: 3px solid var(--safety);
+  border-radius: 50%;
+  background: transparent;
+}
+
+.site-loop-symbol::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--bg);
+  border-radius: 50%;
+  background: var(--safety);
+  transform: translate(-50%, -55%);
+}
+
+.site-loop-symbol-lg {
+  width: 68px;
+}
+
+.site-loop-symbol-sm {
+  width: 30px;
+  border-width: 2px;
+}
+
+.site-loop-symbol-sm::before {
+  width: 7px;
+  height: 7px;
+  border-width: 1px;
+}
+
+.splash-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.splash-top {
+  justify-content: flex-start;
+}
+
+.splash-copy {
+  margin: 5px 0 0;
+  color: var(--text-2);
+}
+
+.splash-flap-row {
+  display: block;
+}
+
+.splash-flap-row .flap-values {
+  justify-content: center;
+  overflow: hidden;
+}
+
+.splash-actions p {
+  margin: 0;
+}
+
+.app-shell[data-theme='light'] .splash-stage {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(233, 185, 43, 0.12), transparent 22%),
+    radial-gradient(circle at 90% 12%, rgba(0, 82, 164, 0.08), transparent 20%),
+    linear-gradient(180deg, #f8fafc 0%, #edf1f6 52%, #e4eaf2 100%);
+}
+
+.app-shell[data-theme='light'] .splash-panel {
+  border-color: var(--line);
+  background:
+    linear-gradient(90deg, rgba(16, 24, 38, 0.045) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(16, 24, 38, 0.025), transparent),
+    var(--panel);
+}
+
+.app-shell[data-theme='light'] .ticker-strip {
+  border-color: var(--line);
+  background: var(--panel-soft);
+}
+
+.app-shell[data-theme='light'] .flap-board {
+  border-color: var(--line-strong);
+}
+
+@media (max-width: 720px) {
+  .site-loop-symbol-lg {
+    width: 54px;
+  }
+
+  .splash-top h1 {
+    font-size: clamp(1.75rem, 9vw, 2.6rem);
+  }
+
+  .splash-actions {
+    align-items: center;
+  }
+}

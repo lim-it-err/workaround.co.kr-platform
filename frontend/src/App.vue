@@ -6,6 +6,7 @@ import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import VoyageView from './components/VoyageView.vue'
 import WritingStudio from './components/WritingStudio.vue'
+import { SiteLoopSymbol } from './components/tone/index.js'
 import { LINES } from './data/lines.js'
 import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
 import { VOYAGE } from './data/voyage.js'
@@ -71,47 +72,15 @@ const WORK_ROADMAP_ITEMS = [
   }
 ]
 
-const tickerPool = [
+const splashTickerMessages = [
   '에스컬레이터 방향 다수결로 정하는 중…',
   '지연 시간을 정성껏 반올림하는 중…',
-  '출구 번호에 서열 매기는 중…',
-  '계단과 에스컬레이터 화해시키는 중…',
-  '손잡이 높이 만장일치로 조정하는 중…',
-  '환승 저항을 0에 수렴시키는 중…',
-  '첫차의 각오를 백업하는 중…',
-  '노란 안전선 자존감 챙기는 중…',
-  '막차 놓친 사람 위로 캐시 불러오는 중…',
-  '냉방 온도 만장일치로 정하는 중…',
-  '갈아타기 최단경로가 삐지지 않게 계산하는 중…',
-  '승객들의 한숨을 열차 추진력으로 재활용하는 중…',
-  '오늘 치 무표정을 표준 규격에 맞추는 중…',
-  '지하철 손잡이 악력 등급 매기는 중…',
-  '안내방송 성우에게 따뜻한 차 대접하는 중…',
-  '노선 색깔끼리 안 싸우게 중재하는 중…',
-  '엘리베이터에게 오늘 기분 물어보는 중…',
-  '교통카드 잔액에 위로 건네는 중…',
-  '개찰구에 오늘의 운세 심는 중…',
-  '관리자 몰래 내맘대로 홈페이지 로딩하는 중.',
-  '월요일의 사기를 롤백하는 중…',
-  '오늘의 의욕을 절전 모드에서 깨우는 중…',
-  '잔소리를 캐시에서 비우는 중…',
-  '참을성 잔액을 조회하는 중…',
-  '어제의 후회를 아카이브로 옮기는 중…',
-  '점심 메뉴 결정권을 위임하는 중…',
-  '침묵의 어색함을 반올림하는 중…',
-  '오후 3시의 나른함을 격리하는 중…',
-  '미룬 일들의 대기표를 재정렬하는 중…',
-  '양심의 알림을 스누즈하는 중…',
-  '표정 관리 모듈을 재기동하는 중…',
-  '금요일의 설렘을 미리 당겨 쓰는 중…',
-  '게으름에게 정당한 사유를 부여하는 중…',
-  '눈꺼풀의 중력을 재협상하는 중…',
-  '딴생각의 트래픽을 분산하는 중…',
-  '하품의 도미노를 진압하는 중…',
-  '실없는 농담의 품질을 검수하는 중…',
-  '결심의 롤백 지점을 저장하는 중…',
-  '직장인들 화가 취미로 오르는 중…'
+  '출구 번호에 서열 매기는 중…'
 ]
+
+const splashPhrases = ['WORKING AROUND', 'MIND THE GAP', 'DOORS OPENING']
+const splashCellCount = Math.max(...splashPhrases.map((phrase) => phrase.length))
+const splashLatinCharset = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 const fallbackHealth = {
   status: 'degraded',
@@ -267,8 +236,6 @@ const isLegacyTestRoute = computed(() => testRouteMode.value === 'v040')
 const isVersionedTestRoute = computed(() => testRouteMode.value === 'v050')
 const page = ref(readInitialPage())
 const theme = ref(readInitialTheme())
-const clockText = ref(formatClock())
-const currentTicker = ref(tickerPool[0])
 const selectedWorkTicketId = ref('')
 const selectedCommand = ref('')
 const commandNote = ref('')
@@ -318,18 +285,12 @@ const writingBackupMessage = ref('')
 const staticModeMessage = ref('')
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
-const splashBoardRows = ref([])
-
-const splashRows = [
-  { label: 'route', value: 'WORKAROUND CENTRAL', accent: 'line-w' },
-  { label: 'next', value: 'BLOG DISTRICT LINE', accent: 'line-e' },
-  { label: 'platform', value: 'MAIN JUNCTION', accent: 'line-r' },
-  { label: 'status', value: 'TRANSFER IN 10S', accent: 'line-p' }
-]
-const splashCellCount = Math.max(...splashRows.map((row) => row.value.length))
-const splashLatinCharset = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-const splashDigitCharset = ' 0123456789'
-splashBoardRows.value = createInitialSplashBoardRows()
+const currentTickerIndex = ref(0)
+const currentSplashPhrase = ref(splashPhrases[0])
+const splashBoardCells = ref(
+  Array.from({ length: splashCellCount }, (_, index) => createSplashCellState(`splash-${index}`))
+)
+const currentTicker = computed(() => splashTickerMessages[currentTickerIndex.value])
 
 const orchestratorSlices = [
   {
@@ -721,7 +682,7 @@ const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'junction') {
     return {
       line: 'UI-v0.5.0 Prototype Junction',
-      title: 'seoul simulation transfer hall',
+      title: '시뮬레이션 환승 홀',
       description: '실사용 포털을 건드리지 않고, 다음 시뮬레이터 승강장과 운영 확장 레일을 분리해 검토하는 가상 허브입니다.'
     }
   }
@@ -729,7 +690,7 @@ const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'taxi') {
     return {
       line: 'Line T / Taxi District Lab',
-      title: 'district demand and fleet board',
+      title: '지역 수요·차량 현황',
       description: '서울 지하철식 환승 UX 위에서 택시 수요, 차량, 리워드 루프를 새로 설계하는 시뮬레이터 승강장입니다.'
     }
   }
@@ -737,7 +698,7 @@ const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'ops') {
     return {
       line: 'Line O / Crew Board',
-      title: 'worker visibility and review rail',
+      title: '작업자·검수 현황',
       description: '누가 어떤 티켓을 잡았는지, 우선순위가 어떻게 반응해야 하는지 운영 확장 레일로 정리합니다.'
     }
   }
@@ -745,7 +706,7 @@ const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'signals') {
     return {
       line: 'Line S / Signal Room',
-      title: 'live vs prototype separation',
+      title: '실사용·목업 경계',
       description: '실사용 경로와 가상 디자인 레일의 경계, handoff, 검수 위치를 신호실처럼 고정합니다.'
     }
   }
@@ -753,7 +714,7 @@ const currentRoute = computed(() => {
   if (page.value === 'junction') {
     return {
       line: 'Main Junction',
-      title: 'workaround central',
+      title: '환승 홀',
       description: '기능을 직접 실행하지 않고, 실제 페이지로 환승시키는 메인 허브입니다.'
     }
   }
@@ -761,7 +722,7 @@ const currentRoute = computed(() => {
   if (page.value === 'elevator') {
     return {
       line: 'Line E / Elevator Station',
-      title: 'vertical dispatch platform',
+      title: '수직 승강장',
       description: '23층 건물의 층별 대기 인원, car 적재량, 목적층 흐름을 실제 상태로 읽습니다.'
     }
   }
@@ -777,7 +738,7 @@ const currentRoute = computed(() => {
   if (page.value === 'taxi') {
     return {
       line: 'Line T / Taxi District Lab',
-      title: 'district dispatch simulator',
+      title: '지역 배차 시뮬레이터',
       description: '9구역 수요, 차량 배치, 리워드/패널티 루프를 프런트 단독 코어로 돌립니다.'
     }
   }
@@ -785,7 +746,7 @@ const currentRoute = computed(() => {
   if (page.value === 'bloghub') {
     return {
       line: 'Line B / Blog District',
-      title: 'archive and writing district',
+      title: '글 보관소와 스튜디오',
       description: '긴 글 읽기와 글쓰기 스튜디오를 시뮬레이터와 다른 리듬으로 분리한 글 공간입니다.'
     }
   }
@@ -793,7 +754,7 @@ const currentRoute = computed(() => {
   if (page.value === 'blogArchive') {
     return {
       line: 'Line B / Public Archive',
-      title: 'published post archive',
+      title: '공개 글 보관소',
       description: '공개된 글만 모아 차분한 목록 리듬으로 읽는 아카이브 레일입니다.'
     }
   }
@@ -801,7 +762,7 @@ const currentRoute = computed(() => {
   if (page.value === 'blogPost') {
     return {
       line: 'Line B / Post Detail',
-      title: activeBlogPost.value?.title || 'reading platform',
+      title: activeBlogPost.value?.title || '글 읽기',
       description: '긴 글은 패널보다 문서처럼 읽혀야 하므로, 폭과 줄 간격을 차분하게 제한합니다.'
     }
   }
@@ -809,7 +770,7 @@ const currentRoute = computed(() => {
   if (page.value === 'writingStudio') {
     return {
       line: 'Line B / Writing Studio',
-      title: 'draft, preview, publish',
+      title: '초안·미리보기·발행',
       description: '작성 집중 레이어와 상태 레이어를 나눈 단일 작성자용 글쓰기 스튜디오입니다.'
     }
   }
@@ -817,7 +778,7 @@ const currentRoute = computed(() => {
   if (page.value === 'voyage') {
     return {
       line: 'Line V / Voyage',
-      title: 'east europe voyage line',
+      title: '동유럽 여행 노선',
       description: '출발 전 체크리스트와 일정, 예산을 한 흐름에서 확인합니다.'
     }
   }
@@ -825,14 +786,14 @@ const currentRoute = computed(() => {
   if (page.value === 'work') {
     return {
       line: 'Line W / Work Manager',
-      title: 'operations control deck',
+      title: '운영 관제실',
       description: '티켓 상태, Ready 표시, 상세 패널, preset command 를 운영실처럼 분리합니다.'
     }
   }
 
   return {
     line: 'Line R / Runtime Board',
-    title: 'policy and runtime route',
+    title: '정책과 실행환경',
     description: 'ion2, rtx5070, gateway 의 역할과 degraded 정책을 릴리스 레일 관점에서 정리합니다.'
   }
 })
@@ -1031,7 +992,9 @@ const blogSeriesGroups = computed(() => {
 const standalonePublishedBlogPosts = computed(() =>
   publishedBlogPosts.value.filter((post) => !post.tags.some(isBlogSeriesTag))
 )
-const studioPreviewHtml = computed(() => renderMarkdownToHtml(studioState.value.bodyMarkdown))
+const studioPreviewHtml = computed(() =>
+  renderMarkdownToHtml(studioState.value.bodyMarkdown, studioState.value.tables)
+)
 const activeBlogReadingMinutes = computed(() =>
   activeBlogPost.value ? Math.max(1, Math.ceil(countWords(activeBlogPost.value.bodyMarkdown) / 230)) : 0
 )
@@ -1185,8 +1148,6 @@ const activityFeed = computed(() => workBoardState.value.activityFeed || [])
 const commandHistory = computed(() => workBoardState.value.commandHistory || [])
 
 let splashTimer
-let clockTimer
-let tickerTimer
 let portalRefreshTimer
 let elevatorRefreshTimer
 let taxiSimulationTimer
@@ -1329,16 +1290,6 @@ watch(
   { flush: 'post' }
 )
 
-function createInitialSplashBoardRows() {
-  return splashRows.map((row, rowIndex) => ({
-    ...row,
-    cells: row.value
-      .padEnd(splashCellCount, ' ')
-      .split('')
-      .map((_, charIndex) => createSplashCellState(`${row.label}-${rowIndex}-${charIndex}`))
-  }))
-}
-
 function createSplashCellState(key) {
   return {
     key,
@@ -1357,6 +1308,11 @@ function displaySplashCharacter(character) {
   return character === ' ' ? '\u00A0' : character
 }
 
+function centerSplashPhrase(phrase) {
+  const leftPadding = Math.floor((splashCellCount - phrase.length) / 2)
+  return `${' '.repeat(leftPadding)}${phrase}`.padEnd(splashCellCount, ' ')
+}
+
 function updateSplashCellDisplay(cell, character) {
   const display = displaySplashCharacter(character)
   cell.currentCharacter = character
@@ -1369,26 +1325,15 @@ function updateSplashCellDisplay(cell, character) {
 }
 
 function resetSplashBoard() {
-  for (const row of splashBoardRows.value) {
-    for (const cell of row.cells) {
-      updateSplashCellDisplay(cell, ' ')
-    }
-  }
+  splashBoardCells.value.forEach((cell) => updateSplashCellDisplay(cell, ' '))
 }
 
-function setSplashBoardToTargets() {
-  splashBoardRows.value.forEach((row) => {
-    row.cells.forEach((cell, index) => {
-      updateSplashCellDisplay(cell, row.value.charAt(index) || ' ')
-    })
+function setSplashBoardToPhrase(phrase) {
+  const target = centerSplashPhrase(phrase)
+  splashBoardCells.value.forEach((cell, index) => {
+    updateSplashCellDisplay(cell, target.charAt(index) || ' ')
   })
-}
-
-function charsetForSplashCharacter(character) {
-  if (/[0-9]/.test(character)) {
-    return splashDigitCharset
-  }
-  return splashLatinCharset
+  currentSplashPhrase.value = phrase
 }
 
 function randomSplashRange(min, max) {
@@ -1396,12 +1341,11 @@ function randomSplashRange(min, max) {
 }
 
 function buildSplashFlipSequence(targetCharacter, charIndex) {
-  const charset = charsetForSplashCharacter(targetCharacter)
   const spins =
     targetCharacter === ' ' ? (Math.random() < 0.3 ? 1 : 0) : 3 + (charIndex % 3) + Math.floor(Math.random() * 4)
   const sequence = []
   for (let spinIndex = 0; spinIndex < spins; spinIndex += 1) {
-    sequence.push(charset.charAt(1 + Math.floor(Math.random() * (charset.length - 1))))
+    sequence.push(splashLatinCharset.charAt(1 + Math.floor(Math.random() * (splashLatinCharset.length - 1))))
   }
   sequence.push(targetCharacter)
   return sequence
@@ -1413,7 +1357,6 @@ function queueSplashAnimation(callback, delayMs) {
     callback()
   }, delayMs)
   splashAnimationTimers.push(timer)
-  return timer
 }
 
 function clearSplashAnimationTimers() {
@@ -1470,36 +1413,47 @@ function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0
   })
 }
 
+function animateSplashPhrase(phrase, runId) {
+  if (runId !== splashAnimationRunId) {
+    return
+  }
+  const target = centerSplashPhrase(phrase)
+  currentSplashPhrase.value = phrase
+  splashBoardCells.value.forEach((cell, charIndex) => {
+    const targetCharacter = target.charAt(charIndex) || ' '
+    const delayMs = 180 + charIndex * 45 + randomSplashRange(0, 36)
+    const stepDurationMs = 82 + randomSplashRange(-8, 12)
+    const sequence = buildSplashFlipSequence(targetCharacter, charIndex)
+    queueSplashAnimation(() => {
+      playSplashCellSequence(cell, sequence, stepDurationMs, runId)
+    }, delayMs)
+  })
+}
+
 function playSplashFlap() {
   splashAnimationRunId += 1
   const runId = splashAnimationRunId
   clearSplashAnimationTimers()
+  currentTickerIndex.value = 0
 
   if (prefersReducedMotion.value) {
-    setSplashBoardToTargets()
+    setSplashBoardToPhrase(splashPhrases[0])
     return
   }
 
   resetSplashBoard()
-
-  splashBoardRows.value.forEach((row, rowIndex) => {
-    row.cells.forEach((cell, charIndex) => {
-      const targetCharacter = row.value.charAt(charIndex) || ' '
-      const delayMs = 320 + rowIndex * 170 + charIndex * 55 + randomSplashRange(0, 40)
-      const stepDurationMs = 82 + randomSplashRange(-8, 12)
-      const sequence = buildSplashFlipSequence(targetCharacter, charIndex)
-
-      queueSplashAnimation(() => {
-        playSplashCellSequence(cell, sequence, stepDurationMs, runId)
-      }, delayMs)
-    })
+  splashPhrases.forEach((phrase, phraseIndex) => {
+    queueSplashAnimation(() => {
+      currentTickerIndex.value = phraseIndex
+      animateSplashPhrase(phrase, runId)
+    }, phraseIndex * 3300)
   })
 }
 
 onMounted(async () => {
   window.addEventListener('beforeunload', handleStudioBeforeUnload)
   window.addEventListener('popstate', handleLocationPopState)
-  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+  if (typeof window.matchMedia === 'function') {
     reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     prefersReducedMotion.value = reducedMotionMediaQuery.matches
     reducedMotionMediaListener = (event) => {
@@ -1524,15 +1478,6 @@ onMounted(async () => {
     syncTestLocation()
   }
 
-  currentTicker.value = pickNextTicker([])
-  tickerTimer = window.setInterval(() => {
-    currentTicker.value = pickNextTicker([currentTicker.value])
-  }, 2600)
-
-  clockTimer = window.setInterval(() => {
-    clockText.value = formatClock()
-  }, 1000)
-
   initializeBlogWorkspace()
   if (!isStaticMode) {
     await loadPortalData()
@@ -1554,8 +1499,6 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.clearTimeout(splashTimer)
   clearSplashAnimationTimers()
-  window.clearInterval(clockTimer)
-  window.clearInterval(tickerTimer)
   window.clearInterval(portalRefreshTimer)
   window.clearInterval(elevatorRefreshTimer)
   window.clearInterval(taxiSimulationTimer)
@@ -1789,7 +1732,8 @@ function populateStudio(post) {
     slugLocked,
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
-    publishedAt: post.publishedAt || ''
+    publishedAt: post.publishedAt || '',
+    tables: normalizeStudioTables(post.tables)
   }
   studioPostId.value = post.id
   markStudioSaved(post.updatedAt || '', studioState.value)
@@ -1806,6 +1750,8 @@ function updateStudioField(field, value) {
     setStudioSlug(value)
   } else if (['title', 'bodyMarkdown', 'summary', 'tags'].includes(field)) {
     studioState.value[field] = value
+  } else if (field === 'tables' && Array.isArray(value)) {
+    studioState.value.tables = normalizeStudioTables(value)
   }
 }
 
@@ -1924,6 +1870,7 @@ function persistStudioPost(nextStatus, options = {}) {
       .split(',')
       .map((tag) => tag.trim())
       .filter(Boolean),
+    tables: normalizeStudioTables(studioState.value.tables),
     createdAt,
     updatedAt: nowIso,
     publishedAt
@@ -1960,6 +1907,7 @@ function createStudioEditableSnapshot(state) {
     summary: state.summary,
     tags: state.tags,
     bodyMarkdown: state.bodyMarkdown,
+    tables: normalizeStudioTables(state.tables),
     status: state.status,
     publishedAt: state.publishedAt
   })
@@ -2288,12 +2236,6 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
   })
 }
 
-function skipSplash() {
-  window.clearTimeout(splashTimer)
-  clearSplashAnimationTimers()
-  openPage('junction')
-}
-
 function scheduleSplashTransition() {
   window.clearTimeout(splashTimer)
   splashTimer = window.setTimeout(() => {
@@ -2526,6 +2468,7 @@ function createEmptyStudioState() {
     status: 'draft',
     slugLocked: false,
     tags: '',
+    tables: [],
     createdAt: nowIso,
     updatedAt: nowIso,
     publishedAt: ''
@@ -2573,9 +2516,10 @@ function ensureUniqueSlug(candidate, currentId) {
   return next
 }
 
-function renderMarkdownToHtml(markdown) {
+function renderMarkdownToHtml(markdown, tables = []) {
   const lines = escapeHtml(String(markdown || '')).replace(/\r\n/g, '\n').split('\n')
   const html = []
+  const studioTables = new Map(normalizeStudioTables(tables).map((table) => [table.id, table]))
   let inCode = false
 
   for (let index = 0; index < lines.length; index += 1) {
@@ -2592,6 +2536,12 @@ function renderMarkdownToHtml(markdown) {
     }
 
     if (!line.trim()) {
+      continue
+    }
+
+    const studioTable = studioTables.get(parseStudioTableMarker(line))
+    if (studioTable) {
+      html.push(renderStudioTable(studioTable))
       continue
     }
 
@@ -2689,8 +2639,46 @@ function isMarkdownBlockStart(line) {
     line.startsWith('```') ||
     /^(#{1,3})\s/.test(line) ||
     line.startsWith('> ') ||
-    Boolean(parseMarkdownListItem(line))
+    Boolean(parseMarkdownListItem(line)) ||
+    Boolean(parseStudioTableMarker(line))
   )
+}
+
+function normalizeStudioTables(tables) {
+  if (!Array.isArray(tables)) {
+    return []
+  }
+  return tables
+    .filter((table) => table && /^[a-z0-9-]+$/i.test(String(table.id || '')))
+    .map((table, tableIndex) => {
+      const headers = Array.isArray(table.headers) && table.headers.length > 0
+        ? table.headers.map((value, columnIndex) => String(value || `열 ${columnIndex + 1}`))
+        : ['열 1']
+      const rows = Array.isArray(table.rows) && table.rows.length > 0
+        ? table.rows.map((row) => headers.map((_, columnIndex) => String(row?.[columnIndex] || '')))
+        : [headers.map(() => '')]
+      return {
+        id: String(table.id),
+        caption: String(table.caption || `표 ${tableIndex + 1}`),
+        headers,
+        rows
+      }
+    })
+}
+
+function parseStudioTableMarker(line) {
+  return String(line || '').trim().match(/^\[\[studio-table:([a-z0-9-]+)\]\]$/i)?.[1] || ''
+}
+
+function renderStudioTable(table) {
+  const caption = inlineMarkdown(escapeHtml(table.caption))
+  const head = table.headers
+    .map((cell) => `<th scope="col">${inlineMarkdown(escapeHtml(cell))}</th>`)
+    .join('')
+  const body = table.rows
+    .map((row) => `<tr>${row.map((cell) => `<td>${inlineMarkdown(escapeHtml(cell))}</td>`).join('')}</tr>`)
+    .join('')
+  return `<figure class="studio-table"><figcaption>${caption}</figcaption><div class="studio-table-scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></figure>`
 }
 
 function inlineMarkdown(text) {
@@ -2704,7 +2692,7 @@ function inlineMarkdown(text) {
   let rendered = String(text || '').replace(/`([^`\n]+)`/g, (_, code) => protect(`<code>${code}</code>`))
 
   rendered = rendered.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, url) => {
-    const safeUrl = allowedMarkdownUrl(url, ['http:', 'https:'])
+    const safeUrl = allowedMarkdownImageUrl(url)
     if (!safeUrl) {
       return alt
     }
@@ -2738,6 +2726,17 @@ function allowedMarkdownUrl(value, allowedProtocols) {
   } catch (error) {
     return ''
   }
+}
+
+function allowedMarkdownImageUrl(value) {
+  const candidate = String(value || '').trim()
+  if (
+    candidate.length <= 2_100_000 &&
+    /^data:image\/(?:png|jpeg|gif|webp|avif);base64,[a-z0-9+/]+={0,2}$/i.test(candidate)
+  ) {
+    return candidate
+  }
+  return allowedMarkdownUrl(candidate, ['http:', 'https:'])
 }
 
 function escapeHtml(value) {
@@ -2774,13 +2773,6 @@ function formatDate(value) {
   } catch (error) {
     return value
   }
-}
-
-function formatClock() {
-  return new Date().toLocaleTimeString('ko-KR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
 }
 
 function readElevatorTickerDefault() {
@@ -2995,13 +2987,6 @@ function handleLocationPopState(event) {
   })
 }
 
-function pickNextTicker(excluded = []) {
-  const blocked = new Set(excluded)
-  const candidates = tickerPool.filter((line) => !blocked.has(line))
-  const nextPool = candidates.length > 0 ? candidates : tickerPool
-  return nextPool[Math.floor(Math.random() * nextPool.length)]
-}
-
 function readReadyTicketIds() {
   if (typeof window === 'undefined') {
     return []
@@ -3195,32 +3180,23 @@ function persistStudioPostId(postId) {
       <section v-if="page === 'splash'" class="splash-stage">
         <div class="splash-panel">
           <div class="splash-top">
-            <div class="line-badge line-w">2</div>
+            <SiteLoopSymbol size="large" />
             <div>
-              <p class="eyebrow">Seoul Subway Portal</p>
-              <h1>workaround central</h1>
-            </div>
-            <div class="clock-box">
-              <span>transfer</span>
-              <strong>{{ clockText }}</strong>
+              <h1>workaround.co.kr</h1>
+              <p class="splash-copy">곧 문이 열립니다</p>
             </div>
           </div>
 
           <div class="flap-board" :class="{ 'reduced-motion': prefersReducedMotion }">
-            <div
-              v-for="row in splashBoardRows"
-              :key="row.label"
-              class="flap-row"
-              :class="row.accent"
-            >
-              <span class="flap-label">{{ row.label }}</span>
-              <div class="flap-values">
+            <div class="flap-row splash-flap-row">
+              <div class="flap-values" role="img" :aria-label="currentSplashPhrase">
                 <span
-                  v-for="cell in row.cells"
+                  v-for="cell in splashBoardCells"
                   :key="cell.key"
-                  class="flap-cell"
-                  :class="[row.accent, { run: cell.isRunning && !prefersReducedMotion, settle: cell.isSettling }]"
+                  class="flap-cell line-w"
+                  :class="{ run: cell.isRunning && !prefersReducedMotion, settle: cell.isSettling }"
                   :style="{ '--flap-duration': cell.durationMs }"
+                  aria-hidden="true"
                 >
                   <span class="flap-half flap-static flap-top"><b>{{ cell.topStatic }}</b></span>
                   <span class="flap-half flap-static flap-bottom"><b>{{ cell.bottomStatic }}</b></span>
@@ -3231,37 +3207,22 @@ function persistStudioPostId(postId) {
             </div>
           </div>
 
-          <div class="ticker-strip">
-            <span class="ticker-label">notice</span>
+          <div class="ticker-strip" aria-live="polite">
+            <span class="ticker-label">알림</span>
             <span class="ticker-copy">{{ currentTicker }}</span>
-          </div>
-
-          <div class="arrival-grid">
-            <article>
-              <span>main page</span>
-              <strong>10초 후 자동 전환</strong>
-            </article>
-            <article>
-              <span>runtime</span>
-              <strong>{{ runtimeState.ollama?.status || 'unknown' }}</strong>
-            </article>
-            <article>
-              <span>mobile</span>
-              <strong>세로 카드 스택 우선</strong>
-            </article>
           </div>
         </div>
 
         <div class="splash-actions">
-          <p>메인 페이지는 대시보드가 아니라 환승 허브로 동작하고, 실제 기능은 각 플랫폼에서 이어집니다.</p>
+          <p>10초 후 자동 전환</p>
           <button type="button" class="ghost-button" @click="replaySplashFlap">다시 재생</button>
-          <button type="button" class="ghost-button" @click="skipSplash">바로 환승 홀로 이동</button>
         </div>
       </section>
 
       <main v-else class="portal-stage" :class="{ 'writing-stage': page === 'writingStudio' }">
         <header class="station-topbar" :class="topbarLineClass">
-          <span class="roundel" :class="topbarLineClass">{{ topbarLetter }}</span>
+          <SiteLoopSymbol v-if="page === 'junction'" />
+          <span v-else class="roundel" :class="topbarLineClass">{{ topbarLetter }}</span>
           <h2>{{ page === 'writingStudio' ? '글쓰기' : currentRoute.title }}</h2>
           <div class="topbar-actions">
             <button
@@ -4163,7 +4124,7 @@ function persistStudioPostId(postId) {
                 <StatusBadge :status="activeBlogPost.status" />
               </div>
 
-              <div class="markdown-body post-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown)"></div>
+              <div class="markdown-body post-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown, activeBlogPost.tables)"></div>
 
               <footer class="post-foot-nav">
                 <button v-if="adjacentBlogPosts.previous" type="button" class="ghost-button" @click="openBlogPost(adjacentBlogPosts.previous.slug)">
