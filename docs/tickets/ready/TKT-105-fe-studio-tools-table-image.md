@@ -2,10 +2,10 @@
 
 # TKT-105 `[FE]` Writing Studio 도구 메뉴 — 사진 첨부·h1~h3·기능형 표
 
-- 상태: backlog (TKT-102 목업 승인 후 ready)
+- 상태: ready (PO 2026-09-13 — 목업 승인과 무관하게 착수)
 - 우선순위: P2
 - 담당: codex-1 (FE)
-- 의존: TKT-102 승인, 사진 업로드 서버측은 TKT-053 [BE]
+- 의존: 없음 (사진 업로드 서버측은 TKT-053 [BE] — 그 전까지 정적 미리보기). r5 목업의 도구 메뉴 배치는 참고만, 차단 아님
 - 관련 스펙: `design/writing-studio-spec.md` §6
 - scope: `frontend/src/components/WritingStudio.vue`, `frontend/src/App.vue`(스튜디오 연결부), `frontend/src/styles.css`, studio 테스트
 

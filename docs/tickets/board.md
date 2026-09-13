@@ -6,7 +6,6 @@
 
 ## Backlog
 
-- `TKT-105` `P2` `chore` `backlog` `[FE]` Writing Studio 도구 메뉴 — 사진·h1~h3·기능형 표 (102 승인 후, 053 연계)
 
 - `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
 - `TKT-012` `P1` `v0.2.1` `진행 가능` `[BE]` 테스트 코드 확장과 커버리지 측정 기반 (PM 게이트 해제 2026-08-17)
@@ -42,6 +41,8 @@
 
 
 ## Ready
+
+- `TKT-105` `P1` `chore` `ready` `[FE]` Writing Studio 도구 메뉴 — 사진·h1~h3·기능형 표 (스펙 §6, PO 직접 요청)
 
 - `TKT-108` `P1` `voyage` `ready` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드 (스펙 voyage-collection-spec.md)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
