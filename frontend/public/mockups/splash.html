@@ -26,10 +26,26 @@
 @media(max-width:600px){.stage{padding:52px 12px 16px;gap:16px}.splash-panel{min-height:0;border-radius:18px;gap:20px}.splash-top{gap:8px}.splash-top .loop{width:44px;height:44px}.wordmark{font-size:clamp(22px,6.4vw,32px)}.copy{font-size:14px}.flap-board{--flap-height:36px;padding:20px 10px;border-radius:12px}.flap-values{gap:2px}.flap-top{border-radius:3px 3px 1px 1px}.flap-bottom{border-radius:1px 1px 3px 3px}.ticker{font-size:12px;min-height:48px}.splash-actions{gap:6px}.splash-actions nav{gap:6px}.nav-link{font-size:12px;padding:8px 10px}.auto{font-size:11px}}
 @media(prefers-color-scheme:light){.stage{background:var(--bg)}.splash-panel{background:#fff;border-color:var(--line)}.splash-top .loop{color:var(--text)}}
 @media(prefers-reduced-motion:reduce){.change{display:none}.change,.flap-half,.ticker span,.progress::after{animation:none!important}.ticker span{opacity:0}.ticker span:first-child{opacity:1}.progress::after{transform:scaleX(1)}}
+
+/* r12 — r4 의 심플 구성 + r9 플립 동작 (PM 2026-09-14) */
+html,body,.stage{background:#0A0F16!important;color:#F3F6FB!important}
+.stage{min-height:100svh;display:grid;place-items:center;padding:24px 16px}
+.wordmark,.copy,.ticker,.ticker span{color:#F3F6FB!important}.copy,.ticker,.ticker span{color:#AEB8C8!important}
+.splash-panel{background:transparent!important;border:0!important;box-shadow:none!important;max-width:620px;width:100%;margin:auto;padding:0;text-align:center}
+.splash-top{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:26px}
+.splash-top .loop{width:112px;height:112px;color:#F3C544}
+.wordmark{font-size:clamp(28px,6vw,40px);margin:8px 0 0;letter-spacing:-.01em;color:#F3F6FB}
+.copy{color:#AEB8C8;margin:0}
+.flap-board{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;min-height:calc(var(--flap-height) + 24px)!important;height:calc(var(--flap-height) + 24px);justify-content:stretch;justify-items:stretch;position:relative}
+.flap-values{width:min(100%,600px);margin:0 auto;justify-content:normal}
+.ticker{background:transparent!important;border:0!important;justify-content:center;margin-top:22px;color:#AEB8C8}
+.splash-actions{max-width:620px;margin:26px auto 0;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#7C8AA0;font-size:12px}
+.splash-actions a{border:1px solid rgba(255,255,255,.16);color:#AEB8C8;padding:8px 12px;border-radius:10px}
+@media(prefers-color-scheme:light){html,body{background:#0A0F16!important;color:#F3F6FB!important}}
 </style></head><body>
-<header class="mockup-banner">MOCKUP — 실화면 아님 · 시작 화면 r9</header>
+<header class="mockup-banner">MOCKUP — 실화면 아님 · 시작 화면 r12 · r4 구성 + r9 플립</header>
 <main class="stage"><section class="splash-panel" aria-labelledby="splash-title">
-<div class="splash-top"><svg class="loop" viewBox="0 0 96 96" width="72" height="72" aria-hidden="true"><circle cx="48" cy="50" r="33" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="48" cy="17" r="6" fill="currentColor"/></svg><div><h1 class="wordmark" id="splash-title">workaround.co.kr</h1><p class="copy">곧 문이 열립니다</p></div></div>
+<div class="splash-top"><svg class="loop" viewBox="0 0 96 96" width="72" height="72" aria-hidden="true"><path d="M60.6 19.6 A33 33 0 1 1 35.4 19.6" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/><circle cx="48" cy="17" r="5" fill="currentColor"/></svg><div><h1 class="wordmark" id="splash-title">workaround.co.kr</h1><p class="copy">곧 문이 열립니다</p></div></div>
 <!-- 14칸 고정. 상판은 기존 글자→접힘, 하판은 다음 글자→펼침. 40ms 좌→우 시차. -->
 <div class="flap-board" role="img" aria-label="WORKING AROUND, MIND THE GAP, DOORS OPENING 순서로 전환"><div class="flap-values" aria-hidden="true">
 <div class="flap-cell" style="--i:0"><span class="flap-half flap-top "><b>W</b></span><span class="flap-half flap-bottom "><b>W</b></span>
