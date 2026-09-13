@@ -76,7 +76,6 @@
 
 ## Started
 
-- `TKT-111` `P1` `tone` `started` `[FE]` 홈 환승 홀 — 최신 D-015 안 E·`home.html` r13 기준 노선도와 3묶음·2단 구현
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -99,6 +98,8 @@
 
 
 ## Finished
+
+- `TKT-111` `[FE]` 홈 노선도(r14 방사형·3노선) + 목록 — r1 통과 (2026-09-14)
 
 - `TKT-109` `[FE]` 여정 노선도 — 실좌표 순환선·시각표·정차역 상세, r1 통과 (2026-09-14)
 
