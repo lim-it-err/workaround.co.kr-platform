@@ -1,0 +1,241 @@
+[
+  {
+    "width": 375,
+    "colorScheme": "dark",
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 335,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "input": "입력 확인",
+    "nextFocus": "1행 1열 셀 메뉴"
+  },
+  {
+    "cellMenu": true,
+    "width": 375,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 335,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "toolsVisible": true,
+    "width": 375,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 335,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "tableTarget": "#inline-table",
+    "toolsClosed": true
+  },
+  {
+    "back": "http://127.0.0.1:4190/workaround.co.kr-platform/mockups/blog-hub.html"
+  },
+  {
+    "width": 375,
+    "colorScheme": "light",
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 335,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "input": "입력 확인",
+    "nextFocus": "1행 1열 셀 메뉴"
+  },
+  {
+    "cellMenu": true,
+    "width": 375,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 335,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "toolsVisible": true,
+    "width": 375,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 335,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "tableTarget": "#inline-table",
+    "toolsClosed": true
+  },
+  {
+    "back": "http://127.0.0.1:4190/workaround.co.kr-platform/mockups/blog-hub.html"
+  },
+  {
+    "width": 390,
+    "colorScheme": "dark",
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 350,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "input": "입력 확인",
+    "nextFocus": "1행 1열 셀 메뉴"
+  },
+  {
+    "cellMenu": true,
+    "width": 390,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 350,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "toolsVisible": true,
+    "width": 390,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 350,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "tableTarget": "#inline-table",
+    "toolsClosed": true
+  },
+  {
+    "back": "http://127.0.0.1:4190/workaround.co.kr-platform/mockups/blog-hub.html"
+  },
+  {
+    "width": 390,
+    "colorScheme": "light",
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 350,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "input": "입력 확인",
+    "nextFocus": "1행 1열 셀 메뉴"
+  },
+  {
+    "cellMenu": true,
+    "width": 390,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 350,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "toolsVisible": true,
+    "width": 390,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 350,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "tableTarget": "#inline-table",
+    "toolsClosed": true
+  },
+  {
+    "back": "http://127.0.0.1:4190/workaround.co.kr-platform/mockups/blog-hub.html"
+  },
+  {
+    "width": 1440,
+    "colorScheme": "dark",
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 720,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "input": "입력 확인",
+    "nextFocus": "1행 1열 셀 메뉴"
+  },
+  {
+    "cellMenu": true,
+    "width": 1440,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 720,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "back": "http://127.0.0.1:4190/workaround.co.kr-platform/mockups/blog-hub.html"
+  },
+  {
+    "width": 1440,
+    "colorScheme": "light",
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 720,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "input": "입력 확인",
+    "nextFocus": "1행 1열 셀 메뉴"
+  },
+  {
+    "cellMenu": true,
+    "width": 1440,
+    "overflow": 0,
+    "centerError": 0,
+    "editorWidth": 720,
+    "smallTargets": [],
+    "toolsActions": 3,
+    "toolsTable": 0,
+    "scripts": 0
+  },
+  {
+    "back": "http://127.0.0.1:4190/workaround.co.kr-platform/mockups/blog-hub.html"
+  },
+  {
+    "otherChanges": [],
+    "sourceDistEqual": true,
+    "sha": "d2a9ef2cedd359ad12c2e5b5342587094bcabd73caa1c4b34afa2794a15b9af8"
+  }
+]

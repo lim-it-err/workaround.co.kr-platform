@@ -1,0 +1,3137 @@
+[
+  {
+    "name": "home",
+    "route": "/missions",
+    "width": 390,
+    "overflow": 0,
+    "height": 8540,
+    "mainTop": 254,
+    "headings": [
+      "오늘도 세상 하나를 구조로 읽어봅시다"
+    ],
+    "smallTargets": [
+      {
+        "text": "Easy",
+        "width": 50.390625,
+        "height": 29,
+        "y": 596.546875
+      },
+      {
+        "text": "Normal",
+        "width": 64.953125,
+        "height": 29,
+        "y": 596.546875
+      },
+      {
+        "text": "Hard",
+        "width": 51.921875,
+        "height": 29,
+        "y": 596.546875
+      },
+      {
+        "text": "단일 파일",
+        "width": 72.546875,
+        "height": 29,
+        "y": 666.734375
+      },
+      {
+        "text": "여러 파일",
+        "width": 72.546875,
+        "height": 29,
+        "y": 666.734375
+      },
+      {
+        "text": "모듈 경계",
+        "width": 72.546875,
+        "height": 29,
+        "y": 666.734375
+      },
+      {
+        "text": "리팩토링",
+        "width": 69.25,
+        "height": 29,
+        "y": 736.921875
+      },
+      {
+        "text": "기능 추가",
+        "width": 72.546875,
+        "height": 29,
+        "y": 736.921875
+      },
+      {
+        "text": "도메인 로직 구현",
+        "width": 108.265625,
+        "height": 29,
+        "y": 736.921875
+      },
+      {
+        "text": "설계 리뷰",
+        "width": 72.546875,
+        "height": 29,
+        "y": 771.921875
+      },
+      {
+        "text": "코드 판독",
+        "width": 72.546875,
+        "height": 29,
+        "y": 771.921875
+      },
+      {
+        "text": "배역극",
+        "width": 58.4375,
+        "height": 29,
+        "y": 771.921875
+      },
+      {
+        "text": "제목·도메인으로 찾기",
+        "width": 328,
+        "height": 31,
+        "y": 842.109375
+      }
+    ],
+    "cards": 42,
+    "readOnlyCards": 1,
+    "mainText": "오늘도 세상 하나를 구조로 읽어봅시다\n\n도메인 상식 브리핑 → 레거시 리팩토링/기능 추가 → 에이전트 리뷰 → 설명 훈련. 지금까지 0개 미션을 제출했습니다.\n\n🚆\n🍜\n🗂\n오늘의 훈련 0/3\n→\n🚲 새로운 모드: 프로젝트 — 맨땅에서\n→\n난이도\nEasy\nNormal\nHard\n범위\n단일 파일\n여러 파일\n모듈 경계\n유형\n리팩토링\n기능 추가\n도메인 로직 구현\n설계 리뷰\n코드 판독\n배역극\n검색\n총 39개 미션\n제1부\n분리와 계약\n코드 안의 전쟁 — 책임을 나누고, 계약을 긋고, 레거시를 길들인다\nS1\n분리의 감각\n“이 코드가 변경되는 이유는 몇 개인가?”\n🍷 와인\nEasy\n리팩토링\n와인 추천기의 뒤엉킨 책임 풀어내기\n~90분 · 단일 파일\n진행 가능\n🥖 제과·제빵\nEasy\n도메인 로직 구현\n베이커스 퍼센트 레시피 스케일러 만들기\n~90분 · 단일 파일\n진행 가능\n🎼 음악·합창단\nEasy\n도메인 로직 구현\n합창단 파트 배정기 — 이건 스케줄링 문제잖아\n~90분 · 단일 파일\n진행 가능\n🏠 부동산 · 주택청약\nNormal\n도메인 로직 구현\n84점 만점의 인생 — 청약 가점 계산기\n~100분 · 단일 파일\n진행 가능\n🎰 게임 · 확률형 아이템\nEasy\n도메인 로직 구현\n1%의 진실 — 가챠 확률 공시 계산기\n~90분 · 단일 파일\n진행 가능\n🧊 콜드체인\nEasy\n코드 판독\n🤝 기획자 모드\n백신 상자의 마지막 온도\n~45분 · 단일 파일\n진행 가능\nS2\n인터페이스는 계약\n“호출자는 무엇을 알아야 하고, 무엇을 몰라야 하는가?”\n🪑 가구 조립 파이프라인\nNormal\n기능 추가\n생산 라인에 공정 두 개를 끼워 넣어라\n~120분 · 여러 파일\n진행 가능\n🏗 건축\nNormal\n도메인 로직 구현\n건폐율·용적률 — 건축 가능 규모 검토기\n~150분 · 여러 파일\n진행 가능\n🩸 혈액형 수혈 매칭\nEasy\n도메인 로직 구현\n수혈 호환 매칭기 — 섞이면 안 되는 것을 코드로\n~90분 · 단일 파일\n진행 가능\n🌙 천문·시간\nNormal\n도메인 로직 구현\n당신의 연휴는 달이 정한다 — 공휴일 계산기\n~120분 · 여러 파일\n진행 가능\n⛵ 항해 · 해상충돌예방규칙\nNormal\n도메인 로직 구현\n바다의 프로토콜 — 누가 피할 것인가\n~110분 · 단일 파일\n진행 가능\n🚰 정수 처리\nEasy\n설계 리뷰\n🤝 기획자 모드\n탁도 경보가 놓친 3분\n~60분 · 단일 파일\n진행 가능\nS3\n의존성 역전\n“도메인 로직이 DB 없이 테스트되는가?”\n💱 금융\nNormal\n도메인 로직 구현\n적금 만기 해지 계산기 — 규칙을 코드로 번역하라\n~150분 · 여러 파일\n진행 가능\n🚂 시베리아 횡단철도\nNormal\n도메인 로직 구현\n모스크바 시간으로 달리는 열차 — 환승 계산기\n~150분 · 여러 파일\n진행 가능\n💼 기업 재무·회생\nNormal\n도메인 로직 구현\n🤝 기획자 모드\n워터폴의 맨 아래 — 회생 시나리오 시뮬레이터\n~150분 · 여러 파일\n진행 가능\n🎬 영화 오마주\nNormal\n도메인 로직 구현\n39분씩 어긋나는 달력 — 화성 기지 생존 계획기\n~140분 · 여러 파일\n진행 가능\n🏛️ 박물관 소장품 대여\nNormal\n도메인 로직 구현\n🤝 기획자 모드\n작품은 떠나도 책임은 남는다\n~75분 · 여러 파일\n진행 가능\nS4\n레거시 길들이기\n“무엇이 부서질지 모른 채 어떻게 고치는가?”\n🚌 대중교통 사내 시스템\nHard\n기능 추가\n30년 묵은 요금 계산기에 조조할인 넣기\n~180분 · 단일 파일\n진행 가능\n🚄 철도\nHard\n기능 추가\n🤝 기획자 모드\n통일호가 살아 있는 예매 시스템에 KTX 넣기\n~160분 · 여러 파일\n진행 가능\n🎬 영화 오마주\nNormal\n리팩토링\n검산 노트와 한 치도 다르지 않게 — 재진입 창 계산의 이관\n~150분 · 여러 파일\n진행 가능\n⚾ 야구 · 세이버메트릭스\nNormal\n리팩토링\n타율은 볼넷을 모른다 — 스카우팅 리포트에 OPS 넣기\n~140분 · 여러 파일\n진행 가능\n🏦 전세 · 경매 배당\nNormal\n코드 판독\n도장 하나가 수억을 지킨다 — 배당 계산기 판독\n~50분 · 단일 파일\n진행 가능\n💿 반도체 팹\nNormal\n기능 추가\n🤝 기획자 모드\n웨이퍼 재처리의 한 번뿐인 기회\n~90분 · 여러 파일\n진행 가능\n제2부\n구조와 세계\n시스템과 사람 — 경계는 코드가 아니라 세계에 긋는 것이다\nS5\n거대한 구조\n“어디서 모델을 갈라야 하는가?”\n🎬 영화 오마주\nNormal\n리팩토링\n달리는 열차의 벽 — 명부·배급·통행의 경계 다시 긋기\n~150분 · 모듈 경계\n진행 가능\n✈️ 역사적 해프닝 · 항공\nHard\n리팩토링\n가방이 공항을 이긴 날 — 수하물 시스템의 경계 재설계\n~180분 · 모듈 경계\n진행 가능\n🔥 산불 대피소\nHard\n도메인 로직 구현\n🤝 기획자 모드\n지도보다 먼저 차는 대피소\n~105분 · 모듈 경계\n진행 가능\nS6\n구조로 세상 읽기\n“이 시스템의 세계관은 무엇인가?”\n📚 도서관·분류\nNormal\n설계 리뷰\n설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게\n~120분 · 여러 파일\n진행 가능\n📋 항공 · 오버부킹\nNormal\n설계 리뷰\n빈 좌석은 소멸한다 — 오버부킹 정책안 비평\n~60분 · 여러 파일\n진행 가능\n✈️ 항공 · 전산 마비\nHard\n배역극\n결항 57편의 아침 — 항공사 마비의 세 가지 언어\n~100분 · 여러 파일\n진행 가능\n🌿 스마트 온실\nHard\n기능 추가\n🤝 기획자 모드\n비가 오는데 밸브가 열린 이유\n~120분 · 모듈 경계\n진행 가능\n제3부\n현실의 압력\n테스트, 실패, 동시성, 데이터, 그리고 단순함 — 운영이 가르치는 것들\nS7\n테스트가 설계를 이끈다\n“테스트가 괴로운 건 테스트 탓인가, 설계 탓인가?”\n⚡ 전기요금 · 누진제\nNormal\n도메인 로직 구현\n요금 폭탄의 경계선 — 테스트 먼저 쓰는 누진제 계산기\n~120분 · 단일 파일\n진행 가능\n🌊 해운·항해\nNormal\n도메인 로직 구현\n물때를 아는 코드 — 입출항 시간창 계산기\n~130분 · 여러 파일\n진행 가능\nS8\n실패를 설계하다\n“이 시스템은 어떻게 죽고, 어떻게 다시 일어나는가?”\n💳 결제 · PG 연동\nHard\n기능 추가\n타임아웃 너머의 결제 — 멱등키와 보상의 설계\n~150분 · 여러 파일\n진행 가능\n💳 결제 · 장애 커뮤니케이션\nNormal\n배역극\n같은 사고, 세 개의 의자 — 이중청구의 밤\n~90분 · 여러 파일\n진행 가능\nS9\n동시성의 감각\n“이 코드에 두 명이 동시에 들어오면 무슨 일이 벌어지는가?”\n🎤 공연 티켓팅\nHard\n리팩토링\n0.3초의 전쟁 — 같은 좌석이 두 번 팔리는 코드\n~150분 · 여러 파일\n진행 가능\n🎓 대학 수강신청\nHard\n코드 판독\n오전 10시 정각의 코드 — 수강신청 서버 판독\n~60분 · 여러 파일\n진행 가능\nS10\n데이터가 흐르는 길\n“진실은 어디에 있고, 사본은 언제 거짓말하는가?”\n🛒 커머스 · 재고\nNormal\n리팩토링\n재고가 세 곳에 사는 집 — 진실과 사본의 재설계\n~150분 · 모듈 경계\n진행 가능\n🗺 지도·측량\nNormal\n도메인 로직 구현\n하나의 위치, 세 개의 좌표 — 사본이 배달을 보낸 곳\n~140분 · 여러 파일\n진행 가능\nS11\n단순함의 철학\n“이 복잡함은 문제의 것인가, 우리가 만든 것인가?”\n☕ 카페 키오스크\nNormal\n리팩토링\n아메리카노 한 잔에 파일 일곱 개 — 과분리 레거시 병합\n~120분 · 여러 파일\n진행 가능",
+    "links": [
+      {
+        "text": "🚆🍜🗂오늘의 훈련 0/3→",
+        "href": "/workaround.co.kr-platform/advisor/routine",
+        "y": 409.171875
+      },
+      {
+        "text": "🚲 새로운 모드: 프로젝트 — 맨땅에서→",
+        "href": "/workaround.co.kr-platform/advisor/projects",
+        "y": 468.765625
+      },
+      {
+        "text": "🍷 와인Easy리팩토링와인 추천기의 뒤엉킨 책임 풀어내기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 1118.296875
+      },
+      {
+        "text": "🥖 제과·제빵Easy도메인 로직 구현베이커스 퍼센트 레시피 스케일러 만들기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-bakery-01",
+        "y": 1262.078125
+      },
+      {
+        "text": "🎼 음악·합창단Easy도메인 로직 구현합창단 파트 배정기 — 이건 스케줄링 문제잖아~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-choir-01",
+        "y": 1405.859375
+      },
+      {
+        "text": "🏠 부동산 · 주택청약Normal도메인 로직 구현84점 만점의 인생 — 청약 가점 계산기~100분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-cheongyak-01",
+        "y": 1549.640625
+      },
+      {
+        "text": "🎰 게임 · 확률형 아이템Easy도메인 로직 구현1%의 진실 — 가챠 확률 공시 계산기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-gacha-01",
+        "y": 1720.21875
+      },
+      {
+        "text": "🧊 콜드체인Easy코드 판독🤝 기획자 모드백신 상자의 마지막 온도~45분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-cold-chain-01",
+        "y": 1890.796875
+      },
+      {
+        "text": "🪑 가구 조립 파이프라인Normal기능 추가생산 라인에 공정 두 개를 끼워 넣어라~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-furniture-01",
+        "y": 2155.765625
+      },
+      {
+        "text": "🏗 건축Normal도메인 로직 구현건폐율·용적률 — 건축 가능 규모 검토기~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-zoning-01",
+        "y": 2299.546875
+      },
+      {
+        "text": "🩸 혈액형 수혈 매칭Easy도메인 로직 구현수혈 호환 매칭기 — 섞이면 안 되는 것을 코드로~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-blood-01",
+        "y": 2443.328125
+      },
+      {
+        "text": "🌙 천문·시간Normal도메인 로직 구현당신의 연휴는 달이 정한다 — 공휴일 계산기~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-lunar-01",
+        "y": 2587.109375
+      },
+      {
+        "text": "⛵ 항해 · 해상충돌예방규칙Normal도메인 로직 구현바다의 프로토콜 — 누가 피할 것인가~110분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-colreg-01",
+        "y": 2730.890625
+      },
+      {
+        "text": "🚰 정수 처리Easy설계 리뷰🤝 기획자 모드탁도 경보가 놓친 3분~60분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-water-treatment-01",
+        "y": 2901.46875
+      },
+      {
+        "text": "💱 금융Normal도메인 로직 구현적금 만기 해지 계산기 — 규칙을 코드로 번역하라~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-interest-01",
+        "y": 3166.4375
+      },
+      {
+        "text": "🚂 시베리아 횡단철도Normal도메인 로직 구현모스크바 시간으로 달리는 열차 — 환승 계산기~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-transsib-01",
+        "y": 3310.21875
+      },
+      {
+        "text": "💼 기업 재무·회생Normal도메인 로직 구현🤝 기획자 모드워터폴의 맨 아래 — 회생 시나리오 시뮬레이터~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-homeplus-01",
+        "y": 3480.796875
+      },
+      {
+        "text": "🎬 영화 오마주Normal도메인 로직 구현39분씩 어긋나는 달력 — 화성 기지 생존 계획기~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-martian-01",
+        "y": 3683.765625
+      },
+      {
+        "text": "🏛️ 박물관 소장품 대여Normal도메인 로직 구현🤝 기획자 모드작품은 떠나도 책임은 남는다~75분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-museum-loan-01",
+        "y": 3827.546875
+      },
+      {
+        "text": "🚌 대중교통 사내 시스템Hard기능 추가30년 묵은 요금 계산기에 조조할인 넣기~180분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-transit-01",
+        "y": 4124.90625
+      },
+      {
+        "text": "🚄 철도Hard기능 추가🤝 기획자 모드통일호가 살아 있는 예매 시스템에 KTX 넣기~160분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-ktx-01",
+        "y": 4268.6875
+      },
+      {
+        "text": "🎬 영화 오마주Normal리팩토링검산 노트와 한 치도 다르지 않게 — 재진입 창 계산의 이관~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-figures-01",
+        "y": 4412.46875
+      },
+      {
+        "text": "⚾ 야구 · 세이버메트릭스Normal리팩토링타율은 볼넷을 모른다 — 스카우팅 리포트에 OPS 넣기~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-saber-01",
+        "y": 4577.25
+      },
+      {
+        "text": "🏦 전세 · 경매 배당Normal코드 판독도장 하나가 수억을 지킨다 — 배당 계산기 판독~50분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-jeonse-01",
+        "y": 4742.03125
+      },
+      {
+        "text": "💿 반도체 팹Normal기능 추가🤝 기획자 모드웨이퍼 재처리의 한 번뿐인 기회~90분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-semiconductor-fab-01",
+        "y": 4885.8125
+      },
+      {
+        "text": "🎬 영화 오마주Normal리팩토링달리는 열차의 벽 — 명부·배급·통행의 경계 다시 긋기~150분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s5-snowpiercer-01",
+        "y": 5250.578125
+      },
+      {
+        "text": "✈️ 역사적 해프닝 · 항공Hard리팩토링가방이 공항을 이긴 날 — 수하물 시스템의 경계 재설계~180분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s5-denver-01",
+        "y": 5415.359375
+      },
+      {
+        "text": "🔥 산불 대피소Hard도메인 로직 구현🤝 기획자 모드지도보다 먼저 차는 대피소~105분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-wildfire-shelter-01",
+        "y": 5580.140625
+      },
+      {
+        "text": "📚 도서관·분류Normal설계 리뷰설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-dewey-01",
+        "y": 5845.109375
+      },
+      {
+        "text": "📋 항공 · 오버부킹Normal설계 리뷰빈 좌석은 소멸한다 — 오버부킹 정책안 비평~60분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-overbooking-01",
+        "y": 5988.890625
+      },
+      {
+        "text": "✈️ 항공 · 전산 마비Hard배역극결항 57편의 아침 — 항공사 마비의 세 가지 언어~100분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-roleplay-02",
+        "y": 6132.671875
+      },
+      {
+        "text": "🌿 스마트 온실Hard기능 추가🤝 기획자 모드비가 오는데 밸브가 열린 이유~120분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-greenhouse-control-01",
+        "y": 6276.453125
+      },
+      {
+        "text": "⚡ 전기요금 · 누진제Normal도메인 로직 구현요금 폭탄의 경계선 — 테스트 먼저 쓰는 누진제 계산기~120분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s7-tariff-01",
+        "y": 6641.21875
+      },
+      {
+        "text": "🌊 해운·항해Normal도메인 로직 구현물때를 아는 코드 — 입출항 시간창 계산기~130분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s7-tide-01",
+        "y": 6832.796875
+      },
+      {
+        "text": "💳 결제 · PG 연동Hard기능 추가타임아웃 너머의 결제 — 멱등키와 보상의 설계~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-payment-01",
+        "y": 7070.96875
+      },
+      {
+        "text": "💳 결제 · 장애 커뮤니케이션Normal배역극같은 사고, 세 개의 의자 — 이중청구의 밤~90분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-roleplay-01",
+        "y": 7214.75
+      },
+      {
+        "text": "🎤 공연 티켓팅Hard리팩토링0.3초의 전쟁 — 같은 좌석이 두 번 팔리는 코드~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-ticketing-01",
+        "y": 7492.921875
+      },
+      {
+        "text": "🎓 대학 수강신청Hard코드 판독오전 10시 정각의 코드 — 수강신청 서버 판독~60분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-sugang-01",
+        "y": 7636.703125
+      },
+      {
+        "text": "🛒 커머스 · 재고Normal리팩토링재고가 세 곳에 사는 집 — 진실과 사본의 재설계~150분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s10-stock-01",
+        "y": 7874.875
+      },
+      {
+        "text": "🗺 지도·측량Normal도메인 로직 구현하나의 위치, 세 개의 좌표 — 사본이 배달을 보낸 곳~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s10-coords-01",
+        "y": 8018.65625
+      },
+      {
+        "text": "☕ 카페 키오스크Normal리팩토링아메리카노 한 잔에 파일 일곱 개 — 과분리 레거시 병합~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s11-kiosk-01",
+        "y": 8277.828125
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "routine",
+    "route": "/routine",
+    "width": 390,
+    "overflow": 0,
+    "height": 1078,
+    "mainTop": 254,
+    "headings": [
+      "오늘의 훈련"
+    ],
+    "smallTargets": [],
+    "cards": 3,
+    "readOnlyCards": 3,
+    "mainText": "오늘의 훈련\n2026년 9월 14일 월\n월\n화\n수\n목\n금\n토\n일\n수사의 월요일\n단서를 열고, 판정을 내리고, 마지막엔 한 갈래를 고릅니다.\n🚆\n출근길 · ~11시\n사건 파일 오늘 단서\n사라지는 적립금 · Day 1\n🍜\n점심 · 11~17시\n머지 or 반려\n오늘의 판정 5장\n🗂\n저녁 · 17시~\n카드 갈래 1장\n정리하는 뇌\n\n3칸을 다 채울 필요는 없습니다. 어제의 나보다 한 문단 더 읽었으면 이긴 겁니다.",
+    "links": [
+      {
+        "text": "사라지는 적립금 · Day 1",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-vanishing-points-01",
+        "y": 551.5625
+      },
+      {
+        "text": "오늘의 판정 5장",
+        "href": "/workaround.co.kr-platform/advisor/routine/swipe",
+        "y": 710.90625
+      },
+      {
+        "text": "정리하는 뇌",
+        "href": "/workaround.co.kr-platform/advisor/games?card=read-levitin-01",
+        "y": 870.25
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "inflight",
+    "route": "/inflight",
+    "width": 390,
+    "overflow": 0,
+    "height": 1361,
+    "mainTop": 254,
+    "headings": [
+      "기내 훈련 팩",
+      "이번 비행 추천"
+    ],
+    "smallTargets": [
+      {
+        "text": "3분 한 판",
+        "width": 78.75,
+        "height": 38,
+        "y": 524.859375
+      },
+      {
+        "text": "10분 세 판",
+        "width": 84.765625,
+        "height": 38,
+        "y": 524.859375
+      },
+      {
+        "text": "30분 사건",
+        "width": 83.640625,
+        "height": 38,
+        "y": 524.859375
+      },
+      {
+        "text": "60분 혼합 코스",
+        "width": 110.390625,
+        "height": 38,
+        "y": 570.859375
+      },
+      {
+        "text": "운영",
+        "width": 53.0625,
+        "height": 38,
+        "y": 620.859375
+      },
+      {
+        "text": "설계",
+        "width": 53.0625,
+        "height": 38,
+        "y": 620.859375
+      },
+      {
+        "text": "동시성",
+        "width": 64.59375,
+        "height": 38,
+        "y": 620.859375
+      },
+      {
+        "text": "도메인 여행",
+        "width": 91.171875,
+        "height": 38,
+        "y": 666.859375
+      },
+      {
+        "text": "랜덤",
+        "width": 53.0625,
+        "height": 38,
+        "y": 666.859375
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 721.078125
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 721.078125
+      },
+      {
+        "text": "INPUT",
+        "width": 129,
+        "height": 16,
+        "y": 766.015625
+      },
+      {
+        "text": "INPUT",
+        "width": 129,
+        "height": 16,
+        "y": 805.453125
+      }
+    ],
+    "cards": 6,
+    "readOnlyCards": 3,
+    "mainText": "✈️ OFFLINE MODE\n기내 훈련 팩\n\n네트워크 없이 읽고 판단합니다. 진행 기록은 이 기기에만 저장됩니다.\n\n미열람 131개\n시간\n3분 한 판\n10분 세 판\n30분 사건\n60분 혼합 코스\n취향\n운영\n설계\n동시성\n도메인 여행\n랜덤\n본 콘텐츠 포함\n다시 볼 것만\n글자 크기\n줄 간격\n이번 비행 추천\n123개 선택 가능\n📖\n독서 카드 · 3분\n총, 균, 쇠\n→\n📖\n독서 카드 · 3분\n생각에 관한 생각\n→\n📖\n독서 카드 · 3분\n블랙 스완\n→\n착륙 후 온라인 기능\n\nAI 채팅·서버 동기화는 기내 팩에서 호출하지 않습니다. 연결이 돌아오면 기존 미션 화면에서 이용하세요.",
+    "links": [
+      {
+        "text": "📖독서 카드 · 3분총, 균, 쇠→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-ggs-01",
+        "y": 906.859375
+      },
+      {
+        "text": "📖독서 카드 · 3분생각에 관한 생각→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-kahneman-01",
+        "y": 997.234375
+      },
+      {
+        "text": "📖독서 카드 · 3분블랙 스완→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-blackswan-01",
+        "y": 1087.609375
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "season",
+    "route": "/season",
+    "width": 390,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 254,
+    "headings": [
+      "이번 시즌",
+      "나의 4스탯",
+      "최근 적립"
+    ],
+    "smallTargets": [],
+    "cards": 2,
+    "readOnlyCards": 2,
+    "mainText": "4주 성장 기록\n이번 시즌\n\n2026-09-14 — 2026-10-11\n\nD-27\n1일차\n나의 4스탯\n총 0\n👁안목\n0\n🗣언어화\n0\n🧭판단\n0\n📚교양\n0\n\n모든 슬롯을 채운 날 0일\n\n최근 적립\n최대 10건\n아직 적립 기록이 없습니다. 오늘의 훈련에서 카드 하나를 읽어 보세요.",
+    "links": [],
+    "errors": []
+  },
+  {
+    "name": "games",
+    "route": "/games",
+    "width": 390,
+    "overflow": 0,
+    "height": 5747,
+    "mainTop": 254,
+    "headings": [
+      "미니게임",
+      "🧰 전체 게임 · 다시하기",
+      "독서 카드",
+      "시사회 카드",
+      "머지 or 반려",
+      "한 번만 물어본다면",
+      "경계선 한 칸",
+      "사건 파일",
+      "최소 재현 실험실",
+      "동시성 순서 맞추기",
+      "벌크헤드 설계실",
+      "🗂 카드 서랍 — 읽는 데 3분, 꼬리 질문은 하루 종일",
+      "🔍 노코드 스낵 — 코드를 짜지 않고 읽고 판정하는 미션",
+      "🎮 바로 플레이",
+      "🎮 준비 중"
+    ],
+    "smallTargets": [
+      {
+        "text": "기내 팩 →",
+        "width": 49.75,
+        "height": 20.796875,
+        "y": 485.375
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 576.96875
+      }
+    ],
+    "cards": 50,
+    "readOnlyCards": 31,
+    "mainText": "미니게임\n\n데일리는 시즌 기록으로, 연습은 보상 없이 원하는 판을 몇 번이고.\n\n오늘의 훈련 ≠ 전체 게임 연습\n\n아래 연습 기록은 별도 로컬 저장소에 남고 데일리 완료·연속 기록·시즌 보상을 바꾸지 않습니다.\n\n🧰 전체 게임 · 다시하기\n기내 팩 →\n 미완료만\n📖\n독서 카드\n\n책의 통찰을 시스템 설계 질문으로 바꿉니다.\n\n20판 · 판당 약 3분 · 미완료 20\n연습\n🎬\n시사회 카드\n\n영화 장면을 구조·운영의 언어로 읽습니다.\n\n16판 · 판당 약 3분 · 미완료 16\n연습\n🃏\n머지 or 반려\n\n코드와 계약의 경계를 판정합니다.\n\n36판 · 판당 약 5분 · 미완료 36\n연습\n🔬\n한 번만 물어본다면\n\n가설을 가장 많이 줄이는 관측을 고릅니다.\n\n15판 · 판당 약 5분 · 미완료 15\n연습\n✂️\n경계선 한 칸\n\n실패가 머물 트랜잭션 경계를 선택합니다.\n\n12판 · 판당 약 5분 · 미완료 12\n연습\n🕵️\n사건 파일\n\n5개 단서를 자유롭게 열어 근본 원인을 추리합니다.\n\n8판 · 판당 약 30분 · 미완료 8\n연습\n🧫\n최소 재현 실험실\n\n변수를 덜어 실패를 재현 가능한 한 조각으로 만듭니다.\n\n8판 · 판당 약 4분 · 미완료 8\n연습\n🧵\n동시성 순서 맞추기\n\n경합하는 두 사건의 최종 판정자를 고릅니다.\n\n8판 · 판당 약 5분 · 미완료 8\n연습\n🚪\n벌크헤드 설계실\n\n한 실패가 자원 전체를 삼키지 못하도록 격리합니다.\n\n8판 · 판당 약 5분 · 미완료 8\n연습\n🗂 카드 서랍 — 읽는 데 3분, 꼬리 질문은 하루 종일\n📖 독서 (20)\n🎬 시사회 (16)\n🌾\n📖 독서\n총, 균, 쇠 · 재레드 다이아몬드\n▸\n🧠\n📖 독서\n생각에 관한 생각 · 대니얼 카너먼\n▸\n🦢\n📖 독서\n블랙 스완 · 나심 탈레브\n▸\n🧬\n📖 독서\n이기적 유전자 · 리처드 도킨스\n▸\n🗂\n📖 독서\n정리하는 뇌 · 대니얼 레비틴\n▸\n⚔️\n📖 독서\n전쟁론 · 카를 폰 클라우제비츠\n▸\n👉\n📖 독서\n넛지 · 리처드 탈러 · 캐스 선스타인\n▸\n🌪\n📖 독서\n안티프래질 · 나심 탈레브\n▸\n🧭\n📖 독서\n테세우스의 배 · 플루타르코스\n▸\n🌱\n📖 독서\n침묵의 봄 · 레이첼 카슨\n▸\n🗺️\n📖 독서\n국가처럼 보기 · 제임스 C. 스콧\n▸\n🔭\n📖 독서\n과학혁명의 구조 · 토머스 쿤\n▸\n✅\n📖 독서\n체크리스트 선언 · 아툴 가완디\n▸\n🧩\n📖 독서\n지도와 영토 · 앨프리드 코르집스키\n▸\n⚙️\n📖 독서\n정상 사고 · 찰스 페로\n▸\n⏳\n📖 독서\n결핍의 경제학 · 센딜 멀레이너선\n▸\n🔒\n📖 독서\n블랙박스 사회 · 프랭크 파스콸레\n▸\n🚪\n📖 독서\n일상의 디자인 · 도널드 노먼\n▸\n📡\n📖 독서\n신호와 소음 · 네이트 실버\n▸\n🕸️\n📖 독서\n전환점 · 프리초프 카프라\n▸\n🔍 노코드 스낵 — 코드를 짜지 않고 읽고 판정하는 미션\n설계 리뷰 · Normal\n설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게\n코드 판독 · Normal\n도장 하나가 수억을 지킨다 — 배당 계산기 판독\n코드 판독 · Hard\n오전 10시 정각의 코드 — 수강신청 서버 판독\n설계 리뷰 · Normal\n빈 좌석은 소멸한다 — 오버부킹 정책안 비평\n배역극 · Normal\n같은 사고, 세 개의 의자 — 이중청구의 밤\n배역극 · Hard\n결항 57편의 아침 — 항공사 마비의 세 가지 언어\n🧊\n코드 판독 · Easy\n백신 상자의 마지막 온도\n🚰\n설계 리뷰 · Easy\n탁도 경보가 놓친 3분\n🎮 바로 플레이\n✂️\n경계선 한 칸\n트랜잭션 경계 1탭 + 결과 비교 · 하루 한 판\n경계 긋기 →\n🔬\n한 번만 물어본다면\n관측 1탭 + 가설 지목 1탭 · 하루 한 판\n관측 →\n🃏\n머지 or 반려\n코드 판정 1탭 + 근거 토큰 1탭 · 샘플 카드 5장\n플레이 →\n🕵️\n사라지는 적립금\n매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다\n수사 →\n🚦\n모든 신호가 빨간불이 된 아침\n사고는 없었다. 열차도 없었다 — 단 한 대도 움직이지 못했으니까\n수사 →\n🧪\n얼지 않은 백신\n센서 값은 정상인데 일부 상자만 효능 검사가 실패한다\n수사 →\n💡\n밤마다 밝아지는 전시실\n폐관 뒤 조명이 켜져 민감한 작품의 누적 노출이 늘어난다\n수사 →\n🔬\n사라진 웨이퍼 17장\n재공품 목록과 실제 장비 투입 수가 하루마다 벌어진다\n수사 →\n🗺️\n지도에는 빈 대피소\n현장에서는 만석인데 안내 앱은 계속 자리가 있다고 말한다\n수사 →\n🌧️\n비 오는 날의 관수\n비가 온 직후에도 자동 관수가 가장 오래 실행된다\n수사 →\n🚰\n조용한 탁도 경보\n민원은 늘지만 운영 화면의 정상률은 100%다\n수사 →\n🎮 준비 중\n📈\n시즌제 스탯\n4주 시즌, 안목·언어화·판단·교양 — 준비 중",
+    "links": [
+      {
+        "text": "기내 팩 →",
+        "href": "/workaround.co.kr-platform/advisor/inflight",
+        "y": 485.375
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-ggs-01",
+        "y": 708.9375
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/cinema/film-martian-01",
+        "y": 879.71875
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/swipe/swipe-tx-self-01",
+        "y": 1050.5
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/probe/probe-slow-api-01",
+        "y": 1221.28125
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/boundary/boundary-order-01",
+        "y": 1392.0625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/case/case-vanishing-points-01",
+        "y": 1562.84375
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/minimal-repro/minimal-repro-01",
+        "y": 1733.625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/concurrency-sequencing/concurrency-sequencing-01",
+        "y": 1904.40625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/bulkheads/bulkheads-01",
+        "y": 2075.1875
+      },
+      {
+        "text": "설계 리뷰 · Normal설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-dewey-01",
+        "y": 3924.375
+      },
+      {
+        "text": "코드 판독 · Normal도장 하나가 수억을 지킨다 — 배당 계산기 판독",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-jeonse-01",
+        "y": 4005.0625
+      },
+      {
+        "text": "코드 판독 · Hard오전 10시 정각의 코드 — 수강신청 서버 판독",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-sugang-01",
+        "y": 4085.75
+      },
+      {
+        "text": "설계 리뷰 · Normal빈 좌석은 소멸한다 — 오버부킹 정책안 비평",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-overbooking-01",
+        "y": 4166.4375
+      },
+      {
+        "text": "배역극 · Normal같은 사고, 세 개의 의자 — 이중청구의 밤",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-roleplay-01",
+        "y": 4247.125
+      },
+      {
+        "text": "배역극 · Hard결항 57편의 아침 — 항공사 마비의 세 가지 언어",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-roleplay-02",
+        "y": 4327.8125
+      },
+      {
+        "text": "🧊코드 판독 · Easy백신 상자의 마지막 온도",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-cold-chain-01",
+        "y": 4408.5
+      },
+      {
+        "text": "🚰설계 리뷰 · Easy탁도 경보가 놓친 3분",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-water-treatment-01",
+        "y": 4489.1875
+      },
+      {
+        "text": "✂️경계선 한 칸트랜잭션 경계 1탭 + 결과 비교 · 하루 한 판경계 긋기 →",
+        "href": "/workaround.co.kr-platform/advisor/games/boundary",
+        "y": 4621.46875
+      },
+      {
+        "text": "🔬한 번만 물어본다면관측 1탭 + 가설 지목 1탭 · 하루 한 판관측 →",
+        "href": "/workaround.co.kr-platform/advisor/games/probe",
+        "y": 4702.15625
+      },
+      {
+        "text": "🃏머지 or 반려코드 판정 1탭 + 근거 토큰 1탭 · 샘플 카드 5장플레이 →",
+        "href": "/workaround.co.kr-platform/advisor/routine/swipe",
+        "y": 4782.84375
+      },
+      {
+        "text": "🕵️사라지는 적립금매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-vanishing-points-01",
+        "y": 4863.53125
+      },
+      {
+        "text": "🚦모든 신호가 빨간불이 된 아침사고는 없었다. 열차도 없었다 — 단 한 대도 움직이지 못했으니까수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-all-red-morning-01",
+        "y": 4944.21875
+      },
+      {
+        "text": "🧪얼지 않은 백신센서 값은 정상인데 일부 상자만 효능 검사가 실패한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-01-cold-room",
+        "y": 5043.296875
+      },
+      {
+        "text": "💡밤마다 밝아지는 전시실폐관 뒤 조명이 켜져 민감한 작품의 누적 노출이 늘어난다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-02-museum-light",
+        "y": 5123.984375
+      },
+      {
+        "text": "🔬사라진 웨이퍼 17장재공품 목록과 실제 장비 투입 수가 하루마다 벌어진다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-03-fab-queue",
+        "y": 5223.0625
+      },
+      {
+        "text": "🗺️지도에는 빈 대피소현장에서는 만석인데 안내 앱은 계속 자리가 있다고 말한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-04-shelter-map",
+        "y": 5303.75
+      },
+      {
+        "text": "🌧️비 오는 날의 관수비가 온 직후에도 자동 관수가 가장 오래 실행된다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-05-greenhouse-rain",
+        "y": 5402.828125
+      },
+      {
+        "text": "🚰조용한 탁도 경보민원은 늘지만 운영 화면의 정상률은 100%다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-06-water-alarm",
+        "y": 5483.515625
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "projects",
+    "route": "/projects",
+    "width": 390,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 254,
+    "headings": [
+      "프로젝트 — 맨땅에서"
+    ],
+    "smallTargets": [],
+    "cards": 1,
+    "readOnlyCards": 0,
+    "mainText": "프로젝트 — 맨땅에서\n\n이번엔 물려받을 코드가 없습니다.\n\n🚲\n공공자전거\n공공자전거 시스템 — 맨땅에서\n\n대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.\n\n0 / 6",
+    "links": [
+      {
+        "text": "🚲공공자전거공공자전거 시스템 — 맨땅에서대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.0 / 6",
+        "href": "/workaround.co.kr-platform/advisor/projects/p-bike-01",
+        "y": 357.984375
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "history",
+    "route": "/missions/history",
+    "width": 390,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 254,
+    "headings": [
+      "성장 기록",
+      "기록에 이름을 남깁니다"
+    ],
+    "smallTargets": [
+      {
+        "text": "와인 추천기",
+        "width": 73.421875,
+        "height": 19,
+        "y": 748.734375
+      },
+      {
+        "text": "✕",
+        "width": 27.4375,
+        "height": 31,
+        "y": 324.90625
+      },
+      {
+        "text": "예: 김부장",
+        "width": 294,
+        "height": 39,
+        "y": 432.890625
+      },
+      {
+        "text": "엔진 토큰",
+        "width": 294,
+        "height": 39,
+        "y": 539.078125
+      }
+    ],
+    "cards": 6,
+    "readOnlyCards": 6,
+    "mainText": "성장 기록\n\n세상을 구조로 읽은 흔적들\n\n0\n제출한 미션 수\n0\n설명 과제 수\n—\n다녀온 도메인 수 (0)\nS1\nS2\nS3\nS4\nS5\nS6\nS7\nS8\nS9\nS10\nS11\n스테이지 진행 현황\n\n아직 기록이 없습니다. 세상은 여전히 if문 범벅인 채로 당신을 기다리고 있습니다.\n\n일단 와인 추천기부터 뜯어보러 가볼까요?\n\n✕\n기록에 이름을 남깁니다\n\n커밋에 작성자가 있듯, 제출에도 이름이 남습니다. 구분용 닉네임 하나면 됩니다.\n\n고급 — 엔진 토큰(선택)\n확인",
+    "links": [
+      {
+        "text": "와인 추천기",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 748.734375
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "mission",
+    "route": "/missions/s1-wine-01",
+    "width": 390,
+    "overflow": 0,
+    "height": 1613,
+    "mainTop": 254,
+    "headings": [
+      "와인 추천기의 뒤엉킨 책임 풀어내기",
+      "소믈리에는 사실 규칙 엔진이다 — 와인 추천의 세계",
+      "품종이 8할이다",
+      "빈티지와 테루아",
+      "페어링은 감이 아니라 규칙",
+      "그래서 추천 시스템은 규칙 덩어리"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미션 목록",
+        "width": 60.984375,
+        "height": 16,
+        "y": 275
+      },
+      {
+        "text": "도메인 브리핑",
+        "width": 108.34375,
+        "height": 39,
+        "y": 428.765625
+      },
+      {
+        "text": "미션",
+        "width": 56.234375,
+        "height": 39,
+        "y": 428.765625
+      },
+      {
+        "text": "제출",
+        "width": 56.234375,
+        "height": 39,
+        "y": 428.765625
+      },
+      {
+        "text": "설명 훈련",
+        "width": 84.125,
+        "height": 39,
+        "y": 428.765625
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미션 목록\nS1 · 분리의 감각\n리팩토링\nEasy\n📐 단일 파일\n🍷 와인\n와인 추천기의 뒤엉킨 책임 풀어내기\n도메인 브리핑\n미션\n제출\n설명 훈련\n소믈리에는 사실 규칙 엔진이다 — 와인 추천의 세계\n품종이 8할이다\n\n와인 맛의 큰 틀은 포도 품종(varietal) 이 결정합니다. 카베르네 소비뇽은 타닌이 강하고 묵직하며(풀바디), 피노 누아는 가볍고 산미가 살아 있고, 리슬링은 향이 화려하며 단맛부터 드라이까지 폭이 넓습니다. 샤르도네는 양조 방식에 따라 버터 같은 풍미부터 미네랄한 맛까지 변신하는 팔색조죠.\n\n빈티지와 테루아\n\n라벨의 연도인 빈티지(vintage) 는 포도를 수확한 해입니다. 그해 일조량과 강수량이 포도 품질을 좌우하기 때문에 같은 밭이라도 해마다 맛과 가격이 달라집니다. 테루아(terroir) 는 토양·기후·경사 등 밭의 환경 전체를 가리키는 말로, \"부르고뉴는 밭 이름으로 와인을 판다\"는 말이 나올 만큼 유럽 와인 가격의 핵심 변수입니다.\n\n페어링은 감이 아니라 규칙\n\n음식 궁합(페어링)에는 검증된 규칙이 있습니다. 붉은 고기의 지방과 단백질은 타닌을 부드럽게 만들어 주기 때문에 스테이크·삼겹살에는 타닌 강한 레드가 어울리고, 매운 음식에는 알코올이 낮고 살짝 단 리슬링이 매운맛을 식혀 줍니다. 굴이나 회처럼 비린 해산물에 레드를 곁들이면 철분과 타닌이 만나 쇠맛이 나기 때문에 산미 좋은 화이트를 권하죠.\n\n그래서 추천 시스템은 규칙 덩어리\n\n소믈리에의 머릿속을 들여다보면 \"바디 선호 ±1 이내인가\", \"예산 안인가\", \"음식과 품종 궁합 규칙에 걸리는가\" 같은 규칙의 조합과 가중치 계산이 돌아갑니다. 와인 추천 소프트웨어가 if문 범벅이 되기 쉬운 이유가 바로 이것인데, 규칙이 많다는 것과 규칙이 한 덩어리여야 한다는 것은, 전혀 다른 이야기인데도요.\n\n브리핑 읽었어요 → 미션 보기\n💬 질문하기",
+    "links": [
+      {
+        "text": "← 미션 목록",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "review",
+    "route": "/missions/s1-wine-01/review",
+    "width": 390,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 254,
+    "headings": [
+      "리뷰 — 와인 추천기의 뒤엉킨 책임 풀어내기"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미션으로",
+        "width": 57.578125,
+        "height": 16,
+        "y": 275
+      },
+      {
+        "text": "미션 페이지",
+        "width": 59.65625,
+        "height": 16,
+        "y": 362.984375
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미션으로\n리뷰 — 와인 추천기의 뒤엉킨 책임 풀어내기\n아직 코드를 제출하지 않았습니다. 미션 페이지에서 제출하세요.\n코드 고쳐서 재제출\n다음 미션으로",
+    "links": [
+      {
+        "text": "← 미션으로",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 275
+      },
+      {
+        "text": "미션 페이지",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 362.984375
+      },
+      {
+        "text": "코드 고쳐서 재제출",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 414.78125
+      },
+      {
+        "text": "다음 미션으로",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 414.78125
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "probe",
+    "route": "/games/probe",
+    "width": 390,
+    "overflow": 0,
+    "height": 1216,
+    "mainTop": 254,
+    "headings": [
+      "한 번만 물어본다면",
+      "금요일 오후의 p99",
+      "무엇이 원인일까요?",
+      "딱 하나만 확인할 수 있다면?"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 275
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🐢 오늘의 한 판\n한 번만 물어본다면\n\n관측은 한 번뿐. 결과를 본 뒤 가장 그럴듯한 가설을 지목하세요.\n\n상황\n금요일 오후의 p99\n\n주문 조회 API의 p99 응답시간이 오늘 오후부터 3배로 뛰었습니다. 평균은 거의 그대로라 대부분의 사용자는 모르지만, 그래프의 꼬리는 분명히 두꺼워졌습니다. 배포는 오늘 없었습니다. 퇴근 전에 방향은 잡아야 합니다 — 관측할 시간은 한 번뿐입니다.\n\n가설\n무엇이 원인일까요?\n📇 DB 인덱스를 안 타는 쿼리가 생겼다 (데이터 분포 변화)\n🔌 외부 결제사 API가 간헐적으로 느리다\n🗑 JVM GC가 길게 멈추고 있다\n1 · 관측\n딱 하나만 확인할 수 있다면?\n외부 결제사 호출 구간의 지연 분포를 본다\n오늘 오후의 슬로우 쿼리 로그를 연다\n서버 평균 CPU 사용률을 확인한다",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "boundary",
+    "route": "/games/boundary",
+    "width": 390,
+    "overflow": 0,
+    "height": 1344,
+    "mainTop": 254,
+    "headings": [
+      "경계선 한 칸",
+      "이벤트 당일의 주문 흐름",
+      "세로 파이프라인",
+      "어디까지 묶을까요?"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 275
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🛒 오늘의 한 판\n경계선 한 칸\n\n어디까지 같은 운명으로 묶을지 고르세요. 실패는 사라지지 않고, 머물 방만 달라집니다.\n\n상황\n이벤트 당일의 주문 흐름\n\n내일 아침 10시, 한정판 드롭 이벤트가 열립니다. 평소의 10배 트래픽이 예고돼 있고, 운영팀의 요구는 명확합니다 — \"재고는 나중에 맞출 수 있다. 그러나 돈이 두 번 나가는 것과 주문이 증발하는 것은 안 된다.\" 주문 흐름의 트랜잭션 경계를 오늘 정해야 합니다.\n\n업무 흐름\n세로 파이프라인\n1\n주문 생성\n2\n재고 차감\n3\n결제 승인 (외부 PG)\n4\n알림 발송\n1 · 경계 선택\n어디까지 묶을까요?\n전부 하나로 — 주문·재고·결제·알림을 한 트랜잭션에\n주문+재고까지만 — 결제·알림은 밖에서 보상으로\n주문만 확정 — 재고·결제·알림은 비동기 사가로",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "case",
+    "route": "/games/case/case-vanishing-points-01",
+    "width": 390,
+    "overflow": 0,
+    "height": 1293,
+    "mainTop": 254,
+    "headings": [
+      "사라지는 적립금",
+      "수사 기록"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 275
+      }
+    ],
+    "cards": 2,
+    "readOnlyCards": 2,
+    "mainText": "← 미니게임\n🕵️ 사건 파일 · 1/5일\n사라지는 적립금\n\n매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다\n\n구독형 커머스 「데일리박스」의 CS 게시판에 같은 문의가 사흘째 쌓이고 있습니다. \"적립금이 어제보다 줄었어요. 쓴 적이 없는데요.\" 금액은 제각각이고, 전원도 아니고 일부 고객만. 재현은 안 되고, 그래프는 새벽에만 움직입니다. 당신은 오늘부터 닷새간 매일 단서 하나씩을 받습니다. 서두르지 마세요 — 결론을 아끼는 것이 수사의 절반입니다.\n\n하루에 단서 하나\n\n로컬 날짜가 바뀌면 다음 단서가 열립니다.\n\n몰아보기\n수사 기록\nDay 1 · 민원과 그래프\n피해자들의 공통점\n\n민원 41건 표본 정리:\n\n피해 금액: 100~3,000P, 고객마다 다름. 단 같은 고객은 항상 같은 금액이 반복해서 빠짐.\n발생 시각: 고객이 알아챈 건 아침이지만, 포인트 이력상 차감 기록은 새벽 0시대와 새벽 1시대에 몰려 있음.\n피해 고객 공통점: 전원이 \"포인트 자동 소멸 안내\" 대상자 (유효기간 만료 포인트 보유).\n비피해 고객: 만료 예정 포인트가 없는 고객은 단 한 건도 없음.\n\n📎 수사 노트: 만료 포인트 차감 자체는 정상 업무다. 문제는 \"얼마나\" 빠졌는가다.",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "swipe",
+    "route": "/routine/swipe",
+    "width": 390,
+    "overflow": 0,
+    "height": 952,
+    "mainTop": 254,
+    "headings": [
+      "머지 or 반려",
+      "삭제 API에 멱등 의미를 문서화하고 구현한다",
+      "1. 판정"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 275
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🃏 오늘의 판정 5장\n머지 or 반려\n\n판정을 고르고, 근거 하나를 붙이세요. 질문 없이는 판단할 수 없는 코드도 있습니다.\n\n1 / 5\n삭제 API에 멱등 의미를 문서화하고 구현한다\n// PR #428\nResult handle(Request request) {\n    return policy.delete_idempotent(request);\n}\n1. 판정\n✅ 머지\n❌ 반려\n❓ 질문 필요",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "practice",
+    "route": "/games/practice/minimal-repro",
+    "width": 390,
+    "overflow": 0,
+    "height": 999,
+    "mainTop": 254,
+    "headings": [
+      "빈 목록에서만 합계가 NaN"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 전체 게임",
+        "width": 358,
+        "height": 20.796875,
+        "y": 270
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 전체 게임\n🧫 최소 재현 실험실 · 1/8\n연습 모드 · 보상/연속 기록 없음\n빈 목록에서만 합계가 NaN\n\n빈 목록에서만 합계가 NaN. 정상 경로는 통과하지만 경계 조건에서만 반복되는 합성 장애 상황입니다.\n\n가장 작은 재현 실험은 무엇입니까?\n\n입력을 0개와 1개로 줄이고 초기값 유무를 비교한다\n전체 시스템을 재시작해 다시 본다\n모든 요청을 하나의 전역 락으로 감싼다\n선택하고 해설 보기\n처음부터 다시\n다음 판\n무작위\n안 본 판\n이 게임 연습 기록만 지우기",
+    "links": [
+      {
+        "text": "← 전체 게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 270
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "journey",
+    "route": "/projects/p-bike-01",
+    "width": 390,
+    "overflow": 0,
+    "height": 3530,
+    "mainTop": 254,
+    "headings": [
+      "공공자전거 시스템 — 맨땅에서",
+      "도시의 혈관",
+      "요금은 단순하고, 현실은 아니다",
+      "운영의 최대 난제 — 자전거는 흐른다",
+      "이번엔 물려받을 코드가 없습니다",
+      "스스로 결정하세요"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 프로젝트 목록",
+        "width": 83.484375,
+        "height": 16,
+        "y": 275
+      },
+      {
+        "text": "예: src/main/java/wine/WineRecommender.java",
+        "width": 222,
+        "height": 31,
+        "y": 2508.171875
+      },
+      {
+        "text": "✕",
+        "width": 34,
+        "height": 31,
+        "y": 2508.171875
+      }
+    ],
+    "cards": 3,
+    "readOnlyCards": 3,
+    "mainText": "← 프로젝트 목록\n🚲 공공자전거\n공공자전거 시스템 — 맨땅에서\n\n대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.\n\n아침 8시, 자전거는 왜 항상 없는가\n도시의 혈관\n\n서울의 공공자전거 따릉이는 대여소 수천 개, 자전거 수만 대 규모의 시스템입니다. 하루 수십만 건의 대여가 일어나고, 시민은 아무 대여소에서 빌려 아무 대여소에나 반납합니다. 이 \"아무 데나 반납\"이 공공자전거의 매력이자, 운영의 모든 골칫거리의 시작입니다.\n\n요금은 단순하고, 현실은 아니다\n\n요금 체계 자체는 간명합니다 — 기본권(1시간권, 일권)을 사고, 기본 시간을 넘기면 초과요금이 붙습니다. 하지만 그 간명한 규칙 아래에서 시스템은 대여와 반납의 짝을 맞추고, 시간을 재고, 미반납을 추적해야 합니다. 규칙이 쉬운 것과 규칙을 지키는 코드가 쉬운 것은 다른 이야기입니다.\n\n운영의 최대 난제 — 자전거는 흐른다\n\n그리고 재배치. 아침 출근 시간, 주거지역 대여소는 텅 비고 업무지구 대여소는 자전거가 넘쳐 거치대가 모자랍니다. 자전거가 지형과 출퇴근의 물길을 따라 한쪽으로 쏠리는 겁니다. 그래서 매일 밤, 트럭들이 도시를 돌며 자전거를 거꾸로 실어 나릅니다 — 시민이 낮에 옮긴 것을 사람이 밤에 되돌리는, 보이지 않는 노동. 어느 대여소에서 몇 대가 빠져나가고 몇 대가 들어오는지를 아는 것이 이 노동의 시작이고, 그것은 정확히 데이터 문제입니다.\n\n이번엔 물려받을 코드가 없습니다\n\n지금까지 여러분은 남이 만든 코드를 길들여 왔습니다. 이번에는 다릅니다. 빈 디렉터리에서 시작해 도메인 모델부터 시청 보고서까지, 여섯 걸음으로 이 시스템을 세웁니다. 모든 결정이 당신의 것이고, 모든 결과도 그렇습니다 — 세 걸음쯤 뒤에, 오늘의 결정이 당신을 기다리고 있을 겁니다.\n\n0 / 6\n▶\n도메인 모델 — 이름을 먼저 짓는다\n~60분\n자전거·대여소·회원·대여를 코드의 언어로 옮긴 첫 모델\n\n첫 걸음은 기능이 아니라 이름입니다. 이 세계에는 자전거(Bike), 대여소(Station), 회원(Member), 그리고 대여(Rental)가 삽니다. 각각을 클래스(또는 레코드)로 만들고, 서로가 서로를 어떻게 가리키는지 정하세요.\n\n아직 대여 로직도, 요금도, 저장소도 없습니다. 지금 정하는 것은 오직 구조 — 무엇이 무엇을 아는가, 각 개념의 식별자는 무엇인가, 상태(고장, 대여 중)는 어디에 사는가입니다. 운영 매뉴얼의 문장(\"QR을 찍으면 대여가 시작된다\", \"고장 신고된 자전거는 정비 대상이다\")이 여러분의 클래스 이름으로 자연스럽게 번역되는지가 시금석입니다.\n\n사소해 보이는 결정들이 사실 이 프로젝트 전체의 지반입니다. 다음 다섯 걸음이 전부 이 모델 위에 쌓입니다.\n\n스스로 결정하세요\n☐ 대여(Rental)는 자전거에 붙는 상태인가, 독립적인 개념(자기 식별자를 가진 기록)인가? 반납 후에도 대여 기록이 남아야 한다면 답이 달라지는가?\n☐ 각 개념의 식별자는 무엇인가 — 자전거 차체 번호, 회원 전화번호, 대여소 이름? 바뀔 수 있는 값을 식별자로 삼으면 무슨 일이 생기는가?\n☐ \"고장\"은 Bike의 boolean 필드인가, 상태(enum)의 하나인가? 정비 중·폐기 같은 상태가 늘어난다면?\n\n제출물 — 도메인 클래스들(Bike, Station, Member, Rental 등)과 각 설계 결정의 이유를 짧게 적은 노트. 실행 코드나 main은 필요 없습니다.\n\n✕\n+ 파일 추가\n제출하고 리뷰 받기\n🔒\n대여와 반납 — 규칙이 코드가 되는 순간\n~90분\ns1 모델 위에 대여·반납의 핵심 규칙 구현\n🔒\n요금 정책 — 숫자는 틀리면 민원이 된다\n~90분\n기본권·초과요금·미반납 페널티의 정확한 계산\n🔒\n저장 경계 — 어제의 결정이 당신을 기다린다\n~90분\n도메인이 저장 기술을 모르게 — repository 경계 설계\n🔒\n재배치 리포트 — 아침 8시의 강남\n~90분\n대여소별 유입·유출 집계로 쏠림을 숫자로 드러내기\n🔒\n시청 보고서 — 숫자로 트럭을 얻어 내라\n~60분\ns5의 집계를 근거로 재배치 예산을 설득하는 글",
+    "links": [
+      {
+        "text": "← 프로젝트 목록",
+        "href": "/workaround.co.kr-platform/advisor/projects",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "home",
+    "route": "/missions",
+    "width": 375,
+    "overflow": 0,
+    "height": 8819,
+    "mainTop": 254,
+    "headings": [
+      "오늘도 세상 하나를 구조로 읽어봅시다"
+    ],
+    "smallTargets": [
+      {
+        "text": "Easy",
+        "width": 50.390625,
+        "height": 29,
+        "y": 596.546875
+      },
+      {
+        "text": "Normal",
+        "width": 64.953125,
+        "height": 29,
+        "y": 596.546875
+      },
+      {
+        "text": "Hard",
+        "width": 51.921875,
+        "height": 29,
+        "y": 596.546875
+      },
+      {
+        "text": "단일 파일",
+        "width": 72.546875,
+        "height": 29,
+        "y": 666.734375
+      },
+      {
+        "text": "여러 파일",
+        "width": 72.546875,
+        "height": 29,
+        "y": 666.734375
+      },
+      {
+        "text": "모듈 경계",
+        "width": 72.546875,
+        "height": 29,
+        "y": 666.734375
+      },
+      {
+        "text": "리팩토링",
+        "width": 69.25,
+        "height": 29,
+        "y": 736.921875
+      },
+      {
+        "text": "기능 추가",
+        "width": 72.546875,
+        "height": 29,
+        "y": 736.921875
+      },
+      {
+        "text": "도메인 로직 구현",
+        "width": 108.265625,
+        "height": 29,
+        "y": 736.921875
+      },
+      {
+        "text": "설계 리뷰",
+        "width": 72.546875,
+        "height": 29,
+        "y": 771.921875
+      },
+      {
+        "text": "코드 판독",
+        "width": 72.546875,
+        "height": 29,
+        "y": 771.921875
+      },
+      {
+        "text": "배역극",
+        "width": 58.4375,
+        "height": 29,
+        "y": 771.921875
+      },
+      {
+        "text": "제목·도메인으로 찾기",
+        "width": 313,
+        "height": 31,
+        "y": 842.109375
+      }
+    ],
+    "cards": 42,
+    "readOnlyCards": 1,
+    "mainText": "오늘도 세상 하나를 구조로 읽어봅시다\n\n도메인 상식 브리핑 → 레거시 리팩토링/기능 추가 → 에이전트 리뷰 → 설명 훈련. 지금까지 0개 미션을 제출했습니다.\n\n🚆\n🍜\n🗂\n오늘의 훈련 0/3\n→\n🚲 새로운 모드: 프로젝트 — 맨땅에서\n→\n난이도\nEasy\nNormal\nHard\n범위\n단일 파일\n여러 파일\n모듈 경계\n유형\n리팩토링\n기능 추가\n도메인 로직 구현\n설계 리뷰\n코드 판독\n배역극\n검색\n총 39개 미션\n제1부\n분리와 계약\n코드 안의 전쟁 — 책임을 나누고, 계약을 긋고, 레거시를 길들인다\nS1\n분리의 감각\n“이 코드가 변경되는 이유는 몇 개인가?”\n🍷 와인\nEasy\n리팩토링\n와인 추천기의 뒤엉킨 책임 풀어내기\n~90분 · 단일 파일\n진행 가능\n🥖 제과·제빵\nEasy\n도메인 로직 구현\n베이커스 퍼센트 레시피 스케일러 만들기\n~90분 · 단일 파일\n진행 가능\n🎼 음악·합창단\nEasy\n도메인 로직 구현\n합창단 파트 배정기 — 이건 스케줄링 문제잖아\n~90분 · 단일 파일\n진행 가능\n🏠 부동산 · 주택청약\nNormal\n도메인 로직 구현\n84점 만점의 인생 — 청약 가점 계산기\n~100분 · 단일 파일\n진행 가능\n🎰 게임 · 확률형 아이템\nEasy\n도메인 로직 구현\n1%의 진실 — 가챠 확률 공시 계산기\n~90분 · 단일 파일\n진행 가능\n🧊 콜드체인\nEasy\n코드 판독\n🤝 기획자 모드\n백신 상자의 마지막 온도\n~45분 · 단일 파일\n진행 가능\nS2\n인터페이스는 계약\n“호출자는 무엇을 알아야 하고, 무엇을 몰라야 하는가?”\n🪑 가구 조립 파이프라인\nNormal\n기능 추가\n생산 라인에 공정 두 개를 끼워 넣어라\n~120분 · 여러 파일\n진행 가능\n🏗 건축\nNormal\n도메인 로직 구현\n건폐율·용적률 — 건축 가능 규모 검토기\n~150분 · 여러 파일\n진행 가능\n🩸 혈액형 수혈 매칭\nEasy\n도메인 로직 구현\n수혈 호환 매칭기 — 섞이면 안 되는 것을 코드로\n~90분 · 단일 파일\n진행 가능\n🌙 천문·시간\nNormal\n도메인 로직 구현\n당신의 연휴는 달이 정한다 — 공휴일 계산기\n~120분 · 여러 파일\n진행 가능\n⛵ 항해 · 해상충돌예방규칙\nNormal\n도메인 로직 구현\n바다의 프로토콜 — 누가 피할 것인가\n~110분 · 단일 파일\n진행 가능\n🚰 정수 처리\nEasy\n설계 리뷰\n🤝 기획자 모드\n탁도 경보가 놓친 3분\n~60분 · 단일 파일\n진행 가능\nS3\n의존성 역전\n“도메인 로직이 DB 없이 테스트되는가?”\n💱 금융\nNormal\n도메인 로직 구현\n적금 만기 해지 계산기 — 규칙을 코드로 번역하라\n~150분 · 여러 파일\n진행 가능\n🚂 시베리아 횡단철도\nNormal\n도메인 로직 구현\n모스크바 시간으로 달리는 열차 — 환승 계산기\n~150분 · 여러 파일\n진행 가능\n💼 기업 재무·회생\nNormal\n도메인 로직 구현\n🤝 기획자 모드\n워터폴의 맨 아래 — 회생 시나리오 시뮬레이터\n~150분 · 여러 파일\n진행 가능\n🎬 영화 오마주\nNormal\n도메인 로직 구현\n39분씩 어긋나는 달력 — 화성 기지 생존 계획기\n~140분 · 여러 파일\n진행 가능\n🏛️ 박물관 소장품 대여\nNormal\n도메인 로직 구현\n🤝 기획자 모드\n작품은 떠나도 책임은 남는다\n~75분 · 여러 파일\n진행 가능\nS4\n레거시 길들이기\n“무엇이 부서질지 모른 채 어떻게 고치는가?”\n🚌 대중교통 사내 시스템\nHard\n기능 추가\n30년 묵은 요금 계산기에 조조할인 넣기\n~180분 · 단일 파일\n진행 가능\n🚄 철도\nHard\n기능 추가\n🤝 기획자 모드\n통일호가 살아 있는 예매 시스템에 KTX 넣기\n~160분 · 여러 파일\n진행 가능\n🎬 영화 오마주\nNormal\n리팩토링\n검산 노트와 한 치도 다르지 않게 — 재진입 창 계산의 이관\n~150분 · 여러 파일\n진행 가능\n⚾ 야구 · 세이버메트릭스\nNormal\n리팩토링\n타율은 볼넷을 모른다 — 스카우팅 리포트에 OPS 넣기\n~140분 · 여러 파일\n진행 가능\n🏦 전세 · 경매 배당\nNormal\n코드 판독\n도장 하나가 수억을 지킨다 — 배당 계산기 판독\n~50분 · 단일 파일\n진행 가능\n💿 반도체 팹\nNormal\n기능 추가\n🤝 기획자 모드\n웨이퍼 재처리의 한 번뿐인 기회\n~90분 · 여러 파일\n진행 가능\n제2부\n구조와 세계\n시스템과 사람 — 경계는 코드가 아니라 세계에 긋는 것이다\nS5\n거대한 구조\n“어디서 모델을 갈라야 하는가?”\n🎬 영화 오마주\nNormal\n리팩토링\n달리는 열차의 벽 — 명부·배급·통행의 경계 다시 긋기\n~150분 · 모듈 경계\n진행 가능\n✈️ 역사적 해프닝 · 항공\nHard\n리팩토링\n가방이 공항을 이긴 날 — 수하물 시스템의 경계 재설계\n~180분 · 모듈 경계\n진행 가능\n🔥 산불 대피소\nHard\n도메인 로직 구현\n🤝 기획자 모드\n지도보다 먼저 차는 대피소\n~105분 · 모듈 경계\n진행 가능\nS6\n구조로 세상 읽기\n“이 시스템의 세계관은 무엇인가?”\n📚 도서관·분류\nNormal\n설계 리뷰\n설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게\n~120분 · 여러 파일\n진행 가능\n📋 항공 · 오버부킹\nNormal\n설계 리뷰\n빈 좌석은 소멸한다 — 오버부킹 정책안 비평\n~60분 · 여러 파일\n진행 가능\n✈️ 항공 · 전산 마비\nHard\n배역극\n결항 57편의 아침 — 항공사 마비의 세 가지 언어\n~100분 · 여러 파일\n진행 가능\n🌿 스마트 온실\nHard\n기능 추가\n🤝 기획자 모드\n비가 오는데 밸브가 열린 이유\n~120분 · 모듈 경계\n진행 가능\n제3부\n현실의 압력\n테스트, 실패, 동시성, 데이터, 그리고 단순함 — 운영이 가르치는 것들\nS7\n테스트가 설계를 이끈다\n“테스트가 괴로운 건 테스트 탓인가, 설계 탓인가?”\n⚡ 전기요금 · 누진제\nNormal\n도메인 로직 구현\n요금 폭탄의 경계선 — 테스트 먼저 쓰는 누진제 계산기\n~120분 · 단일 파일\n진행 가능\n🌊 해운·항해\nNormal\n도메인 로직 구현\n물때를 아는 코드 — 입출항 시간창 계산기\n~130분 · 여러 파일\n진행 가능\nS8\n실패를 설계하다\n“이 시스템은 어떻게 죽고, 어떻게 다시 일어나는가?”\n💳 결제 · PG 연동\nHard\n기능 추가\n타임아웃 너머의 결제 — 멱등키와 보상의 설계\n~150분 · 여러 파일\n진행 가능\n💳 결제 · 장애 커뮤니케이션\nNormal\n배역극\n같은 사고, 세 개의 의자 — 이중청구의 밤\n~90분 · 여러 파일\n진행 가능\nS9\n동시성의 감각\n“이 코드에 두 명이 동시에 들어오면 무슨 일이 벌어지는가?”\n🎤 공연 티켓팅\nHard\n리팩토링\n0.3초의 전쟁 — 같은 좌석이 두 번 팔리는 코드\n~150분 · 여러 파일\n진행 가능\n🎓 대학 수강신청\nHard\n코드 판독\n오전 10시 정각의 코드 — 수강신청 서버 판독\n~60분 · 여러 파일\n진행 가능\nS10\n데이터가 흐르는 길\n“진실은 어디에 있고, 사본은 언제 거짓말하는가?”\n🛒 커머스 · 재고\nNormal\n리팩토링\n재고가 세 곳에 사는 집 — 진실과 사본의 재설계\n~150분 · 모듈 경계\n진행 가능\n🗺 지도·측량\nNormal\n도메인 로직 구현\n하나의 위치, 세 개의 좌표 — 사본이 배달을 보낸 곳\n~140분 · 여러 파일\n진행 가능\nS11\n단순함의 철학\n“이 복잡함은 문제의 것인가, 우리가 만든 것인가?”\n☕ 카페 키오스크\nNormal\n리팩토링\n아메리카노 한 잔에 파일 일곱 개 — 과분리 레거시 병합\n~120분 · 여러 파일\n진행 가능",
+    "links": [
+      {
+        "text": "🚆🍜🗂오늘의 훈련 0/3→",
+        "href": "/workaround.co.kr-platform/advisor/routine",
+        "y": 409.171875
+      },
+      {
+        "text": "🚲 새로운 모드: 프로젝트 — 맨땅에서→",
+        "href": "/workaround.co.kr-platform/advisor/projects",
+        "y": 468.765625
+      },
+      {
+        "text": "🍷 와인Easy리팩토링와인 추천기의 뒤엉킨 책임 풀어내기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 1118.296875
+      },
+      {
+        "text": "🥖 제과·제빵Easy도메인 로직 구현베이커스 퍼센트 레시피 스케일러 만들기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-bakery-01",
+        "y": 1262.078125
+      },
+      {
+        "text": "🎼 음악·합창단Easy도메인 로직 구현합창단 파트 배정기 — 이건 스케줄링 문제잖아~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-choir-01",
+        "y": 1405.859375
+      },
+      {
+        "text": "🏠 부동산 · 주택청약Normal도메인 로직 구현84점 만점의 인생 — 청약 가점 계산기~100분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-cheongyak-01",
+        "y": 1549.640625
+      },
+      {
+        "text": "🎰 게임 · 확률형 아이템Easy도메인 로직 구현1%의 진실 — 가챠 확률 공시 계산기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-gacha-01",
+        "y": 1720.21875
+      },
+      {
+        "text": "🧊 콜드체인Easy코드 판독🤝 기획자 모드백신 상자의 마지막 온도~45분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-cold-chain-01",
+        "y": 1890.796875
+      },
+      {
+        "text": "🪑 가구 조립 파이프라인Normal기능 추가생산 라인에 공정 두 개를 끼워 넣어라~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-furniture-01",
+        "y": 2195.765625
+      },
+      {
+        "text": "🏗 건축Normal도메인 로직 구현건폐율·용적률 — 건축 가능 규모 검토기~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-zoning-01",
+        "y": 2339.546875
+      },
+      {
+        "text": "🩸 혈액형 수혈 매칭Easy도메인 로직 구현수혈 호환 매칭기 — 섞이면 안 되는 것을 코드로~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-blood-01",
+        "y": 2483.328125
+      },
+      {
+        "text": "🌙 천문·시간Normal도메인 로직 구현당신의 연휴는 달이 정한다 — 공휴일 계산기~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-lunar-01",
+        "y": 2674.90625
+      },
+      {
+        "text": "⛵ 항해 · 해상충돌예방규칙Normal도메인 로직 구현바다의 프로토콜 — 누가 피할 것인가~110분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-colreg-01",
+        "y": 2818.6875
+      },
+      {
+        "text": "🚰 정수 처리Easy설계 리뷰🤝 기획자 모드탁도 경보가 놓친 3분~60분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-water-treatment-01",
+        "y": 2989.265625
+      },
+      {
+        "text": "💱 금융Normal도메인 로직 구현적금 만기 해지 계산기 — 규칙을 코드로 번역하라~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-interest-01",
+        "y": 3254.234375
+      },
+      {
+        "text": "🚂 시베리아 횡단철도Normal도메인 로직 구현모스크바 시간으로 달리는 열차 — 환승 계산기~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-transsib-01",
+        "y": 3419.015625
+      },
+      {
+        "text": "💼 기업 재무·회생Normal도메인 로직 구현🤝 기획자 모드워터폴의 맨 아래 — 회생 시나리오 시뮬레이터~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-homeplus-01",
+        "y": 3589.59375
+      },
+      {
+        "text": "🎬 영화 오마주Normal도메인 로직 구현39분씩 어긋나는 달력 — 화성 기지 생존 계획기~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-martian-01",
+        "y": 3792.5625
+      },
+      {
+        "text": "🏛️ 박물관 소장품 대여Normal도메인 로직 구현🤝 기획자 모드작품은 떠나도 책임은 남는다~75분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-museum-loan-01",
+        "y": 3957.34375
+      },
+      {
+        "text": "🚌 대중교통 사내 시스템Hard기능 추가30년 묵은 요금 계산기에 조조할인 넣기~180분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-transit-01",
+        "y": 4254.703125
+      },
+      {
+        "text": "🚄 철도Hard기능 추가🤝 기획자 모드통일호가 살아 있는 예매 시스템에 KTX 넣기~160분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-ktx-01",
+        "y": 4398.484375
+      },
+      {
+        "text": "🎬 영화 오마주Normal리팩토링검산 노트와 한 치도 다르지 않게 — 재진입 창 계산의 이관~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-figures-01",
+        "y": 4569.0625
+      },
+      {
+        "text": "⚾ 야구 · 세이버메트릭스Normal리팩토링타율은 볼넷을 모른다 — 스카우팅 리포트에 OPS 넣기~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-saber-01",
+        "y": 4733.84375
+      },
+      {
+        "text": "🏦 전세 · 경매 배당Normal코드 판독도장 하나가 수억을 지킨다 — 배당 계산기 판독~50분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-jeonse-01",
+        "y": 4898.625
+      },
+      {
+        "text": "💿 반도체 팹Normal기능 추가🤝 기획자 모드웨이퍼 재처리의 한 번뿐인 기회~90분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-semiconductor-fab-01",
+        "y": 5042.40625
+      },
+      {
+        "text": "🎬 영화 오마주Normal리팩토링달리는 열차의 벽 — 명부·배급·통행의 경계 다시 긋기~150분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s5-snowpiercer-01",
+        "y": 5407.171875
+      },
+      {
+        "text": "✈️ 역사적 해프닝 · 항공Hard리팩토링가방이 공항을 이긴 날 — 수하물 시스템의 경계 재설계~180분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s5-denver-01",
+        "y": 5571.953125
+      },
+      {
+        "text": "🔥 산불 대피소Hard도메인 로직 구현🤝 기획자 모드지도보다 먼저 차는 대피소~105분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-wildfire-shelter-01",
+        "y": 5736.734375
+      },
+      {
+        "text": "📚 도서관·분류Normal설계 리뷰설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-dewey-01",
+        "y": 6034.09375
+      },
+      {
+        "text": "📋 항공 · 오버부킹Normal설계 리뷰빈 좌석은 소멸한다 — 오버부킹 정책안 비평~60분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-overbooking-01",
+        "y": 6198.875
+      },
+      {
+        "text": "✈️ 항공 · 전산 마비Hard배역극결항 57편의 아침 — 항공사 마비의 세 가지 언어~100분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-roleplay-02",
+        "y": 6342.65625
+      },
+      {
+        "text": "🌿 스마트 온실Hard기능 추가🤝 기획자 모드비가 오는데 밸브가 열린 이유~120분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-greenhouse-control-01",
+        "y": 6507.4375
+      },
+      {
+        "text": "⚡ 전기요금 · 누진제Normal도메인 로직 구현요금 폭탄의 경계선 — 테스트 먼저 쓰는 누진제 계산기~120분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s7-tariff-01",
+        "y": 6872.203125
+      },
+      {
+        "text": "🌊 해운·항해Normal도메인 로직 구현물때를 아는 코드 — 입출항 시간창 계산기~130분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s7-tide-01",
+        "y": 7063.78125
+      },
+      {
+        "text": "💳 결제 · PG 연동Hard기능 추가타임아웃 너머의 결제 — 멱등키와 보상의 설계~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-payment-01",
+        "y": 7301.953125
+      },
+      {
+        "text": "💳 결제 · 장애 커뮤니케이션Normal배역극같은 사고, 세 개의 의자 — 이중청구의 밤~90분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-roleplay-01",
+        "y": 7445.734375
+      },
+      {
+        "text": "🎤 공연 티켓팅Hard리팩토링0.3초의 전쟁 — 같은 좌석이 두 번 팔리는 코드~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-ticketing-01",
+        "y": 7750.703125
+      },
+      {
+        "text": "🎓 대학 수강신청Hard코드 판독오전 10시 정각의 코드 — 수강신청 서버 판독~60분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-sugang-01",
+        "y": 7894.484375
+      },
+      {
+        "text": "🛒 커머스 · 재고Normal리팩토링재고가 세 곳에 사는 집 — 진실과 사본의 재설계~150분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s10-stock-01",
+        "y": 8132.65625
+      },
+      {
+        "text": "🗺 지도·측량Normal도메인 로직 구현하나의 위치, 세 개의 좌표 — 사본이 배달을 보낸 곳~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s10-coords-01",
+        "y": 8297.4375
+      },
+      {
+        "text": "☕ 카페 키오스크Normal리팩토링아메리카노 한 잔에 파일 일곱 개 — 과분리 레거시 병합~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s11-kiosk-01",
+        "y": 8556.609375
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "routine",
+    "route": "/routine",
+    "width": 375,
+    "overflow": 0,
+    "height": 1078,
+    "mainTop": 254,
+    "headings": [
+      "오늘의 훈련"
+    ],
+    "smallTargets": [],
+    "cards": 3,
+    "readOnlyCards": 3,
+    "mainText": "오늘의 훈련\n2026년 9월 14일 월\n월\n화\n수\n목\n금\n토\n일\n수사의 월요일\n단서를 열고, 판정을 내리고, 마지막엔 한 갈래를 고릅니다.\n🚆\n출근길 · ~11시\n사건 파일 오늘 단서\n사라지는 적립금 · Day 1\n🍜\n점심 · 11~17시\n머지 or 반려\n오늘의 판정 5장\n🗂\n저녁 · 17시~\n카드 갈래 1장\n정리하는 뇌\n\n3칸을 다 채울 필요는 없습니다. 어제의 나보다 한 문단 더 읽었으면 이긴 겁니다.",
+    "links": [
+      {
+        "text": "사라지는 적립금 · Day 1",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-vanishing-points-01",
+        "y": 551.5625
+      },
+      {
+        "text": "오늘의 판정 5장",
+        "href": "/workaround.co.kr-platform/advisor/routine/swipe",
+        "y": 710.90625
+      },
+      {
+        "text": "정리하는 뇌",
+        "href": "/workaround.co.kr-platform/advisor/games?card=read-levitin-01",
+        "y": 870.25
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "inflight",
+    "route": "/inflight",
+    "width": 375,
+    "overflow": 0,
+    "height": 1361,
+    "mainTop": 254,
+    "headings": [
+      "기내 훈련 팩",
+      "이번 비행 추천"
+    ],
+    "smallTargets": [
+      {
+        "text": "3분 한 판",
+        "width": 78.75,
+        "height": 38,
+        "y": 524.859375
+      },
+      {
+        "text": "10분 세 판",
+        "width": 84.765625,
+        "height": 38,
+        "y": 524.859375
+      },
+      {
+        "text": "30분 사건",
+        "width": 83.640625,
+        "height": 38,
+        "y": 570.859375
+      },
+      {
+        "text": "60분 혼합 코스",
+        "width": 110.390625,
+        "height": 38,
+        "y": 570.859375
+      },
+      {
+        "text": "운영",
+        "width": 53.0625,
+        "height": 38,
+        "y": 620.859375
+      },
+      {
+        "text": "설계",
+        "width": 53.0625,
+        "height": 38,
+        "y": 620.859375
+      },
+      {
+        "text": "동시성",
+        "width": 64.59375,
+        "height": 38,
+        "y": 620.859375
+      },
+      {
+        "text": "도메인 여행",
+        "width": 91.171875,
+        "height": 38,
+        "y": 666.859375
+      },
+      {
+        "text": "랜덤",
+        "width": 53.0625,
+        "height": 38,
+        "y": 666.859375
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 721.078125
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 721.078125
+      },
+      {
+        "text": "INPUT",
+        "width": 129,
+        "height": 16,
+        "y": 766.015625
+      },
+      {
+        "text": "INPUT",
+        "width": 129,
+        "height": 16,
+        "y": 805.453125
+      }
+    ],
+    "cards": 6,
+    "readOnlyCards": 3,
+    "mainText": "✈️ OFFLINE MODE\n기내 훈련 팩\n\n네트워크 없이 읽고 판단합니다. 진행 기록은 이 기기에만 저장됩니다.\n\n미열람 131개\n시간\n3분 한 판\n10분 세 판\n30분 사건\n60분 혼합 코스\n취향\n운영\n설계\n동시성\n도메인 여행\n랜덤\n본 콘텐츠 포함\n다시 볼 것만\n글자 크기\n줄 간격\n이번 비행 추천\n123개 선택 가능\n📖\n독서 카드 · 3분\n총, 균, 쇠\n→\n📖\n독서 카드 · 3분\n생각에 관한 생각\n→\n📖\n독서 카드 · 3분\n블랙 스완\n→\n착륙 후 온라인 기능\n\nAI 채팅·서버 동기화는 기내 팩에서 호출하지 않습니다. 연결이 돌아오면 기존 미션 화면에서 이용하세요.",
+    "links": [
+      {
+        "text": "📖독서 카드 · 3분총, 균, 쇠→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-ggs-01",
+        "y": 906.859375
+      },
+      {
+        "text": "📖독서 카드 · 3분생각에 관한 생각→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-kahneman-01",
+        "y": 997.234375
+      },
+      {
+        "text": "📖독서 카드 · 3분블랙 스완→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-blackswan-01",
+        "y": 1087.609375
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "season",
+    "route": "/season",
+    "width": 375,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 254,
+    "headings": [
+      "이번 시즌",
+      "나의 4스탯",
+      "최근 적립"
+    ],
+    "smallTargets": [],
+    "cards": 2,
+    "readOnlyCards": 2,
+    "mainText": "4주 성장 기록\n이번 시즌\n\n2026-09-14 — 2026-10-11\n\nD-27\n1일차\n나의 4스탯\n총 0\n👁안목\n0\n🗣언어화\n0\n🧭판단\n0\n📚교양\n0\n\n모든 슬롯을 채운 날 0일\n\n최근 적립\n최대 10건\n아직 적립 기록이 없습니다. 오늘의 훈련에서 카드 하나를 읽어 보세요.",
+    "links": [],
+    "errors": []
+  },
+  {
+    "name": "games",
+    "route": "/games",
+    "width": 375,
+    "overflow": 0,
+    "height": 5802,
+    "mainTop": 254,
+    "headings": [
+      "미니게임",
+      "🧰 전체 게임 · 다시하기",
+      "독서 카드",
+      "시사회 카드",
+      "머지 or 반려",
+      "한 번만 물어본다면",
+      "경계선 한 칸",
+      "사건 파일",
+      "최소 재현 실험실",
+      "동시성 순서 맞추기",
+      "벌크헤드 설계실",
+      "🗂 카드 서랍 — 읽는 데 3분, 꼬리 질문은 하루 종일",
+      "🔍 노코드 스낵 — 코드를 짜지 않고 읽고 판정하는 미션",
+      "🎮 바로 플레이",
+      "🎮 준비 중"
+    ],
+    "smallTargets": [
+      {
+        "text": "기내 팩 →",
+        "width": 49.75,
+        "height": 20.796875,
+        "y": 485.375
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 576.96875
+      }
+    ],
+    "cards": 50,
+    "readOnlyCards": 31,
+    "mainText": "미니게임\n\n데일리는 시즌 기록으로, 연습은 보상 없이 원하는 판을 몇 번이고.\n\n오늘의 훈련 ≠ 전체 게임 연습\n\n아래 연습 기록은 별도 로컬 저장소에 남고 데일리 완료·연속 기록·시즌 보상을 바꾸지 않습니다.\n\n🧰 전체 게임 · 다시하기\n기내 팩 →\n 미완료만\n📖\n독서 카드\n\n책의 통찰을 시스템 설계 질문으로 바꿉니다.\n\n20판 · 판당 약 3분 · 미완료 20\n연습\n🎬\n시사회 카드\n\n영화 장면을 구조·운영의 언어로 읽습니다.\n\n16판 · 판당 약 3분 · 미완료 16\n연습\n🃏\n머지 or 반려\n\n코드와 계약의 경계를 판정합니다.\n\n36판 · 판당 약 5분 · 미완료 36\n연습\n🔬\n한 번만 물어본다면\n\n가설을 가장 많이 줄이는 관측을 고릅니다.\n\n15판 · 판당 약 5분 · 미완료 15\n연습\n✂️\n경계선 한 칸\n\n실패가 머물 트랜잭션 경계를 선택합니다.\n\n12판 · 판당 약 5분 · 미완료 12\n연습\n🕵️\n사건 파일\n\n5개 단서를 자유롭게 열어 근본 원인을 추리합니다.\n\n8판 · 판당 약 30분 · 미완료 8\n연습\n🧫\n최소 재현 실험실\n\n변수를 덜어 실패를 재현 가능한 한 조각으로 만듭니다.\n\n8판 · 판당 약 4분 · 미완료 8\n연습\n🧵\n동시성 순서 맞추기\n\n경합하는 두 사건의 최종 판정자를 고릅니다.\n\n8판 · 판당 약 5분 · 미완료 8\n연습\n🚪\n벌크헤드 설계실\n\n한 실패가 자원 전체를 삼키지 못하도록 격리합니다.\n\n8판 · 판당 약 5분 · 미완료 8\n연습\n🗂 카드 서랍 — 읽는 데 3분, 꼬리 질문은 하루 종일\n📖 독서 (20)\n🎬 시사회 (16)\n🌾\n📖 독서\n총, 균, 쇠 · 재레드 다이아몬드\n▸\n🧠\n📖 독서\n생각에 관한 생각 · 대니얼 카너먼\n▸\n🦢\n📖 독서\n블랙 스완 · 나심 탈레브\n▸\n🧬\n📖 독서\n이기적 유전자 · 리처드 도킨스\n▸\n🗂\n📖 독서\n정리하는 뇌 · 대니얼 레비틴\n▸\n⚔️\n📖 독서\n전쟁론 · 카를 폰 클라우제비츠\n▸\n👉\n📖 독서\n넛지 · 리처드 탈러 · 캐스 선스타인\n▸\n🌪\n📖 독서\n안티프래질 · 나심 탈레브\n▸\n🧭\n📖 독서\n테세우스의 배 · 플루타르코스\n▸\n🌱\n📖 독서\n침묵의 봄 · 레이첼 카슨\n▸\n🗺️\n📖 독서\n국가처럼 보기 · 제임스 C. 스콧\n▸\n🔭\n📖 독서\n과학혁명의 구조 · 토머스 쿤\n▸\n✅\n📖 독서\n체크리스트 선언 · 아툴 가완디\n▸\n🧩\n📖 독서\n지도와 영토 · 앨프리드 코르집스키\n▸\n⚙️\n📖 독서\n정상 사고 · 찰스 페로\n▸\n⏳\n📖 독서\n결핍의 경제학 · 센딜 멀레이너선\n▸\n🔒\n📖 독서\n블랙박스 사회 · 프랭크 파스콸레\n▸\n🚪\n📖 독서\n일상의 디자인 · 도널드 노먼\n▸\n📡\n📖 독서\n신호와 소음 · 네이트 실버\n▸\n🕸️\n📖 독서\n전환점 · 프리초프 카프라\n▸\n🔍 노코드 스낵 — 코드를 짜지 않고 읽고 판정하는 미션\n설계 리뷰 · Normal\n설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게\n코드 판독 · Normal\n도장 하나가 수억을 지킨다 — 배당 계산기 판독\n코드 판독 · Hard\n오전 10시 정각의 코드 — 수강신청 서버 판독\n설계 리뷰 · Normal\n빈 좌석은 소멸한다 — 오버부킹 정책안 비평\n배역극 · Normal\n같은 사고, 세 개의 의자 — 이중청구의 밤\n배역극 · Hard\n결항 57편의 아침 — 항공사 마비의 세 가지 언어\n🧊\n코드 판독 · Easy\n백신 상자의 마지막 온도\n🚰\n설계 리뷰 · Easy\n탁도 경보가 놓친 3분\n🎮 바로 플레이\n✂️\n경계선 한 칸\n트랜잭션 경계 1탭 + 결과 비교 · 하루 한 판\n경계 긋기 →\n🔬\n한 번만 물어본다면\n관측 1탭 + 가설 지목 1탭 · 하루 한 판\n관측 →\n🃏\n머지 or 반려\n코드 판정 1탭 + 근거 토큰 1탭 · 샘플 카드 5장\n플레이 →\n🕵️\n사라지는 적립금\n매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다\n수사 →\n🚦\n모든 신호가 빨간불이 된 아침\n사고는 없었다. 열차도 없었다 — 단 한 대도 움직이지 못했으니까\n수사 →\n🧪\n얼지 않은 백신\n센서 값은 정상인데 일부 상자만 효능 검사가 실패한다\n수사 →\n💡\n밤마다 밝아지는 전시실\n폐관 뒤 조명이 켜져 민감한 작품의 누적 노출이 늘어난다\n수사 →\n🔬\n사라진 웨이퍼 17장\n재공품 목록과 실제 장비 투입 수가 하루마다 벌어진다\n수사 →\n🗺️\n지도에는 빈 대피소\n현장에서는 만석인데 안내 앱은 계속 자리가 있다고 말한다\n수사 →\n🌧️\n비 오는 날의 관수\n비가 온 직후에도 자동 관수가 가장 오래 실행된다\n수사 →\n🚰\n조용한 탁도 경보\n민원은 늘지만 운영 화면의 정상률은 100%다\n수사 →\n🎮 준비 중\n📈\n시즌제 스탯\n4주 시즌, 안목·언어화·판단·교양 — 준비 중",
+    "links": [
+      {
+        "text": "기내 팩 →",
+        "href": "/workaround.co.kr-platform/advisor/inflight",
+        "y": 485.375
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-ggs-01",
+        "y": 708.9375
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/cinema/film-martian-01",
+        "y": 879.71875
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/swipe/swipe-tx-self-01",
+        "y": 1050.5
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/probe/probe-slow-api-01",
+        "y": 1221.28125
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/boundary/boundary-order-01",
+        "y": 1392.0625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/case/case-vanishing-points-01",
+        "y": 1562.84375
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/minimal-repro/minimal-repro-01",
+        "y": 1733.625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/concurrency-sequencing/concurrency-sequencing-01",
+        "y": 1904.40625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/bulkheads/bulkheads-01",
+        "y": 2075.1875
+      },
+      {
+        "text": "설계 리뷰 · Normal설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-dewey-01",
+        "y": 3924.375
+      },
+      {
+        "text": "코드 판독 · Normal도장 하나가 수억을 지킨다 — 배당 계산기 판독",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-jeonse-01",
+        "y": 4005.0625
+      },
+      {
+        "text": "코드 판독 · Hard오전 10시 정각의 코드 — 수강신청 서버 판독",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-sugang-01",
+        "y": 4085.75
+      },
+      {
+        "text": "설계 리뷰 · Normal빈 좌석은 소멸한다 — 오버부킹 정책안 비평",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-overbooking-01",
+        "y": 4166.4375
+      },
+      {
+        "text": "배역극 · Normal같은 사고, 세 개의 의자 — 이중청구의 밤",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-roleplay-01",
+        "y": 4247.125
+      },
+      {
+        "text": "배역극 · Hard결항 57편의 아침 — 항공사 마비의 세 가지 언어",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-roleplay-02",
+        "y": 4327.8125
+      },
+      {
+        "text": "🧊코드 판독 · Easy백신 상자의 마지막 온도",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-cold-chain-01",
+        "y": 4408.5
+      },
+      {
+        "text": "🚰설계 리뷰 · Easy탁도 경보가 놓친 3분",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-water-treatment-01",
+        "y": 4489.1875
+      },
+      {
+        "text": "✂️경계선 한 칸트랜잭션 경계 1탭 + 결과 비교 · 하루 한 판경계 긋기 →",
+        "href": "/workaround.co.kr-platform/advisor/games/boundary",
+        "y": 4621.46875
+      },
+      {
+        "text": "🔬한 번만 물어본다면관측 1탭 + 가설 지목 1탭 · 하루 한 판관측 →",
+        "href": "/workaround.co.kr-platform/advisor/games/probe",
+        "y": 4702.15625
+      },
+      {
+        "text": "🃏머지 or 반려코드 판정 1탭 + 근거 토큰 1탭 · 샘플 카드 5장플레이 →",
+        "href": "/workaround.co.kr-platform/advisor/routine/swipe",
+        "y": 4782.84375
+      },
+      {
+        "text": "🕵️사라지는 적립금매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-vanishing-points-01",
+        "y": 4863.53125
+      },
+      {
+        "text": "🚦모든 신호가 빨간불이 된 아침사고는 없었다. 열차도 없었다 — 단 한 대도 움직이지 못했으니까수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-all-red-morning-01",
+        "y": 4962.609375
+      },
+      {
+        "text": "🧪얼지 않은 백신센서 값은 정상인데 일부 상자만 효능 검사가 실패한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-01-cold-room",
+        "y": 5061.6875
+      },
+      {
+        "text": "💡밤마다 밝아지는 전시실폐관 뒤 조명이 켜져 민감한 작품의 누적 노출이 늘어난다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-02-museum-light",
+        "y": 5160.765625
+      },
+      {
+        "text": "🔬사라진 웨이퍼 17장재공품 목록과 실제 장비 투입 수가 하루마다 벌어진다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-03-fab-queue",
+        "y": 5259.84375
+      },
+      {
+        "text": "🗺️지도에는 빈 대피소현장에서는 만석인데 안내 앱은 계속 자리가 있다고 말한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-04-shelter-map",
+        "y": 5358.921875
+      },
+      {
+        "text": "🌧️비 오는 날의 관수비가 온 직후에도 자동 관수가 가장 오래 실행된다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-05-greenhouse-rain",
+        "y": 5458
+      },
+      {
+        "text": "🚰조용한 탁도 경보민원은 늘지만 운영 화면의 정상률은 100%다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-06-water-alarm",
+        "y": 5538.6875
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "projects",
+    "route": "/projects",
+    "width": 375,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 254,
+    "headings": [
+      "프로젝트 — 맨땅에서"
+    ],
+    "smallTargets": [],
+    "cards": 1,
+    "readOnlyCards": 0,
+    "mainText": "프로젝트 — 맨땅에서\n\n이번엔 물려받을 코드가 없습니다.\n\n🚲\n공공자전거\n공공자전거 시스템 — 맨땅에서\n\n대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.\n\n0 / 6",
+    "links": [
+      {
+        "text": "🚲공공자전거공공자전거 시스템 — 맨땅에서대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.0 / 6",
+        "href": "/workaround.co.kr-platform/advisor/projects/p-bike-01",
+        "y": 357.984375
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "history",
+    "route": "/missions/history",
+    "width": 375,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 254,
+    "headings": [
+      "성장 기록",
+      "기록에 이름을 남깁니다"
+    ],
+    "smallTargets": [
+      {
+        "text": "와인 추천기",
+        "width": 73.421875,
+        "height": 19,
+        "y": 748.734375
+      },
+      {
+        "text": "✕",
+        "width": 27.4375,
+        "height": 31,
+        "y": 324.90625
+      },
+      {
+        "text": "예: 김부장",
+        "width": 294,
+        "height": 39,
+        "y": 432.890625
+      },
+      {
+        "text": "엔진 토큰",
+        "width": 294,
+        "height": 39,
+        "y": 539.078125
+      }
+    ],
+    "cards": 6,
+    "readOnlyCards": 6,
+    "mainText": "성장 기록\n\n세상을 구조로 읽은 흔적들\n\n0\n제출한 미션 수\n0\n설명 과제 수\n—\n다녀온 도메인 수 (0)\nS1\nS2\nS3\nS4\nS5\nS6\nS7\nS8\nS9\nS10\nS11\n스테이지 진행 현황\n\n아직 기록이 없습니다. 세상은 여전히 if문 범벅인 채로 당신을 기다리고 있습니다.\n\n일단 와인 추천기부터 뜯어보러 가볼까요?\n\n✕\n기록에 이름을 남깁니다\n\n커밋에 작성자가 있듯, 제출에도 이름이 남습니다. 구분용 닉네임 하나면 됩니다.\n\n고급 — 엔진 토큰(선택)\n확인",
+    "links": [
+      {
+        "text": "와인 추천기",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 748.734375
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "mission",
+    "route": "/missions/s1-wine-01",
+    "width": 375,
+    "overflow": 0,
+    "height": 1668,
+    "mainTop": 254,
+    "headings": [
+      "와인 추천기의 뒤엉킨 책임 풀어내기",
+      "소믈리에는 사실 규칙 엔진이다 — 와인 추천의 세계",
+      "품종이 8할이다",
+      "빈티지와 테루아",
+      "페어링은 감이 아니라 규칙",
+      "그래서 추천 시스템은 규칙 덩어리"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미션 목록",
+        "width": 60.984375,
+        "height": 16,
+        "y": 275
+      },
+      {
+        "text": "도메인 브리핑",
+        "width": 108.34375,
+        "height": 39,
+        "y": 428.765625
+      },
+      {
+        "text": "미션",
+        "width": 56.234375,
+        "height": 39,
+        "y": 428.765625
+      },
+      {
+        "text": "제출",
+        "width": 56.234375,
+        "height": 39,
+        "y": 428.765625
+      },
+      {
+        "text": "설명 훈련",
+        "width": 84.125,
+        "height": 39,
+        "y": 428.765625
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미션 목록\nS1 · 분리의 감각\n리팩토링\nEasy\n📐 단일 파일\n🍷 와인\n와인 추천기의 뒤엉킨 책임 풀어내기\n도메인 브리핑\n미션\n제출\n설명 훈련\n소믈리에는 사실 규칙 엔진이다 — 와인 추천의 세계\n품종이 8할이다\n\n와인 맛의 큰 틀은 포도 품종(varietal) 이 결정합니다. 카베르네 소비뇽은 타닌이 강하고 묵직하며(풀바디), 피노 누아는 가볍고 산미가 살아 있고, 리슬링은 향이 화려하며 단맛부터 드라이까지 폭이 넓습니다. 샤르도네는 양조 방식에 따라 버터 같은 풍미부터 미네랄한 맛까지 변신하는 팔색조죠.\n\n빈티지와 테루아\n\n라벨의 연도인 빈티지(vintage) 는 포도를 수확한 해입니다. 그해 일조량과 강수량이 포도 품질을 좌우하기 때문에 같은 밭이라도 해마다 맛과 가격이 달라집니다. 테루아(terroir) 는 토양·기후·경사 등 밭의 환경 전체를 가리키는 말로, \"부르고뉴는 밭 이름으로 와인을 판다\"는 말이 나올 만큼 유럽 와인 가격의 핵심 변수입니다.\n\n페어링은 감이 아니라 규칙\n\n음식 궁합(페어링)에는 검증된 규칙이 있습니다. 붉은 고기의 지방과 단백질은 타닌을 부드럽게 만들어 주기 때문에 스테이크·삼겹살에는 타닌 강한 레드가 어울리고, 매운 음식에는 알코올이 낮고 살짝 단 리슬링이 매운맛을 식혀 줍니다. 굴이나 회처럼 비린 해산물에 레드를 곁들이면 철분과 타닌이 만나 쇠맛이 나기 때문에 산미 좋은 화이트를 권하죠.\n\n그래서 추천 시스템은 규칙 덩어리\n\n소믈리에의 머릿속을 들여다보면 \"바디 선호 ±1 이내인가\", \"예산 안인가\", \"음식과 품종 궁합 규칙에 걸리는가\" 같은 규칙의 조합과 가중치 계산이 돌아갑니다. 와인 추천 소프트웨어가 if문 범벅이 되기 쉬운 이유가 바로 이것인데, 규칙이 많다는 것과 규칙이 한 덩어리여야 한다는 것은, 전혀 다른 이야기인데도요.\n\n브리핑 읽었어요 → 미션 보기\n💬 질문하기",
+    "links": [
+      {
+        "text": "← 미션 목록",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "review",
+    "route": "/missions/s1-wine-01/review",
+    "width": 375,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 254,
+    "headings": [
+      "리뷰 — 와인 추천기의 뒤엉킨 책임 풀어내기"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미션으로",
+        "width": 57.578125,
+        "height": 16,
+        "y": 275
+      },
+      {
+        "text": "미션 페이지",
+        "width": 59.65625,
+        "height": 16,
+        "y": 362.984375
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미션으로\n리뷰 — 와인 추천기의 뒤엉킨 책임 풀어내기\n아직 코드를 제출하지 않았습니다. 미션 페이지에서 제출하세요.\n코드 고쳐서 재제출\n다음 미션으로",
+    "links": [
+      {
+        "text": "← 미션으로",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 275
+      },
+      {
+        "text": "미션 페이지",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 362.984375
+      },
+      {
+        "text": "코드 고쳐서 재제출",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 435.578125
+      },
+      {
+        "text": "다음 미션으로",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 435.578125
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "probe",
+    "route": "/games/probe",
+    "width": 375,
+    "overflow": 0,
+    "height": 1216,
+    "mainTop": 254,
+    "headings": [
+      "한 번만 물어본다면",
+      "금요일 오후의 p99",
+      "무엇이 원인일까요?",
+      "딱 하나만 확인할 수 있다면?"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 275
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🐢 오늘의 한 판\n한 번만 물어본다면\n\n관측은 한 번뿐. 결과를 본 뒤 가장 그럴듯한 가설을 지목하세요.\n\n상황\n금요일 오후의 p99\n\n주문 조회 API의 p99 응답시간이 오늘 오후부터 3배로 뛰었습니다. 평균은 거의 그대로라 대부분의 사용자는 모르지만, 그래프의 꼬리는 분명히 두꺼워졌습니다. 배포는 오늘 없었습니다. 퇴근 전에 방향은 잡아야 합니다 — 관측할 시간은 한 번뿐입니다.\n\n가설\n무엇이 원인일까요?\n📇 DB 인덱스를 안 타는 쿼리가 생겼다 (데이터 분포 변화)\n🔌 외부 결제사 API가 간헐적으로 느리다\n🗑 JVM GC가 길게 멈추고 있다\n1 · 관측\n딱 하나만 확인할 수 있다면?\n외부 결제사 호출 구간의 지연 분포를 본다\n오늘 오후의 슬로우 쿼리 로그를 연다\n서버 평균 CPU 사용률을 확인한다",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "boundary",
+    "route": "/games/boundary",
+    "width": 375,
+    "overflow": 0,
+    "height": 1344,
+    "mainTop": 254,
+    "headings": [
+      "경계선 한 칸",
+      "이벤트 당일의 주문 흐름",
+      "세로 파이프라인",
+      "어디까지 묶을까요?"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 275
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🛒 오늘의 한 판\n경계선 한 칸\n\n어디까지 같은 운명으로 묶을지 고르세요. 실패는 사라지지 않고, 머물 방만 달라집니다.\n\n상황\n이벤트 당일의 주문 흐름\n\n내일 아침 10시, 한정판 드롭 이벤트가 열립니다. 평소의 10배 트래픽이 예고돼 있고, 운영팀의 요구는 명확합니다 — \"재고는 나중에 맞출 수 있다. 그러나 돈이 두 번 나가는 것과 주문이 증발하는 것은 안 된다.\" 주문 흐름의 트랜잭션 경계를 오늘 정해야 합니다.\n\n업무 흐름\n세로 파이프라인\n1\n주문 생성\n2\n재고 차감\n3\n결제 승인 (외부 PG)\n4\n알림 발송\n1 · 경계 선택\n어디까지 묶을까요?\n전부 하나로 — 주문·재고·결제·알림을 한 트랜잭션에\n주문+재고까지만 — 결제·알림은 밖에서 보상으로\n주문만 확정 — 재고·결제·알림은 비동기 사가로",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "case",
+    "route": "/games/case/case-vanishing-points-01",
+    "width": 375,
+    "overflow": 0,
+    "height": 1293,
+    "mainTop": 254,
+    "headings": [
+      "사라지는 적립금",
+      "수사 기록"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 275
+      }
+    ],
+    "cards": 2,
+    "readOnlyCards": 2,
+    "mainText": "← 미니게임\n🕵️ 사건 파일 · 1/5일\n사라지는 적립금\n\n매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다\n\n구독형 커머스 「데일리박스」의 CS 게시판에 같은 문의가 사흘째 쌓이고 있습니다. \"적립금이 어제보다 줄었어요. 쓴 적이 없는데요.\" 금액은 제각각이고, 전원도 아니고 일부 고객만. 재현은 안 되고, 그래프는 새벽에만 움직입니다. 당신은 오늘부터 닷새간 매일 단서 하나씩을 받습니다. 서두르지 마세요 — 결론을 아끼는 것이 수사의 절반입니다.\n\n하루에 단서 하나\n\n로컬 날짜가 바뀌면 다음 단서가 열립니다.\n\n몰아보기\n수사 기록\nDay 1 · 민원과 그래프\n피해자들의 공통점\n\n민원 41건 표본 정리:\n\n피해 금액: 100~3,000P, 고객마다 다름. 단 같은 고객은 항상 같은 금액이 반복해서 빠짐.\n발생 시각: 고객이 알아챈 건 아침이지만, 포인트 이력상 차감 기록은 새벽 0시대와 새벽 1시대에 몰려 있음.\n피해 고객 공통점: 전원이 \"포인트 자동 소멸 안내\" 대상자 (유효기간 만료 포인트 보유).\n비피해 고객: 만료 예정 포인트가 없는 고객은 단 한 건도 없음.\n\n📎 수사 노트: 만료 포인트 차감 자체는 정상 업무다. 문제는 \"얼마나\" 빠졌는가다.",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "swipe",
+    "route": "/routine/swipe",
+    "width": 375,
+    "overflow": 0,
+    "height": 952,
+    "mainTop": 254,
+    "headings": [
+      "머지 or 반려",
+      "삭제 API에 멱등 의미를 문서화하고 구현한다",
+      "1. 판정"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 275
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🃏 오늘의 판정 5장\n머지 or 반려\n\n판정을 고르고, 근거 하나를 붙이세요. 질문 없이는 판단할 수 없는 코드도 있습니다.\n\n1 / 5\n삭제 API에 멱등 의미를 문서화하고 구현한다\n// PR #428\nResult handle(Request request) {\n    return policy.delete_idempotent(request);\n}\n1. 판정\n✅ 머지\n❌ 반려\n❓ 질문 필요",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "practice",
+    "route": "/games/practice/minimal-repro",
+    "width": 375,
+    "overflow": 0,
+    "height": 1025,
+    "mainTop": 254,
+    "headings": [
+      "빈 목록에서만 합계가 NaN"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 전체 게임",
+        "width": 343,
+        "height": 20.796875,
+        "y": 270
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 전체 게임\n🧫 최소 재현 실험실 · 1/8\n연습 모드 · 보상/연속 기록 없음\n빈 목록에서만 합계가 NaN\n\n빈 목록에서만 합계가 NaN. 정상 경로는 통과하지만 경계 조건에서만 반복되는 합성 장애 상황입니다.\n\n가장 작은 재현 실험은 무엇입니까?\n\n입력을 0개와 1개로 줄이고 초기값 유무를 비교한다\n전체 시스템을 재시작해 다시 본다\n모든 요청을 하나의 전역 락으로 감싼다\n선택하고 해설 보기\n처음부터 다시\n다음 판\n무작위\n안 본 판\n이 게임 연습 기록만 지우기",
+    "links": [
+      {
+        "text": "← 전체 게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 270
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "journey",
+    "route": "/projects/p-bike-01",
+    "width": 375,
+    "overflow": 0,
+    "height": 3635,
+    "mainTop": 254,
+    "headings": [
+      "공공자전거 시스템 — 맨땅에서",
+      "도시의 혈관",
+      "요금은 단순하고, 현실은 아니다",
+      "운영의 최대 난제 — 자전거는 흐른다",
+      "이번엔 물려받을 코드가 없습니다",
+      "스스로 결정하세요"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 프로젝트 목록",
+        "width": 83.484375,
+        "height": 16,
+        "y": 275
+      },
+      {
+        "text": "예: src/main/java/wine/WineRecommender.java",
+        "width": 207,
+        "height": 31,
+        "y": 2596.953125
+      },
+      {
+        "text": "✕",
+        "width": 34,
+        "height": 31,
+        "y": 2596.953125
+      }
+    ],
+    "cards": 3,
+    "readOnlyCards": 3,
+    "mainText": "← 프로젝트 목록\n🚲 공공자전거\n공공자전거 시스템 — 맨땅에서\n\n대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.\n\n아침 8시, 자전거는 왜 항상 없는가\n도시의 혈관\n\n서울의 공공자전거 따릉이는 대여소 수천 개, 자전거 수만 대 규모의 시스템입니다. 하루 수십만 건의 대여가 일어나고, 시민은 아무 대여소에서 빌려 아무 대여소에나 반납합니다. 이 \"아무 데나 반납\"이 공공자전거의 매력이자, 운영의 모든 골칫거리의 시작입니다.\n\n요금은 단순하고, 현실은 아니다\n\n요금 체계 자체는 간명합니다 — 기본권(1시간권, 일권)을 사고, 기본 시간을 넘기면 초과요금이 붙습니다. 하지만 그 간명한 규칙 아래에서 시스템은 대여와 반납의 짝을 맞추고, 시간을 재고, 미반납을 추적해야 합니다. 규칙이 쉬운 것과 규칙을 지키는 코드가 쉬운 것은 다른 이야기입니다.\n\n운영의 최대 난제 — 자전거는 흐른다\n\n그리고 재배치. 아침 출근 시간, 주거지역 대여소는 텅 비고 업무지구 대여소는 자전거가 넘쳐 거치대가 모자랍니다. 자전거가 지형과 출퇴근의 물길을 따라 한쪽으로 쏠리는 겁니다. 그래서 매일 밤, 트럭들이 도시를 돌며 자전거를 거꾸로 실어 나릅니다 — 시민이 낮에 옮긴 것을 사람이 밤에 되돌리는, 보이지 않는 노동. 어느 대여소에서 몇 대가 빠져나가고 몇 대가 들어오는지를 아는 것이 이 노동의 시작이고, 그것은 정확히 데이터 문제입니다.\n\n이번엔 물려받을 코드가 없습니다\n\n지금까지 여러분은 남이 만든 코드를 길들여 왔습니다. 이번에는 다릅니다. 빈 디렉터리에서 시작해 도메인 모델부터 시청 보고서까지, 여섯 걸음으로 이 시스템을 세웁니다. 모든 결정이 당신의 것이고, 모든 결과도 그렇습니다 — 세 걸음쯤 뒤에, 오늘의 결정이 당신을 기다리고 있을 겁니다.\n\n0 / 6\n▶\n도메인 모델 — 이름을 먼저 짓는다\n~60분\n자전거·대여소·회원·대여를 코드의 언어로 옮긴 첫 모델\n\n첫 걸음은 기능이 아니라 이름입니다. 이 세계에는 자전거(Bike), 대여소(Station), 회원(Member), 그리고 대여(Rental)가 삽니다. 각각을 클래스(또는 레코드)로 만들고, 서로가 서로를 어떻게 가리키는지 정하세요.\n\n아직 대여 로직도, 요금도, 저장소도 없습니다. 지금 정하는 것은 오직 구조 — 무엇이 무엇을 아는가, 각 개념의 식별자는 무엇인가, 상태(고장, 대여 중)는 어디에 사는가입니다. 운영 매뉴얼의 문장(\"QR을 찍으면 대여가 시작된다\", \"고장 신고된 자전거는 정비 대상이다\")이 여러분의 클래스 이름으로 자연스럽게 번역되는지가 시금석입니다.\n\n사소해 보이는 결정들이 사실 이 프로젝트 전체의 지반입니다. 다음 다섯 걸음이 전부 이 모델 위에 쌓입니다.\n\n스스로 결정하세요\n☐ 대여(Rental)는 자전거에 붙는 상태인가, 독립적인 개념(자기 식별자를 가진 기록)인가? 반납 후에도 대여 기록이 남아야 한다면 답이 달라지는가?\n☐ 각 개념의 식별자는 무엇인가 — 자전거 차체 번호, 회원 전화번호, 대여소 이름? 바뀔 수 있는 값을 식별자로 삼으면 무슨 일이 생기는가?\n☐ \"고장\"은 Bike의 boolean 필드인가, 상태(enum)의 하나인가? 정비 중·폐기 같은 상태가 늘어난다면?\n\n제출물 — 도메인 클래스들(Bike, Station, Member, Rental 등)과 각 설계 결정의 이유를 짧게 적은 노트. 실행 코드나 main은 필요 없습니다.\n\n✕\n+ 파일 추가\n제출하고 리뷰 받기\n🔒\n대여와 반납 — 규칙이 코드가 되는 순간\n~90분\ns1 모델 위에 대여·반납의 핵심 규칙 구현\n🔒\n요금 정책 — 숫자는 틀리면 민원이 된다\n~90분\n기본권·초과요금·미반납 페널티의 정확한 계산\n🔒\n저장 경계 — 어제의 결정이 당신을 기다린다\n~90분\n도메인이 저장 기술을 모르게 — repository 경계 설계\n🔒\n재배치 리포트 — 아침 8시의 강남\n~90분\n대여소별 유입·유출 집계로 쏠림을 숫자로 드러내기\n🔒\n시청 보고서 — 숫자로 트럭을 얻어 내라\n~60분\ns5의 집계를 근거로 재배치 예산을 설득하는 글",
+    "links": [
+      {
+        "text": "← 프로젝트 목록",
+        "href": "/workaround.co.kr-platform/advisor/projects",
+        "y": 275
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "home",
+    "route": "/missions",
+    "width": 1440,
+    "overflow": 0,
+    "height": 5100,
+    "mainTop": 215.515625,
+    "headings": [
+      "오늘도 세상 하나를 구조로 읽어봅시다"
+    ],
+    "smallTargets": [
+      {
+        "text": "Easy",
+        "width": 50.390625,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "Normal",
+        "width": 64.953125,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "Hard",
+        "width": 51.921875,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "단일 파일",
+        "width": 72.546875,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "여러 파일",
+        "width": 72.546875,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "모듈 경계",
+        "width": 72.546875,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "리팩토링",
+        "width": 69.25,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "기능 추가",
+        "width": 72.546875,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "도메인 로직 구현",
+        "width": 108.265625,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "설계 리뷰",
+        "width": 72.546875,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "코드 판독",
+        "width": 72.546875,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "배역극",
+        "width": 58.4375,
+        "height": 29,
+        "y": 528.875
+      },
+      {
+        "text": "제목·도메인으로 찾기",
+        "width": 260,
+        "height": 31,
+        "y": 603.0625
+      }
+    ],
+    "cards": 42,
+    "readOnlyCards": 1,
+    "mainText": "오늘도 세상 하나를 구조로 읽어봅시다\n\n도메인 상식 브리핑 → 레거시 리팩토링/기능 추가 → 에이전트 리뷰 → 설명 훈련. 지금까지 0개 미션을 제출했습니다.\n\n🚆\n🍜\n🗂\n오늘의 훈련 0/3\n→\n🚲 새로운 모드: 프로젝트 — 맨땅에서\n→\n난이도\nEasy\nNormal\nHard\n범위\n단일 파일\n여러 파일\n모듈 경계\n유형\n리팩토링\n기능 추가\n도메인 로직 구현\n설계 리뷰\n코드 판독\n배역극\n검색\n총 39개 미션\n제1부\n분리와 계약\n코드 안의 전쟁 — 책임을 나누고, 계약을 긋고, 레거시를 길들인다\nS1\n분리의 감각\n“이 코드가 변경되는 이유는 몇 개인가?”\n🍷 와인\nEasy\n리팩토링\n와인 추천기의 뒤엉킨 책임 풀어내기\n~90분 · 단일 파일\n진행 가능\n🥖 제과·제빵\nEasy\n도메인 로직 구현\n베이커스 퍼센트 레시피 스케일러 만들기\n~90분 · 단일 파일\n진행 가능\n🎼 음악·합창단\nEasy\n도메인 로직 구현\n합창단 파트 배정기 — 이건 스케줄링 문제잖아\n~90분 · 단일 파일\n진행 가능\n🏠 부동산 · 주택청약\nNormal\n도메인 로직 구현\n84점 만점의 인생 — 청약 가점 계산기\n~100분 · 단일 파일\n진행 가능\n🎰 게임 · 확률형 아이템\nEasy\n도메인 로직 구현\n1%의 진실 — 가챠 확률 공시 계산기\n~90분 · 단일 파일\n진행 가능\n🧊 콜드체인\nEasy\n코드 판독\n🤝 기획자 모드\n백신 상자의 마지막 온도\n~45분 · 단일 파일\n진행 가능\nS2\n인터페이스는 계약\n“호출자는 무엇을 알아야 하고, 무엇을 몰라야 하는가?”\n🪑 가구 조립 파이프라인\nNormal\n기능 추가\n생산 라인에 공정 두 개를 끼워 넣어라\n~120분 · 여러 파일\n진행 가능\n🏗 건축\nNormal\n도메인 로직 구현\n건폐율·용적률 — 건축 가능 규모 검토기\n~150분 · 여러 파일\n진행 가능\n🩸 혈액형 수혈 매칭\nEasy\n도메인 로직 구현\n수혈 호환 매칭기 — 섞이면 안 되는 것을 코드로\n~90분 · 단일 파일\n진행 가능\n🌙 천문·시간\nNormal\n도메인 로직 구현\n당신의 연휴는 달이 정한다 — 공휴일 계산기\n~120분 · 여러 파일\n진행 가능\n⛵ 항해 · 해상충돌예방규칙\nNormal\n도메인 로직 구현\n바다의 프로토콜 — 누가 피할 것인가\n~110분 · 단일 파일\n진행 가능\n🚰 정수 처리\nEasy\n설계 리뷰\n🤝 기획자 모드\n탁도 경보가 놓친 3분\n~60분 · 단일 파일\n진행 가능\nS3\n의존성 역전\n“도메인 로직이 DB 없이 테스트되는가?”\n💱 금융\nNormal\n도메인 로직 구현\n적금 만기 해지 계산기 — 규칙을 코드로 번역하라\n~150분 · 여러 파일\n진행 가능\n🚂 시베리아 횡단철도\nNormal\n도메인 로직 구현\n모스크바 시간으로 달리는 열차 — 환승 계산기\n~150분 · 여러 파일\n진행 가능\n💼 기업 재무·회생\nNormal\n도메인 로직 구현\n🤝 기획자 모드\n워터폴의 맨 아래 — 회생 시나리오 시뮬레이터\n~150분 · 여러 파일\n진행 가능\n🎬 영화 오마주\nNormal\n도메인 로직 구현\n39분씩 어긋나는 달력 — 화성 기지 생존 계획기\n~140분 · 여러 파일\n진행 가능\n🏛️ 박물관 소장품 대여\nNormal\n도메인 로직 구현\n🤝 기획자 모드\n작품은 떠나도 책임은 남는다\n~75분 · 여러 파일\n진행 가능\nS4\n레거시 길들이기\n“무엇이 부서질지 모른 채 어떻게 고치는가?”\n🚌 대중교통 사내 시스템\nHard\n기능 추가\n30년 묵은 요금 계산기에 조조할인 넣기\n~180분 · 단일 파일\n진행 가능\n🚄 철도\nHard\n기능 추가\n🤝 기획자 모드\n통일호가 살아 있는 예매 시스템에 KTX 넣기\n~160분 · 여러 파일\n진행 가능\n🎬 영화 오마주\nNormal\n리팩토링\n검산 노트와 한 치도 다르지 않게 — 재진입 창 계산의 이관\n~150분 · 여러 파일\n진행 가능\n⚾ 야구 · 세이버메트릭스\nNormal\n리팩토링\n타율은 볼넷을 모른다 — 스카우팅 리포트에 OPS 넣기\n~140분 · 여러 파일\n진행 가능\n🏦 전세 · 경매 배당\nNormal\n코드 판독\n도장 하나가 수억을 지킨다 — 배당 계산기 판독\n~50분 · 단일 파일\n진행 가능\n💿 반도체 팹\nNormal\n기능 추가\n🤝 기획자 모드\n웨이퍼 재처리의 한 번뿐인 기회\n~90분 · 여러 파일\n진행 가능\n제2부\n구조와 세계\n시스템과 사람 — 경계는 코드가 아니라 세계에 긋는 것이다\nS5\n거대한 구조\n“어디서 모델을 갈라야 하는가?”\n🎬 영화 오마주\nNormal\n리팩토링\n달리는 열차의 벽 — 명부·배급·통행의 경계 다시 긋기\n~150분 · 모듈 경계\n진행 가능\n✈️ 역사적 해프닝 · 항공\nHard\n리팩토링\n가방이 공항을 이긴 날 — 수하물 시스템의 경계 재설계\n~180분 · 모듈 경계\n진행 가능\n🔥 산불 대피소\nHard\n도메인 로직 구현\n🤝 기획자 모드\n지도보다 먼저 차는 대피소\n~105분 · 모듈 경계\n진행 가능\nS6\n구조로 세상 읽기\n“이 시스템의 세계관은 무엇인가?”\n📚 도서관·분류\nNormal\n설계 리뷰\n설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게\n~120분 · 여러 파일\n진행 가능\n📋 항공 · 오버부킹\nNormal\n설계 리뷰\n빈 좌석은 소멸한다 — 오버부킹 정책안 비평\n~60분 · 여러 파일\n진행 가능\n✈️ 항공 · 전산 마비\nHard\n배역극\n결항 57편의 아침 — 항공사 마비의 세 가지 언어\n~100분 · 여러 파일\n진행 가능\n🌿 스마트 온실\nHard\n기능 추가\n🤝 기획자 모드\n비가 오는데 밸브가 열린 이유\n~120분 · 모듈 경계\n진행 가능\n제3부\n현실의 압력\n테스트, 실패, 동시성, 데이터, 그리고 단순함 — 운영이 가르치는 것들\nS7\n테스트가 설계를 이끈다\n“테스트가 괴로운 건 테스트 탓인가, 설계 탓인가?”\n⚡ 전기요금 · 누진제\nNormal\n도메인 로직 구현\n요금 폭탄의 경계선 — 테스트 먼저 쓰는 누진제 계산기\n~120분 · 단일 파일\n진행 가능\n🌊 해운·항해\nNormal\n도메인 로직 구현\n물때를 아는 코드 — 입출항 시간창 계산기\n~130분 · 여러 파일\n진행 가능\nS8\n실패를 설계하다\n“이 시스템은 어떻게 죽고, 어떻게 다시 일어나는가?”\n💳 결제 · PG 연동\nHard\n기능 추가\n타임아웃 너머의 결제 — 멱등키와 보상의 설계\n~150분 · 여러 파일\n진행 가능\n💳 결제 · 장애 커뮤니케이션\nNormal\n배역극\n같은 사고, 세 개의 의자 — 이중청구의 밤\n~90분 · 여러 파일\n진행 가능\nS9\n동시성의 감각\n“이 코드에 두 명이 동시에 들어오면 무슨 일이 벌어지는가?”\n🎤 공연 티켓팅\nHard\n리팩토링\n0.3초의 전쟁 — 같은 좌석이 두 번 팔리는 코드\n~150분 · 여러 파일\n진행 가능\n🎓 대학 수강신청\nHard\n코드 판독\n오전 10시 정각의 코드 — 수강신청 서버 판독\n~60분 · 여러 파일\n진행 가능\nS10\n데이터가 흐르는 길\n“진실은 어디에 있고, 사본은 언제 거짓말하는가?”\n🛒 커머스 · 재고\nNormal\n리팩토링\n재고가 세 곳에 사는 집 — 진실과 사본의 재설계\n~150분 · 모듈 경계\n진행 가능\n🗺 지도·측량\nNormal\n도메인 로직 구현\n하나의 위치, 세 개의 좌표 — 사본이 배달을 보낸 곳\n~140분 · 여러 파일\n진행 가능\nS11\n단순함의 철학\n“이 복잡함은 문제의 것인가, 우리가 만든 것인가?”\n☕ 카페 키오스크\nNormal\n리팩토링\n아메리카노 한 잔에 파일 일곱 개 — 과분리 레거시 병합\n~120분 · 여러 파일\n진행 가능",
+    "links": [
+      {
+        "text": "🚆🍜🗂오늘의 훈련 0/3→",
+        "href": "/workaround.co.kr-platform/advisor/routine",
+        "y": 339.5
+      },
+      {
+        "text": "🚲 새로운 모드: 프로젝트 — 맨땅에서→",
+        "href": "/workaround.co.kr-platform/advisor/projects",
+        "y": 399.09375
+      },
+      {
+        "text": "🍷 와인Easy리팩토링와인 추천기의 뒤엉킨 책임 풀어내기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 855.25
+      },
+      {
+        "text": "🥖 제과·제빵Easy도메인 로직 구현베이커스 퍼센트 레시피 스케일러 만들기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-bakery-01",
+        "y": 855.25
+      },
+      {
+        "text": "🎼 음악·합창단Easy도메인 로직 구현합창단 파트 배정기 — 이건 스케줄링 문제잖아~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-choir-01",
+        "y": 855.25
+      },
+      {
+        "text": "🏠 부동산 · 주택청약Normal도메인 로직 구현84점 만점의 인생 — 청약 가점 계산기~100분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-cheongyak-01",
+        "y": 999.03125
+      },
+      {
+        "text": "🎰 게임 · 확률형 아이템Easy도메인 로직 구현1%의 진실 — 가챠 확률 공시 계산기~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-gacha-01",
+        "y": 999.03125
+      },
+      {
+        "text": "🧊 콜드체인Easy코드 판독🤝 기획자 모드백신 상자의 마지막 온도~45분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-cold-chain-01",
+        "y": 999.03125
+      },
+      {
+        "text": "🪑 가구 조립 파이프라인Normal기능 추가생산 라인에 공정 두 개를 끼워 넣어라~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-furniture-01",
+        "y": 1260.40625
+      },
+      {
+        "text": "🏗 건축Normal도메인 로직 구현건폐율·용적률 — 건축 가능 규모 검토기~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-zoning-01",
+        "y": 1260.40625
+      },
+      {
+        "text": "🩸 혈액형 수혈 매칭Easy도메인 로직 구현수혈 호환 매칭기 — 섞이면 안 되는 것을 코드로~90분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-blood-01",
+        "y": 1260.40625
+      },
+      {
+        "text": "🌙 천문·시간Normal도메인 로직 구현당신의 연휴는 달이 정한다 — 공휴일 계산기~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-lunar-01",
+        "y": 1425.1875
+      },
+      {
+        "text": "⛵ 항해 · 해상충돌예방규칙Normal도메인 로직 구현바다의 프로토콜 — 누가 피할 것인가~110분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s2-colreg-01",
+        "y": 1425.1875
+      },
+      {
+        "text": "🚰 정수 처리Easy설계 리뷰🤝 기획자 모드탁도 경보가 놓친 3분~60분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-water-treatment-01",
+        "y": 1425.1875
+      },
+      {
+        "text": "💱 금융Normal도메인 로직 구현적금 만기 해지 계산기 — 규칙을 코드로 번역하라~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-interest-01",
+        "y": 1686.5625
+      },
+      {
+        "text": "🚂 시베리아 횡단철도Normal도메인 로직 구현모스크바 시간으로 달리는 열차 — 환승 계산기~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-transsib-01",
+        "y": 1686.5625
+      },
+      {
+        "text": "💼 기업 재무·회생Normal도메인 로직 구현🤝 기획자 모드워터폴의 맨 아래 — 회생 시나리오 시뮬레이터~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-homeplus-01",
+        "y": 1686.5625
+      },
+      {
+        "text": "🎬 영화 오마주Normal도메인 로직 구현39분씩 어긋나는 달력 — 화성 기지 생존 계획기~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s3-martian-01",
+        "y": 1949.53125
+      },
+      {
+        "text": "🏛️ 박물관 소장품 대여Normal도메인 로직 구현🤝 기획자 모드작품은 떠나도 책임은 남는다~75분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-museum-loan-01",
+        "y": 1949.53125
+      },
+      {
+        "text": "🚌 대중교통 사내 시스템Hard기능 추가30년 묵은 요금 계산기에 조조할인 넣기~180분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-transit-01",
+        "y": 2356.484375
+      },
+      {
+        "text": "🚄 철도Hard기능 추가🤝 기획자 모드통일호가 살아 있는 예매 시스템에 KTX 넣기~160분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-ktx-01",
+        "y": 2356.484375
+      },
+      {
+        "text": "🎬 영화 오마주Normal리팩토링검산 노트와 한 치도 다르지 않게 — 재진입 창 계산의 이관~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-figures-01",
+        "y": 2356.484375
+      },
+      {
+        "text": "⚾ 야구 · 세이버메트릭스Normal리팩토링타율은 볼넷을 모른다 — 스카우팅 리포트에 OPS 넣기~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-saber-01",
+        "y": 2521.265625
+      },
+      {
+        "text": "🏦 전세 · 경매 배당Normal코드 판독도장 하나가 수억을 지킨다 — 배당 계산기 판독~50분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-jeonse-01",
+        "y": 2521.265625
+      },
+      {
+        "text": "💿 반도체 팹Normal기능 추가🤝 기획자 모드웨이퍼 재처리의 한 번뿐인 기회~90분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-semiconductor-fab-01",
+        "y": 2521.265625
+      },
+      {
+        "text": "🎬 영화 오마주Normal리팩토링달리는 열차의 벽 — 명부·배급·통행의 경계 다시 긋기~150분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s5-snowpiercer-01",
+        "y": 2914.828125
+      },
+      {
+        "text": "✈️ 역사적 해프닝 · 항공Hard리팩토링가방이 공항을 이긴 날 — 수하물 시스템의 경계 재설계~180분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s5-denver-01",
+        "y": 2914.828125
+      },
+      {
+        "text": "🔥 산불 대피소Hard도메인 로직 구현🤝 기획자 모드지도보다 먼저 차는 대피소~105분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-wildfire-shelter-01",
+        "y": 2914.828125
+      },
+      {
+        "text": "📚 도서관·분류Normal설계 리뷰설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-dewey-01",
+        "y": 3259.390625
+      },
+      {
+        "text": "📋 항공 · 오버부킹Normal설계 리뷰빈 좌석은 소멸한다 — 오버부킹 정책안 비평~60분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-overbooking-01",
+        "y": 3259.390625
+      },
+      {
+        "text": "✈️ 항공 · 전산 마비Hard배역극결항 57편의 아침 — 항공사 마비의 세 가지 언어~100분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-roleplay-02",
+        "y": 3259.390625
+      },
+      {
+        "text": "🌿 스마트 온실Hard기능 추가🤝 기획자 모드비가 오는데 밸브가 열린 이유~120분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-greenhouse-control-01",
+        "y": 3424.171875
+      },
+      {
+        "text": "⚡ 전기요금 · 누진제Normal도메인 로직 구현요금 폭탄의 경계선 — 테스트 먼저 쓰는 누진제 계산기~120분 · 단일 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s7-tariff-01",
+        "y": 3776.140625
+      },
+      {
+        "text": "🌊 해운·항해Normal도메인 로직 구현물때를 아는 코드 — 입출항 시간창 계산기~130분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s7-tide-01",
+        "y": 3776.140625
+      },
+      {
+        "text": "💳 결제 · PG 연동Hard기능 추가타임아웃 너머의 결제 — 멱등키와 보상의 설계~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-payment-01",
+        "y": 4058.515625
+      },
+      {
+        "text": "💳 결제 · 장애 커뮤니케이션Normal배역극같은 사고, 세 개의 의자 — 이중청구의 밤~90분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-roleplay-01",
+        "y": 4058.515625
+      },
+      {
+        "text": "🎤 공연 티켓팅Hard리팩토링0.3초의 전쟁 — 같은 좌석이 두 번 팔리는 코드~150분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-ticketing-01",
+        "y": 4304.6875
+      },
+      {
+        "text": "🎓 대학 수강신청Hard코드 판독오전 10시 정각의 코드 — 수강신청 서버 판독~60분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-sugang-01",
+        "y": 4304.6875
+      },
+      {
+        "text": "🛒 커머스 · 재고Normal리팩토링재고가 세 곳에 사는 집 — 진실과 사본의 재설계~150분 · 모듈 경계진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s10-stock-01",
+        "y": 4550.859375
+      },
+      {
+        "text": "🗺 지도·측량Normal도메인 로직 구현하나의 위치, 세 개의 좌표 — 사본이 배달을 보낸 곳~140분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s10-coords-01",
+        "y": 4550.859375
+      },
+      {
+        "text": "☕ 카페 키오스크Normal리팩토링아메리카노 한 잔에 파일 일곱 개 — 과분리 레거시 병합~120분 · 여러 파일진행 가능",
+        "href": "/workaround.co.kr-platform/advisor/missions/s11-kiosk-01",
+        "y": 4818.03125
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "routine",
+    "route": "/routine",
+    "width": 1440,
+    "overflow": 0,
+    "height": 1061,
+    "mainTop": 215.515625,
+    "headings": [
+      "오늘의 훈련"
+    ],
+    "smallTargets": [],
+    "cards": 3,
+    "readOnlyCards": 3,
+    "mainText": "오늘의 훈련\n2026년 9월 14일 월\n월\n화\n수\n목\n금\n토\n일\n수사의 월요일\n단서를 열고, 판정을 내리고, 마지막엔 한 갈래를 고릅니다.\n🚆\n출근길 · ~11시\n사건 파일 오늘 단서\n사라지는 적립금 · Day 1\n🍜\n점심 · 11~17시\n머지 or 반려\n오늘의 판정 5장\n🗂\n저녁 · 17시~\n카드 갈래 1장\n정리하는 뇌\n\n3칸을 다 채울 필요는 없습니다. 어제의 나보다 한 문단 더 읽었으면 이긴 겁니다.",
+    "links": [
+      {
+        "text": "사라지는 적립금 · Day 1",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-vanishing-points-01",
+        "y": 530.28125
+      },
+      {
+        "text": "오늘의 판정 5장",
+        "href": "/workaround.co.kr-platform/advisor/routine/swipe",
+        "y": 693.625
+      },
+      {
+        "text": "정리하는 뇌",
+        "href": "/workaround.co.kr-platform/advisor/games?card=read-levitin-01",
+        "y": 856.96875
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "inflight",
+    "route": "/inflight",
+    "width": 1440,
+    "overflow": 0,
+    "height": 1030,
+    "mainTop": 215.515625,
+    "headings": [
+      "기내 훈련 팩",
+      "이번 비행 추천"
+    ],
+    "smallTargets": [
+      {
+        "text": "3분 한 판",
+        "width": 78.75,
+        "height": 38,
+        "y": 420.1875
+      },
+      {
+        "text": "10분 세 판",
+        "width": 84.765625,
+        "height": 38,
+        "y": 420.1875
+      },
+      {
+        "text": "30분 사건",
+        "width": 83.640625,
+        "height": 38,
+        "y": 420.1875
+      },
+      {
+        "text": "60분 혼합 코스",
+        "width": 110.390625,
+        "height": 38,
+        "y": 420.1875
+      },
+      {
+        "text": "운영",
+        "width": 53.0625,
+        "height": 38,
+        "y": 470.1875
+      },
+      {
+        "text": "설계",
+        "width": 53.0625,
+        "height": 38,
+        "y": 470.1875
+      },
+      {
+        "text": "동시성",
+        "width": 64.59375,
+        "height": 38,
+        "y": 470.1875
+      },
+      {
+        "text": "도메인 여행",
+        "width": 91.171875,
+        "height": 38,
+        "y": 470.1875
+      },
+      {
+        "text": "랜덤",
+        "width": 53.0625,
+        "height": 38,
+        "y": 470.1875
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 524.40625
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 524.40625
+      },
+      {
+        "text": "INPUT",
+        "width": 129,
+        "height": 16,
+        "y": 569.34375
+      },
+      {
+        "text": "INPUT",
+        "width": 129,
+        "height": 16,
+        "y": 569.34375
+      }
+    ],
+    "cards": 6,
+    "readOnlyCards": 3,
+    "mainText": "✈️ OFFLINE MODE\n기내 훈련 팩\n\n네트워크 없이 읽고 판단합니다. 진행 기록은 이 기기에만 저장됩니다.\n\n미열람 131개\n시간\n3분 한 판\n10분 세 판\n30분 사건\n60분 혼합 코스\n취향\n운영\n설계\n동시성\n도메인 여행\n랜덤\n본 콘텐츠 포함\n다시 볼 것만\n글자 크기\n줄 간격\n이번 비행 추천\n123개 선택 가능\n📖\n독서 카드 · 3분\n총, 균, 쇠\n→\n📖\n독서 카드 · 3분\n생각에 관한 생각\n→\n📖\n독서 카드 · 3분\n블랙 스완\n→\n착륙 후 온라인 기능\n\nAI 채팅·서버 동기화는 기내 팩에서 호출하지 않습니다. 연결이 돌아오면 기존 미션 화면에서 이용하세요.",
+    "links": [
+      {
+        "text": "📖독서 카드 · 3분총, 균, 쇠→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-ggs-01",
+        "y": 670.75
+      },
+      {
+        "text": "📖독서 카드 · 3분생각에 관한 생각→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-kahneman-01",
+        "y": 670.75
+      },
+      {
+        "text": "📖독서 카드 · 3분블랙 스완→",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-blackswan-01",
+        "y": 761.125
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "season",
+    "route": "/season",
+    "width": 1440,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 215.515625,
+    "headings": [
+      "이번 시즌",
+      "나의 4스탯",
+      "최근 적립"
+    ],
+    "smallTargets": [],
+    "cards": 2,
+    "readOnlyCards": 2,
+    "mainText": "4주 성장 기록\n이번 시즌\n\n2026-09-14 — 2026-10-11\n\nD-27\n1일차\n나의 4스탯\n총 0\n👁안목\n0\n🗣언어화\n0\n🧭판단\n0\n📚교양\n0\n\n모든 슬롯을 채운 날 0일\n\n최근 적립\n최대 10건\n아직 적립 기록이 없습니다. 오늘의 훈련에서 카드 하나를 읽어 보세요.",
+    "links": [],
+    "errors": []
+  },
+  {
+    "name": "games",
+    "route": "/games",
+    "width": 1440,
+    "overflow": 0,
+    "height": 5123,
+    "mainTop": 215.515625,
+    "headings": [
+      "미니게임",
+      "🧰 전체 게임 · 다시하기",
+      "독서 카드",
+      "시사회 카드",
+      "머지 or 반려",
+      "한 번만 물어본다면",
+      "경계선 한 칸",
+      "사건 파일",
+      "최소 재현 실험실",
+      "동시성 순서 맞추기",
+      "벌크헤드 설계실",
+      "🗂 카드 서랍 — 읽는 데 3분, 꼬리 질문은 하루 종일",
+      "🔍 노코드 스낵 — 코드를 짜지 않고 읽고 판정하는 미션",
+      "🎮 바로 플레이",
+      "🎮 준비 중"
+    ],
+    "smallTargets": [
+      {
+        "text": "기내 팩 →",
+        "width": 49.75,
+        "height": 20.796875,
+        "y": 438.890625
+      },
+      {
+        "text": "INPUT",
+        "width": 13,
+        "height": 13,
+        "y": 486.390625
+      }
+    ],
+    "cards": 50,
+    "readOnlyCards": 31,
+    "mainText": "미니게임\n\n데일리는 시즌 기록으로, 연습은 보상 없이 원하는 판을 몇 번이고.\n\n오늘의 훈련 ≠ 전체 게임 연습\n\n아래 연습 기록은 별도 로컬 저장소에 남고 데일리 완료·연속 기록·시즌 보상을 바꾸지 않습니다.\n\n🧰 전체 게임 · 다시하기\n기내 팩 →\n 미완료만\n📖\n독서 카드\n\n책의 통찰을 시스템 설계 질문으로 바꿉니다.\n\n20판 · 판당 약 3분 · 미완료 20\n연습\n🎬\n시사회 카드\n\n영화 장면을 구조·운영의 언어로 읽습니다.\n\n16판 · 판당 약 3분 · 미완료 16\n연습\n🃏\n머지 or 반려\n\n코드와 계약의 경계를 판정합니다.\n\n36판 · 판당 약 5분 · 미완료 36\n연습\n🔬\n한 번만 물어본다면\n\n가설을 가장 많이 줄이는 관측을 고릅니다.\n\n15판 · 판당 약 5분 · 미완료 15\n연습\n✂️\n경계선 한 칸\n\n실패가 머물 트랜잭션 경계를 선택합니다.\n\n12판 · 판당 약 5분 · 미완료 12\n연습\n🕵️\n사건 파일\n\n5개 단서를 자유롭게 열어 근본 원인을 추리합니다.\n\n8판 · 판당 약 30분 · 미완료 8\n연습\n🧫\n최소 재현 실험실\n\n변수를 덜어 실패를 재현 가능한 한 조각으로 만듭니다.\n\n8판 · 판당 약 4분 · 미완료 8\n연습\n🧵\n동시성 순서 맞추기\n\n경합하는 두 사건의 최종 판정자를 고릅니다.\n\n8판 · 판당 약 5분 · 미완료 8\n연습\n🚪\n벌크헤드 설계실\n\n한 실패가 자원 전체를 삼키지 못하도록 격리합니다.\n\n8판 · 판당 약 5분 · 미완료 8\n연습\n🗂 카드 서랍 — 읽는 데 3분, 꼬리 질문은 하루 종일\n📖 독서 (20)\n🎬 시사회 (16)\n🌾\n📖 독서\n총, 균, 쇠 · 재레드 다이아몬드\n▸\n🧠\n📖 독서\n생각에 관한 생각 · 대니얼 카너먼\n▸\n🦢\n📖 독서\n블랙 스완 · 나심 탈레브\n▸\n🧬\n📖 독서\n이기적 유전자 · 리처드 도킨스\n▸\n🗂\n📖 독서\n정리하는 뇌 · 대니얼 레비틴\n▸\n⚔️\n📖 독서\n전쟁론 · 카를 폰 클라우제비츠\n▸\n👉\n📖 독서\n넛지 · 리처드 탈러 · 캐스 선스타인\n▸\n🌪\n📖 독서\n안티프래질 · 나심 탈레브\n▸\n🧭\n📖 독서\n테세우스의 배 · 플루타르코스\n▸\n🌱\n📖 독서\n침묵의 봄 · 레이첼 카슨\n▸\n🗺️\n📖 독서\n국가처럼 보기 · 제임스 C. 스콧\n▸\n🔭\n📖 독서\n과학혁명의 구조 · 토머스 쿤\n▸\n✅\n📖 독서\n체크리스트 선언 · 아툴 가완디\n▸\n🧩\n📖 독서\n지도와 영토 · 앨프리드 코르집스키\n▸\n⚙️\n📖 독서\n정상 사고 · 찰스 페로\n▸\n⏳\n📖 독서\n결핍의 경제학 · 센딜 멀레이너선\n▸\n🔒\n📖 독서\n블랙박스 사회 · 프랭크 파스콸레\n▸\n🚪\n📖 독서\n일상의 디자인 · 도널드 노먼\n▸\n📡\n📖 독서\n신호와 소음 · 네이트 실버\n▸\n🕸️\n📖 독서\n전환점 · 프리초프 카프라\n▸\n🔍 노코드 스낵 — 코드를 짜지 않고 읽고 판정하는 미션\n설계 리뷰 · Normal\n설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게\n코드 판독 · Normal\n도장 하나가 수억을 지킨다 — 배당 계산기 판독\n코드 판독 · Hard\n오전 10시 정각의 코드 — 수강신청 서버 판독\n설계 리뷰 · Normal\n빈 좌석은 소멸한다 — 오버부킹 정책안 비평\n배역극 · Normal\n같은 사고, 세 개의 의자 — 이중청구의 밤\n배역극 · Hard\n결항 57편의 아침 — 항공사 마비의 세 가지 언어\n🧊\n코드 판독 · Easy\n백신 상자의 마지막 온도\n🚰\n설계 리뷰 · Easy\n탁도 경보가 놓친 3분\n🎮 바로 플레이\n✂️\n경계선 한 칸\n트랜잭션 경계 1탭 + 결과 비교 · 하루 한 판\n경계 긋기 →\n🔬\n한 번만 물어본다면\n관측 1탭 + 가설 지목 1탭 · 하루 한 판\n관측 →\n🃏\n머지 or 반려\n코드 판정 1탭 + 근거 토큰 1탭 · 샘플 카드 5장\n플레이 →\n🕵️\n사라지는 적립금\n매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다\n수사 →\n🚦\n모든 신호가 빨간불이 된 아침\n사고는 없었다. 열차도 없었다 — 단 한 대도 움직이지 못했으니까\n수사 →\n🧪\n얼지 않은 백신\n센서 값은 정상인데 일부 상자만 효능 검사가 실패한다\n수사 →\n💡\n밤마다 밝아지는 전시실\n폐관 뒤 조명이 켜져 민감한 작품의 누적 노출이 늘어난다\n수사 →\n🔬\n사라진 웨이퍼 17장\n재공품 목록과 실제 장비 투입 수가 하루마다 벌어진다\n수사 →\n🗺️\n지도에는 빈 대피소\n현장에서는 만석인데 안내 앱은 계속 자리가 있다고 말한다\n수사 →\n🌧️\n비 오는 날의 관수\n비가 온 직후에도 자동 관수가 가장 오래 실행된다\n수사 →\n🚰\n조용한 탁도 경보\n민원은 늘지만 운영 화면의 정상률은 100%다\n수사 →\n🎮 준비 중\n📈\n시즌제 스탯\n4주 시즌, 안목·언어화·판단·교양 — 준비 중",
+    "links": [
+      {
+        "text": "기내 팩 →",
+        "href": "/workaround.co.kr-platform/advisor/inflight",
+        "y": 438.890625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-ggs-01",
+        "y": 557.875
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/cinema/film-martian-01",
+        "y": 672.65625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/swipe/swipe-tx-self-01",
+        "y": 787.4375
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/probe/probe-slow-api-01",
+        "y": 902.21875
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/boundary/boundary-order-01",
+        "y": 1017
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/case/case-vanishing-points-01",
+        "y": 1131.78125
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/minimal-repro/minimal-repro-01",
+        "y": 1246.5625
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/concurrency-sequencing/concurrency-sequencing-01",
+        "y": 1361.34375
+      },
+      {
+        "text": "연습",
+        "href": "/workaround.co.kr-platform/advisor/games/practice/bulkheads/bulkheads-01",
+        "y": 1476.125
+      },
+      {
+        "text": "설계 리뷰 · Normal설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-dewey-01",
+        "y": 3339.703125
+      },
+      {
+        "text": "코드 판독 · Normal도장 하나가 수억을 지킨다 — 배당 계산기 판독",
+        "href": "/workaround.co.kr-platform/advisor/missions/s4-jeonse-01",
+        "y": 3420.390625
+      },
+      {
+        "text": "코드 판독 · Hard오전 10시 정각의 코드 — 수강신청 서버 판독",
+        "href": "/workaround.co.kr-platform/advisor/missions/s9-sugang-01",
+        "y": 3501.078125
+      },
+      {
+        "text": "설계 리뷰 · Normal빈 좌석은 소멸한다 — 오버부킹 정책안 비평",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-overbooking-01",
+        "y": 3581.765625
+      },
+      {
+        "text": "배역극 · Normal같은 사고, 세 개의 의자 — 이중청구의 밤",
+        "href": "/workaround.co.kr-platform/advisor/missions/s8-roleplay-01",
+        "y": 3662.453125
+      },
+      {
+        "text": "배역극 · Hard결항 57편의 아침 — 항공사 마비의 세 가지 언어",
+        "href": "/workaround.co.kr-platform/advisor/missions/s6-roleplay-02",
+        "y": 3743.140625
+      },
+      {
+        "text": "🧊코드 판독 · Easy백신 상자의 마지막 온도",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-cold-chain-01",
+        "y": 3823.828125
+      },
+      {
+        "text": "🚰설계 리뷰 · Easy탁도 경보가 놓친 3분",
+        "href": "/workaround.co.kr-platform/advisor/missions/flight-water-treatment-01",
+        "y": 3904.515625
+      },
+      {
+        "text": "✂️경계선 한 칸트랜잭션 경계 1탭 + 결과 비교 · 하루 한 판경계 긋기 →",
+        "href": "/workaround.co.kr-platform/advisor/games/boundary",
+        "y": 4036.796875
+      },
+      {
+        "text": "🔬한 번만 물어본다면관측 1탭 + 가설 지목 1탭 · 하루 한 판관측 →",
+        "href": "/workaround.co.kr-platform/advisor/games/probe",
+        "y": 4117.484375
+      },
+      {
+        "text": "🃏머지 or 반려코드 판정 1탭 + 근거 토큰 1탭 · 샘플 카드 5장플레이 →",
+        "href": "/workaround.co.kr-platform/advisor/routine/swipe",
+        "y": 4198.171875
+      },
+      {
+        "text": "🕵️사라지는 적립금매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-vanishing-points-01",
+        "y": 4278.859375
+      },
+      {
+        "text": "🚦모든 신호가 빨간불이 된 아침사고는 없었다. 열차도 없었다 — 단 한 대도 움직이지 못했으니까수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-all-red-morning-01",
+        "y": 4359.546875
+      },
+      {
+        "text": "🧪얼지 않은 백신센서 값은 정상인데 일부 상자만 효능 검사가 실패한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-01-cold-room",
+        "y": 4440.234375
+      },
+      {
+        "text": "💡밤마다 밝아지는 전시실폐관 뒤 조명이 켜져 민감한 작품의 누적 노출이 늘어난다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-02-museum-light",
+        "y": 4520.921875
+      },
+      {
+        "text": "🔬사라진 웨이퍼 17장재공품 목록과 실제 장비 투입 수가 하루마다 벌어진다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-03-fab-queue",
+        "y": 4601.609375
+      },
+      {
+        "text": "🗺️지도에는 빈 대피소현장에서는 만석인데 안내 앱은 계속 자리가 있다고 말한다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-04-shelter-map",
+        "y": 4682.296875
+      },
+      {
+        "text": "🌧️비 오는 날의 관수비가 온 직후에도 자동 관수가 가장 오래 실행된다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-05-greenhouse-rain",
+        "y": 4762.984375
+      },
+      {
+        "text": "🚰조용한 탁도 경보민원은 늘지만 운영 화면의 정상률은 100%다수사 →",
+        "href": "/workaround.co.kr-platform/advisor/games/case/case-flight-06-water-alarm",
+        "y": 4843.671875
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "projects",
+    "route": "/projects",
+    "width": 1440,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 215.515625,
+    "headings": [
+      "프로젝트 — 맨땅에서"
+    ],
+    "smallTargets": [],
+    "cards": 1,
+    "readOnlyCards": 0,
+    "mainText": "프로젝트 — 맨땅에서\n\n이번엔 물려받을 코드가 없습니다.\n\n🚲\n공공자전거\n공공자전거 시스템 — 맨땅에서\n\n대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.\n\n0 / 6",
+    "links": [
+      {
+        "text": "🚲공공자전거공공자전거 시스템 — 맨땅에서대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.0 / 6",
+        "href": "/workaround.co.kr-platform/advisor/projects/p-bike-01",
+        "y": 339.5
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "history",
+    "route": "/missions/history",
+    "width": 1440,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 215.515625,
+    "headings": [
+      "성장 기록",
+      "기록에 이름을 남깁니다"
+    ],
+    "smallTargets": [
+      {
+        "text": "와인 추천기",
+        "width": 73.421875,
+        "height": 19,
+        "y": 571.875
+      },
+      {
+        "text": "✕",
+        "width": 27.4375,
+        "height": 31,
+        "y": 324.90625
+      },
+      {
+        "text": "예: 김부장",
+        "width": 294,
+        "height": 39,
+        "y": 432.890625
+      },
+      {
+        "text": "엔진 토큰",
+        "width": 294,
+        "height": 39,
+        "y": 539.078125
+      }
+    ],
+    "cards": 6,
+    "readOnlyCards": 6,
+    "mainText": "성장 기록\n\n세상을 구조로 읽은 흔적들\n\n0\n제출한 미션 수\n0\n설명 과제 수\n—\n다녀온 도메인 수 (0)\nS1\nS2\nS3\nS4\nS5\nS6\nS7\nS8\nS9\nS10\nS11\n스테이지 진행 현황\n\n아직 기록이 없습니다. 세상은 여전히 if문 범벅인 채로 당신을 기다리고 있습니다.\n\n일단 와인 추천기부터 뜯어보러 가볼까요?\n\n✕\n기록에 이름을 남깁니다\n\n커밋에 작성자가 있듯, 제출에도 이름이 남습니다. 구분용 닉네임 하나면 됩니다.\n\n고급 — 엔진 토큰(선택)\n확인",
+    "links": [
+      {
+        "text": "와인 추천기",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 571.875
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "mission",
+    "route": "/missions/s1-wine-01",
+    "width": 1440,
+    "overflow": 0,
+    "height": 1112,
+    "mainTop": 215.515625,
+    "headings": [
+      "와인 추천기의 뒤엉킨 책임 풀어내기",
+      "소믈리에는 사실 규칙 엔진이다 — 와인 추천의 세계",
+      "품종이 8할이다",
+      "빈티지와 테루아",
+      "페어링은 감이 아니라 규칙",
+      "그래서 추천 시스템은 규칙 덩어리"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미션 목록",
+        "width": 60.984375,
+        "height": 16,
+        "y": 248.515625
+      },
+      {
+        "text": "도메인 브리핑",
+        "width": 108.34375,
+        "height": 39,
+        "y": 372.6875
+      },
+      {
+        "text": "미션",
+        "width": 56.234375,
+        "height": 39,
+        "y": 372.6875
+      },
+      {
+        "text": "제출",
+        "width": 56.234375,
+        "height": 39,
+        "y": 372.6875
+      },
+      {
+        "text": "설명 훈련",
+        "width": 84.125,
+        "height": 39,
+        "y": 372.6875
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미션 목록\nS1 · 분리의 감각\n리팩토링\nEasy\n📐 단일 파일\n🍷 와인\n와인 추천기의 뒤엉킨 책임 풀어내기\n도메인 브리핑\n미션\n제출\n설명 훈련\n소믈리에는 사실 규칙 엔진이다 — 와인 추천의 세계\n품종이 8할이다\n\n와인 맛의 큰 틀은 포도 품종(varietal) 이 결정합니다. 카베르네 소비뇽은 타닌이 강하고 묵직하며(풀바디), 피노 누아는 가볍고 산미가 살아 있고, 리슬링은 향이 화려하며 단맛부터 드라이까지 폭이 넓습니다. 샤르도네는 양조 방식에 따라 버터 같은 풍미부터 미네랄한 맛까지 변신하는 팔색조죠.\n\n빈티지와 테루아\n\n라벨의 연도인 빈티지(vintage) 는 포도를 수확한 해입니다. 그해 일조량과 강수량이 포도 품질을 좌우하기 때문에 같은 밭이라도 해마다 맛과 가격이 달라집니다. 테루아(terroir) 는 토양·기후·경사 등 밭의 환경 전체를 가리키는 말로, \"부르고뉴는 밭 이름으로 와인을 판다\"는 말이 나올 만큼 유럽 와인 가격의 핵심 변수입니다.\n\n페어링은 감이 아니라 규칙\n\n음식 궁합(페어링)에는 검증된 규칙이 있습니다. 붉은 고기의 지방과 단백질은 타닌을 부드럽게 만들어 주기 때문에 스테이크·삼겹살에는 타닌 강한 레드가 어울리고, 매운 음식에는 알코올이 낮고 살짝 단 리슬링이 매운맛을 식혀 줍니다. 굴이나 회처럼 비린 해산물에 레드를 곁들이면 철분과 타닌이 만나 쇠맛이 나기 때문에 산미 좋은 화이트를 권하죠.\n\n그래서 추천 시스템은 규칙 덩어리\n\n소믈리에의 머릿속을 들여다보면 \"바디 선호 ±1 이내인가\", \"예산 안인가\", \"음식과 품종 궁합 규칙에 걸리는가\" 같은 규칙의 조합과 가중치 계산이 돌아갑니다. 와인 추천 소프트웨어가 if문 범벅이 되기 쉬운 이유가 바로 이것인데, 규칙이 많다는 것과 규칙이 한 덩어리여야 한다는 것은, 전혀 다른 이야기인데도요.\n\n브리핑 읽었어요 → 미션 보기\n💬 질문하기",
+    "links": [
+      {
+        "text": "← 미션 목록",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 248.515625
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "review",
+    "route": "/missions/s1-wine-01/review",
+    "width": 1440,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 215.515625,
+    "headings": [
+      "리뷰 — 와인 추천기의 뒤엉킨 책임 풀어내기"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미션으로",
+        "width": 57.578125,
+        "height": 16,
+        "y": 248.515625
+      },
+      {
+        "text": "미션 페이지",
+        "width": 59.65625,
+        "height": 16,
+        "y": 345.296875
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미션으로\n리뷰 — 와인 추천기의 뒤엉킨 책임 풀어내기\n아직 코드를 제출하지 않았습니다. 미션 페이지에서 제출하세요.\n코드 고쳐서 재제출\n다음 미션으로",
+    "links": [
+      {
+        "text": "← 미션으로",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 248.515625
+      },
+      {
+        "text": "미션 페이지",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 345.296875
+      },
+      {
+        "text": "코드 고쳐서 재제출",
+        "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+        "y": 401.09375
+      },
+      {
+        "text": "다음 미션으로",
+        "href": "/workaround.co.kr-platform/advisor/missions",
+        "y": 401.09375
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "probe",
+    "route": "/games/probe",
+    "width": 1440,
+    "overflow": 0,
+    "height": 1169,
+    "mainTop": 215.515625,
+    "headings": [
+      "한 번만 물어본다면",
+      "금요일 오후의 p99",
+      "무엇이 원인일까요?",
+      "딱 하나만 확인할 수 있다면?"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 248.515625
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🐢 오늘의 한 판\n한 번만 물어본다면\n\n관측은 한 번뿐. 결과를 본 뒤 가장 그럴듯한 가설을 지목하세요.\n\n상황\n금요일 오후의 p99\n\n주문 조회 API의 p99 응답시간이 오늘 오후부터 3배로 뛰었습니다. 평균은 거의 그대로라 대부분의 사용자는 모르지만, 그래프의 꼬리는 분명히 두꺼워졌습니다. 배포는 오늘 없었습니다. 퇴근 전에 방향은 잡아야 합니다 — 관측할 시간은 한 번뿐입니다.\n\n가설\n무엇이 원인일까요?\n📇 DB 인덱스를 안 타는 쿼리가 생겼다 (데이터 분포 변화)\n🔌 외부 결제사 API가 간헐적으로 느리다\n🗑 JVM GC가 길게 멈추고 있다\n1 · 관측\n딱 하나만 확인할 수 있다면?\n외부 결제사 호출 구간의 지연 분포를 본다\n오늘 오후의 슬로우 쿼리 로그를 연다\n서버 평균 CPU 사용률을 확인한다",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 248.515625
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "boundary",
+    "route": "/games/boundary",
+    "width": 1440,
+    "overflow": 0,
+    "height": 1276,
+    "mainTop": 215.515625,
+    "headings": [
+      "경계선 한 칸",
+      "이벤트 당일의 주문 흐름",
+      "세로 파이프라인",
+      "어디까지 묶을까요?"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 248.515625
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🛒 오늘의 한 판\n경계선 한 칸\n\n어디까지 같은 운명으로 묶을지 고르세요. 실패는 사라지지 않고, 머물 방만 달라집니다.\n\n상황\n이벤트 당일의 주문 흐름\n\n내일 아침 10시, 한정판 드롭 이벤트가 열립니다. 평소의 10배 트래픽이 예고돼 있고, 운영팀의 요구는 명확합니다 — \"재고는 나중에 맞출 수 있다. 그러나 돈이 두 번 나가는 것과 주문이 증발하는 것은 안 된다.\" 주문 흐름의 트랜잭션 경계를 오늘 정해야 합니다.\n\n업무 흐름\n세로 파이프라인\n1\n주문 생성\n2\n재고 차감\n3\n결제 승인 (외부 PG)\n4\n알림 발송\n1 · 경계 선택\n어디까지 묶을까요?\n전부 하나로 — 주문·재고·결제·알림을 한 트랜잭션에\n주문+재고까지만 — 결제·알림은 밖에서 보상으로\n주문만 확정 — 재고·결제·알림은 비동기 사가로",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 248.515625
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "case",
+    "route": "/games/case/case-vanishing-points-01",
+    "width": 1440,
+    "overflow": 0,
+    "height": 1022,
+    "mainTop": 215.515625,
+    "headings": [
+      "사라지는 적립금",
+      "수사 기록"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 248.515625
+      }
+    ],
+    "cards": 2,
+    "readOnlyCards": 2,
+    "mainText": "← 미니게임\n🕵️ 사건 파일 · 1/5일\n사라지는 적립금\n\n매일 새벽, 아무도 모르게 포인트가 조금씩 증발한다\n\n구독형 커머스 「데일리박스」의 CS 게시판에 같은 문의가 사흘째 쌓이고 있습니다. \"적립금이 어제보다 줄었어요. 쓴 적이 없는데요.\" 금액은 제각각이고, 전원도 아니고 일부 고객만. 재현은 안 되고, 그래프는 새벽에만 움직입니다. 당신은 오늘부터 닷새간 매일 단서 하나씩을 받습니다. 서두르지 마세요 — 결론을 아끼는 것이 수사의 절반입니다.\n\n하루에 단서 하나\n\n로컬 날짜가 바뀌면 다음 단서가 열립니다.\n\n몰아보기\n수사 기록\nDay 1 · 민원과 그래프\n피해자들의 공통점\n\n민원 41건 표본 정리:\n\n피해 금액: 100~3,000P, 고객마다 다름. 단 같은 고객은 항상 같은 금액이 반복해서 빠짐.\n발생 시각: 고객이 알아챈 건 아침이지만, 포인트 이력상 차감 기록은 새벽 0시대와 새벽 1시대에 몰려 있음.\n피해 고객 공통점: 전원이 \"포인트 자동 소멸 안내\" 대상자 (유효기간 만료 포인트 보유).\n비피해 고객: 만료 예정 포인트가 없는 고객은 단 한 건도 없음.\n\n📎 수사 노트: 만료 포인트 차감 자체는 정상 업무다. 문제는 \"얼마나\" 빠졌는가다.",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 248.515625
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "swipe",
+    "route": "/routine/swipe",
+    "width": 1440,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 215.515625,
+    "headings": [
+      "머지 or 반려",
+      "삭제 API에 멱등 의미를 문서화하고 구현한다",
+      "1. 판정"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 미니게임",
+        "width": 59.78125,
+        "height": 16,
+        "y": 248.515625
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 미니게임\n🃏 오늘의 판정 5장\n머지 or 반려\n\n판정을 고르고, 근거 하나를 붙이세요. 질문 없이는 판단할 수 없는 코드도 있습니다.\n\n1 / 5\n삭제 API에 멱등 의미를 문서화하고 구현한다\n// PR #428\nResult handle(Request request) {\n    return policy.delete_idempotent(request);\n}\n1. 판정\n✅ 머지\n❌ 반려\n❓ 질문 필요",
+    "links": [
+      {
+        "text": "← 미니게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 248.515625
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "practice",
+    "route": "/games/practice/minimal-repro",
+    "width": 1440,
+    "overflow": 0,
+    "height": 900,
+    "mainTop": 215.515625,
+    "headings": [
+      "빈 목록에서만 합계가 NaN"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 전체 게임",
+        "width": 60.984375,
+        "height": 20.796875,
+        "y": 243.515625
+      }
+    ],
+    "cards": 1,
+    "readOnlyCards": 1,
+    "mainText": "← 전체 게임\n🧫 최소 재현 실험실 · 1/8\n연습 모드 · 보상/연속 기록 없음\n빈 목록에서만 합계가 NaN\n\n빈 목록에서만 합계가 NaN. 정상 경로는 통과하지만 경계 조건에서만 반복되는 합성 장애 상황입니다.\n\n가장 작은 재현 실험은 무엇입니까?\n\n입력을 0개와 1개로 줄이고 초기값 유무를 비교한다\n전체 시스템을 재시작해 다시 본다\n모든 요청을 하나의 전역 락으로 감싼다\n선택하고 해설 보기\n처음부터 다시\n다음 판\n무작위\n안 본 판\n이 게임 연습 기록만 지우기",
+    "links": [
+      {
+        "text": "← 전체 게임",
+        "href": "/workaround.co.kr-platform/advisor/games",
+        "y": 243.515625
+      }
+    ],
+    "errors": []
+  },
+  {
+    "name": "journey",
+    "route": "/projects/p-bike-01",
+    "width": 1440,
+    "overflow": 0,
+    "height": 2539,
+    "mainTop": 215.515625,
+    "headings": [
+      "공공자전거 시스템 — 맨땅에서",
+      "도시의 혈관",
+      "요금은 단순하고, 현실은 아니다",
+      "운영의 최대 난제 — 자전거는 흐른다",
+      "이번엔 물려받을 코드가 없습니다",
+      "스스로 결정하세요"
+    ],
+    "smallTargets": [
+      {
+        "text": "← 프로젝트 목록",
+        "width": 83.484375,
+        "height": 16,
+        "y": 248.515625
+      },
+      {
+        "text": "예: src/main/java/wine/WineRecommender.java",
+        "width": 850,
+        "height": 31,
+        "y": 1492.3125
+      },
+      {
+        "text": "✕",
+        "width": 34,
+        "height": 31,
+        "y": 1492.3125
+      }
+    ],
+    "cards": 3,
+    "readOnlyCards": 3,
+    "mainText": "← 프로젝트 목록\n🚲 공공자전거\n공공자전거 시스템 — 맨땅에서\n\n대여소 수천 개, 자전거 수만 대. 물려받을 코드 없이, 도시의 두 바퀴를 처음부터 설계합니다.\n\n아침 8시, 자전거는 왜 항상 없는가\n도시의 혈관\n\n서울의 공공자전거 따릉이는 대여소 수천 개, 자전거 수만 대 규모의 시스템입니다. 하루 수십만 건의 대여가 일어나고, 시민은 아무 대여소에서 빌려 아무 대여소에나 반납합니다. 이 \"아무 데나 반납\"이 공공자전거의 매력이자, 운영의 모든 골칫거리의 시작입니다.\n\n요금은 단순하고, 현실은 아니다\n\n요금 체계 자체는 간명합니다 — 기본권(1시간권, 일권)을 사고, 기본 시간을 넘기면 초과요금이 붙습니다. 하지만 그 간명한 규칙 아래에서 시스템은 대여와 반납의 짝을 맞추고, 시간을 재고, 미반납을 추적해야 합니다. 규칙이 쉬운 것과 규칙을 지키는 코드가 쉬운 것은 다른 이야기입니다.\n\n운영의 최대 난제 — 자전거는 흐른다\n\n그리고 재배치. 아침 출근 시간, 주거지역 대여소는 텅 비고 업무지구 대여소는 자전거가 넘쳐 거치대가 모자랍니다. 자전거가 지형과 출퇴근의 물길을 따라 한쪽으로 쏠리는 겁니다. 그래서 매일 밤, 트럭들이 도시를 돌며 자전거를 거꾸로 실어 나릅니다 — 시민이 낮에 옮긴 것을 사람이 밤에 되돌리는, 보이지 않는 노동. 어느 대여소에서 몇 대가 빠져나가고 몇 대가 들어오는지를 아는 것이 이 노동의 시작이고, 그것은 정확히 데이터 문제입니다.\n\n이번엔 물려받을 코드가 없습니다\n\n지금까지 여러분은 남이 만든 코드를 길들여 왔습니다. 이번에는 다릅니다. 빈 디렉터리에서 시작해 도메인 모델부터 시청 보고서까지, 여섯 걸음으로 이 시스템을 세웁니다. 모든 결정이 당신의 것이고, 모든 결과도 그렇습니다 — 세 걸음쯤 뒤에, 오늘의 결정이 당신을 기다리고 있을 겁니다.\n\n0 / 6\n▶\n도메인 모델 — 이름을 먼저 짓는다\n~60분\n자전거·대여소·회원·대여를 코드의 언어로 옮긴 첫 모델\n\n첫 걸음은 기능이 아니라 이름입니다. 이 세계에는 자전거(Bike), 대여소(Station), 회원(Member), 그리고 대여(Rental)가 삽니다. 각각을 클래스(또는 레코드)로 만들고, 서로가 서로를 어떻게 가리키는지 정하세요.\n\n아직 대여 로직도, 요금도, 저장소도 없습니다. 지금 정하는 것은 오직 구조 — 무엇이 무엇을 아는가, 각 개념의 식별자는 무엇인가, 상태(고장, 대여 중)는 어디에 사는가입니다. 운영 매뉴얼의 문장(\"QR을 찍으면 대여가 시작된다\", \"고장 신고된 자전거는 정비 대상이다\")이 여러분의 클래스 이름으로 자연스럽게 번역되는지가 시금석입니다.\n\n사소해 보이는 결정들이 사실 이 프로젝트 전체의 지반입니다. 다음 다섯 걸음이 전부 이 모델 위에 쌓입니다.\n\n스스로 결정하세요\n☐ 대여(Rental)는 자전거에 붙는 상태인가, 독립적인 개념(자기 식별자를 가진 기록)인가? 반납 후에도 대여 기록이 남아야 한다면 답이 달라지는가?\n☐ 각 개념의 식별자는 무엇인가 — 자전거 차체 번호, 회원 전화번호, 대여소 이름? 바뀔 수 있는 값을 식별자로 삼으면 무슨 일이 생기는가?\n☐ \"고장\"은 Bike의 boolean 필드인가, 상태(enum)의 하나인가? 정비 중·폐기 같은 상태가 늘어난다면?\n\n제출물 — 도메인 클래스들(Bike, Station, Member, Rental 등)과 각 설계 결정의 이유를 짧게 적은 노트. 실행 코드나 main은 필요 없습니다.\n\n✕\n+ 파일 추가\n제출하고 리뷰 받기\n🔒\n대여와 반납 — 규칙이 코드가 되는 순간\n~90분\ns1 모델 위에 대여·반납의 핵심 규칙 구현\n🔒\n요금 정책 — 숫자는 틀리면 민원이 된다\n~90분\n기본권·초과요금·미반납 페널티의 정확한 계산\n🔒\n저장 경계 — 어제의 결정이 당신을 기다린다\n~90분\n도메인이 저장 기술을 모르게 — repository 경계 설계\n🔒\n재배치 리포트 — 아침 8시의 강남\n~90분\n대여소별 유입·유출 집계로 쏠림을 숫자로 드러내기\n🔒\n시청 보고서 — 숫자로 트럭을 얻어 내라\n~60분\ns5의 집계를 근거로 재배치 예산을 설득하는 글",
+    "links": [
+      {
+        "text": "← 프로젝트 목록",
+        "href": "/workaround.co.kr-platform/advisor/projects",
+        "y": 248.515625
+      }
+    ],
+    "errors": []
+  }
+]
