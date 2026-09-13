@@ -43,7 +43,8 @@
 
 ## Ready
 
-- `TKT-106` `P1` `voyage` `ready` `[PM]` Line V 컬렉션 전환 스펙 + 지난 여행(스페인·아이슬란드) — D-013 실행, PO 콘텐츠 대기
+- `TKT-108` `P1` `voyage` `ready` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드 (스펙 voyage-collection-spec.md)
+- `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
@@ -70,6 +71,8 @@
 
 
 ## Finished
+
+- `TKT-106` `[PM]` Line V 컬렉션 스펙 — 작성 완료 (2026-09-13)
 
 - `TKT-103` `[INFRA]` Pages 산출물에 advisor 빌드 포함 — r1 통과 (2026-09-12)
 - `TKT-079` `[FE]` Advisor 사이트 진입 + 프레임 통합 — r1 통과, A 노선 개통 (2026-09-12)
