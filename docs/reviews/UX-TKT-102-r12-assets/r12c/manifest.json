@@ -1,0 +1,19 @@
+{
+  "capturedAt": "2026-09-13T23:17:28.963Z",
+  "build": "54 modules; Pages base; Node24.19.0",
+  "source": [
+    {
+      "file": "frontend/public/mockups/home.html",
+      "sha256": "8d4ca47335057c5abe22c4ccf74090ad17eda0e1be6aa6d530ccccb37512e5d7",
+      "currentSame": false,
+      "distSame": true
+    },
+    {
+      "file": "frontend/public/mockups/splash.html",
+      "sha256": "bdd567b7f6933c9344973af01fb89a7eeb446a7d32f46781126715ef26d40703",
+      "currentSame": false,
+      "distSame": true
+    }
+  ],
+  "linksUnchangedFromR12b": true
+}
