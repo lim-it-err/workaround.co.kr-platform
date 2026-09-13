@@ -2,7 +2,7 @@
 
 # TKT-105 `[FE]` Writing Studio 도구 메뉴 — 사진 첨부·h1~h3·기능형 표
 
-- 상태: `started` (r1 반려 2026-09-14 — REV-TKT-105-r1: 표·사진 편집 표면을 본문 인라인 블록으로, 터치 타깃, 모바일 제목)
+- 상태: `need_review` (r2 재제출 2026-09-14 — 표·사진 인라인 블록, 터치 타깃, 모바일 제목 보정)
 - 우선순위: P2
 - 담당: codex-1 (FE)
 - 의존: 없음 (사진 업로드 서버측은 TKT-053 [BE] — 그 전까지 정적 미리보기). r5 목업의 도구 메뉴 배치는 참고만, 차단 아님
@@ -30,11 +30,11 @@
 - [x] `npm --prefix frontend run build` — Vite 6.4.3, 37 modules, 성공.
 - [x] `npm --prefix frontend run build -- --base=/workaround.co.kr-platform/` — 성공.
 - [x] `node --test frontend/src/staticRouting.test.mjs frontend/src/staticWritingState.test.mjs frontend/src/data/voyageCoverage.test.mjs` — 3/3 통과.
-- [x] `frontend/src/components/WritingStudio.e2e.mjs` — Chromium 9/9 통과.
-  - TKT-105: H1~H3 적용·교체·해제, 표 행/열 추가·삭제, 파이프 문법 비노출, 사진 첨부, 자동저장, 미리보기, 공개 글, 새로고침 복원.
+- [x] `frontend/src/components/WritingStudio.e2e.mjs` — Chromium 9/9 통과 (r2 최종 재실행).
+  - TKT-105: H1~H3 적용·교체·해제, 커서 위치 표/사진 인라인 삽입, 표 행/열 추가·셀 메뉴 삭제·Tab 이동, 내부 표 참조/data URL 편집 표면 비노출, 자동저장·미리보기·공개 글·새로고침 복원.
   - TKT-054/055/056/057/097: 저장 실패 이탈 가드, 공개 상태·최초 발행일, 딥링크·보관 복원, Markdown/XSS, 로컬 백업 회귀 통과.
   - PNG data URL 허용, SVG data URL·`javascript:`·raw HTML 이벤트 속성 차단.
-  - 375×812 다크/라이트에서 도구·표 시트와 document/body/scroller/dialog 가로 오버플로 0. 데스크톱 본문 폭 720px 이하 단언 및 캡처 육안 확인.
+  - 375×812 다크/라이트에서 인라인 2×2 표·도구 시트와 document/body/scroller/dialog 가로 오버플로 0, 긴 제목 자동 높이·`← 블로그` 가시성 확인. 데스크톱 본문 폭 720px 이하·인라인 블록 캡처 육안 확인.
 - [x] `git diff --check` — 성공.
 
 ## 검토 메모
@@ -48,6 +48,14 @@
 - **목업(`mockups/writing-studio.html`)의 우측 패널 미니 표·+행/+열은 오인 소지 — 따르지 말 것.** 스펙 §6 개정판이 기준: 도구 메뉴 = 버튼 3개(사진 첨부·제목 H1/H2/H3·표 삽입). '표 삽입' 클릭 → **본문 커서 위치에 2×2 표 삽입**, 편집은 **본문 안 표 위에서**(hover 가장자리 `+열`/`+행`, 셀 `⋯` 삭제, Tab 셀 이동). 패널에는 표 편집 UI 없음.
 - 이미 패널형으로 만들었다면 인라인형으로 전환하고 history 에 한 줄. need_review 상태라면 리뷰에서 이 기준으로 판정한다.
 
+## r2 재작업 산출물 (codex-1, 2026-09-14)
+
+- 본문 편집 표면을 텍스트·표·사진의 순서형 블록으로 전환했다. 기존 `bodyMarkdown`의 표 참조와 사진 data URL은 저장/발행 호환을 위한 내부 경계로만 직렬화하며, 편집 화면의 textarea/input에는 노출하지 않는다.
+- 표 삽입은 활성 텍스트 커서를 기준으로 앞뒤 텍스트를 나누고 즉시 2×2 인라인 표를 만든다. 표 안에서 헤더·셀·이름을 직접 편집하며 오른쪽 `＋ 열`, 아래 `＋ 행`, 각 셀 `⋯`의 행/열 삭제, Tab 셀 이동을 제공한다. 기존 구조화 `tables` 저장·복원·미리보기·발행 경로는 유지했다.
+- 사진은 커서 위치에 인라인 썸네일로 나타나며 설명 수정·삭제가 가능하다. 허용 MIME·1.5MB 상한과 data URL 검증은 유지했다.
+- 데스크톱 도구와 인라인 조작 타깃을 40px 이상으로 높이고, 모바일 `← 블로그` 라벨을 숨기지 않으며 제목을 자동 높이 textarea로 바꿔 긴 제목 잘림을 제거했다. 넓은 표에는 가로 이동 안내와 독립 스크롤 영역을 제공한다.
+
 ## 리뷰 기록
 
 - r1 **반려** — `docs/reviews/REV-TKT-105-r1.md` (+ `UX-TKT-105-r1.md`). 재작업 방향: 블록 시퀀스 편집 표면, `tables` 데이터 로직 유지.
+- r2 **재검토 요청** — r1 블로커 1건과 중요 2건을 구현·회귀 테스트·다크/라이트 실렌더로 해소. 최종 판정·commit은 PM 소관.

@@ -2,9 +2,9 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `started` (r8 — 홈 노선도 안 C 순환선+환승 지선, 디자이너 codex-8 첫 과제)
+- 상태: `need_review` (r8 통과 — PM 2026-09-14, PO 홈 형태 최종 확인 후 finished; r9·r10 은 후속 라운드)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
-- 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
+- 담당: codex-8 디자이너 (r8 이후; r1~r6 제작 이력은 codex-4)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
 - scope: **`frontend/public/mockups/**` 만** — frontend/src 등 앱 코드는 읽기 전용. 위반은 블로커.
 
@@ -183,3 +183,13 @@
 ## r10 지시 (PM, 2026-09-14 — codex-8, r9 뒤) — writing-studio.html 표 UX 정정
 
 우측 패널을 버튼 3개(사진 첨부 · H1/H2/H3 · 표 삽입)로 줄이고 미니 표·+행/+열 제거. 본문에 삽입된 표 예시를 넣고, hover 상태(오른쪽 `+열`·아래 `+행`·셀 `⋯`)를 정적으로 표현. 스펙 §6 개정판 기준.
+
+
+### r8 구현 인계 (codex-8 디자이너, 2026-09-13)
+
+- 제품 변경은 `frontend/public/mockups/home.html` 하나다. 단색 5px 링·환승역 8·12시 환승 홀과 노선색 방사 지선을 구현했다. B/V/S 정류장 3/3/4개, A/W/R 각 1개, D/P 점선 stub. 지선 길이 80 / 링 반지름 145 = 55.2%. r6 목록·목적지를 유지하고 배지색과 링크 누름 영역을 정합했다.
+- 원칙 6은 최신 r8 지시·D-015 안 C를 기준으로 적용했다. 원칙·스펙 문서는 수정하지 않았다.
+- **자기 체크리스트**: 주인공=노선도 하나 / 읽기 콘텐츠 면 없음(식별 배너·역 원 예외) / 영어 섹션 간판 0(지정 서비스명 유지) / 노선색은 선·배지 / 375px 넘침 0·모든 링크 40px 이상 / r6 카피·r8 정류장명 일치 / 지하철 문자 배지 유지·스플래시 무변경(r9 범위) / 라이트 실렌더 확인. 제작자 자기점검이며 독립 검수·최종 판정이 아니다.
+- **게이트**: 최종 Pages-base Vite build 성공(37 modules), source/dist home 바이트 동일, script·외부 의존·SVG text 안 HTML 태그 0. 375/390/1440×900 다크·라이트 6조합에서 라벨 겹침·지도 밖 이탈·페이지 가로 overflow 0. 최소 지도 글자 11.43/11.96/24.12px. HTML 목적지 12개 클릭, Tab→목차→Enter 확인. 다른 목업 14개 SHA 불변·git diff --check 통과.
+- **근거**: `docs/reviews/UX-TKT-102-r8.md` 및 `docs/reviews/UX-TKT-102-r8-assets/`(스크린샷·측정 JSON·전후 SHA·재현 스크립트). 확인 URL `/mockups/home.html`.
+- **제약/후속**: 앱 코드·다른 목업·원칙·결정 무변경, commit·push·배포·PM 판정 없음. Safari/WebKit·실배포·기존 Advisor 앱 목적지는 미검증. 상단 W 심볼과 스플래시·Studio 목업은 각각 후속 r9·r10 범위로 남겼다.

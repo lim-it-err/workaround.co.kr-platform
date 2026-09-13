@@ -35,6 +35,9 @@
 
 ## Need Review
 
+- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 — r8 순환선+환승 지선 홈 통과(codex-8), **PO 최종 확인 대기** (r9 심볼·플립, r10 표 UX 후속)
+
+
 
 
 
@@ -73,15 +76,16 @@
 ## Started
 
 - `TKT-110` `P1` `tone` `blocked` `[FE]` 톤 기반 + 현행 split-flap 3단계 스플래시 — 구현·검증 완료, TKT-102 r9 실파일/PO 심볼·좌우 패널 확인 대기
-- `TKT-105` `P1` `chore` `started` `[FE]` Writing Studio 도구 메뉴 — **r1 반려**(표·사진 인라인 블록으로, UX-105 블로커) → 재작업
 
-- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r8 홈 노선도 안 C(순환선+환승 지선), codex-8 디자이너 첫 과제
 
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
+
+- `TKT-105` `P1` `chore` `need_review` `[FE]` Writing Studio 도구 메뉴 r2 — 표·사진 인라인 블록, 내부 참조 비노출, 40px 타깃·모바일 제목 보정, Studio E2E 9/9
 
 
 - `TKT-080` `P1` `v0.7.0` `need_review` `[BE]` advisor 서비스 계약 마감 — 35/35·gateway 8/8·Compose 실기동/health 200 통과

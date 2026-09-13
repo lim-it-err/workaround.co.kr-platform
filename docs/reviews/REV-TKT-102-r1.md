@@ -79,3 +79,9 @@
 - home-alt.html(3노선 교차, A안): 십자 교차 형태, 동일 목록. 비교안으로 유효.
 - splash.html: 플랩 4단계(WORKAROUND→WORKING AROUND→MIND THE GAP→DOORS OPENING) + 티커 3종 확인. voyage-archive.html: 실제 경과·Hertz·누적 523만원/856 헤더 반영 확인.
 - 지적: 없음. PO 가 형태를 고르면 TKT-111 노선도 부분 확정 → TKT-102 finished.
+
+## PM r8 판정 (2026-09-14) — **통과 (PO 최종 확인 대기) · 디자이너 codex-8 첫 목업 합격**
+
+- home.html(D-015 안 C): 단색 링 + 환승역 8(문자 배지) + 노선색 지선 + 지선 정류장(B: 아카이브→글 상세→스튜디오 / V: 준비→오늘→기록 / S: 격납고→엘베→택시→화이트채플 / A·W·R 단일 / D·P 점선) + 호를 따라 구간명 + 12시 환승 홀. PO 의 상("순환선에서 환승으로 뻗어나가는") 그대로.
+- PM 실측: 390 svg 335px·overflow 0·**라벨 11px 미만 0**, 1440 좌 지도·우 목록 2단. script 0, SVG text 내 HTML 태그 0. **보너스: `prefers-color-scheme: light` 대응** — 라이트 테마 미리보기(TKT-118 참고자료).
+- 자기점검(UX-TKT-102-r8.md + assets) 첨부 — 체크리스트 전항 자기 적용. 지적 없음.
