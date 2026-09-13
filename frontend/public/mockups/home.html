@@ -1,122 +1,132 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>환승 홀 — 순환선과 환승 지선 목업</title>
-  <style>
-    :root{color-scheme:dark;--bg:#0D131C;--text:#F3F6FB;--text-2:#AEB8C8;--muted:#7C8AA0;--line:rgba(255,255,255,.09);--safety:#F3C544;--experience:#E14D78;--learn:#7C89F0;--operations:#35C275;--line-b:#E14D78;--line-v:#55738F;--line-a:#7C89F0;--line-s:#9AA8B5;--line-d:#9B6BF2;--line-p:#22C3A7;--line-w:#35C275;--line-r:#5B8DEF;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-size:15px;line-height:1.55}a{color:inherit;text-decoration:none}a:hover .name,.sublinks a:hover,.index-link:hover{text-decoration:underline;text-underline-offset:4px}a:focus-visible{outline:2px solid var(--safety);outline-offset:3px}
-    .mockup-banner{position:fixed;inset:0 0 auto;z-index:9;padding:7px;background:var(--safety);color:#201A05;text-align:center;font-size:12px;font-weight:800}
-    main{max-width:1240px;margin:auto;padding:60px 20px 48px}.station-bar{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line)}h1{margin:0;font-size:1.125rem}.index-link{display:inline-flex;align-items:center;min-height:44px;margin-left:auto;padding:8px 0 8px 10px;color:var(--text-2);font-size:.875rem}
-    .badge{display:inline-grid;place-items:center;width:24px;height:24px;flex:0 0 24px;border:1.5px solid currentColor;border-radius:50%;font-size:.75rem;font-weight:800;line-height:1}.central{color:var(--safety)}.badge[class*="route-"]{color:var(--route)}.experience{color:#F07CA0}.learn{color:#A5AEF5}.operations{color:#6BD59B}
-    .layout{display:grid;gap:36px;margin-top:24px}.map-hero{min-width:0;margin:0;padding-left:12px;border-left:3px solid var(--safety)}.network{display:block;width:100%;height:auto}
-    .network .loop{fill:none;stroke:var(--text-2);stroke-width:5;vector-effect:non-scaling-stroke}
-    .route-b{--route:var(--line-b)}.route-v{--route:var(--line-v)}.route-a{--route:var(--line-a)}.route-s{--route:var(--line-s)}.route-d{--route:var(--line-d)}.route-p{--route:var(--line-p)}.route-w{--route:var(--line-w)}.route-r{--route:var(--line-r)}
-    .branch-track{fill:none;stroke:var(--route);stroke-width:2;stroke-linecap:round;vector-effect:non-scaling-stroke}.stop{fill:var(--bg);stroke:var(--route);stroke-width:1.5;vector-effect:non-scaling-stroke}.label-guide{fill:none;stroke:var(--route);stroke-width:1;vector-effect:non-scaling-stroke}
-    .stop-label{fill:var(--text-2);font-size:25px;font-weight:550}.future .branch-track{stroke-dasharray:4 6}.future .stop-label{fill:var(--muted)}.future .branch-track{opacity:.65}
-    .transfer circle{fill:var(--bg);stroke:var(--route);stroke-width:2;vector-effect:non-scaling-stroke}.transfer.future circle{stroke-dasharray:3 3}.code{fill:var(--text);font-size:25px;font-weight:800;text-anchor:middle;dominant-baseline:central}
-    .section{fill:var(--muted);font-size:25px;font-weight:600;letter-spacing:1px}.hub{fill:var(--bg);stroke:var(--text);stroke-width:3;vector-effect:non-scaling-stroke}.hub-core{fill:var(--text)}.hub-label{fill:var(--text);font-size:27px;font-weight:750;text-anchor:middle}
-    .lines{display:grid;gap:28px}.line-group{padding-left:12px;border-left:1px solid var(--line)}.line-group h2{margin:0 0 5px;font-size:.92rem}.route-order{margin:0 0 8px;color:var(--muted);font-size:.78rem}.rows{list-style:none;margin:0;padding:0}.rows>li{padding:11px 0;border-bottom:1px solid var(--line)}.line-main{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-height:44px}.name{font-weight:650;overflow-wrap:anywhere}.aside{color:var(--muted);font-size:.78rem;text-align:right}.sublinks{display:flex;flex-wrap:wrap;gap:0 14px;margin:3px 0 0 34px}.sublinks a{display:inline-flex;align-items:center;min-width:40px;min-height:44px;padding:6px 0;color:var(--text-2);font-size:.82rem;text-decoration:underline;text-underline-offset:4px}.unavailable{color:var(--muted)}.unavailable .badge{border-style:dashed}
-    @media(max-width:899px){main{padding-top:58px}.layout{gap:30px}.line-main{grid-template-columns:auto minmax(0,1fr)}.aside{grid-column:2;text-align:left}}
-    @media(min-width:900px){main{padding-top:76px}.layout{grid-template-columns:minmax(0,1.25fr) minmax(360px,.85fr);align-items:start;gap:40px}.map-hero{position:sticky;top:78px}}
-    @media(prefers-color-scheme:light){:root{color-scheme:light;--bg:#EDF1F6;--text:#16202E;--text-2:#45536A;--muted:#6B7A92;--line:rgba(16,24,38,.12);--safety:#E9B92B;--line-b:#C0264F;--line-v:#36566F;--line-a:#3D4EC0;--line-s:#657385;--line-d:#6E3FC0;--line-p:#0E9C86;--line-w:#00A84D;--line-r:#0052A4}.experience{color:#A81F43}.learn{color:#32409E}.operations{color:#00793A}}
-  </style>
-</head>
-<body>
-  <header class="mockup-banner">MOCKUP — 실화면 아님 · tone r8</header>
-  <main>
-    <div class="station-bar"><span class="badge central" aria-hidden="true">W</span><h1>환승 홀</h1><a class="index-link" href="index.html">목업 목차</a></div>
-    <div class="layout">
-      <figure class="map-hero" aria-label="사이트 순환선과 서비스별 환승 지선">
-        <svg class="network" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 700" role="img" aria-labelledby="network-title network-description">
-          <title id="network-title">순환선과 환승 지선</title>
-          <desc id="network-description">환승 홀에서 출발하는 단색 순환선 위에 B, V, A, S, D, P, W, R 여덟 환승역이 있습니다. 각 역에서 노선색 지선이 바깥으로 이어집니다. B는 공개 아카이브, 글 상세, Writing Studio, V는 여행 준비, 오늘, 기록, S는 격납고, 엘리베이터, 택시, 화이트채플로 연결됩니다. 발견 D와 취향 P는 미개통 지선입니다. 화면 이동 링크는 지도 다음 목록에 있습니다.</desc>
-          <defs>
-            <path id="experience-arc" d="M377 258 A96 96 0 0 1 446 350"/>
-            <path id="learning-arc" d="M271.4 405.1 A96 96 0 0 0 428.6 405.1"/>
-            <path id="operations-arc" d="M255.5 333.3 A96 96 0 0 1 302 266.9"/>
-          </defs>
-          <circle class="loop" cx="350" cy="350" r="145"/>
-          <text class="section"><textPath href="#experience-arc" startOffset="50%" text-anchor="middle">경험</textPath></text>
-          <text class="section"><textPath href="#learning-arc" startOffset="50%" text-anchor="middle">학습·놀이</textPath></text>
-          <text class="section"><textPath href="#operations-arc" startOffset="50%" text-anchor="middle">운영</textPath></text>
-          <g class="branch route-b" data-route="B">
-            <path class="branch-track" d="M443.20 238.92 L494.63 177.64"/>
-            <circle class="stop" cx="459.92" cy="219.01" r="6"/>
-            <circle class="stop" cx="477.27" cy="198.32" r="6"/>
-            <circle class="stop" cx="494.63" cy="177.64" r="6"/>
-            <text class="stop-label" x="486" y="246" text-anchor="start">공개 아카이브</text>
-            <text class="stop-label" x="505" y="210" text-anchor="start">글 상세</text>
-            <text class="stop-label" x="516" y="170" text-anchor="start">Writing Studio</text>
-          </g>
-          <g class="branch route-v" data-route="V">
-            <path class="branch-track" d="M495.00 350.00 L575.00 350.00"/>
-            <circle class="stop" cx="521.00" cy="350.00" r="6"/>
-            <circle class="stop" cx="548.00" cy="350.00" r="6"/>
-            <circle class="stop" cx="575.00" cy="350.00" r="6"/>
-            <path class="label-guide" d="M521 342 V315 M548 358 V375"/>
-            <text class="stop-label" x="510" y="306" text-anchor="start">여행 준비</text>
-            <text class="stop-label" x="548" y="397" text-anchor="middle">오늘</text>
-            <text class="stop-label" x="601" y="357" text-anchor="start">기록</text>
-          </g>
-          <g class="branch route-a" data-route="A">
-            <path class="branch-track" d="M452.53 452.53 L509.10 509.10"/>
-            <circle class="stop" cx="509.10" cy="509.10" r="6"/>
-            <text class="stop-label" x="536" y="504" text-anchor="start">Developer</text>
-            <text class="stop-label" x="536" y="535" text-anchor="start">Advisor</text>
-          </g>
-          <g class="branch route-s" data-route="S">
-            <path class="branch-track" d="M350.00 495.00 L350.00 575.00"/>
-            <circle class="stop" cx="350.00" cy="515.00" r="6"/>
-            <circle class="stop" cx="350.00" cy="535.00" r="6"/>
-            <circle class="stop" cx="350.00" cy="555.00" r="6"/>
-            <circle class="stop" cx="350.00" cy="575.00" r="6"/>
-            <text class="stop-label" x="323" y="522" text-anchor="end">격납고</text>
-            <text class="stop-label" x="375" y="542" text-anchor="start">엘리베이터</text>
-            <text class="stop-label" x="323" y="563" text-anchor="end">택시</text>
-            <text class="stop-label" x="375" y="587" text-anchor="start">화이트채플</text>
-          </g>
-          <g class="branch route-d future" data-route="D">
-            <path class="branch-track" d="M256.80 461.08 L205.37 522.36"/>
-            <text class="stop-label" x="177" y="555" text-anchor="end">발견</text>
-          </g>
-          <g class="branch route-p future" data-route="P">
-            <path class="branch-track" d="M207.20 375.18 L128.42 389.07"/>
-            <text class="stop-label" x="89" y="397" text-anchor="end">취향</text>
-          </g>
-          <g class="branch route-w" data-route="W">
-            <path class="branch-track" d="M218.59 288.72 L146.08 254.91"/>
-            <circle class="stop" cx="146.08" cy="254.91" r="6"/>
-            <text class="stop-label" x="205" y="229" text-anchor="end">Work Manager</text>
-          </g>
-          <g class="branch route-r" data-route="R">
-            <path class="branch-track" d="M277.50 224.43 L237.50 155.14"/>
-            <circle class="stop" cx="237.50" cy="155.14" r="6"/>
-            <text class="stop-label" x="218" y="137" text-anchor="end">Runtime Board</text>
-          </g>
-          <g class="transfer route-b" data-code="B"><circle cx="443.20" cy="238.92" r="15"/><text class="code" x="443.20" y="238.92">B</text></g>
-          <g class="transfer route-v" data-code="V"><circle cx="495.00" cy="350.00" r="15"/><text class="code" x="495.00" y="350.00">V</text></g>
-          <g class="transfer route-a" data-code="A"><circle cx="452.53" cy="452.53" r="15"/><text class="code" x="452.53" y="452.53">A</text></g>
-          <g class="transfer route-s" data-code="S"><circle cx="350.00" cy="495.00" r="15"/><text class="code" x="350.00" y="495.00">S</text></g>
-          <g class="transfer route-d future" data-code="D"><circle cx="256.80" cy="461.08" r="15"/><text class="code" x="256.80" y="461.08">D</text></g>
-          <g class="transfer route-p future" data-code="P"><circle cx="207.20" cy="375.18" r="15"/><text class="code" x="207.20" y="375.18">P</text></g>
-          <g class="transfer route-w" data-code="W"><circle cx="218.59" cy="288.72" r="15"/><text class="code" x="218.59" y="288.72">W</text></g>
-          <g class="transfer route-r" data-code="R"><circle cx="277.50" cy="224.43" r="15"/><text class="code" x="277.50" y="224.43">R</text></g>
-          <g><circle class="hub" cx="350" cy="205" r="21"/><circle class="hub-core" cx="350" cy="205" r="5"/><text class="hub-label" x="350" y="165">환승 홀</text></g>
-        </svg>
-      </figure>
-      <nav class="lines" aria-label="순환선 정류장 이동">
-        <section class="line-group experience-line" aria-labelledby="experience-heading"><h2 id="experience-heading">경험 구간</h2><p class="route-order">환승 홀 → B → V</p><ul class="rows">
-          <li><a class="line-main" href="blog-hub.html"><span class="badge route-b" aria-hidden="true">B</span><span class="name">블로그 본선</span><span class="aside">읽고 쓰는 기록</span></a><div class="sublinks"><a href="blog-archive.html">공개 아카이브</a><a href="blog-post.html">글 상세</a><a href="writing-studio.html">스튜디오</a></div></li>
-          <li><a class="line-main" href="voyage-prep.html"><span class="badge route-v" aria-hidden="true">V</span><span class="name">여행 노선</span><span class="aside">여정과 기억</span></a><div class="sublinks"><a href="voyage-prep.html">여행 준비</a><a href="voyage-daily.html">오늘</a><a href="voyage-archive.html">기록</a><a href="voyage-route.html">노선도</a></div></li>
-        </ul></section>
-        <section class="line-group learn-line" aria-labelledby="learn-heading"><h2 id="learn-heading">학습·놀이 구간</h2><p class="route-order">A → S → D → P</p><ul class="rows">
-          <li><a class="line-main" href="../advisor/"><span class="badge route-a" aria-hidden="true">A</span><span class="name">Developer Advisor</span><span class="aside">개발 미션</span></a></li><li><a class="line-main" href="simhub.html"><span class="badge route-s" aria-hidden="true">S</span><span class="name">미스터리 트레인</span><span class="aside">사건 해결</span></a><div class="sublinks"><a href="simhub.html">격납고</a></div></li><li class="unavailable"><div class="line-main"><span class="badge route-d" aria-hidden="true">D</span><span class="name">발견</span><span class="aside">연장 예정</span></div></li><li class="unavailable"><div class="line-main"><span class="badge route-p" aria-hidden="true">P</span><span class="name">취향</span><span class="aside">연장 예정</span></div></li>
-        </ul></section>
-        <section class="line-group operations-line" aria-labelledby="operations-heading"><h2 id="operations-heading">운영 구간</h2><p class="route-order">W → R → 환승 홀</p><ul class="rows"><li><a class="line-main" href="work.html"><span class="badge route-w" aria-hidden="true">W</span><span class="name">Work Manager</span><span class="aside">작업 흐름</span></a></li><li><a class="line-main" href="runtime.html"><span class="badge route-r" aria-hidden="true">R</span><span class="name">Runtime Board</span><span class="aside">실행 상태</span></a></li></ul></section>
-      </nav>
-    </div>
-  </main>
-</body>
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>환승 홀 — 순환선 목업 r11</title><style>
+:root{--bg:#0A0F16;--card:#0D131C;--tx:#F3F6FB;--tx2:#AEB8C8;--mut:#7C8AA0;--hair:rgba(255,255,255,.09);--hair2:rgba(255,255,255,.16);--ring:#E9EDF3;--safety:#F3C544;
+--b:#E14D78;--v:#55738F;--a:#7C89F0;--s:#AEB8C8;--w:#35C275;--r:#5B8DEF;--dim:#7C8AA0}
+@media(prefers-color-scheme:light){:root{--bg:#EDF1F6;--card:#F7F9FC;--tx:#16202E;--tx2:#4B5A70;--mut:#6B7A90;--hair:rgba(10,20,40,.10);--hair2:rgba(10,20,40,.18);--ring:#16202E;--safety:#B8860B;--b:#C0264F;--v:#3E5A78;--a:#3D4EC0;--s:#4B5A70;--w:#1F8A4C;--r:#2F5FCC;--dim:#8A97AA}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui;-webkit-font-smoothing:antialiased}
+header.banner{position:fixed;inset:0 0 auto;z-index:20;padding:7px;text-align:center;background:#F3C544;color:#111;font-size:12px;font-weight:800}
+a{color:inherit;text-decoration:none}
+main{max-width:1120px;margin:auto;padding:58px 20px 80px}
+.top{display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--hair);font-weight:700}
+.top svg{width:22px;height:22px;flex:none}.top small{margin-left:auto;color:var(--mut);font-weight:400;font-size:12px}
+.wrap{display:grid;gap:28px;margin-top:22px}
+@media(min-width:900px){.wrap{grid-template-columns:1.15fr 1fr;align-items:start}.mapbox{position:sticky;top:76px}}
+.mapbox{border-left:3px solid var(--safety);padding-left:14px}
+.mapbox .k{font-size:11px;letter-spacing:.14em;color:var(--mut);font-weight:700}
+svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
+.ring{fill:none;stroke:var(--ring);stroke-width:9}
+.br{fill:none;stroke-width:4;stroke-linecap:round}
+.br.todo{stroke:var(--dim);stroke-width:3;stroke-dasharray:6 7}
+.st{fill:var(--card);stroke:var(--ring);stroke-width:4}
+.st.todo{stroke:var(--dim);stroke-dasharray:3 3}
+.code{font-size:13px;font-weight:800;fill:var(--tx);text-anchor:middle;dominant-baseline:central}
+.code.todo{fill:var(--dim)}
+.stop{fill:var(--card);stroke-width:3}
+.nm{fill:var(--tx);font-size:16px;font-weight:700}.nm.todo{fill:var(--dim);font-weight:500}
+.seg{fill:var(--mut);font-size:12px;letter-spacing:.14em;font-weight:700;text-anchor:middle}
+.lbl-stop{fill:var(--tx2);font-size:12px}
+.hub{fill:none;stroke:var(--safety);stroke-width:4;stroke-linecap:round}
+.hubdot{fill:var(--safety)}
+.hubname{fill:var(--safety);font-size:13px;font-weight:800;text-anchor:middle;letter-spacing:.04em}
+@media(max-width:899px){.lbl-stop{display:none}.seg{display:none}.nm{font-size:27px}.nm.todo{font-size:24px}.code{font-size:22px}.st{r:21px}.stop{r:7px}.hubname{font-size:24px}.ring{stroke-width:11}.br{stroke-width:6}}
+.legend{color:var(--mut);font-size:12px;margin-top:10px}
+/* 목록 */
+.lines{min-width:0}
+.grp{margin-bottom:26px}
+.grp h2{font-size:11px;letter-spacing:.14em;color:var(--mut);font-weight:700;margin:0 0 2px}
+.grp .ord{color:var(--mut);font-size:12px;margin:0 0 6px}
+.row{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--hair)}
+.grp .row:last-of-type{border-bottom:1px solid var(--hair)}
+.badge{width:24px;height:24px;border-radius:50%;border:2px solid var(--c);color:var(--c);display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+.row .name{font-weight:700}.row .aside{margin-left:auto;color:var(--mut);font-size:12px;white-space:nowrap}
+.row.dim .name,.row.dim .badge{color:var(--dim);border-color:var(--dim)}
+.sub{display:flex;flex-wrap:wrap;gap:14px;padding:0 0 12px 36px;font-size:13px;color:var(--tx2)}
+.sub a{border-bottom:1px solid var(--hair2)}
+</style>
+<header class="banner">MOCKUP — 실화면 아님 · tone r11 · 순환선 (PM)</header>
+<main>
+<div class="top">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.7 4.4 A9 9 0 1 1 8.3 4.4" fill="none" stroke="var(--safety)" stroke-width="2.6" stroke-linecap="round"/></svg>
+  환승 홀<small>목업 목차</small>
+</div>
+
+<div class="wrap">
+<section class="mapbox">
+  <div class="k">순환선 · 사이트 한 바퀴</div>
+  <svg class="map" viewBox="0 0 720 720" role="img" aria-label="workaround 순환선 노선도 — 환승역 8, 지선 정류장">
+    <!-- 순환선 (주인공) -->
+    <circle class="ring" cx="360" cy="360" r="200"/>
+    <!-- 구간명 (링 안쪽, 수평) -->
+    <text class="seg" x="470" y="313">경험</text>
+    <text class="seg" x="356" y="486">학습 · 놀이</text>
+    <text class="seg" x="251" y="313">운영</text>
+
+    <!-- 지선: B 블로그 (θ45) -->
+    <path class="br" d="M501.4 218.6 L596.8 123.2" stroke="var(--b)"/>
+    <circle class="stop" cx="533.2" cy="186.8" r="5" stroke="var(--b)"/><text class="lbl-stop" x="546" y="182">공개 아카이브</text>
+    <circle class="stop" cx="565" cy="155" r="5" stroke="var(--b)"/><text class="lbl-stop" x="578" y="150">글 상세</text>
+    <circle class="stop" cx="596.8" cy="123.2" r="5" stroke="var(--b)"/><text class="lbl-stop" x="610" y="118">Writing Studio</text>
+    <!-- 지선: V 여행 (θ90) -->
+    <path class="br" d="M560 360 L680 360" stroke="var(--v)"/>
+    <circle class="stop" cx="600" cy="360" r="5" stroke="var(--v)"/><text class="lbl-stop" x="600" y="384" text-anchor="middle">준비</text>
+    <circle class="stop" cx="640" cy="360" r="5" stroke="var(--v)"/><text class="lbl-stop" x="640" y="344" text-anchor="middle">오늘</text>
+    <circle class="stop" cx="680" cy="360" r="5" stroke="var(--v)"/><text class="lbl-stop" x="680" y="384" text-anchor="middle">기록</text>
+    <!-- 지선: A Advisor (θ130) -->
+    <path class="br" d="M513.2 488.6 L566.8 533.6" stroke="var(--a)"/>
+    <circle class="stop" cx="566.8" cy="533.6" r="5" stroke="var(--a)"/><text class="lbl-stop" x="580" y="538">코스 · 미션</text>
+    <!-- 지선: S 미스터리 트레인 (θ165) -->
+    <path class="br" d="M411.8 553.2 L448 688.4" stroke="var(--s)"/>
+    <circle class="stop" cx="420.9" cy="587" r="5" stroke="var(--s)"/><text class="lbl-stop" x="434" y="591">격납고</text>
+    <circle class="stop" cx="429.9" cy="620.8" r="5" stroke="var(--s)"/><text class="lbl-stop" x="443" y="625">엘리베이터</text>
+    <circle class="stop" cx="439" cy="654.6" r="5" stroke="var(--s)"/><text class="lbl-stop" x="452" y="659">택시</text>
+    <circle class="stop" cx="448" cy="688.4" r="5" stroke="var(--s)"/><text class="lbl-stop" x="461" y="693">화이트채플</text>
+    <!-- 지선: D 발견 · P 취향 (연장 예정) -->
+    <path class="br todo" d="M291.6 548 L271 604.4"/>
+    <path class="br todo" d="M196.2 474.8 L147 509"/>
+    <!-- 지선: W Work (θ275) -->
+    <path class="br" d="M160.8 342.6 L91 336.5" stroke="var(--w)"/>
+    <circle class="stop" cx="91" cy="336.5" r="5" stroke="var(--w)"/><text class="lbl-stop" x="78" y="341" text-anchor="end">작업 흐름</text>
+    <!-- 지선: R Runtime (θ315) -->
+    <path class="br" d="M218.6 218.6 L169 169" stroke="var(--r)"/>
+    <circle class="stop" cx="169" cy="169" r="5" stroke="var(--r)"/><text class="lbl-stop" x="156" y="164" text-anchor="end">실행 상태</text>
+
+    <!-- 환승역 (링 위) -->
+    <g><circle class="st" cx="501.4" cy="218.6" r="13"/><text class="code" x="501.4" y="218.6">B</text><text class="nm" x="478" y="245" text-anchor="end">블로그</text></g>
+    <g><circle class="st" cx="560" cy="360" r="13"/><text class="code" x="560" y="360">V</text><text class="nm" x="536" y="365" text-anchor="end">여행</text></g>
+    <g><circle class="st" cx="513.2" cy="488.6" r="13"/><text class="code" x="513.2" y="488.6">A</text><text class="nm" x="492" y="475" text-anchor="end">Advisor</text></g>
+    <g><circle class="st" cx="411.8" cy="553.2" r="13"/><text class="code" x="411.8" y="553.2">S</text><text class="nm" x="404" y="530" text-anchor="middle">미스터리 트레인</text></g>
+    <g><circle class="st todo" cx="291.6" cy="548" r="13"/><text class="code todo" x="291.6" y="548">D</text><text class="nm todo" x="262" y="578" text-anchor="end">발견</text></g>
+    <g><circle class="st todo" cx="196.2" cy="474.8" r="13"/><text class="code todo" x="196.2" y="474.8">P</text><text class="nm todo" x="218" y="462">취향</text></g>
+    <g><circle class="st" cx="160.8" cy="342.6" r="13"/><text class="code" x="160.8" y="342.6">W</text><text class="nm" x="184" y="347">Work</text></g>
+    <g><circle class="st" cx="218.6" cy="218.6" r="13"/><text class="code" x="218.6" y="218.6">R</text><text class="nm" x="242" y="240">Runtime</text></g>
+
+    <!-- 환승 홀 (기점, C 심볼: 열린 기점) -->
+    <circle cx="360" cy="160" r="22" fill="var(--card)"/>
+    <path class="hub" d="M366.8 139.1 A22 22 0 1 1 353.2 139.1"/>
+    <circle class="hubdot" cx="360" cy="138" r="3"/>
+    <text class="hubname" x="360" y="204">환승 홀</text>
+  </svg>
+  <p class="legend">데스크톱: 정류장 이름 표시 · 모바일: 환승역만, 정류장은 점 — 이름은 아래 목록에서</p>
+</section>
+
+<nav class="lines" aria-label="순환선 정류장 이동">
+  <section class="grp"><h2>경험 구간</h2><p class="ord">환승 홀 → B → V</p>
+    <div class="row" style="--c:var(--b)"><span class="badge">B</span><span class="name">블로그 본선</span><span class="aside">읽고 쓰는 기록</span></div>
+    <div class="sub"><a href="blog-archive.html">공개 아카이브</a><a href="blog-post.html">글 상세</a><a href="writing-studio.html">Writing Studio</a></div>
+    <div class="row" style="--c:var(--v)"><span class="badge">V</span><span class="name">여행 노선</span><span class="aside">여정과 기억</span></div>
+    <div class="sub"><a href="voyage-prep.html">여행 준비</a><a href="voyage-daily.html">오늘</a><a href="voyage-archive.html">기록</a><a href="voyage-route.html">노선도</a></div>
+  </section>
+  <section class="grp"><h2>학습 · 놀이 구간</h2><p class="ord">A → S → D → P</p>
+    <div class="row" style="--c:var(--a)"><span class="badge">A</span><span class="name">Developer Advisor</span><span class="aside">코스 · 미션</span></div>
+    <div class="row" style="--c:var(--s)"><span class="badge">S</span><span class="name">미스터리 트레인</span><span class="aside">격납고</span></div>
+    <div class="sub"><a href="simhub.html">격납고</a><a href="simhub.html">엘리베이터</a><a href="simhub.html">택시</a><a href="simhub.html">화이트채플</a></div>
+    <div class="row dim" style="--c:var(--dim)"><span class="badge">D</span><span class="name">발견</span><span class="aside">연장 예정</span></div>
+    <div class="row dim" style="--c:var(--dim)"><span class="badge">P</span><span class="name">취향</span><span class="aside">연장 예정</span></div>
+  </section>
+  <section class="grp"><h2>운영 구간</h2><p class="ord">W → R → 환승 홀</p>
+    <div class="row" style="--c:var(--w)"><span class="badge">W</span><span class="name">Work Manager</span><span class="aside">보호 구역</span></div>
+    <div class="row" style="--c:var(--r)"><span class="badge">R</span><span class="name">Runtime Board</span><span class="aside">보호 구역</span></div>
+  </section>
+</nav>
+</div>
+</main>
 </html>
