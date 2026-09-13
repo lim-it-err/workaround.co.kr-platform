@@ -65,3 +65,10 @@
 - splash.html 신규: 원형 W 배지 주인공 + 워드마크 + "곧 문이 열립니다" + 한 줄 플랩(WORKAROUND, 순수 CSS 플립) + 현행 tickerPool 멘트 + "10초 후 자동 전환" + 10s 진행선 + 문 열림 힌트. script 0, prefers-reduced-motion 처리.
 - PM 직접 측정(390×844): overflow 0, 높이 844(한 화면). 면 채움은 플랩 셀·배지뿐(장치 요소 — 허용).
 - 나머지 12개 무변경. 총 13개 화면 완성 — PO 최종 승인 후 finished.
+
+## PM r5 판정 (2026-09-14) — **통과 (PO 최종 승인 대기)**
+
+- 자동검사: 4파일 script 0 · splash 티커 3종+doors opening+reduced-motion · home viewBox 1000×460(현행 가로형)·3묶음·'개통 예정' 섹션 0·≥900px 2단 · studio 720px·"← 블로그"·사진/표/제목 도구 · archive DAY 1~6 원문(렌터카·인용문 대조).
+- 실렌더(PM): home 390 overflow 0 / 1440 에서 SVG 135→840px·목록 888px~ 2단 확인. studio 1440 중앙 컬럼+우측 도구 패널. archive 390 DAY 6 주인공·지나온 정류장. splash 9초 시점 좌우 패널 갈라짐+doors opening.
+- **[중요·구현 메모, 목업 비차단]** 모바일(390)에서 가로형 노선도가 154px 높이로 눌려 라벨이 빽빽함 — 구현(FE) 시 규칙: 모바일은 **개통 노선만 이름 표시, 미개통은 배지만**, 라벨 폰트 하한 11px, 필요 시 지도 높이 220px 이상 확보. 톤 원칙 6 에 추가.
+- home-alt(선택)는 미제출 — 문제 없음.

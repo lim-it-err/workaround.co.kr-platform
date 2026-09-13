@@ -2,7 +2,7 @@
 
 # TKT-102 `[목업]` 톤 전환 전 화면 정적 HTML 목업 — codex-4 전담
 
-- 상태: `started` (r5 — PO 목업 리뷰 피드백 4건 반영)
+- 상태: `need_review` (r5 통과 — PM 2026-09-14, PO 최종 육안 승인 대기)
 - 우선순위: P1 (PO 지시 2026-09-09 — "모든 변경될 화면이 html로 있으면 좋겠어")
 - 담당: codex-4 (전속부관 — 예외적 제작 티켓, 앱 코드 무접촉)
 - 관련: `design/tone-principles-2026-09-09.md` (원칙 4) · 기준 목업 `design/mockups/tone-pitch-r1.html`
@@ -118,3 +118,15 @@
 3. **writing-studio.html** — ①데스크톱에서 본문 컬럼 중앙 정렬 max-width 720px(현재 우측 치우침 결함) ②우측 도구 메뉴 목업: 사진 첨부 · h1/h2/h3 · 표 삽입(기능형 — 행/열 버튼) ③`←` 라벨을 `← 블로그`로.
 4. **index.html** 목차 문구 갱신. 검증은 r3/r4 절차(390·1440 오버플로 0, 링크, 배너, script 0 — splash 만 CSS 애니).
 5. **voyage-archive.html 실콘텐츠 (추가, PO 2026-09-13)** — `design/voyage-log-draft-2026-09-13.md` 의 DAY 1~6 기록을 그대로 얹는다(문구 수정 금지 — PM 콘텐츠). 구조: 진행 중 여행 헤더(중부유럽 순환선 · DAY 6/11) → 일차별 기록(날짜·도시·경과 불릿·한 줄 감상은 인용체) → 남은 정류장 흐리게. 원칙 1·2 준수(면 없음, 주인공은 오늘 DAY 6). `voyage-daily.html` 은 무변경.
+
+### r5 구현 인계 (codex-4 전속부관, 2026-09-13)
+
+- 변경 파일: `frontend/public/mockups/splash.html`, `home.html`, `writing-studio.html`, `voyage-archive.html`, `index.html` 5개. 확인 URL은 `/mockups/index.html`에서 각 화면으로 진입한다. 나머지 목업 8개 SHA-256은 착수 시점과 동일하다.
+- 스플래시: 10초 동안 현행 `tickerPool`의 첫 세 문구를 순서대로 3회 노출한다. 마지막 1.5초에 그림자·글로우 없는 단색 좌우 패널이 갈라져 W 배지를 드러내고, 얇은 진행선 아래 `doors opening`을 표시한다. 플랩과 전환 전체는 CSS keyframes만 사용하며 script는 없다.
+- 홈: `lines.js`의 `viewBox="0 0 1000 460"`과 8개 path 좌표를 그대로 옮기고 모든 선을 2px로 다이어트했다. D·P만 저채도 점선으로 두고 상태·통계는 제거했다. 목록은 경험(B·V) / 학습·놀이(A·S·D·P) / 운영(W·R) 세 묶음, 노선당 한 행과 인라인 하위 링크로 정리했다. 900px 이상은 좌 노선도·우 목록 2단, 모바일은 같은 SVG를 위에 쌓는다. `home-alt.html`은 선택 사항이고 PO가 현행 가로형을 선호한 상태라 비교안을 늘리지 않았다.
+- Writing Studio: 본문을 뷰포트 정중앙의 최대 720px 컬럼으로 고정하고 우측에 사진 첨부, H1/H2/H3, 행·열 추가/삭제와 2×2 미리보기를 갖춘 표 도구를 배치했다. Markdown 파이프 문법은 노출하지 않았고 라벨은 `← 블로그`로 변경했다. 이는 TKT-105 구현 전 승인용 정적 목업이며 업로드 동작은 넣지 않았다.
+- 여행 기록: `design/voyage-log-draft-2026-09-13.md`의 DAY 1~6 경과·한 줄·남은 정류장 25개 원문 행을 모두 그대로 포함했다. 진행 중 헤더는 `중부유럽 순환선 · DAY 6/11`, 오늘 DAY 6을 주인공으로 두고 남은 정류장은 흐리게 처리했다. `voyage-daily.html`은 SHA가 유지됐다.
+- 브라우저 검증: Chromium 151.0.7922.34에서 390×900·1440×900을 검사했다. 전 화면 가로 overflow 0, 홈 3묶음·8행·D/P 비활성 및 데스크톱 2단/모바일 스택, 스튜디오 중앙 오차 0px·폭 720px·primary 1개·제목 잘림 0, 여행 DAY 6개·원문 25행 일치, 목차 링크 12개를 확인했다. 스플래시는 0초/3.4초/6.7초 티커 문구와 10.2초 패널 개방·배지 노출·진행선 완료를 확인했다.
+- 접근성/의존성: `prefers-reduced-motion`에서 패널·플랩·티커·진행선 애니메이션이 모두 `none`이고 배지와 첫 티커가 정적으로 보인다. 13개 목업 모두 배너 1회·viewport 선언·외부 의존·script 0, source/dist 바이트 일치다.
+- 완료 게이트: `npm --prefix frontend run build` 통과(Vite 6.4.3, 37 modules), `git diff --check` 통과. 390/1440px 스크린샷을 육안 확인했다. 자료는 `/private/tmp/tkt102-r5.KSBYbK/`의 `verify.cjs`와 PNG 9개에 있다(임시 경로라 정리 시 소실 가능).
+- 제약: 실제 Vue 화면·라우팅·업로드·표 편집 기능은 scope 밖이라 수정하지 않았다. Safari/WebKit 실기와 실배포는 미검증이며 최종 판정·commit·push·배포는 수행하지 않았다.

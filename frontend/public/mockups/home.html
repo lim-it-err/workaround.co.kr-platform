@@ -5,163 +5,78 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>환승 홀 — 톤 목업</title>
   <style>
-    :root {
-      color-scheme: dark;
-      --bg: #0D131C;
-      --text: #F3F6FB;
-      --text-2: #AEB8C8;
-      --muted: #7C8AA0;
-      --line: rgba(255,255,255,.09);
-      --safety: #F3C544;
-      --line-b: #E14D78;
-      --line-b-text: #F07CA0;
-      --line-v: #55738F;
-      --line-v-text: #9CB8D2;
-      --line-s: #9AA8B5;
-      --line-w: #35C275;
-      --line-r: #5B8DEF;
-      font-family: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", system-ui, sans-serif;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; background: var(--bg); color: var(--text); font-size: 1rem; line-height: 1.55; }
-    .mockup-banner { position: fixed; inset: 0 0 auto; z-index: 9; padding: 7px; background: var(--safety); color: #201A05; text-align: center; font-size: 12px; font-weight: 800; }
-    main { max-width: 760px; margin: auto; padding: 60px 20px 48px; }
-    a { color: inherit; text-decoration: none; }
-    a:hover .name, .index-link:hover { text-decoration: underline; text-underline-offset: 4px; }
-    a:focus-visible { outline: 2px solid var(--safety); outline-offset: 3px; }
-    .station-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
-    h1 { font-size: 1.125rem; margin: 0; font-weight: 700; }
-    .index-link { margin-left: auto; padding: 10px 0 10px 10px; color: var(--text-2); font-size: .875rem; }
-    .badge { display: inline-grid; place-items: center; width: 24px; height: 24px; flex: 0 0 24px; border: 1.5px solid currentColor; border-radius: 50%; font-size: .75rem; font-weight: 800; line-height: 1; }
-    .central { color: var(--safety); }
-    .blog { color: var(--line-b-text); border-color: var(--line-b); }
-    .voyage { color: var(--line-v-text); border-color: var(--line-v); }
-    .play { color: var(--line-s); }
-    .work { color: var(--line-w); }
-    .runtime { color: var(--line-r); }
-    .planned { color: var(--muted); border-style: dashed; }
-    .map-hero { margin: 24px 0 36px; padding-left: 12px; border-left: 3px solid var(--safety); }
-    .network { display: block; width: 100%; max-width: 560px; height: auto; margin: auto; }
-    .network .track { fill: none; stroke: var(--route-color); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-    .network .node { fill: var(--bg); stroke: var(--route-color); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-    .network text { fill: var(--text-2); font-family: inherit; font-size: 16px; }
-    .network .code { fill: var(--text); font-size: 12px; font-weight: 800; text-anchor: middle; dominant-baseline: central; }
-    .network .unopened .track, .network .unopened .node { stroke-dasharray: 4 5; }
-    .network .unopened text { fill: var(--muted); }
-    .categories { display: grid; gap: 28px; }
-    .category h2 { margin: 0 0 8px; font-size: .875rem; font-weight: 600; color: var(--text-2); }
-    .rows, .journey-links { list-style: none; padding: 0; margin: 0; }
-    .rows { margin-left: 12px; }
-    .rows > li { border-bottom: 1px solid var(--line); }
-    .row { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 10px; align-items: center; min-height: 56px; padding: 12px 0; }
-    .name { min-width: 0; font-weight: 600; overflow-wrap: anywhere; word-break: keep-all; }
-    .status { color: var(--text-2); text-align: right; font-size: .875rem; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-    .unavailable .name, .unavailable .status { color: var(--muted); }
-    .journey-links { display: flex; flex-wrap: wrap; gap: 0 24px; margin: 0 0 4px 34px; }
-    .journey-links a { display: block; padding: 10px 0; font-size: .875rem; color: var(--text-2); text-decoration: underline; text-underline-offset: 4px; }
-    @media (min-width: 700px) { main { padding-top: 76px; } .categories { gap: 32px; } }
-    @media (max-width: 360px) { .row { grid-template-columns: 24px minmax(0,1fr); } .status { grid-column: 2; text-align: left; } }
+    :root{color-scheme:dark;--bg:#0D131C;--text:#F3F6FB;--text-2:#AEB8C8;--muted:#7C8AA0;--line:rgba(255,255,255,.09);--safety:#F3C544;--line-a:#7C89F0;--line-b:#E14D78;--line-v:#55738F;--line-s:#9AA8B5;--line-w:#35C275;--line-r:#5B8DEF;--line-d:#9B6BF2;--line-p:#22C3A7;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-size:15px;line-height:1.55}
+    a{color:inherit;text-decoration:none}
+    a:hover .name,.sublinks a:hover,.index-link:hover{text-decoration:underline;text-underline-offset:4px}
+    a:focus-visible{outline:2px solid var(--safety);outline-offset:3px}
+    .mockup-banner{position:fixed;inset:0 0 auto;z-index:9;padding:7px;background:var(--safety);color:#201A05;text-align:center;font-size:12px;font-weight:800}
+    main{max-width:1240px;margin:auto;padding:60px 20px 48px}
+    .station-bar{display:flex;align-items:center;gap:10px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+    h1{margin:0;font-size:1.125rem}.index-link{margin-left:auto;padding:10px 0 10px 10px;color:var(--text-2);font-size:.875rem}
+    .badge{display:inline-grid;place-items:center;width:24px;height:24px;flex:0 0 24px;border:1.5px solid currentColor;border-radius:50%;font-size:.75rem;font-weight:800;line-height:1}
+    .central{color:var(--safety)}.line-a{color:#A5AEF5;border-color:var(--line-a)}.line-b{color:#F07CA0;border-color:var(--line-b)}.line-v{color:#9CB8D2;border-color:var(--line-v)}.line-s{color:#BCC7D1;border-color:var(--line-s)}.line-w{color:#6BD59B;border-color:var(--line-w)}.line-r{color:#8FB0F5;border-color:var(--line-r)}.line-d{color:#BCA1F7;border-color:var(--line-d)}.line-p{color:#5AD9C2;border-color:var(--line-p)}
+    .layout{display:grid;gap:36px;margin-top:24px}.map-hero{min-width:0;margin:0;padding-left:12px;border-left:3px solid var(--safety)}
+    .network{display:block;width:100%;height:auto;max-height:360px}
+    .network .track{fill:none;stroke:var(--route-color);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+    .network .node{fill:var(--bg);stroke:var(--route-color);stroke-width:1.5;vector-effect:non-scaling-stroke}
+    .network .lchip{fill:var(--bg);stroke:var(--route-color);stroke-width:2;vector-effect:non-scaling-stroke}
+    .network .code{fill:var(--text);font-size:22px;font-weight:850;text-anchor:middle;dominant-baseline:central}
+    .network .label{fill:var(--text-2);font-size:23px;font-weight:650}
+    .network .label-center{text-anchor:middle}.network .unopened{opacity:.42}.network .unopened .track,.network .unopened .lchip{stroke-dasharray:5 6}.network .hub{fill:var(--bg);stroke:var(--safety);stroke-width:2;vector-effect:non-scaling-stroke}
+    .categories{display:grid;gap:26px}.category h2{margin:0 0 7px;color:var(--text-2);font-size:.875rem;font-weight:650}.rows{list-style:none;margin:0;padding:0 0 0 12px}.rows>li{padding:11px 0;border-bottom:1px solid var(--line)}
+    .line-main{display:flex;align-items:center;gap:10px;min-height:28px}.name{font-weight:650;overflow-wrap:anywhere}.sublinks{display:flex;flex-wrap:wrap;gap:0 18px;margin:6px 0 0 34px}.sublinks a{padding:5px 0;color:var(--text-2);font-size:.82rem;text-decoration:underline;text-underline-offset:4px}.unavailable{opacity:.45}.unavailable .badge{border-style:dashed}
+    @media(max-width:899px){main{padding-top:58px}.layout{gap:30px}.network{max-height:220px}.network .code{font-size:25px}.network .label{font-size:27px}.network .lchip{r:22px}}
+    @media(min-width:900px){main{padding-top:76px}.layout{grid-template-columns:minmax(0,1.25fr) minmax(330px,.75fr);align-items:start;gap:48px}.map-hero{position:sticky;top:78px}.network{max-height:min(62vh,460px)}.categories{gap:30px}}
   </style>
 </head>
 <body>
-  <header class="mockup-banner">MOCKUP — 실화면 아님 · tone r1</header>
+  <header class="mockup-banner">MOCKUP — 실화면 아님 · tone r5</header>
   <main>
-    <div class="station-bar">
-      <span class="badge central" aria-hidden="true">W</span>
-      <h1>환승 홀</h1>
-      <a class="index-link" href="index.html">목업 목차</a>
+    <div class="station-bar"><span class="badge central" aria-hidden="true">W</span><h1>환승 홀</h1><a class="index-link" href="index.html">목업 목차</a></div>
+    <div class="layout">
+      <figure class="map-hero" aria-label="노선도">
+        <svg class="network" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 460" role="img" aria-labelledby="network-title network-description">
+          <title id="network-title">환승 홀 가로형 노선도</title>
+          <desc id="network-description">현행 노선 좌표를 따라 환승 홀에서 여덟 개 노선으로 이어집니다. 발견과 취향 노선은 점선입니다. 이동은 오른쪽 또는 아래 목록을 이용하세요.</desc>
+          <g style="--route-color:var(--line-a)"><path class="track" d="M300 230 L180 78 H96"/><circle class="lchip" cx="96" cy="78" r="20"/><text class="code" x="96" y="78">A</text><text class="label" x="12" y="43">Developer Advisor</text></g>
+          <g style="--route-color:var(--line-w)"><path class="track" d="M300 230 L180 140 H96"/><circle class="lchip" cx="96" cy="140" r="20"/><text class="code" x="96" y="140">W</text><text class="label" x="12" y="108">Work Manager</text></g>
+          <g style="--route-color:var(--line-r)"><path class="track" d="M300 230 L180 320 H96"/><circle class="lchip" cx="96" cy="320" r="20"/><text class="code" x="96" y="320">R</text><text class="label" x="12" y="360">Runtime Board</text></g>
+          <g style="--route-color:var(--line-v)"><path class="track" d="M300 230 L180 382 H96"/><circle class="lchip" cx="96" cy="382" r="20"/><text class="code" x="96" y="382">V</text><text class="label" x="12" y="424">여행 노선</text></g>
+          <g class="unopened" style="--route-color:var(--line-d)"><path class="track" d="M300 230 L440 96 H600"/><circle class="lchip" cx="600" cy="96" r="20"/><text class="code" x="600" y="96">D</text><text class="label" x="632" y="102">발견 노선</text></g>
+          <g style="--route-color:var(--line-s)"><path class="track" d="M300 230 L440 158 H600"/><circle class="lchip" cx="600" cy="158" r="20"/><text class="code" x="600" y="158">S</text><text class="label" x="632" y="164">미스터리 트레인</text></g>
+          <g class="unopened" style="--route-color:var(--line-p)"><path class="track" d="M300 230 L440 364 H600"/><circle class="lchip" cx="600" cy="364" r="20"/><text class="code" x="600" y="364">P</text><text class="label" x="632" y="370">취향 노선</text></g>
+          <g style="--route-color:var(--line-b)"><path class="track" d="M300 230 H852"/><circle class="lchip" cx="852" cy="230" r="20"/><text class="code" x="852" y="230">B</text><text class="label label-center" x="852" y="196">블로그 본선</text></g>
+          <circle class="hub" cx="300" cy="230" r="13"/><text class="label label-center" x="300" y="194">환승 홀</text>
+        </svg>
+      </figure>
+      <nav class="categories" aria-label="노선별 이동">
+        <section class="category" aria-labelledby="experience-heading">
+          <h2 id="experience-heading">경험</h2>
+          <ul class="rows">
+            <li><a class="line-main" href="blog-hub.html"><span class="badge line-b" aria-hidden="true">B</span><span class="name">블로그 본선</span></a><div class="sublinks"><a href="blog-archive.html">공개 아카이브</a><a href="blog-post.html">글 상세</a><a href="writing-studio.html">스튜디오</a></div></li>
+            <li><a class="line-main" href="voyage-prep.html"><span class="badge line-v" aria-hidden="true">V</span><span class="name">여행 노선</span></a><div class="sublinks"><a href="voyage-prep.html">여행 준비</a><a href="voyage-daily.html">오늘</a><a href="voyage-archive.html">기록</a></div></li>
+          </ul>
+        </section>
+        <section class="category" aria-labelledby="learn-play-heading">
+          <h2 id="learn-play-heading">학습·놀이</h2>
+          <ul class="rows">
+            <li><a class="line-main" href="../advisor/"><span class="badge line-a" aria-hidden="true">A</span><span class="name">Developer Advisor</span></a></li>
+            <li><a class="line-main" href="simhub.html"><span class="badge line-s" aria-hidden="true">S</span><span class="name">미스터리 트레인</span></a><div class="sublinks"><a href="simhub.html">격납고</a></div></li>
+            <li class="unavailable"><div class="line-main"><span class="badge line-d" aria-hidden="true">D</span><span class="name">발견 노선</span></div></li>
+            <li class="unavailable"><div class="line-main"><span class="badge line-p" aria-hidden="true">P</span><span class="name">취향 노선</span></div></li>
+          </ul>
+        </section>
+        <section class="category" aria-labelledby="operations-heading">
+          <h2 id="operations-heading">운영</h2>
+          <ul class="rows">
+            <li><a class="line-main" href="work.html"><span class="badge line-w" aria-hidden="true">W</span><span class="name">Work Manager</span></a></li>
+            <li><a class="line-main" href="runtime.html"><span class="badge line-r" aria-hidden="true">R</span><span class="name">Runtime Board</span></a></li>
+          </ul>
+        </section>
+      </nav>
     </div>
-
-    <!-- 노선 위치는 lines.js의 중앙 환승점/좌우 지선을 모바일 약도로 단순화한다. -->
-    <figure class="map-hero" aria-label="노선도">
-      <svg class="network" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 350 290" role="img" aria-labelledby="network-title network-description">
-        <title id="network-title">환승 홀 간단 노선도</title>
-        <desc id="network-description">중앙에서 블로그, 여행, 배움, 놀이, 운영 노선으로 갈라집니다. 점선은 연결 준비 중인 배움과 개통 예정인 발견·취향 노선입니다. 이동은 아래 카테고리 목록을 이용하세요.</desc>
-        <g class="unopened" style="--route-color:#7C8AA0" data-line="A">
-          <path class="track" d="M175 160 L134 62 H28"/>
-          <circle class="node" cx="28" cy="62" r="10"/><text class="code" x="28" y="62">A</text>
-          <text x="12" y="38">Developer Advisor</text>
-        </g>
-        <g style="--route-color:var(--line-w)" data-line="W">
-          <path class="track" d="M175 160 L130 112 H28"/>
-          <circle class="node" cx="28" cy="112" r="10"/><text class="code" x="28" y="112">W</text>
-          <text x="12" y="90">Work Manager</text>
-        </g>
-        <g style="--route-color:var(--line-r)" data-line="R">
-          <path class="track" d="M175 160 L130 212 H28"/>
-          <circle class="node" cx="28" cy="212" r="10"/><text class="code" x="28" y="212">R</text>
-          <text x="12" y="192">Runtime Board</text>
-        </g>
-        <g style="--route-color:var(--line-v)" data-line="V">
-          <path class="track" d="M175 160 L134 268 H28"/>
-          <circle class="node" cx="28" cy="268" r="10"/><text class="code" x="28" y="268">V</text>
-          <text x="12" y="246">여행 노선</text>
-        </g>
-        <g class="unopened" style="--route-color:#7C8AA0" data-line="D">
-          <path class="track" d="M175 160 L216 62 H322"/>
-          <circle class="node" cx="322" cy="62" r="10"/><text class="code" x="322" y="62">D</text>
-          <text x="214" y="38">발견 노선</text>
-        </g>
-        <g style="--route-color:var(--line-b)" data-line="B">
-          <path class="track" d="M175 160 L220 112 H322"/>
-          <circle class="node" cx="322" cy="112" r="10"/><text class="code" x="322" y="112">B</text>
-          <text x="214" y="90">블로그 본선</text>
-        </g>
-        <g style="--route-color:var(--line-s)" data-line="S">
-          <path class="track" d="M175 160 L220 212 H322"/>
-          <circle class="node" cx="322" cy="212" r="10"/><text class="code" x="322" y="212">S</text>
-          <text x="214" y="192">미스터리 트레인</text>
-        </g>
-        <g class="unopened" style="--route-color:#7C8AA0" data-line="P">
-          <path class="track" d="M175 160 L216 268 H322"/>
-          <circle class="node" cx="322" cy="268" r="10"/><text class="code" x="322" y="268">P</text>
-          <text x="214" y="246">취향 노선</text>
-        </g>
-        <circle cx="175" cy="160" r="9" fill="var(--bg)" stroke="var(--safety)" stroke-width="2"/>
-      </svg>
-    </figure>
-
-    <nav class="categories" aria-label="카테고리별 이동">
-      <section class="category" aria-labelledby="writing-heading">
-        <h2 id="writing-heading">글쓰기</h2>
-        <ul class="rows">
-          <li><a class="row" href="blog-archive.html"><span class="badge blog" aria-hidden="true">B</span><span class="name">공개 아카이브</span><span class="status">읽기</span></a></li>
-          <li><a class="row" href="blog-post.html"><span class="badge blog" aria-hidden="true">B</span><span class="name">글 상세</span><span class="status">본문</span></a></li>
-          <li><a class="row" href="writing-studio.html"><span class="badge blog" aria-hidden="true">B</span><span class="name">Writing Studio</span><span class="status">초안 쓰기</span></a></li>
-        </ul>
-      </section>
-      <section class="category" aria-labelledby="voyage-heading">
-        <h2 id="voyage-heading">여행</h2>
-        <ul class="rows">
-          <li>
-            <a class="row" href="voyage-prep.html"><span class="badge voyage" aria-hidden="true">V</span><span class="name">중부유럽 순환선</span><span class="status">여행 준비</span></a>
-            <ul class="journey-links" aria-label="중부유럽 순환선 상세"><li><a href="voyage-daily.html">일일 운행 안내</a></li><li><a href="voyage-archive.html">여행 기록</a></li></ul>
-          </li>
-        </ul>
-      </section>
-      <section class="category" aria-labelledby="learning-heading">
-        <h2 id="learning-heading">배움</h2>
-        <ul class="rows"><li><div class="row unavailable"><span class="badge planned" aria-hidden="true">A</span><span class="name">Developer Advisor</span><span class="status">연결 준비 중</span></div></li></ul>
-      </section>
-      <section class="category" aria-labelledby="play-heading">
-        <h2 id="play-heading">놀이</h2>
-        <ul class="rows"><li><a class="row" href="simhub.html"><span class="badge play" aria-hidden="true">S</span><span class="name">미스터리 트레인</span><span class="status">격납고</span></a></li></ul>
-      </section>
-      <section class="category" aria-labelledby="operations-heading">
-        <h2 id="operations-heading">운영</h2>
-        <ul class="rows">
-          <li><a class="row" href="work.html"><span class="badge work" aria-hidden="true">W</span><span class="name">Work Manager</span><span class="status">보호 구역</span></a></li>
-          <li><a class="row" href="runtime.html"><span class="badge runtime" aria-hidden="true">R</span><span class="name">Runtime Board</span><span class="status">보호 구역</span></a></li>
-        </ul>
-      </section>
-      <section class="category" aria-labelledby="upcoming-heading">
-        <h2 id="upcoming-heading">개통 예정</h2>
-        <ul class="rows">
-          <li><div class="row unavailable"><span class="badge planned" aria-hidden="true">D</span><span class="name">발견 노선</span><span class="status">준비 중</span></div></li>
-          <li><div class="row unavailable"><span class="badge planned" aria-hidden="true">P</span><span class="name">취향 노선</span><span class="status">준비 중</span></div></li>
-        </ul>
-      </section>
-    </nav>
   </main>
 </body>
 </html>

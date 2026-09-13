@@ -31,9 +31,10 @@
 - `TKT-074` `P1` `chore` `blocked/진행 불가` `[SIM]` S4 택시 지도 — 보드 SIM 배정과 PM 직접 수행 기록 충돌, 택시 단독 범위·5개 페이지 완료 기준 정렬 PM 대기 (스펙: `design/sim-taxi-spec.md`)
 - `TKT-075` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S5 - App.vue 컴포넌트 분해 [시안 적용]
 - `TKT-078` `P1` `v0.7.0` `진행 가능` `[INFRA]` 화이트채플 아케이드 편입 마감 — 라우팅·매니페스트 (코드 subtree 흡수는 2026-08-16 완료, D-003~005)
-- `TKT-080` `P1` `v0.7.0` `진행 가능` `[BE]` advisor 서비스 계약 마감 — /health·라우트·매니페스트·빌드 게이트
 
 ## Need Review
+
+- `TKT-102` `P1` `chore` `need_review` `[목업]` 톤 목업 13종 — r5 통과(PO 리뷰 5건 반영), **PO 최종 육안 승인 대기**
 
 
 
@@ -41,8 +42,6 @@
 
 
 ## Ready
-
-- `TKT-105` `P1` `chore` `ready` `[FE]` Writing Studio 도구 메뉴 — 사진·h1~h3·기능형 표 (스펙 §6, PO 직접 요청)
 
 - `TKT-108` `P1` `voyage` `ready` `[FE]` Line V 컬렉션 전환 — VOYAGES[]·여행 목록·지난 여행 2건 시드 (스펙 voyage-collection-spec.md)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
@@ -54,7 +53,9 @@
 
 ## Started
 
-- `TKT-102` `P1` `chore` `started` `[목업]` 톤 목업 — r5 (PO 리뷰: 스플래시 티커 3회·문 열림, 홈 노선도 현행형·3묶음·데스크톱 2단, 스튜디오 도구 메뉴)
+- `TKT-105` `P1` `chore` `started` `[FE]` Writing Studio 도구 메뉴 — 사진·h1~h3·기능형 표 (스펙 §6, PO 직접 요청)
+
+- `TKT-080` `P1` `v0.7.0` `started` `[BE]` advisor 서비스 계약 마감 — /health·라우트·매니페스트·빌드 게이트
 
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
@@ -64,7 +65,6 @@
 
 - `TKT-104` `P2` `advisor` `need_review` `[FE]` Inflight pill aria-pressed — 9개 선택·키보드·복원 검증, E2E 17/17·unit 44/44·build·375px 통과
 
-- `TKT-102` `P1` `chore` `need_review` `[목업]` r4 — CSS-only 10초 스플래시·한 줄 플랩·현행 멘트·문 열림 힌트, 390/1440px·reduced-motion·build 통과
 
 
 
