@@ -1,0 +1,319 @@
+{
+  "capturedAt": "2026-09-13T23:03:15.299Z",
+  "runtime": "v24.19.0",
+  "build": "Vite 5.4.21; 99 modules; isolated snapshot; base=/workaround.co.kr-platform/advisor/",
+  "browser": "Playwright Chromium",
+  "network": "Only local preview origin allowed; backend requests aborted; synthetic sample data",
+  "viewportHeight": 900,
+  "dark": 45,
+  "light": 15,
+  "maxOverflow": 0,
+  "pageErrors": [],
+  "source": [
+    {
+      "path": "services/advisor/frontend/src/app/App.vue",
+      "sha256": "a27e5080f008644cc2f1bfb189db60af9ea57cc03e24f886601369bc1e0aeb7e",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/app/platform.css",
+      "sha256": "ac0568b29331c5e3c8018ffd878a86702a49cdd722109f4409264ab2bf654aea",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/app/platformNavigation.js",
+      "sha256": "ff8fce03ef18973121c414b5e43c69c2996c401909797f4ad88daae0b0637240",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/app/platformNavigation.spec.js",
+      "sha256": "24d6f5fb7db6747984b961171ba01a46fbb808701a13acb49545edc902f8bf4b",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/app/platformTheme.js",
+      "sha256": "0c12b7aa9dd71eb53385b799e4806cc2c855ddaeb921f0a70f3c9a351de82487",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/app/platformTheme.spec.js",
+      "sha256": "658b347f0cf9877274cf201d7892200795234f01a2d573fb45087072da599442",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/app/router.js",
+      "sha256": "4cdf1c027e68a7edf9dc87675505c99f889dd1c6889391213e42677cb5e1f20c",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/app/styles.css",
+      "sha256": "cf64b2b3f946e8df59f38516a35fb2d09bc08d81d4f7e8ef6a328d7db7abea34",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/main.js",
+      "sha256": "30638626daa8f3bdf23062f6675b1aa730e6db90510fd660769fac7313786eaa",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/ChatPanel.vue",
+      "sha256": "8cfa19c788b4805e0a3ce889927f5580d9f35038ffdbcdf44156709db2564b2e",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/CodeViewer.vue",
+      "sha256": "4136129b560126f244f47b9d142e1ab95c79f2ec9262010a86863017f218386e",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/FileSubmitEditor.vue",
+      "sha256": "4b761a05a98d3cc54ad761ee306c5638c9a84742a9f3de9da404c525192032dc",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/FindingsBuilder.vue",
+      "sha256": "45d03773ce1493ba26e19574414d00f6fe509e38c4245e8a870acbebeb066fdd",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/InsightCard.vue",
+      "sha256": "5e10e6b0476fcfc8818559bf17db421c44738a640837517527930f59603db404",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/MarkdownBlock.vue",
+      "sha256": "35afbc1e7ba2eddca5b1297f29d797d47303b127ed279de98fbc4172d619bd8d",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/NicknamePrompt.vue",
+      "sha256": "80d2bf9bb77ada9b2828e8aceaba6db16ed2d3c900b45eed907a516c5cf61305",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/PlannerMeetingPanel.vue",
+      "sha256": "7f3cc2f025502e7cc0027532aac28c05ef4fd0b210a72afb8bf12a3c06311268",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/PlannerReviewPanel.vue",
+      "sha256": "591e27cb758b64e7cc2d5212d12eb0317fad4749b590571a2c460d8ce53c6ba4",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/components/RubricList.vue",
+      "sha256": "a7f3babbe5194a823fb6866614c4a4b4edce7e1d3d00343796b4ee87338412d0",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/__tests__/inflightContent.spec.js",
+      "sha256": "5e71269073acc8e9fd64f9a71dcc72e5697a42c09c4bb39fd2fc455ddc969d5d",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/courseVienna1900.js",
+      "sha256": "0240ad553b363fe28ea07a4c3932712fb682281fa997d7874ad42276b84f1aa3",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/inflightContent.js",
+      "sha256": "d3d9ef70d7e386ccd280a72d31a2775383ad213597d787a74d87a81ddcc5c8b2",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/sampleBoundaryRounds.js",
+      "sha256": "26982d4feab817fbaf834d4bc5e06d2b77dcff5986137ea0adaa040427caf2e1",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/sampleCards.js",
+      "sha256": "b46d1c04e4ef0b53ed347bc69d0d250b1f29174488f02810739b2019ad2f2595",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/sampleCaseFiles.js",
+      "sha256": "cb9f0daf3e7dd8d2e5ef173e184604440b463d8900a22e20345321aa18698845",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/sampleContent.js",
+      "sha256": "ab3916b56baed0c373a03f77970d760b45b78396d3827b9dcda3c987f3505c36",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/sampleProbeRounds.js",
+      "sha256": "78c76459f2e3549b303f6c78ae5fd6e8567f04fba7cb2387dba3e15d35a32b2b",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/sampleProjects.js",
+      "sha256": "5d530fb0ceb24c27c8d163bb7d91e4819cd141501242e0ccd1309c9aeb73fb8b",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/sampleSeasons.js",
+      "sha256": "9e2d41b53549757989e4ae21ece6ea457e923dbb40211d65a51be289d5d247c3",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/data/sampleSwipeCards.js",
+      "sha256": "3ef9d4837546b7600a928639a717047e3334feaee9d639681983d1ed24f7a401",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/games/__tests__/boundaryEngine.spec.js",
+      "sha256": "77dc9b6f01c89edefbb59f6e575c0330fc1488e226b2010956daccc4787f3317",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/games/__tests__/practiceCatalog.spec.js",
+      "sha256": "8103131639ea310e344354731449f6fa579ac0992b018b21b896d6d210c4971a",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/games/__tests__/probeEngine.spec.js",
+      "sha256": "ea0956038869947b33ad4feb23c8df23a6794e9dee843ac91932e29aa5498446",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/games/__tests__/swipeEngine.spec.js",
+      "sha256": "0f2adec902bb8510eb6e9970f53ed9988f6d2ad4490a0b680f1246cd630d5d47",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/games/boundaryEngine.js",
+      "sha256": "70c738fb22035b218e5c0b6270f7a637c3f059606d1e6ba72f52a5d79305f643",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/games/practiceCatalog.js",
+      "sha256": "ff1d3f3a02b7bcd0cf1561878e65d95ef2771a790016de053e47b9944bc4c449",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/games/probeEngine.js",
+      "sha256": "db3fc48145ecdae6b7243560fe3b28bd9c01ee25f9f9658f7518073d220fd4ea",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/games/swipeEngine.js",
+      "sha256": "5daad4ca48e1fe93ad39de0ea181f0044eb4d391452440d7d8f5491d6e141adb",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/BoundaryGamePage.vue",
+      "sha256": "e9300d2dc14e16b68aa606e37e19aa478f23cbea38708efe049ea855c5b432f0",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/CaseFilePage.vue",
+      "sha256": "7fb3d0e020cac950e1d6a5791eaceb49fe3533d6e6d84d7ce9089982fc7e1935",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/GamesPage.vue",
+      "sha256": "9553331b3c795e54c9f3f1d94cb98c4f86576dbcc46d9def43dba3e7aa9f9457",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/HistoryPage.vue",
+      "sha256": "26158494d072661027ca08371557f3973ce747b1da0bb7799d76ace36244be22",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/HomePage.vue",
+      "sha256": "e0a2990aa5e2b37851107444f1e9b44294bc69b5949e4da86e19d8842bc4fbbf",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/InflightPage.vue",
+      "sha256": "44b250e3136f14960356b8cc9ac4a1abc64e2550fcb384946a08187fb3a1daf7",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/MissionPage.vue",
+      "sha256": "bfde22a59d6c2a7d8f5f6db6b947901ebc2ece8e9e9a04ceefe19f10f3228fd0",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/PracticeGamePage.vue",
+      "sha256": "0b4afb609519f6eb56a9a9183d3e690b50031252f30a399d703310d8236d6a72",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/ProbeGamePage.vue",
+      "sha256": "ba238596bcac314146595f4fc54ffde8011144bb2899ae25a4a3b63f329b3c7f",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/ProjectJourneyPage.vue",
+      "sha256": "0984ad775a06277b9db5e66bde625330e53f751ae024234a55aa5efb18112e1a",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/ProjectsPage.vue",
+      "sha256": "905b527f5eb109d298e3c1eb27371fef5c135bde2757b1cdd1a5f76a38fe058f",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/ReviewPage.vue",
+      "sha256": "d8363ef8fb1700d7cad54197d2eaf4a3a70921af059dbff2137fab3a104a3cfa",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/RoutinePage.vue",
+      "sha256": "74f0e6486b1ae067761f982994e4929d629911af35900e5e3abb5ddeabf06609",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/SeasonPage.vue",
+      "sha256": "0f8acbec9574fbf4c5d8464a02624301472a56fdff55451db013864b1add859c",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/pages/SwipeReviewPage.vue",
+      "sha256": "31fe23c8a227ffa17258b122cd3bb88ea6a000949b2fd582fe53a8dba99f5955",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/routes.js",
+      "sha256": "beffb27f840536c92d7df62978e026c9c1cd89f58c5aa2ffa95e77e0eb60ec42",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/store/__tests__/missions.spec.js",
+      "sha256": "38ea665cd4d7255bbfdb5cb3d077802217319966606e1c3503afee7af909c909",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/store/__tests__/practice.spec.js",
+      "sha256": "17d06ffb96f0738440d247bd92c59d441ac9328980416930239d13738b8b4aff",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/store/__tests__/seasonStats.spec.js",
+      "sha256": "ffec67d83dcc3f6ad4b7d823570324e3f78c44b433e86b8abb32e5105518b9e0",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/store/missions.js",
+      "sha256": "58261448c6a2e619faab025403853f9d2da524b73128e77dc805ca8aba747a6b",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/store/practice.js",
+      "sha256": "7be6e5041906a8612ab9e7b91e9d292c455473cb42a55fb641a49af9cffe47b8",
+      "currentMatches": true
+    },
+    {
+      "path": "services/advisor/frontend/src/modules/missions/store/seasonStats.js",
+      "sha256": "ecdbf07d471f818538f6e0b07e1ee201a635d361d1013eb4b8bbee2cc4e47d88",
+      "currentMatches": true
+    },
+    {
+      "path": "frontend/src/components/StationHeader.vue",
+      "sha256": "0904846a2fa51b9f3b8e43fd38ddf8e3a0e5b67199ae7c7bab50c0c4f291a6e8",
+      "currentMatches": true
+    }
+  ]
+}

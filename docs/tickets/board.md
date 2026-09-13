@@ -1,4 +1,4 @@
-﻿문서 상태: 수정중
+﻿문서 상태: 작성완료
 
 # 티켓 보드
 
@@ -54,7 +54,6 @@
 
 - `TKT-111` `P1` `tone` `ready` `[FE]` 홈 순환선 노선도(D-015) + 3묶음 + 2단 — r6 승인 후 노선도 확정
 - `TKT-112` `P1` `tone` `ready` `[FE]` 여행 3종 톤 전환 + 지출 표시 — 108 뒤
-- `TKT-109` `P1` `voyage` `ready` `[FE]` 여정 노선도 — 순환선 지도·기차 시각표·정차역 상세 (r7 목업 = 스펙)
 - `TKT-113` `P2` `tone` `ready` `[FE]` 블로그 3종 톤 전환
 - `TKT-114` `P2` `tone` `ready` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime
 - `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
@@ -77,6 +76,7 @@
 
 ## Started
 
+- `TKT-109` `P1` `voyage` `started` `[FE]` 여정 노선도 — 지리 충실 순환선·구간/도시 양방향 상세
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
