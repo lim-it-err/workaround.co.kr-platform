@@ -841,22 +841,85 @@ const simHubCards = computed(() => [
     page: 'elevator',
     lineNo: 'E',
     name: 'Elevator Station',
-    summary: '23층 승객 운송',
+    displayName: '멈춘 엘리베이터',
+    kicker: '추천 시나리오 · 시스템 설계',
+    summary: '재시도와 상태 복구를 설계합니다.',
     status: elevatorState.value.mode === 'live-traffic-loop' ? '실시간 루프' : '저하 운행',
     accent: 'line-e',
-    cta: '엘리베이터 열기'
+    cta: '시작'
   },
   {
     key: 'taxi',
     page: 'taxi',
     lineNo: 'T',
     name: 'Taxi District Lab',
-    summary: '9구역 택시 배차',
-    status: '운행 중',
+    displayName: '심야 택시',
+    summary: '제한된 정보로 안전한 선택을 만듭니다.',
+    status: '제품 판단',
     accent: 'line-t',
-    cta: '택시 승강장 열기'
+    cta: '시작'
   }
 ])
+const featuredSimCard = computed(() => simHubCards.value[0])
+const secondarySimCards = computed(() => simHubCards.value.slice(1))
+
+function runtimeStatusMeta(value) {
+  const status = String(value || '').trim().toLowerCase()
+  if (['online', 'available', 'ok', 'healthy'].includes(status)) {
+    return { label: '정상', warning: false }
+  }
+  if (status === 'degraded') {
+    return { label: '지연', warning: true }
+  }
+  if (['unavailable', 'offline'].includes(status)) {
+    return { label: '중단', warning: true }
+  }
+  return { label: '확인 중', warning: true }
+}
+
+function runtimeMetric(source) {
+  const responseTime = [source?.responseTimeMs, source?.latencyMs, source?.durationMs]
+    .map(Number)
+    .find(value => Number.isFinite(value) && value >= 0)
+  return responseTime === undefined ? '' : `${Math.round(responseTime)} ms`
+}
+
+function runtimeToneRow({ key, label, detail, source, status }) {
+  const meta = runtimeStatusMeta(status)
+  const metric = runtimeMetric(source)
+  return {
+    key,
+    label,
+    detail,
+    status: metric ? `${meta.label} · ${metric}` : meta.label,
+    warning: meta.warning
+  }
+}
+
+const runtimeToneRows = computed(() => [
+  runtimeToneRow({
+    key: 'gateway',
+    label: '웹 화면',
+    detail: 'gateway',
+    source: healthState.value,
+    status: healthState.value.status
+  }),
+  runtimeToneRow({
+    key: 'ollama',
+    label: '인공지능 응답',
+    detail: 'Ollama',
+    source: runtimeState.value.ollama,
+    status: runtimeState.value.ollama?.status
+  }),
+  ...(runtimeState.value.nodes || []).map((node) => runtimeToneRow({
+    key: node.nodeId,
+    label: node.nodeId,
+    detail: node.role,
+    source: node,
+    status: node.availability
+  }))
+])
+const runtimeNeedsAttention = computed(() => runtimeToneRows.value.some((row) => row.warning))
 
 const taxiZones = computed(() => taxiState.value.zones)
 const taxiFleet = computed(() => taxiState.value.taxis)
@@ -1017,19 +1080,19 @@ const workBoardColumns = computed(() => {
     {
       status: 'ready',
       label: 'Ready',
-      helper: 'worker agent 다른 작업 중...',
+      helper: '다른 작업이 끝나기를 기다림',
       tickets: readyTickets
     },
     {
       status: 'started',
       label: 'Started',
-      helper: '실제 worker 수행 구간',
+      helper: '담당자가 수행 중',
       tickets: normalized.get('started')?.tickets || []
     },
     {
       status: 'need_review',
       label: 'Need Review',
-      helper: 'PM agent 확인중...',
+      helper: 'PM 확인 대기',
       tickets: normalized.get('need_review')?.tickets || []
     },
     {
@@ -1044,6 +1107,19 @@ const workBoardColumns = computed(() => {
 const readyColumnTickets = computed(() =>
   workBoardColumns.value.find((column) => column.status === 'ready')?.tickets || []
 )
+
+const workToneRows = computed(() => [
+  { status: 'need_review', label: '검토 대기', shortStatus: '검토' },
+  { status: 'started', label: '진행 중', shortStatus: '진행' },
+  { status: 'ready', label: '다음 작업', shortStatus: '대기' }
+].map((item) => {
+  const column = workBoardColumns.value.find((candidate) => candidate.status === item.status)
+  return {
+    ...item,
+    count: column?.tickets.length || 0,
+    helper: column?.helper || ''
+  }
+}))
 
 const allWorkTickets = computed(() => workBoardColumns.value.flatMap((column) => column.tickets))
 
@@ -3636,35 +3712,30 @@ function persistStudioPostId(postId) {
             <p v-if="staticModeMessage" class="junction-note static-mode-note" role="status">{{ staticModeMessage }}</p>
           </section>
 
-          <section v-else-if="page === 'simhub'" class="feature-shell sim-annex">
-            <StationHeader
-              :line-class="simHubLine.lineClass"
-              station-code="S00"
-              :title="simHubLine.nameKo"
-              :title-en="simHubLine.nameEn"
-              :status="simHubLine.subtitle"
-              next-label=""
-              @exit="openPage('junction')"
-            />
+          <section v-else-if="page === 'simhub'" class="feature-shell tone-page tone-sim-page line-s">
+            <section v-if="featuredSimCard" class="tone-page-hero" :class="featuredSimCard.accent">
+              <small>{{ featuredSimCard.kicker }}</small>
+              <h1>{{ featuredSimCard.displayName }}</h1>
+              <p>{{ featuredSimCard.summary }}</p>
+              <button type="button" class="primary-button" @click="openPage(featuredSimCard.page)">
+                {{ featuredSimCard.cta }}
+              </button>
+            </section>
 
-            <div class="line-grid sim-annex-grid" aria-label="격납고">
+            <div class="tone-service-list" aria-label="격납고">
               <article
-                v-for="card in simHubCards"
+                v-for="card in secondarySimCards"
                 :key="card.key"
-                class="line-card"
+                class="tone-service-row"
                 :class="card.accent"
               >
-                <div class="line-card-top">
-                  <div class="line-mark">
-                    <span class="line-round" :class="card.accent">{{ card.lineNo }}</span>
-                    <h4>{{ card.name }}</h4>
-                  </div>
-                  <span class="status-chip">{{ card.status }}</span>
+                <span class="line-round" :class="card.accent" aria-hidden="true">{{ card.lineNo }}</span>
+                <div>
+                  <small>{{ card.status }}</small>
+                  <h2>{{ card.displayName }}</h2>
+                  <p>{{ card.summary }}</p>
                 </div>
-
-                <p>{{ card.summary }}</p>
-
-                <button type="button" class="line-cta" @click="openPage(card.page)">
+                <button type="button" class="ghost-button" @click="openPage(card.page)">
                   {{ card.cta }}
                 </button>
               </article>
@@ -4084,34 +4155,32 @@ function persistStudioPostId(postId) {
             @clear-message="blogMessage = ''"
           />
 
-          <section v-else-if="page === 'work'" class="feature-shell">
-            <StationHeader
-              line-class="line-w"
-              station-code="W01"
-              title="운영 보드 승강장"
-              title-en="WORK MANAGER"
-              :status="workManagerToken ? 'command gate unlocked' : '조회 공개 · gate locked'"
-              :status-tone="workManagerToken ? 'live' : 'ok'"
-              summary="5레인 · preset command + memo"
-              @exit="openPage('junction')"
-            />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article>
-              <span>lanes</span>
-              <strong>5</strong>
-              </article>
-              <article>
-              <span>selected</span>
-              <strong>{{ selectedWorkTicket?.id || 'none' }}</strong>
-              </article>
-              <article>
-              <span>command gate</span>
-              <strong>{{ workManagerToken ? 'unlocked' : 'locked' }}</strong>
-              </article>
-              </div>
-            </section>
+          <section v-else-if="page === 'work'" class="feature-shell tone-page tone-work-page line-w">
+            <div class="tone-page-intro">
+              <section class="tone-page-hero line-w">
+                <div class="tone-hero-topline">
+                  <small>지금 볼 것</small>
+                  <span>보호 구역</span>
+                </div>
+                <h1>검토 대기 {{ workToneRows[0].count }}건</h1>
+                <p>결정이 필요한 작업만 앞에 둡니다.</p>
+              </section>
 
+              <div class="tone-status-list" aria-label="작업 상태 요약">
+                <div v-for="item in workToneRows" :key="item.status" class="tone-status-row">
+                  <span class="tone-status-dot" :class="{ wait: item.status !== 'started' }" aria-hidden="true"></span>
+                  <div>
+                    <strong>{{ item.label }} {{ item.count }}건</strong>
+                    <small>{{ item.helper }}</small>
+                  </div>
+                  <span>{{ item.shortStatus }}</span>
+                </div>
+              </div>
+            </div>
+
+            <details class="tone-support-details">
+              <summary>버전·작업자·저장 기준</summary>
+              <div class="tone-support-details__body">
             <section class="section-block">
               <div class="section-head">
                 <div>
@@ -4250,7 +4319,12 @@ function persistStudioPostId(postId) {
               </article>
             </section>
 
-            <section class="section-block work-layout">
+              </div>
+            </details>
+
+            <details class="tone-work-manager-details">
+              <summary>전체 작업 보드·지시</summary>
+              <section class="section-block work-layout tone-work-layout">
               <div class="work-board">
                 <article
                   v-for="column in workBoardColumns"
@@ -4292,7 +4366,6 @@ function persistStudioPostId(postId) {
               <aside class="detail-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Ticket Detail</p>
                     <h3>{{ selectedWorkTicket?.id || '선택 없음' }}</h3>
                   </div>
                 </div>
@@ -4396,8 +4469,7 @@ function persistStudioPostId(postId) {
               <aside class="command-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Command Zone</p>
-                    <h3>preset bridge</h3>
+                    <h3>작업 지시</h3>
                   </div>
                 </div>
 
@@ -4478,57 +4550,36 @@ function persistStudioPostId(postId) {
                   </article>
                 </div>
               </aside>
-            </section>
+              </section>
+            </details>
           </section>
 
-          <section v-else class="feature-shell">
-            <StationHeader
-              line-class="line-r"
-              station-code="R01"
-              title="노드 정책 보드"
-              title-en="RUNTIME BOARD"
-              status="정책 조회"
-              status-tone="ok"
-              summary="ion2 · rtx5070 · gateway"
-              @exit="openPage('junction')"
-            />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article>
-              <span>gateway</span>
-              <strong>{{ healthState.status }}</strong>
-              </article>
-              <article>
-              <span>rtx5070</span>
-              <strong>{{ runtimeState.ollama?.status || 'unknown' }}</strong>
-              </article>
-              <article>
-              <span>queued</span>
-              <strong>{{ healthState.tickets?.queued ?? 0 }}</strong>
-              </article>
+          <section v-else class="feature-shell tone-page tone-runtime-page line-r">
+            <section class="tone-page-hero line-r">
+              <div class="tone-hero-topline">
+                <small>주의가 필요한 신호</small>
+                <span>보호 구역</span>
               </div>
+              <h1>{{ runtimeNeedsAttention ? '응답 지연이 평소보다 깁니다' : '모든 실행 환경이 응답 중입니다' }}</h1>
+              <p>{{ runtimeNeedsAttention ? '서비스는 동작 중이며 최근 10분의 변화입니다.' : '최근 확인한 실행 환경이 정상입니다.' }}</p>
             </section>
 
-            <section class="section-block">
-              <div class="section-head">
+            <div class="tone-runtime-list" aria-label="실행 환경 상태">
+              <div v-for="row in runtimeToneRows" :key="row.key" class="tone-runtime-row">
+                <span class="tone-status-dot" :class="{ wait: row.warning }" aria-hidden="true"></span>
                 <div>
-                  <p class="eyebrow">Runtime Nodes</p>
-                  <h3>운영 노드</h3>
+                  <strong>{{ row.label }}</strong>
+                  <small>{{ row.detail }}</small>
                 </div>
+                <span class="tone-runtime-metric">{{ row.status }}</span>
               </div>
+            </div>
 
-              <div class="runtime-grid">
-                <article v-for="node in runtimeState.nodes" :key="node.nodeId" class="runtime-card">
-                  <div class="runtime-top">
-                    <strong>{{ node.nodeId }}</strong>
-                    <span class="status-chip">{{ node.availability }}</span>
-                  </div>
-                  <p>{{ node.role }}</p>
-                  <small>{{ (node.handles || []).join(', ') }}</small>
-                </article>
-              </div>
-            </section>
+            <button type="button" class="ghost-button tone-refresh" @click="loadPortalData">상태 새로고침</button>
 
+            <details class="tone-support-details tone-runtime-details">
+              <summary>오프로드·배포 기준</summary>
+              <div class="tone-support-details__body">
             <section class="section-block split-layout">
               <article class="surface-panel">
                 <div class="section-head">
@@ -4562,6 +4613,8 @@ function persistStudioPostId(postId) {
                 </div>
               </article>
             </section>
+              </div>
+            </details>
           </section>
 
           <nav v-if="!isTestRoute" class="mobile-quick-nav" :class="{ static: isStaticMode }" aria-label="빠른 환승">

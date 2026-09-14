@@ -545,7 +545,7 @@ function formatModified(value) {
       </div>
 
       <aside v-show="!preview" class="writer-tools" aria-label="글 도구">
-        <strong>도구</strong>
+        <strong>글 도구</strong>
         <button type="button" @click="chooseImage">사진</button>
         <button type="button" @click="toggleHeading(1)">H1</button>
         <button type="button" @click="toggleHeading(2)">H2</button>
@@ -643,16 +643,16 @@ function formatModified(value) {
 .writer-save.error { color: var(--danger); }
 .writer-bar .writer-more { font-size: 1.3rem; padding: 4px 10px; }
 .writer-bar .writer-tool-trigger { font-size: 1.15rem; padding: 4px 10px; }
-.writer-storage { display: flex; align-items: center; gap: 8px; padding: 8px 0; color: var(--text-2); font-size: .75rem; line-height: 1.5; }
+.writer-storage { display: flex; align-items: center; gap: 8px; width: min(100%, 720px); margin-inline: auto; padding: 8px 0; color: var(--text-2); font-size: .75rem; line-height: 1.5; }
 .writer-storage span { word-break: keep-all; }
 .writer-storage button { border: 1px solid var(--line-strong); border-radius: 50%; background: transparent; color: var(--text-2); width: 28px; height: 28px; flex: none; cursor: pointer; }
 .writer-workspace { position: relative; display: flex; flex: 1; min-width: 0; }
 .writer-page { display: flex; flex: 1; flex-direction: column; width: min(100%, 720px); max-width: 720px; margin: 20px auto 0; min-width: 0; }
 .writer-editor { display: flex; flex: 1; flex-direction: column; gap: 24px; min-width: 0; }
-.writer-title, .writer-body { display: block; width: 100%; border: 0; border-radius: 0; background: transparent; color: var(--text); font: inherit; padding: 8px; }
+.writer-title, .writer-body { display: block; width: 100%; border: 0; border-radius: 0; background: transparent; color: var(--text); font: inherit; padding: 0; }
 .writer-title { min-height: 1.35em; overflow: hidden; resize: none; font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 750; line-height: 1.25; letter-spacing: -.03em; overflow-wrap: anywhere; }
 .writer-title::placeholder, .writer-body::placeholder { color: var(--muted); opacity: 1; }
-.writer-title:focus, .writer-body:focus { outline: 1px solid var(--accent-text); outline-offset: 3px; }
+.writer-title:focus, .writer-body:focus { outline: 1px solid var(--accent-text); outline-offset: 4px; }
 .writer-blocks { display: grid; align-content: start; gap: 18px; min-width: 0; }
 .writer-body { min-height: 88px; overflow: hidden; resize: none; line-height: 1.85; font-size: 1rem; }
 .writer-body-primary { min-height: 320px; }
@@ -660,7 +660,7 @@ function formatModified(value) {
 .writer-preview h1 { font-size: clamp(1.6rem, 3vw, 2.4rem); margin: 0 0 24px; }
 .writer-message { color: var(--text); line-height: 1.6; font-size: .9rem; }
 .writer-tool-message { margin: 12px 8px 0; color: var(--text-2); font-size: .82rem; line-height: 1.5; }
-.writer-tools { display: none; position: absolute; top: 20px; left: calc(50% + 388px); width: 116px; gap: 6px; }
+.writer-tools { display: none; position: absolute; top: 20px; left: calc(50% + 380px); width: 150px; gap: 6px; padding-left: 16px; border-left: 1px solid var(--line); }
 .writer-tools strong { margin: 0 0 4px; color: var(--text-2); font-size: .72rem; }
 .writer-tools button { min-height: 40px; border: 0; border-left: 2px solid var(--line); background: transparent; color: var(--text-2); text-align: left; padding: 8px 10px; cursor: pointer; }
 .writer-tools button:hover, .writer-tools button:focus-visible { border-left-color: var(--line-b); color: var(--text); outline: none; }

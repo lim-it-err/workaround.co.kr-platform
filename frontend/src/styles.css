@@ -3882,6 +3882,316 @@ a.junction-route-row:hover {
   }
 }
 
+/* ── 톤 전환: 격납고·Work·Runtime — 한 화면 한 주인공 + hairline 행 ── */
+
+.tone-page {
+  gap: 0;
+}
+
+.tone-sim-page,
+.tone-runtime-page {
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+
+.tone-page-hero {
+  width: min(100%, 760px);
+  margin: 24px auto 30px;
+  padding: 12px 18px;
+  border-left: 3px solid var(--accent, var(--line-strong));
+}
+
+.tone-page-hero small,
+.tone-page-hero p,
+.tone-hero-topline span,
+.tone-service-row small,
+.tone-service-row p,
+.tone-status-row small,
+.tone-status-row > span:last-child,
+.tone-runtime-row small,
+.tone-runtime-metric {
+  color: var(--muted);
+}
+
+.tone-page-hero h1,
+.tone-page-hero p,
+.tone-service-row h2,
+.tone-service-row p {
+  margin: 0;
+}
+
+.tone-page-hero h1 {
+  margin: 3px 0 7px;
+  font-size: clamp(2rem, 6vw, 2.35rem);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+}
+
+.tone-page-hero p {
+  max-width: 42rem;
+  line-height: 1.65;
+}
+
+.tone-page-hero > button {
+  margin-top: 18px;
+}
+
+.tone-hero-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.tone-hero-topline span {
+  font-size: var(--fs-caption);
+  white-space: nowrap;
+}
+
+.tone-service-list,
+.tone-status-list,
+.tone-runtime-list {
+  border-top: 1px solid var(--line);
+}
+
+.tone-service-row,
+.tone-status-row,
+.tone-runtime-row {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tone-service-row {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 19px 0;
+}
+
+.tone-service-row .line-round {
+  width: 38px;
+  height: 38px;
+  font-size: 0.85rem;
+  box-shadow: none;
+}
+
+.tone-service-row h2 {
+  font-size: 1.15rem;
+  letter-spacing: -0.025em;
+}
+
+.tone-service-row p {
+  line-height: 1.55;
+}
+
+.tone-service-row > button {
+  min-width: 44px;
+}
+
+.tone-page-intro {
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+
+.tone-status-row,
+.tone-runtime-row {
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  padding: 16px 0;
+}
+
+.tone-status-row > div,
+.tone-runtime-row > div {
+  display: grid;
+  min-width: 0;
+}
+
+.tone-status-row small,
+.tone-runtime-row small {
+  overflow-wrap: anywhere;
+}
+
+.tone-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--exit);
+}
+
+.tone-status-dot.wait {
+  background: var(--safety);
+}
+
+.tone-status-row > span:last-child,
+.tone-runtime-metric {
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.tone-support-details {
+  width: min(100%, 760px);
+  margin: 28px auto 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.tone-support-details > summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.tone-support-details__body {
+  padding: 0 0 22px;
+}
+
+.tone-support-details .section-block,
+.tone-support-details .surface-panel {
+  padding: 18px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.tone-support-details .section-block + .section-block,
+.tone-support-details .surface-panel + .surface-panel {
+  border-top: 1px solid var(--line);
+}
+
+.tone-support-details .version-chip-card,
+.tone-support-details .roadmap-summary-card,
+.tone-support-details .crew-card,
+.tone-support-details .prototype-rule-card,
+.tone-support-details .info-stack article {
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  box-shadow: none;
+}
+
+.tone-work-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 34px;
+  padding: 24px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.tone-work-manager-details {
+  margin-top: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tone-work-manager-details > summary {
+  padding: 16px 0;
+  color: var(--text-2);
+  cursor: pointer;
+}
+
+.tone-work-manager-details[open] > summary {
+  color: var(--text-1);
+}
+
+.tone-work-layout .work-board {
+  grid-column: 1 / -1;
+  min-width: 0;
+  width: 100%;
+}
+
+.tone-work-layout .lane-card {
+  min-height: 360px;
+  padding: 0 12px 12px;
+  border: 0;
+  border-left: 2px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.tone-work-layout .lane-head {
+  min-height: 54px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tone-work-layout .lane-status {
+  max-width: 8rem;
+  padding: 0;
+  background: transparent;
+  text-align: right;
+  text-transform: none;
+}
+
+.tone-work-layout .ticket-card,
+.tone-work-layout .command-card {
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.tone-work-layout .detail-panel,
+.tone-work-layout .command-panel {
+  padding: 0 0 0 18px;
+  border: 0;
+  border-left: 3px solid var(--line-w);
+  border-radius: 0;
+  background: transparent;
+}
+
+.tone-work-layout .detail-stack article,
+.tone-work-layout .feed-block article {
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.tone-refresh {
+  justify-self: start;
+  margin-top: 28px;
+}
+
+.tone-runtime-details {
+  margin-bottom: 26px;
+}
+
+@media (max-width: 760px) {
+  .tone-page-hero {
+    margin-top: 18px;
+  }
+
+  .tone-service-row {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .tone-service-row > button {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .tone-work-layout .detail-panel,
+  .tone-work-layout .command-panel {
+    width: 100%;
+    padding: 22px 0 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .tone-work-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tone-work-layout .lane-card {
+    min-height: 0;
+    padding-block: 16px;
+  }
+}
+
 /* ── 슬림 상단 바 (PO 2026-08-17: 레퍼런스 블로그 헤더 — 원형 배지 + 타이틀만, 하단 노선색 라인) ── */
 
 .station-topbar {
