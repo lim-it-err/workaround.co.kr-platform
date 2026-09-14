@@ -99,13 +99,37 @@ test('375px: the existing split-flap engine runs three phrases and tickers befor
   assert.equal(await page.getByText('곧 문이 열립니다', { exact: true }).count(), 1)
   assert.equal(await page.getByText('10초 후 자동 전환', { exact: true }).count(), 1)
   assert.equal(await page.locator('.site-loop-symbol').count(), 1)
+  assert.equal(await page.locator('.site-loop-symbol path').getAttribute('d'), 'M58 18.55 A33 33 0 1 1 38 18.55')
   assert.equal(await page.locator('.arrival-grid, .splash-door-panel, .splash-flap-word').count(), 0)
   assert.equal(await page.getByRole('button', { name: '다시 재생', exact: true }).count(), 1)
   assert.equal(await page.getByRole('img', { name: 'WORKING AROUND', exact: true }).count(), 1)
   await page.keyboard.press('Tab')
   const replayButton = page.getByRole('button', { name: '다시 재생', exact: true })
-  assert.equal(await replayButton.evaluate(element => element === document.activeElement), true)
+  const activeAfterTab = await page.evaluate(() => document.activeElement?.outerHTML || '')
+  assert.equal(await replayButton.evaluate(element => element === document.activeElement), true, activeAfterTab)
   assert.notEqual(await replayButton.evaluate(element => getComputedStyle(element).outlineStyle), 'none')
+
+  const boardGeometry = await page.evaluate(() => {
+    const board = document.querySelector('.splash-flap-board').getBoundingClientRect()
+    const cell = document.querySelector('.splash-flap-row .flap-cell').getBoundingClientRect()
+    return { boardHeight: board.height, cellHeight: cell.height }
+  })
+  assert.ok(boardGeometry.boardHeight <= boardGeometry.cellHeight + 27, '플랩 보드는 한 줄과 24px 여백만 가져야 한다')
+  const tickerStyle = await page.locator('.splash-ticker-strip').evaluate(element => {
+    const style = getComputedStyle(element)
+    return {
+      background: style.backgroundColor,
+      borderRadius: style.borderRadius,
+      borderTop: style.borderTopStyle,
+      borderBottom: style.borderBottomStyle,
+      direction: style.flexDirection
+    }
+  })
+  assert.equal(tickerStyle.background, 'rgba(0, 0, 0, 0)')
+  assert.equal(tickerStyle.borderRadius, '0px')
+  assert.equal(tickerStyle.borderTop, 'solid')
+  assert.equal(tickerStyle.borderBottom, 'solid')
+  assert.equal(tickerStyle.direction, 'row')
 
   await page.waitForTimeout(400)
   const first = await snapshot(page)
@@ -129,6 +153,7 @@ test('375px: the existing split-flap engine runs three phrases and tickers befor
   }
   await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 2500 })
   assert.equal(await page.locator('.station-topbar h2').textContent(), '환승 홀')
+  assert.equal(Math.round((await page.locator('.station-topbar .site-loop-symbol').boundingBox()).width), 24)
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0)
 })
 
@@ -144,5 +169,43 @@ test('1440px light reduced motion: static first phrase, loop symbol and zero ove
   assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), 'light')
   if (process.env.SPLASH_SCREENSHOT_DIR) {
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-desktop-reduced.png` })
+  }
+})
+
+test('16px·32px·SVG 파비콘은 Pages base와 열린 기점 형태를 보존한다', async t => {
+  const page = await setup(t, { width: 375, height: 812, reducedMotion: 'reduce', theme: 'dark' })
+  const links = await page.locator('link[rel="icon"]').evaluateAll(elements => elements.map(element => ({
+    type: element.type,
+    sizes: element.sizes.value,
+    path: new URL(element.href).pathname
+  })))
+  assert.deepEqual(links, [
+    { type: 'image/svg+xml', sizes: '', path: `${publicBase}favicon.svg` },
+    { type: 'image/png', sizes: '32x32', path: `${publicBase}favicon-32x32.png` },
+    { type: 'image/png', sizes: '16x16', path: `${publicBase}favicon-16x16.png` }
+  ])
+
+  const assets = await page.evaluate(async filenames => Promise.all(filenames.map(filename => new Promise((resolve, reject) => {
+    const image = new Image()
+    image.onload = () => resolve({ filename, width: image.naturalWidth, height: image.naturalHeight })
+    image.onerror = reject
+    image.src = filename
+  }))), [`${publicBase}favicon-16x16.png`, `${publicBase}favicon-32x32.png`])
+  assert.deepEqual(assets.map(asset => [asset.width, asset.height]), [[16, 16], [32, 32]])
+  const svg = await page.evaluate(path => fetch(path).then(response => response.text()), `${publicBase}favicon.svg`)
+  assert.match(svg, /M59 20 A33 33 0 1 1 37 20/)
+  assert.match(svg, /prefers-color-scheme: light/)
+
+  if (process.env.SPLASH_SCREENSHOT_DIR) {
+    await page.evaluate(paths => {
+      const preview = document.createElement('section')
+      preview.className = 'favicon-preview'
+      preview.innerHTML = `<div class="dark"><img src="${paths[0]}" alt="16px dark"><img src="${paths[1]}" alt="32px dark"></div><div class="light"><img src="${paths[0]}" alt="16px light"><img src="${paths[1]}" alt="32px light"></div>`
+      preview.style.cssText = 'position:fixed;inset:20px auto auto 20px;z-index:9999;display:grid;grid-template-columns:1fr 1fr;border:1px solid #7c8aa0;background:#0d131c'
+      for (const row of preview.children) row.style.cssText = 'width:120px;height:80px;display:flex;align-items:center;justify-content:center;gap:18px'
+      preview.lastElementChild.style.background = '#f7f9fc'
+      document.body.appendChild(preview)
+    }, [`${publicBase}favicon-16x16.png`, `${publicBase}favicon-32x32.png`])
+    await page.locator('.favicon-preview').screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/favicon-16-32-dark-light.png` })
   }
 })

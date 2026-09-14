@@ -326,7 +326,15 @@ function submitExplanation() {
       </div>
       <h1>{{ mission.title }}</h1>
       <a v-if="voyageStopHref" class="voyage-return" :href="voyageStopHref">
-        <span aria-hidden="true" class="voyage-return__loop"></span>
+        <svg
+          aria-hidden="true"
+          class="voyage-return__loop"
+          focusable="false"
+          viewBox="0 0 96 96"
+        >
+          <path d="M58 18.55 A33 33 0 1 1 38 18.55" />
+          <circle cx="48" cy="16" r="4" />
+        </svg>
         이 미션의 정류장 ←
       </a>
     </div>
@@ -643,24 +651,19 @@ h1 { font-size: 22px; margin: 0; }
 .voyage-return:hover, .voyage-return:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
 .voyage-return:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .voyage-return__loop {
-  position: relative;
   width: 16px;
   height: 16px;
   flex: none;
-  border: 2px solid currentColor;
-  border-radius: 50%;
+  overflow: visible;
 }
-.voyage-return__loop::before {
-  position: absolute;
-  top: -4px;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  border: 1px solid var(--bg);
-  border-radius: 50%;
-  background: currentColor;
-  content: '';
-  transform: translateX(-50%);
+.voyage-return__loop path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 5;
+}
+.voyage-return__loop circle {
+  fill: currentColor;
 }
 .mode-select {
   display: inline-flex;

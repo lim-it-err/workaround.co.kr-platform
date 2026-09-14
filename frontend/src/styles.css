@@ -4310,26 +4310,22 @@ button.station-prev:hover {
 
 /* TKT-110 — 현행 스플릿 플랩을 유지한 톤 기반 */
 .site-loop-symbol {
-  position: relative;
-  display: inline-block;
+  display: block;
   flex: none;
   aspect-ratio: 1;
-  border: 3px solid var(--safety);
-  border-radius: 50%;
-  background: transparent;
+  color: var(--safety);
+  overflow: visible;
 }
 
-.site-loop-symbol::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 9px;
-  height: 9px;
-  border: 2px solid var(--bg);
-  border-radius: 50%;
-  background: var(--safety);
-  transform: translate(-50%, -55%);
+.site-loop-symbol path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.site-loop-symbol circle {
+  fill: currentColor;
 }
 
 .site-loop-symbol-lg {
@@ -4337,18 +4333,13 @@ button.station-prev:hover {
 }
 
 .site-loop-symbol-sm {
-  width: 30px;
-  border-width: 2px;
-}
-
-.site-loop-symbol-sm::before {
-  width: 7px;
-  height: 7px;
-  border-width: 1px;
+  width: 24px;
 }
 
 .splash-panel {
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  align-self: center;
 }
 
 .splash-top {
@@ -4367,6 +4358,31 @@ button.station-prev:hover {
 .splash-flap-row .flap-values {
   justify-content: center;
   overflow: hidden;
+}
+
+.splash-flap-board {
+  min-height: calc(var(--flap-height) + 24px);
+  height: calc(var(--flap-height) + 24px);
+  padding: 12px 18px;
+  overflow: hidden;
+}
+
+.splash-ticker-strip {
+  flex-direction: row;
+  align-items: center;
+  padding: 12px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.splash-ticker-strip .ticker-label {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--safety);
 }
 
 .splash-actions p {
@@ -4390,7 +4406,10 @@ button.station-prev:hover {
 
 .app-shell[data-theme='light'] .ticker-strip {
   border-color: var(--line);
-  background: var(--panel-soft);
+}
+
+.app-shell[data-theme='light'] .splash-ticker-strip {
+  background: transparent;
 }
 
 .app-shell[data-theme='light'] .flap-board {
@@ -4398,6 +4417,10 @@ button.station-prev:hover {
 }
 
 @media (max-width: 720px) {
+  .splash-flap-board {
+    --flap-height: clamp(30px, 7.6vw, 46px);
+  }
+
   .site-loop-symbol-lg {
     width: 54px;
   }
@@ -4408,6 +4431,12 @@ button.station-prev:hover {
 
   .splash-actions {
     align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .splash-flap-board {
+    --flap-height: clamp(26px, 7vw, 36px);
   }
 }
 

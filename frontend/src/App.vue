@@ -3261,7 +3261,7 @@ function persistStudioPostId(postId) {
             </div>
           </div>
 
-          <div class="flap-board" :class="{ 'reduced-motion': prefersReducedMotion }">
+          <div class="flap-board splash-flap-board" :class="{ 'reduced-motion': prefersReducedMotion }">
             <div class="flap-row splash-flap-row">
               <div class="flap-values" role="img" :aria-label="currentSplashPhrase">
                 <span
@@ -3281,7 +3281,7 @@ function persistStudioPostId(postId) {
             </div>
           </div>
 
-          <div class="ticker-strip" aria-live="polite">
+          <div class="ticker-strip splash-ticker-strip" aria-live="polite">
             <span class="ticker-label">알림</span>
             <span class="ticker-copy">{{ currentTicker }}</span>
           </div>

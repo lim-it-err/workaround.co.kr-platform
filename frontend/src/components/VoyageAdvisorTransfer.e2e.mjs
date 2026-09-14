@@ -80,12 +80,23 @@ for (const scenario of [
     await page.getByRole('heading', { name: '중부유럽 순환선', exact: true }).waitFor()
     await page.getByRole('button', { name: /^7일차/ }).click()
     const belvedereRow = page.locator('#voyage-stop-day-6-belvedere')
-    await belvedereRow.getByRole('link', { name: /이걸로 미션 만들기/ }).click()
+    const transferLink = belvedereRow.getByRole('link', { name: /이걸로 미션 만들기/ })
+    assert.equal(
+      await transferLink.locator('.site-loop-symbol path').getAttribute('d'),
+      'M58 18.55 A33 33 0 1 1 38 18.55',
+      '여행 환승 링크는 D-018 C 심볼을 사용해야 한다'
+    )
+    await transferLink.click()
 
     await page.getByRole('heading', { name: '비엔나 1900', exact: true }).waitFor()
     assert.match(page.url(), /\/advisor\/courses\/vienna-1900$/)
     await page.locator('[data-mission-id="v1900-f-belvedere-route"]').click()
     await page.getByRole('heading', { name: '벨베데레를 연대순으로 걷기', exact: true }).waitFor()
+    assert.equal(
+      await page.locator('svg.voyage-return__loop path').getAttribute('d'),
+      'M58 18.55 A33 33 0 1 1 38 18.55',
+      'Advisor 역방향 링크도 D-018 C 심볼을 사용해야 한다'
+    )
     if (process.env.VOYAGE_ADVISOR_SCREENSHOT_DIR) {
       await page.screenshot({
         path: `${process.env.VOYAGE_ADVISOR_SCREENSHOT_DIR}/advisor-mission-${scenario.width}-${scenario.theme}.png`,
