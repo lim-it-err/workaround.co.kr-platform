@@ -60,8 +60,6 @@
 - `TKT-120` `P2` `tone` `ready` `[SIM]` 시뮬 2화면 톤 전환 — 110·114 뒤
 - `TKT-122` `P2` `advisor` `ready` `[PM]` Advisor 시즌 수명주기 스펙
 - `TKT-125` `P1` `voyage` `ready` `[FE]` 경험↔배움 환승 링크 — 정차역↔미션 (109·124 뒤)
-- `TKT-132` `P2` `advisor` `ready` `[FE]` Advisor 코스 시뮬 모델 충실도 — 창구 복귀 지연 제거·이용률 표시 (131 뒤, 129 앞)
-- `TKT-129` `P2` `advisor` `ready` `[FE]` Advisor 배우기 통합 인덱스 + GamesPage 폐기 (124 뒤)
 
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 
@@ -72,6 +70,8 @@
 
 ## Started
 
+- `TKT-129` `P2` `advisor` `started` `[FE]` Advisor 배우기 통합 인덱스 + GamesPage 폐기 구현 중 (124·132 뒤)
+- `TKT-133` `P3` `advisor` `ready` `[FE]` Advisor 코스 시뮬 시드 고정 확률 도착 — 임계 이용률 표현 (119 뒤)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -96,6 +96,7 @@
 
 ## Finished
 
+- `TKT-132` `[FE]` Advisor 코스 시뮬 모델 충실도 — 결정론 다중 창구 큐·이용률 표시 — r1 통과 (2026-09-14, [중요] 확률 도착 → 133)
 - `TKT-131` `[FE]` Advisor 코스 시뮬 정정 — 전체 집계·조건 변경 안내·배우기 active·성찰 절 — r1 통과 (2026-09-14, [중요] 모델 충실도 → 132)
 - `TKT-130` `[FE]` Advisor 흐름 결함 — Probe 인접 배치·기내 빈 상태 CTA·결과→기록·익명 기록 열람 — r1 통과 (2026-09-14)
 - `TKT-124` `[FE]` Advisor 코스 컨테이너 — 코스=정류장, 코딩/게임/시뮬 3형식, 비엔나 1900 12미션 진입 — r1 통과 (2026-09-14)

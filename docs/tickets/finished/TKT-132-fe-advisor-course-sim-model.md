@@ -2,7 +2,7 @@
 
 # TKT-132 `[FE]` Advisor 코스 시뮬 모델 충실도 — 창구는 이동하지 않는다
 
-- 상태: ready · P2 · 담당: codex-1 · 의존: TKT-131 finished. 브랜치 `codex/v0.7.0-tone`. **UX 1순위·[반박]/[구체화 질문] 의무.**
+- 상태: finished (2026-09-14, REV-TKT-132-r1 통과) · P2 · 담당: codex-1 · 의존: TKT-131 finished. 브랜치 `codex/v0.7.0-tone`. **UX 1순위·[반박]/[구체화 질문] 의무.**
 - 근거: `docs/reviews/REV-TKT-131-r1.md` [중요]. 스펙 `design/advisor-course-spec.md` §1 "시뮬 = 격납고 엔진 재사용"은 유지하되 **은유가 수치를 왜곡하면 안 된다.**
 - scope: `services/advisor/frontend/src/modules/missions/games/courseQueueSimulation.js`, `pages/CourseSimulationPage.vue`, 테스트. `frontend/src/sim/taxiDispatch.js` 수정 금지, 콘텐츠 3파일 불가침.
 
@@ -15,12 +15,16 @@
 3. tick 양자화(15초 ceil)로 인한 오차를 결과 설명에 한 줄로 명시하거나 tick 을 5초로.
 
 ## 완료 조건
-1. [ ] 10시·창구 3·예약 35% 에서 평균 대기 ≤ 2분(이용률 < 50%일 때 대기가 폭발하지 않음) — unit.
-2. [ ] 창구 +1 과 예약 35%→60% 의 대기 감소 비교가 이용률 계산과 방향 일치 — unit 1건.
-3. [ ] 결과에 이용률 % 표시, 375/1440 overflow 0, 기존 E2E 그린.
+1. [x] 10시·창구 3·예약 35% 에서 평균 대기 ≤ 2분(이용률 < 50%일 때 대기가 폭발하지 않음) — unit.
+2. [x] 창구 +1 과 예약 35%→60% 의 대기 감소 비교가 이용률 계산과 방향 일치 — unit 1건.
+3. [x] 결과에 이용률 % 표시, 375/1440 overflow 0, 기존 E2E 그린.
 
 ## 질문/에스컬레이션
 - 없음.
 
 ## 리뷰 기록
-- 없음.
+- 구현 선택: 택시 엔진 래핑보다 계산 경계가 명확한 초 단위 결정론적 다중 창구 큐로 교체했다. 도착은 한 시간에 균등 배치하고 창구 가용 즉시 다음 관람객을 처리하므로 이동·복귀·tick 양자화가 없다.
+- 수치: 10시·창구 3·예약 35%는 혼합 처리 34.5초, 이용률 53.7%, 평균/최장 대기 0초. 1개 창구 기준 예약 35%→60%는 이용률 161%→126%, 평균 대기 1091초→465초이며 창구 2개는 이용률 80.5%, 평균 대기 0초다.
+- 게이트: unit 70/70, Chromium E2E 36/36, 기본·Pages-base build 각 115 modules, 375/1440 dark 실렌더·overflow 0. `taxiDispatch.js`와 콘텐츠 3파일 diff 0.
+- 남은 위험: 균등 도착 결정론 모델은 실제 확률적 군집 도착을 표현하지 않는다. 기존 초기 청크 503.21kB 경고, Safari/WebKit·실 Pages 배포는 미검증이다. commit/push 없음.
+- r1 (2026-09-14, PM): **통과 → finished**. `docs/reviews/REV-TKT-132-r1.md`. [중요] 균등 도착 → 임계 현상 미표현 → TKT-133.
