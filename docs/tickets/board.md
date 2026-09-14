@@ -80,6 +80,10 @@
 
 
 - `TKT-138` `P1` `tone` `ready` `[FE]` v0.7.0 릴리스 게이트 블로커 — taxi E2E 구 selector·블로그 제목 hit area (AS-R009, 병합 전 필수)
+- `TKT-139` `P1` `tone` `ready` `[FE]` 홈 노선도 기지선·예정 역 흐림 + 같은 화면 토스트(준비 중) — PO 승인, 병합 전
+- `TKT-140` `P1` `tone` `ready` `[FE]` 스플래시 재방문 3초(localStorage 플래그) + 패널 면 제거 — PO 승인, 병합 전
+- `TKT-141` `P2` `voyage` `ready` `[FE]` 정차역 시트 기본 3칸 + 접힘 — PO 승인
+- `TKT-142` `P2` `advisor` `ready` `[FE]` 배우기 첫 화면 축약(목록은 펼침 뒤) — PO 승인
 - `TKT-137` `P1` `tone` `ready` `[UX]` 톤 브랜치 전 화면 최종 UX 검수(병합 전) — codex-8 작성 중
 
 
