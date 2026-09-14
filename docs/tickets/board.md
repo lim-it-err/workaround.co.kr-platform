@@ -1,4 +1,4 @@
-﻿문서 상태: 수정중
+﻿문서 상태: 작성완료
 
 # 티켓 보드
 
@@ -62,13 +62,11 @@
 
 ## Started
 
-- `TKT-135` `P2` `advisor` `started` `[FE]` Advisor 시즌 수명주기 — 종료 보존·명시적 새 시즌·평생 누적·마이그레이션
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
-
 
 
 
@@ -91,6 +89,7 @@
 
 ## Finished
 
+- `TKT-135` `[FE]` Advisor 시즌 수명주기 — 반복 인스턴스·종료 보존·명시적 새 시즌·대기 적립·평생 누적·마이그레이션 — r1 통과 (2026-09-14)
 - `TKT-126` `[FE]` 순환선 심볼 C안(SiteLoopSymbol·파비콘 SVG/16/32·환승 표식) + 스플래시 한 줄 보드·hairline 티커 — r1 통과 (2026-09-14)
 - `TKT-122` `[PM]` Advisor 시즌 수명주기 스펙 — `design/advisor-season-spec.md` (2026-09-14) → 구현 TKT-135
 - `TKT-116` `[FE]` 여정 노선도 회고 모드 — 도착 여행 열차 점 재생·일시정지·2단 속도·reduced-motion — r1 통과 (2026-09-14)
