@@ -39,7 +39,7 @@ test('코딩·게임 미션에 진입하고 출발한 코스로 복귀한다', a
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 })
 
-test('시뮬 미션이 격납고 배차 엔진으로 대기 결과를 만들고 코스로 돌아간다', async ({ page }) => {
+test('시뮬 미션이 다중 창구 큐로 대기 결과를 만들고 코스로 돌아간다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.goto('/courses/vienna-1900')
   await page.locator('[data-mission-id="v1900-5-entry-queue"]').click()
@@ -52,6 +52,7 @@ test('시뮬 미션이 격납고 배차 엔진으로 대기 결과를 만들고 
   await expect(page.getByText('실행 조건 · 09시 · 창구 3개 · 사전 예약 35%')).toBeVisible()
   const metrics = page.locator('.result dl')
   await expect(metrics).toContainText('대기 중')
+  await expect(metrics).toContainText('이용률')
   const arrivals = Number((await metrics.locator('dd').nth(0).innerText()).replace(/\D/g, ''))
   const completed = Number((await metrics.locator('dd').nth(1).innerText()).replace(/\D/g, ''))
   const waiting = Number((await metrics.locator('dd').nth(2).innerText()).replace(/\D/g, ''))
@@ -64,7 +65,7 @@ test('시뮬 미션이 격납고 배차 엔진으로 대기 결과를 만들고 
   await expect(page.getByText('실행 조건 · 10시 · 창구 3개 · 사전 예약 35%')).toBeVisible()
   await expect(page.getByText('조건이 바뀌었습니다', { exact: true })).toHaveCount(0)
   await expect(page.getByText('생각해 볼 질문')).toBeVisible()
-  await expect(page.getByText(/격납고의 배차 전이 엔진/)).toBeVisible()
+  await expect(page.getByText(/결정론적 다중 창구 큐/)).toBeVisible()
   await page.getByRole('link', { name: '← 비엔나 1900 코스' }).click()
   await expect(page).toHaveURL(/\/courses\/vienna-1900$/)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)

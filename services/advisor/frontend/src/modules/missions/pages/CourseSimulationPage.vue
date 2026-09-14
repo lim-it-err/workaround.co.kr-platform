@@ -41,7 +41,7 @@ function minutes(seconds) {
   <div v-if="course && sim" class="sim-page">
     <router-link :to="`/courses/${course.id}`" class="back-link">← {{ course.title }} 코스</router-link>
     <header class="sim-hero">
-      <span>시뮬 · 택시 배차 엔진</span>
+      <span>시뮬 · 다중 창구 대기열</span>
       <h1>{{ sim.title }}</h1>
       <p>{{ sim.brief }}</p>
     </header>
@@ -85,8 +85,9 @@ function minutes(seconds) {
         <div><dt>대기 중</dt><dd>{{ result.waiting }}명</dd></div>
         <div><dt>최장 대기</dt><dd>{{ minutes(result.maxWaitSeconds) }}</dd></div>
         <div><dt>혼합 처리시간</dt><dd>{{ result.serviceSeconds }}초</dd></div>
+        <div><dt>이용률</dt><dd>{{ result.utilizationPercent }}%</dd></div>
       </dl>
-      <p>창구는 차량, 관람객은 호출로 바꿔 격납고의 배차 전이 엔진을 재사용한 결정론적 연습 결과입니다.</p>
+      <p>도착은 한 시간에 같은 간격으로 배치하고 표기 처리시간을 그대로 쓰는 결정론적 다중 창구 큐입니다. 이동·복귀 시간과 tick 올림은 없습니다.</p>
     </section>
 
     <details v-if="questions.length" class="questions">

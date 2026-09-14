@@ -1,57 +1,25 @@
-import {
-  advanceTaxiFleet,
-  assignPendingTaxiRequests,
-} from '../../../../../../../frontend/src/sim/taxiDispatch.js'
-
-const TICK_SECONDS = 15
 const SESSION_MINUTES = 60
+const SESSION_SECONDS = SESSION_MINUTES * 60
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0))
 }
 
-function createState(counterCount, serviceSeconds) {
-  const stepDuration = Math.max(1, Math.ceil(serviceSeconds / TICK_SECONDS))
-  return {
-    clock: { elapsedSeconds: 0 },
-    zones: [
-      { id: 'entry', name: '입구', neighbors: ['gallery'] },
-      { id: 'gallery', name: '전시장', neighbors: ['entry'] },
-    ],
-    taxis: Array.from({ length: counterCount }, (_, index) => ({
-      id: `Counter-${String(index + 1).padStart(2, '0')}`,
-      zoneId: 'entry',
-      targetZoneId: 'entry',
-      positionLabel: '입구',
-      seats: 1,
-      passengerCount: 0,
-      status: 'idle',
-      assignedRequestId: '',
-      route: [],
-      progress: 0,
-      stepDuration,
-    })),
-    activeRequests: [],
-    completedRequests: [],
-    score: { reward: 0, penalty: 0 },
-    eventLog: [],
+function earliestCounter(availableAt) {
+  let selected = 0
+  for (let index = 1; index < availableAt.length; index += 1) {
+    if (availableAt[index] < availableAt[selected]) selected = index
   }
+  return selected
 }
 
-function request(id, createdTick) {
-  return {
-    id,
-    originId: 'entry',
-    destinationId: 'gallery',
-    passengers: 1,
-    source: 'course',
-    status: 'pending',
-    assignedTaxiId: '',
-    pickedUpAt: 0,
-    createdTick,
-  }
-}
-
+/**
+ * A deterministic multi-counter queue.
+ *
+ * Visitors are spaced evenly across the selected hour. Each counter becomes
+ * available as soon as its service time ends, so the displayed service time is
+ * the effective service time—there is no vehicle travel or return leg.
+ */
 export function runEntryQueueScenario(sim, options = {}) {
   const hour = String(options.hour ?? sim?.arrivals?.[0]?.hour ?? '')
   const arrival = sim?.arrivals?.find((entry) => entry.hour === hour)
@@ -59,53 +27,39 @@ export function runEntryQueueScenario(sim, options = {}) {
 
   const counters = Math.round(clamp(options.counters ?? sim.counters, 1, 8))
   const prebookedRatio = clamp(options.prebookedRatio ?? sim.prebookedRatio, 0, 1)
-  const serviceSeconds = (sim.serviceSecPerVisitor * (1 - prebookedRatio)) + (15 * prebookedRatio)
+  const serviceSeconds = Number((
+    (sim.serviceSecPerVisitor * (1 - prebookedRatio))
+    + (15 * prebookedRatio)
+  ).toFixed(2))
   const expectedArrivals = Math.round(arrival.perMin * SESSION_MINUTES)
-  const sessionTicks = (SESSION_MINUTES * 60) / TICK_SECONDS
-  let state = createState(counters, serviceSeconds)
-  let created = 0
-  const completedIds = new Set()
-  const completedWaits = []
+  const utilizationPercent = Number((
+    (arrival.perMin * serviceSeconds * 100) / (60 * counters)
+  ).toFixed(1))
+  const availableAt = Array.from({ length: counters }, () => 0)
+  const waits = []
 
-  function collectCompleted() {
-    for (const entry of state.completedRequests) {
-      if (completedIds.has(entry.id)) continue
-      completedIds.add(entry.id)
-      completedWaits.push(entry.waitSeconds)
-    }
+  for (let index = 0; index < expectedArrivals; index += 1) {
+    const arrivedAt = (index * SESSION_SECONDS) / expectedArrivals
+    const counterIndex = earliestCounter(availableAt)
+    const startsAt = Math.max(arrivedAt, availableAt[counterIndex])
+    waits.push(Math.max(0, startsAt - arrivedAt))
+    availableAt[counterIndex] = startsAt + serviceSeconds
   }
 
-  for (let tick = 1; tick <= sessionTicks; tick += 1) {
-    state.clock.elapsedSeconds = tick * TICK_SECONDS
-    const shouldExist = Math.floor((expectedArrivals * tick) / sessionTicks)
-    while (created < shouldExist) {
-      created += 1
-      state.activeRequests.push(request(`Visitor-${String(created).padStart(3, '0')}`, state.clock.elapsedSeconds))
-    }
-    state = advanceTaxiFleet(assignPendingTaxiRequests(state))
-    collectCompleted()
-  }
-
-  const drainLimit = sessionTicks * 2
-  for (let tick = 0; state.activeRequests.length && tick < drainLimit; tick += 1) {
-    state.clock.elapsedSeconds += TICK_SECONDS
-    state = advanceTaxiFleet(assignPendingTaxiRequests(state))
-    collectCompleted()
-  }
-
-  const averageWaitSeconds = completedWaits.length
-    ? Math.round(completedWaits.reduce((sum, value) => sum + value, 0) / completedWaits.length)
+  const averageWaitSeconds = waits.length
+    ? Math.round(waits.reduce((sum, value) => sum + value, 0) / waits.length)
     : 0
 
   return {
     hour,
     arrivals: expectedArrivals,
-    completed: completedIds.size,
-    waiting: state.activeRequests.length,
+    completed: expectedArrivals,
+    waiting: 0,
     counters,
     prebookedRatio,
     averageWaitSeconds,
-    maxWaitSeconds: completedWaits.length ? Math.max(...completedWaits) : 0,
-    serviceSeconds: Math.round(serviceSeconds),
+    maxWaitSeconds: waits.length ? Math.round(Math.max(...waits)) : 0,
+    serviceSeconds,
+    utilizationPercent,
   }
 }
