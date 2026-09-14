@@ -72,7 +72,6 @@
 
 ## Started
 
-- `TKT-124` `P1` `advisor` `started` `[FE]` Advisor 코스 컨테이너 — 코스=정류장, 형식 배지 (121 need_review 뒤)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -97,6 +96,7 @@
 
 ## Finished
 
+- `TKT-124` `[FE]` Advisor 코스 컨테이너 — 코스=정류장, 코딩/게임/시뮬 3형식, 비엔나 1900 12미션 진입 — r1 통과 (2026-09-14)
 - `TKT-121` `[FE]` Advisor 오늘·배우기·기록 3표면 + 톤 정합 + 초안 보호 — r1 통과 (2026-09-14, D-020 잠정)
 - `TKT-118` `[FE]` 라이트 테마 톤 토큰 매핑 — r1 통과 (2026-09-14, [중요] W 글자 대비 → 119)
 - `TKT-114` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime 톤 전환 — r2 통과 (2026-09-14, r1 반려: 영어 상태 토큰·영어 제목)
