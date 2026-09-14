@@ -694,8 +694,8 @@ const currentRoute = computed(() => {
   if (page.value === 'elevator') {
     return {
       line: 'Line E / Elevator Station',
-      title: '수직 승강장',
-      description: '23층 건물의 층별 대기 인원, car 적재량, 목적층 흐름을 실제 상태로 읽습니다.'
+      title: '멈춘 엘리베이터',
+      description: '23층 건물의 층별 대기 인원, 승강기 적재량, 목적층 흐름을 실제 상태로 읽습니다.'
     }
   }
 
@@ -710,8 +710,8 @@ const currentRoute = computed(() => {
   if (page.value === 'taxi') {
     return {
       line: 'Line T / Taxi District Lab',
-      title: '지역 배차 시뮬레이터',
-      description: '9구역 수요, 차량 배치, 리워드/패널티 루프를 프런트 단독 코어로 돌립니다.'
+      title: '심야 택시',
+      description: '9구역 수요, 차량 배치, 보상/패널티 루프를 화면 안에서 관찰합니다.'
     }
   }
 
@@ -939,10 +939,10 @@ const taxiDashboardMetrics = computed(() => {
       ? completed.reduce((sum, item) => sum + (item.waitSeconds || 0), 0) / completed.length
       : 0
   return [
-    { label: 'active requests', value: String(taxiState.value.activeRequests.length) },
-    { label: 'completed rides', value: String(completed.length) },
-    { label: 'avg wait', value: `${averageWait.toFixed(1)}s` },
-    { label: 'fleet', value: String(taxiFleet.value.length) }
+    { label: '진행 중 호출', value: String(taxiState.value.activeRequests.length) },
+    { label: '완료 운행', value: String(completed.length) },
+    { label: '평균 대기', value: `${averageWait.toFixed(1)}초` },
+    { label: '운행 차량', value: String(taxiFleet.value.length) }
   ]
 })
 const taxiZoneCards = computed(() =>
@@ -2784,6 +2784,23 @@ function formatSignedValue(value) {
   return `${numeric >= 0 ? '+' : ''}${numeric}`
 }
 
+function formatTaxiEvent(entry) {
+  return String(entry || '')
+    .replaceAll('reward', '보상')
+    .replaceAll('penalty', '패널티')
+    .replaceAll(' -> ', ' → ')
+}
+
+function taxiStatusLabel(status) {
+  return {
+    idle: '대기',
+    pending: '배차 대기',
+    assigned: '배차됨',
+    pickup: '승객에게 이동',
+    dropoff: '목적지로 이동'
+  }[status] || status
+}
+
 function formatDate(value) {
   if (!value) {
     return '없음'
@@ -3744,15 +3761,14 @@ function persistStudioPostId(postId) {
 
           <VoyageView v-else-if="page === 'voyage'" @exit="openPage('junction')" />
 
-          <section v-else-if="page === 'elevator'" class="feature-shell">
+          <section v-else-if="page === 'elevator'" class="feature-shell sim-tone-page elevator-tone-page">
             <StationHeader
               line-class="line-e"
               station-code="E01"
-              title="23층 수직 승강장"
-              title-en="ELEVATOR STATION"
+              title="멈춘 엘리베이터"
               status="실시간 운행"
               status-tone="live"
-              :summary="`23층 · car ${elevatorCars.length}대 · 정원 20명`"
+              :summary="`23층 · 승강기 ${elevatorCars.length}대 · 정원 20명`"
               :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
               :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
               @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
@@ -3825,7 +3841,7 @@ function persistStudioPostId(postId) {
                       />
                     </label>
                     <label class="input-block">
-                      <span>car 수 {{ elevatorCarCount }}</span>
+                      <span>승강기 수 {{ elevatorCarCount }}</span>
                       <input
                         class="range-input"
                         type="range"
@@ -3856,39 +3872,37 @@ function persistStudioPostId(postId) {
             </section>
           </section>
 
-          <section v-else-if="page === 'taxi'" class="feature-shell">
+          <section v-else-if="page === 'taxi'" class="feature-shell sim-tone-page taxi-tone-page">
             <StationHeader
               line-class="line-t"
               station-code="T01"
-              title="9구역 택시 시뮬레이터 코어"
-              title-en="TAXI DISTRICT LAB"
-              status="프런트 코어 운행"
+              title="심야 택시"
+              status="실시간 운행"
               status-tone="live"
-              summary="9구역 · reward/penalty 누적"
+              summary="9구역 · 보상/패널티 누적"
               :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
               :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
               @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
             />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article v-for="metric in taxiDashboardMetrics" :key="metric.label">
-              <span>{{ metric.label }}</span>
-              <strong>{{ metric.value }}</strong>
-              </article>
+            <section class="station-lead taxi-timetable" aria-label="택시 실시간 지표">
+              <div class="banner-stats">
+                <article v-for="metric in taxiDashboardMetrics" :key="metric.label">
+                  <span>{{ metric.label }}</span>
+                  <strong class="num">{{ metric.value }}</strong>
+                </article>
               </div>
             </section>
 
             <section class="section-block split-layout">
-              <article class="surface-panel">
+              <article class="surface-panel taxi-map-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">District Mesh</p>
                     <h3>구역별 수요 지도</h3>
                   </div>
-                  <span>실지도 대신 9구역 추상 메쉬를 사용해 이동 이유를 읽을 수 있게 합니다.</span>
+                  <span>9구역 흐름을 한눈에 관찰합니다.</span>
                 </div>
 
-                <div class="district-grid">
+                <div class="district-grid" aria-label="9구역 수요 시뮬레이션 캔버스">
                   <article
                     v-for="zone in taxiZoneCards"
                     :key="zone.id"
@@ -3897,10 +3911,10 @@ function persistStudioPostId(postId) {
                   >
                     <div class="district-top">
                       <strong>{{ zone.name }}</strong>
-                      <span>{{ zone.pending }} req</span>
+                      <span>호출 {{ zone.pending }}</span>
                     </div>
                     <p>{{ zone.demandLabel }}</p>
-                    <small>nearby fleet {{ zone.nearbyFleet }} · neighbors {{ zone.neighbors.length }}</small>
+                    <small>인근 차량 {{ zone.nearbyFleet }} · 연결 구역 {{ zone.neighbors.length }}</small>
                   </article>
                 </div>
               </article>
@@ -3908,7 +3922,6 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Request Console</p>
                     <h3>수동 호출 입력</h3>
                   </div>
                 </div>
@@ -3951,17 +3964,17 @@ function persistStudioPostId(postId) {
 
                 <div class="reward-grid">
                   <article class="reward-card">
-                    <span>reward</span>
+                    <span>보상</span>
                     <strong>{{ formatSignedValue(taxiRewardSummary.reward) }}</strong>
                     <p>빠른 배차 = 보상</p>
                   </article>
                   <article class="reward-card">
-                    <span>penalty</span>
+                    <span>패널티</span>
                     <strong>{{ formatSignedValue(-taxiRewardSummary.penalty) }}</strong>
                     <p>차량 추가 = 패널티</p>
                   </article>
                   <article class="reward-card">
-                    <span>net</span>
+                    <span>순점수</span>
                     <strong>{{ formatSignedValue(taxiRewardSummary.net) }}</strong>
                     <p>보상 − 패널티 = 순점수</p>
                   </article>
@@ -3975,7 +3988,6 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Fleet Strip</p>
                     <h3>차량 상태</h3>
                   </div>
                 </div>
@@ -3984,11 +3996,11 @@ function persistStudioPostId(postId) {
                   <article v-for="cab in taxiFleet" :key="cab.id" class="fleet-card">
                     <div class="fleet-top">
                       <strong>{{ cab.id }}</strong>
-                      <span>{{ cab.status }}</span>
+                      <span class="taxi-state-token" :data-label="taxiStatusLabel(cab.status)">{{ cab.status }}</span>
                     </div>
-                    <p>{{ findTaxiZone(cab.zoneId)?.name }} -> {{ findTaxiZone(cab.targetZoneId)?.name }}</p>
-                    <small>{{ cab.passengerCount }} / {{ cab.seats }} passengers · route {{ cab.route.length }} hops</small>
-                    <strong class="fleet-reward">{{ cab.assignedRequestId || 'idle' }}</strong>
+                    <p>{{ findTaxiZone(cab.zoneId)?.name }} → {{ findTaxiZone(cab.targetZoneId)?.name }}</p>
+                    <small>승객 {{ cab.passengerCount }} / {{ cab.seats }}명 · 남은 구간 {{ cab.route.length }}</small>
+                    <strong class="fleet-reward">{{ cab.assignedRequestId || '배차 대기' }}</strong>
                   </article>
                 </div>
               </article>
@@ -3996,16 +4008,18 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Request Queue</p>
                     <h3>진행 중 호출</h3>
                   </div>
                 </div>
 
                 <div class="prototype-rule-list">
                   <article v-for="request in taxiRequestQueue" :key="request.id" class="prototype-rule-card">
-                    <strong>{{ request.id }} · {{ request.status }}</strong>
+                    <strong>
+                      {{ request.id }} ·
+                      <span class="taxi-state-token" :data-label="taxiStatusLabel(request.status)">{{ request.status }}</span>
+                    </strong>
                     <p>
-                      {{ findTaxiZone(request.originId)?.name }} -> {{ findTaxiZone(request.destinationId)?.name }}
+                      {{ findTaxiZone(request.originId)?.name }} → {{ findTaxiZone(request.destinationId)?.name }}
                       · {{ request.passengers }}명 · {{ request.assignedTaxiId || '배차 대기' }}
                     </p>
                   </article>
@@ -4017,17 +4031,16 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Recent Trips</p>
                     <h3>최근 완료 호출</h3>
                   </div>
                 </div>
 
                 <div class="prototype-rule-list">
                   <article v-for="request in taxiCompletedRequests" :key="request.id" class="prototype-rule-card">
-                    <strong>{{ request.id }} · reward {{ formatSignedValue(request.reward) }}</strong>
+                    <strong>{{ request.id }} · 보상 {{ formatSignedValue(request.reward) }}</strong>
                     <p>
-                      wait {{ request.waitSeconds }}s · trip {{ request.tripSeconds }}s ·
-                      {{ findTaxiZone(request.originId)?.name }} -> {{ findTaxiZone(request.destinationId)?.name }}
+                      대기 {{ request.waitSeconds }}초 · 운행 {{ request.tripSeconds }}초 ·
+                      {{ findTaxiZone(request.originId)?.name }} → {{ findTaxiZone(request.destinationId)?.name }}
                     </p>
                   </article>
                 </div>
@@ -4036,13 +4049,12 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Ops Log</p>
                     <h3>이벤트 로그</h3>
                   </div>
                 </div>
 
                 <div class="arrival-log">
-                  <article v-for="entry in taxiState.eventLog" :key="entry">{{ entry }}</article>
+                  <article v-for="entry in taxiState.eventLog" :key="entry">{{ formatTaxiEvent(entry) }}</article>
                 </div>
               </article>
             </section>

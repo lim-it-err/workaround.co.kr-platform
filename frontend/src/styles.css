@@ -4410,3 +4410,222 @@ button.station-prev:hover {
     align-items: center;
   }
 }
+
+/* TKT-120 — 시뮬레이션은 캔버스만 그림 면으로 두고 나머지는 시각표 행으로 읽는다. */
+.sim-tone-page .section-block {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.elevator-tone-page .elevator-live-layout {
+  padding: 0;
+}
+
+.elevator-tone-page .elevator-metrics {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--line-strong);
+}
+
+.elevator-tone-page .elevator-metrics article {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 16px;
+  padding: 11px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.elevator-tone-page .elevator-metrics strong {
+  font-size: 1.08rem;
+}
+
+.elevator-tone-page .elevator-demand-panel,
+.elevator-tone-page .elevator-advanced,
+.elevator-tone-page .elevator-event-panel {
+  padding: 14px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.elevator-tone-page .elevator-event-list article {
+  padding: 8px 0;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+}
+
+.taxi-tone-page .station-lead {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.taxi-tone-page .banner-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  border-block: 1px solid var(--line-strong);
+}
+
+.taxi-tone-page .banner-stats article {
+  min-width: 0;
+  padding: 12px 16px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.taxi-tone-page .banner-stats article:last-child {
+  border-right: 0;
+}
+
+.taxi-tone-page .banner-stats span {
+  color: var(--muted);
+  text-transform: none;
+}
+
+.taxi-tone-page .banner-stats strong {
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.taxi-tone-page .section-block.split-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: clamp(24px, 4vw, 46px);
+  padding: 0;
+}
+
+.taxi-tone-page .surface-panel {
+  min-width: 0;
+  padding: 18px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line-strong);
+  border-radius: 0;
+  background: transparent;
+}
+
+.taxi-tone-page .taxi-map-panel {
+  border-top: 3px solid var(--line-t);
+}
+
+.taxi-tone-page .section-head {
+  margin-bottom: 14px;
+}
+
+.taxi-tone-page .section-head h3 {
+  margin: 0;
+}
+
+.taxi-tone-page .district-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: visible;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.taxi-tone-page .district-card {
+  min-height: 112px;
+  padding: 13px;
+  border: 0;
+  border-radius: 0;
+  background: var(--panel);
+  box-shadow: none;
+}
+
+.taxi-tone-page .district-card[class*='line-'] {
+  border-top-width: 3px;
+}
+
+.taxi-tone-page .reward-grid,
+.taxi-tone-page .fleet-grid,
+.taxi-tone-page .prototype-rule-list,
+.taxi-tone-page .arrival-log {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.taxi-tone-page .reward-card,
+.taxi-tone-page .fleet-card,
+.taxi-tone-page .prototype-rule-card,
+.taxi-tone-page .arrival-log article {
+  padding: 11px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.taxi-tone-page .reward-card {
+  grid-template-columns: minmax(74px, auto) auto minmax(0, 1fr);
+  align-items: baseline;
+  gap: 14px;
+}
+
+.taxi-tone-page .reward-card p {
+  justify-self: end;
+  text-align: right;
+}
+
+.taxi-tone-page .fleet-reward {
+  font-size: 0.82rem;
+}
+
+.taxi-tone-page .taxi-state-token {
+  font-size: 0;
+}
+
+.taxi-tone-page .taxi-state-token::after {
+  content: attr(data-label);
+  font-size: 0.82rem;
+}
+
+@media (max-width: 960px) {
+  .taxi-tone-page .section-block.split-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .taxi-tone-page .banner-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .taxi-tone-page .banner-stats article:nth-child(2) {
+    border-right: 0;
+  }
+
+  .taxi-tone-page .banner-stats article:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .taxi-tone-page .district-grid {
+    grid-template-columns: repeat(3, minmax(94px, 1fr));
+    overflow-x: auto;
+  }
+
+  .taxi-tone-page .district-card {
+    min-height: 126px;
+    padding: 10px;
+  }
+
+  .taxi-tone-page .reward-card {
+    grid-template-columns: minmax(64px, auto) auto;
+  }
+
+  .taxi-tone-page .reward-card p {
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: left;
+  }
+}
