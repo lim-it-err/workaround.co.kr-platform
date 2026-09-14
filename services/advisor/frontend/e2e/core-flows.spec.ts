@@ -7,7 +7,7 @@ const PROJECT_TITLE = '공공자전거 시스템 — 맨땅에서'
 test.beforeEach(async ({ page }) => {
   // The E2E suite intentionally exercises the keyless, backend-off prototype path.
   await page.route('http://localhost:8080/**', (route) => route.abort())
-  await page.goto('/')
+  await page.goto('/learn')
   // A document load can finish before Vue's initial routine persistence.
   // Wait for the mounted home before clearing/seeding browser-local fixtures.
   await expect(page.locator('.mission-card')).toHaveCount(39)
@@ -46,7 +46,7 @@ test('필터: 난이도와 검색을 조합하고 초기화한다', async ({ pag
   const missionCards = page.locator('.mission-card')
   await expect(missionCards).toHaveCount(39)
 
-  await page.getByRole('button', { name: 'Easy', exact: true }).click()
+  await page.getByRole('button', { name: '쉬움', exact: true }).click()
   const easyCount = await missionCards.count()
   expect(easyCount).toBeGreaterThan(0)
   expect(easyCount).toBeLessThan(39)
@@ -70,7 +70,7 @@ test('기획자 모드: 참석자는 보이지만 비공개 관심사는 DOM에 
 })
 
 test('프로젝트 여정: 첫 제출이 두 번째 소미션을 해금한다', async ({ page }) => {
-  await page.getByRole('link', { name: '프로젝트', exact: true }).click()
+  await page.goto('/projects')
   await page.getByRole('link', { name: new RegExp(PROJECT_TITLE) }).click()
 
   const nodeCards = page.locator('.node-card')
@@ -87,12 +87,7 @@ test('프로젝트 여정: 첫 제출이 두 번째 소미션을 해금한다', 
   await expect(page.getByRole('button', { name: /대여와 반납 — 규칙이 코드가 되는 순간/ })).toBeEnabled()
 })
 
-test('루틴: 평일 노코드 슬롯과 주말 프로젝트 슬롯을 요일별로 보여준다', async ({ page }) => {
-  await page.route('http://localhost:8080/api/advisor/chat/preview', (route) => route.fulfill({
-    status: 200,
-    contentType: 'application/json',
-    body: JSON.stringify({ text: '[기획팀장] 숫자는 이렇습니다.' }),
-  }))
+test('오늘: 다음 한 걸음 하나와 접힌 보조 루틴을 보여준다', async ({ page }) => {
   const errors: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'error') errors.push(message.text())
@@ -100,80 +95,16 @@ test('루틴: 평일 노코드 슬롯과 주말 프로젝트 슬롯을 요일별
   page.on('pageerror', (error) => errors.push(error.message))
 
   await page.clock.setFixedTime(new Date('2026-08-03T08:00:00'))
-  await page.getByRole('link', { name: '오늘의 훈련', exact: true }).click()
-
-  await expect(page.locator('.slot')).toHaveCount(3)
-  const weekdayLabels = [
-    ['월', ['사건 파일 오늘 단서', '머지 or 반려', '카드 갈래 1장']],
-    ['화', ['설계 리뷰 미션 읽기', '결말 예측 1건', '머지 or 반려']],
-    ['수', ['독서 카드 + 갈래', '사건 파일 오늘 단서', '설명 시작 칩 고르기 (문장 완성은 선택)']],
-    ['목', ['기획자 브리핑 읽기', '회의 질문 칩 1개 던지기', '카드 갈래 1장']],
-    ['금', ['아직 되짚을 리뷰가 없습니다', '머지 or 반려', '설명 훈련 (선택·주중 유일 타이핑)']],
-  ] as const
-
-  for (const [day, labels] of weekdayLabels) {
-    await page.getByRole('button', { name: day, exact: true }).click()
-    await expect(page.locator('.slot-label')).toHaveText([...labels])
-  }
-
-  await page.getByRole('button', { name: '화', exact: true }).click()
-  await page.locator('.slot').first().getByRole('link').click()
-  await expect(page).toHaveURL(/\?tab=briefing#mission-briefing$/)
-  await expect(page.locator('#mission-briefing')).toBeVisible()
-
   await page.goto('/routine')
-  await page.getByRole('button', { name: '화', exact: true }).click()
-  await page.locator('.slot').nth(1).getByRole('link').click()
-  await expect(page).toHaveURL(/\?tab=mission#ending-prediction$/)
-  await expect(page.locator('#ending-prediction')).toBeVisible()
-
-  await page.goto('/routine')
-  await page.getByRole('button', { name: '수', exact: true }).click()
-  await page.locator('.slot').nth(2).getByRole('link').click()
-  await expect(page).toHaveURL(/\?tab=explain#explain-starters$/)
-  await expect(page.locator('#explain-starters')).toBeVisible()
-
-  await page.goto('/routine')
-  await page.getByRole('button', { name: '목', exact: true }).click()
-  await page.locator('.slot').nth(1).getByRole('link').click()
-  await expect(page).toHaveURL(/\?mode=plannerMeeting#meeting-room$/)
-  await expect(page.locator('#meeting-room')).toBeVisible()
-  await page.getByRole('button', { name: '회의 시작' }).click()
-  const instantQuestion = '그 입장의 근거 숫자를 보여주실 수 있나요?'
-  await page.getByRole('button', { name: instantQuestion }).click()
-  await expect(page.locator('.msg.me')).toHaveText(instantQuestion)
-  const meetingState = await page.evaluate(() => JSON.parse(localStorage.getItem('advisor.learner.v1') ?? '{}'))
-  expect(Object.values(meetingState.meetingChats ?? {}).flat().filter(
-    (message: { role: string }) => message.role === 'me',
-  )).toHaveLength(1)
-
-  await page.goto('/routine')
-  await page.getByRole('button', { name: '월', exact: true }).click()
-  await page.locator('.slot').first().getByRole('link').click()
-  await expect(page).toHaveURL(/\/games\/case\//)
-  await page.goto('/routine')
-  await expect(page.getByTestId('ongoing-case-banner')).toContainText('수사 진행 중 — Day 1 단서 열기')
-  await expect(page.getByText('✓ 완료')).toBeVisible()
-
-  await page.getByRole('link', { name: '미션 목록', exact: true }).click()
-  await expect(page.getByText('오늘의 훈련 1/3')).toBeVisible()
-
-  await page.getByRole('link', { name: '오늘의 훈련', exact: true }).click()
-  await page.getByRole('button', { name: '수', exact: true }).click()
-  const readingSlot = page.locator('.slot').first()
-  await expect(readingSlot.getByText('독서 카드 + 갈래')).toBeVisible()
-  const readingCardLink = readingSlot.getByRole('link')
-  await expect(readingCardLink).toHaveAttribute('href', /^\/games\?card=read-/)
-  const readingTitle = (await readingCardLink.textContent())?.trim()
-  await readingCardLink.click()
-  await expect(page).toHaveURL(/\/games\?card=read-/)
-  await expect(page.locator('.insight-card.open').first()).toContainText(readingTitle ?? '')
-
-  await page.goto('/routine')
-  await page.getByRole('button', { name: '토', exact: true }).click()
-  const cinemaSlot = page.locator('.slot').first()
-  await expect(cinemaSlot.getByText('시사회 카드 보기')).toBeVisible()
-  await expect(cinemaSlot.getByRole('link')).toHaveAttribute('href', /^\/games\?card=film-/)
+  await expect(page).toHaveURL(/\/today$/)
+  await expect(page.getByRole('navigation', { name: '전역 메뉴' }).getByRole('link')).toHaveCount(3)
+  await expect(page.locator('.surface-hero .btn.primary')).toHaveCount(1)
+  await expect(page.getByRole('heading', { name: '사라지는 적립금 · 1일차' })).toBeVisible()
+  await expect(page.locator('.routine-row').first()).not.toBeVisible()
+  await page.getByText('오늘 전체 보기').click()
+  await expect(page.locator('.routine-row')).toHaveCount(3)
+  await expect(page.locator('.routine-row').first()).toBeVisible()
+  await expect(page.locator('.secondary-block').nth(1)).not.toHaveAttribute('open', '')
   expect(errors).toEqual([])
 })
 
@@ -185,7 +116,7 @@ test('머지 or 반려: 375px에서 5장 판정 후 세션 요약을 본다', as
   page.on('pageerror', (error) => errors.push(error.message))
   await page.setViewportSize({ width: 375, height: 812 })
 
-  await page.getByRole('link', { name: '미니게임', exact: true }).click()
+  await page.goto('/games')
   await page.getByRole('link', { name: /머지 or 반려/ }).click()
   await expect(page).toHaveURL(/\/routine\/swipe$/)
   await expect(page.getByText(/오늘의 판정 5장/)).toBeVisible()
@@ -221,7 +152,7 @@ test('한 번만 물어본다면: 관측으로 가설을 흐리고 지목 뒤 �
   })
   await page.reload()
 
-  await page.getByRole('link', { name: '미니게임', exact: true }).click()
+  await page.goto('/games')
   await page.getByRole('link', { name: /한 번만 물어본다면/ }).click()
   await expect(page).toHaveURL(/\/games\/probe$/)
   await expect(page.getByRole('heading', { name: '금요일 오후의 p99' })).toBeVisible()
@@ -270,7 +201,7 @@ test('경계선 한 칸: 같은 운명 구간과 타임아웃 결과를 보고 �
   })
   await page.reload()
 
-  await page.getByRole('link', { name: '미니게임', exact: true }).click()
+  await page.goto('/games')
   await page.getByRole('link', { name: /경계선 한 칸/ }).click()
   await expect(page).toHaveURL(/\/games\/boundary$/)
   await expect(page.getByRole('heading', { name: '타행 이체의 세 단계' })).toBeVisible()
@@ -306,7 +237,7 @@ test('카드 갈래: 첫 선택을 저장하고 반대 입장도 본 뒤 새로�
   page.on('pageerror', (error) => errors.push(error.message))
   await page.setViewportSize({ width: 375, height: 812 })
 
-  await page.getByRole('link', { name: '미니게임', exact: true }).click()
+  await page.goto('/games')
   const card = page.locator('[data-card-id="read-ggs-01"]')
   await card.getByRole('button', { name: /총, 균, 쇠/ }).click()
   await expect(card.getByText('여러분 프로젝트에서 가장 오래된 초기 선택 — 지금 그것은 무엇에 가깝습니까?'))
@@ -344,19 +275,19 @@ test('사건 파일: Day 1부터 몰아보고 근본 원인을 한 번 지목한
   page.on('pageerror', (error) => errors.push(error.message))
   await page.setViewportSize({ width: 375, height: 812 })
 
-  await page.getByRole('link', { name: '미니게임', exact: true }).click()
+  await page.goto('/games')
   await page.getByRole('link', { name: /사라지는 적립금/ }).click()
 
   await expect(page).toHaveURL(/\/games\/case\/case-vanishing-points-01$/)
   await expect(page.getByRole('heading', { name: '사라지는 적립금' })).toBeVisible()
-  await expect(page.getByText('Day 1 · 민원과 그래프')).toBeVisible()
+  await expect(page.getByText('1일차 · 민원과 그래프')).toBeVisible()
   await expect(page.getByText('민원 41건 표본 정리:')).toBeVisible()
   await expect(page.getByRole('heading', { name: '이 사건의 근본 원인은 무엇입니까?' })).not.toBeVisible()
 
   await page.getByRole('button', { name: '몰아보기' }).click()
-  await expect(page.getByText('Day 5 · 코드')).toBeVisible()
+  await expect(page.getByText('5일차 · 코드')).toBeVisible()
   await expect(page.getByText('민원 41건 표본 정리:')).not.toBeVisible()
-  await page.getByText('Day 1 · 민원과 그래프').click()
+  await page.getByText('1일차 · 민원과 그래프').click()
   await expect(page.getByText('민원 41건 표본 정리:')).toBeVisible()
   await page.getByRole('button', {
     name: '증설 서버의 크론이 시간대 차이로 이중 실행됐고, 만료 차감에 멱등성이 없었다',
@@ -386,11 +317,12 @@ test('시즌: 루틴 수동 체크가 교양 +1과 최근 적립 로그에 반�
   })
   await page.reload()
 
-  await page.getByRole('link', { name: '오늘의 훈련', exact: true }).click()
+  await page.goto('/today')
+  await page.getByText('오늘 전체 보기').click()
   await page.getByRole('button', { name: '읽었어요 ✓' }).click()
-  await page.getByRole('link', { name: '시즌', exact: true }).click()
+  await page.getByRole('link', { name: '기록', exact: true }).click()
 
-  await expect(page).toHaveURL(/\/season$/)
+  await expect(page).toHaveURL(/\/history$/)
   await expect(page.locator('[data-stat="culture"] .stat-value')).toHaveText('1')
   await expect(page.getByText('루틴 수동 체크')).toBeVisible()
   await expect(page.getByText('+1', { exact: true })).toBeVisible()
@@ -398,14 +330,15 @@ test('시즌: 루틴 수동 체크가 교양 +1과 최근 적립 로그에 반�
 
 test('기내 모드: 375px에서 설정과 이어보기를 로컬로 복원한다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 })
-  await page.getByRole('link', { name: '기내 모드', exact: true }).click()
-  await expect(page.getByRole('heading', { name: '기내 훈련 팩' })).toBeVisible()
+  await page.goto('/inflight')
+  await expect(page).toHaveURL(/\/today#offline$/)
+  await expect(page.getByText('오프라인 세션 만들기')).toBeVisible()
   await page.getByRole('button', { name: '30분 사건' }).click()
   await page.getByRole('button', { name: '운영' }).click()
   await page.locator('.flight-card').first().click()
   await expect(page.getByText('연습 모드 · 보상/연속 기록 없음')).toBeVisible()
   await page.reload()
-  await page.getByRole('link', { name: '기내 모드', exact: true }).click()
+  await page.goto('/inflight')
   await expect(page.getByRole('link', { name: /이어서 하기/ })).toBeVisible()
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('advisor.practice.v1') ?? '{}'))
   expect(saved.inflight).toMatchObject({ duration: 30, taste: 'operations' })

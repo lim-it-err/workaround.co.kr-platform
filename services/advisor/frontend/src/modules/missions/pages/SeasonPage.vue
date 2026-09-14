@@ -2,6 +2,8 @@
 import { computed } from 'vue'
 import { useMissions } from '../store/missions.js'
 
+defineProps({ embedded: { type: Boolean, default: false } })
+
 const store = useMissions()
 const overview = computed(() => store.seasonOverview())
 
@@ -40,7 +42,7 @@ function displayDate(date) {
 
 <template>
   <div class="season-page">
-    <section class="hero">
+    <section v-if="!embedded" class="hero">
       <div>
         <div class="eyebrow">4주 성장 기록</div>
         <h1>이번 시즌</h1>
@@ -51,6 +53,10 @@ function displayDate(date) {
         <span>{{ overview.ended ? '시즌 완료' : `${overview.day}일차` }}</span>
       </div>
     </section>
+    <div v-else class="season-inline-head">
+      <span>{{ overview.seasonStart }} — {{ overview.endDate }}</span>
+      <strong>{{ overview.ended ? '시즌 완료' : `${overview.day}일차 · ${overview.dDay}` }}</strong>
+    </div>
 
     <section class="stat-card card" aria-labelledby="stats-title">
       <div class="section-head">
@@ -104,6 +110,8 @@ function displayDate(date) {
 
 <style scoped>
 .season-page { max-width: 640px; margin: 0 auto; }
+.season-inline-head { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 14px; color: var(--fg-dim); font-size: 13px; }
+.season-inline-head strong { color: var(--accent-text); }
 .hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
 .eyebrow { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: 0.04em; }
 .hero h1 { margin: 4px 0 5px; font-size: 25px; }
@@ -141,6 +149,7 @@ function displayDate(date) {
 .narrative { margin: 16px 0 0; font-size: 14px; line-height: 1.8; }
 
 @media (max-width: 480px) {
+  .season-inline-head { flex-direction: column; gap: 2px; }
   .hero h1 { font-size: 22px; }
   .day-badge { min-width: 70px; padding: 9px 10px; }
   .stat-card { padding: 16px; }

@@ -4,11 +4,14 @@ import { useRouter } from 'vue-router'
 import { useMissions } from '../store/missions.js'
 import NicknamePrompt from '../components/NicknamePrompt.vue'
 
+defineProps({ embedded: { type: Boolean, default: false } })
+
 const router = useRouter()
 const store = useMissions()
 const { state, stages } = store
 
 const entries = computed(() => store.historyEntries())
+const DIFFICULTY_LABEL = { Easy: '쉬움', Normal: '보통', Hard: '어려움' }
 
 // 닉네임 게이트: 성장 기록 페이지 진입 시, 닉네임이 없으면 오버레이로 막는다.
 const showNicknamePrompt = ref(false)
@@ -25,7 +28,7 @@ function onNicknameConfirmed() {
 
 function onNicknameCancelled() {
   showNicknamePrompt.value = false
-  router.push('/missions')
+  router.push('/today')
 }
 
 const submittedCount = computed(() => Object.keys(state.submissions).length)
@@ -58,7 +61,7 @@ function formatDate(iso) {
 
 <template>
   <div>
-    <section class="hero">
+    <section v-if="!embedded" class="hero">
       <h1>성장 기록</h1>
       <p class="sub">세상을 구조로 읽은 흔적들</p>
     </section>
@@ -101,7 +104,7 @@ function formatDate(iso) {
               v-if="e.mission.difficulty"
               class="chip"
               :class="'diff-' + String(e.mission.difficulty).toLowerCase()"
-            >{{ e.mission.difficulty }}</span>
+            >{{ DIFFICULTY_LABEL[e.mission.difficulty] ?? e.mission.difficulty }}</span>
             <span v-if="e.mission.scope" class="chip neutral">{{ e.mission.scope }}</span>
             <span class="chip kind">{{ e.kindLabel }}</span>
           </span>
@@ -126,7 +129,7 @@ function formatDate(iso) {
 
     <section v-else class="empty card">
       <p>아직 기록이 없습니다. 세상은 여전히 if문 범벅인 채로 당신을 기다리고 있습니다.</p>
-      <p class="dim">일단 <router-link to="/missions">와인 추천기</router-link>부터 뜯어보러 가볼까요?</p>
+      <p class="dim">일단 <router-link to="/learn">와인 추천기</router-link>부터 뜯어보러 가볼까요?</p>
     </section>
 
     <NicknamePrompt

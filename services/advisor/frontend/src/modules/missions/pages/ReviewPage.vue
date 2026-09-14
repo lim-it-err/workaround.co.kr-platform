@@ -6,6 +6,8 @@ import MarkdownBlock from '../components/MarkdownBlock.vue'
 
 const route = useRoute()
 const store = useMissions()
+const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
+const returnLabel = returnSurface === '/today' ? '오늘로' : '배우기로'
 
 const mission = computed(() => store.getMission(route.params.id))
 
@@ -69,14 +71,14 @@ function itemColor(item) {
 
 <template>
   <div v-if="mission">
-    <router-link :to="`/missions/${mission.id}`" class="back">← 미션으로</router-link>
+    <router-link :to="{ path: `/missions/${mission.id}`, state: { from: returnSurface } }" class="back">← 미션으로</router-link>
     <h1>리뷰 — {{ mission.title }}</h1>
     <p v-if="review && !review.reviewedAt" class="proto-note">
       ⚠️ 이 미션은 아직 실제 백엔드 리뷰 샘플이 없어 <strong>미리 생성된 샘플 리뷰</strong>를 보여줍니다.
-      백엔드가 연결되면 방금 제출한 코드를 Reviewer Agent가 직접 분석합니다.
+      백엔드가 연결되면 방금 제출한 코드를 리뷰 에이전트가 직접 분석합니다.
     </p>
     <p v-else-if="review" class="proto-note real">
-      ✅ 실시간 리뷰 — {{ formatDate(review.reviewedAt) }}에 Reviewer Agent가 생성했습니다.
+      ✅ 실시간 리뷰 — {{ formatDate(review.reviewedAt) }}에 리뷰 에이전트가 생성했습니다.
     </p>
 
     <!-- 재제출로 리뷰가 여러 버전 쌓였을 때: 버전 셀렉터 -->
@@ -221,8 +223,10 @@ function itemColor(item) {
     </section>
 
     <div class="actions">
-      <router-link :to="`/missions/${mission.id}`" class="btn">코드 고쳐서 재제출</router-link>
-      <router-link to="/missions" class="btn primary">다음 미션으로</router-link>
+      <span v-if="hasSubmission" class="saved-note">기록에 저장됨</span>
+      <router-link to="/history" class="btn">내 기록 보기</router-link>
+      <router-link :to="{ path: `/missions/${mission.id}`, state: { from: returnSurface } }" class="btn">코드 고쳐서 재제출</router-link>
+      <router-link :to="returnSurface" class="btn primary">{{ returnLabel }}</router-link>
     </div>
   </div>
 </template>
@@ -299,6 +303,7 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
   padding: 4px 16px;
 }
 .actions { display: flex; gap: 10px; margin-top: 8px; }
+.saved-note { align-self: center; color: var(--good); font-size: 13px; font-weight: 700; }
 .ending-stamp {
   display: flex;
   align-items: center;

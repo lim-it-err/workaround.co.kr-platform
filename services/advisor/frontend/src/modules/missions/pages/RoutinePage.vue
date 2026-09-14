@@ -75,7 +75,7 @@ function check(slot) {
       class="case-banner card"
       data-testid="ongoing-case-banner"
     >
-      <span class="case-banner-main">🕵️ 수사 진행 중 — Day {{ caseBanner.day }} 단서 열기</span>
+      <span class="case-banner-main">🕵️ 수사 진행 중 — {{ caseBanner.day }}일차 단서 열기</span>
       <span class="case-banner-title">{{ caseBanner.title }}</span>
     </router-link>
 

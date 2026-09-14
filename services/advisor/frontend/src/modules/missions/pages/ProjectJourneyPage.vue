@@ -8,6 +8,8 @@ import NicknamePrompt from '../components/NicknamePrompt.vue'
 
 const route = useRoute()
 const store = useMissions()
+const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
+const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
 
 const project = computed(() => store.getProject(route.params.id))
 
@@ -100,7 +102,7 @@ function scoreColor(score) {
 
 <template>
   <div v-if="project">
-    <router-link to="/projects" class="back">← 프로젝트 목록</router-link>
+    <router-link :to="returnSurface" class="back">← {{ returnLabel }}</router-link>
 
     <div class="head">
       <div class="head-meta">

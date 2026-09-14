@@ -2,6 +2,8 @@
 
 * { box-sizing: border-box; }
 
+html, body, #app { min-height: 100%; overflow-x: clip; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -26,6 +28,7 @@ time, .mono, .num { font-variant-numeric: tabular-nums; }
 button {
   font-family: inherit;
   cursor: pointer;
+  min-height: 40px;
 }
 
 .btn {
@@ -51,10 +54,25 @@ button {
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
   padding: 18px;
+}
+
+:is(a, button).card,
+.card:has(:is(input, textarea, select, button)),
+details.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.shell-main .hero {
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .chip {

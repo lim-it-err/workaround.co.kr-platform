@@ -3,6 +3,11 @@ import { computed, ref } from 'vue'
 import { useMissions } from '../store/missions.js'
 import { PARTS } from '../store/missions.js'
 
+const props = defineProps({
+  embedded: { type: Boolean, default: false },
+  entrySurface: { type: String, default: '/learn' },
+})
+
 const store = useMissions()
 const { state, stages, missionStatus } = store
 
@@ -21,6 +26,7 @@ const FILTER_GROUPS = [
   { key: 'scope', label: '범위', options: ['단일 파일', '여러 파일', '모듈 경계'] },
   { key: 'missionType', label: '유형', options: ['리팩토링', '기능 추가', '도메인 로직 구현', '설계 리뷰', '코드 판독', '배역극'] },
 ]
+const OPTION_LABEL = { Easy: '쉬움', Normal: '보통', Hard: '어려움' }
 
 const selected = ref({ difficulty: [], scope: [], missionType: [] })
 const search = ref('')
@@ -39,6 +45,14 @@ const filtersActive = computed(() =>
 function resetFilters() {
   for (const g of FILTER_GROUPS) selected.value[g.key] = []
   search.value = ''
+}
+
+function surfaceLink(path) {
+  return { path, state: { from: props.entrySurface } }
+}
+
+function optionLabel(option) {
+  return OPTION_LABEL[option] ?? option
 }
 
 const filteredMissions = computed(() => {
@@ -75,7 +89,7 @@ const stagesByPartFiltered = computed(() =>
 
 <template>
   <div>
-    <section class="hero">
+    <section v-if="!embedded" class="hero">
       <h1>오늘도 세상 하나를 구조로 읽어봅시다</h1>
       <p class="sub">
         도메인 상식 브리핑 → 레거시 리팩토링/기능 추가 → 에이전트 리뷰 → 설명 훈련.
@@ -83,7 +97,7 @@ const stagesByPartFiltered = computed(() =>
       </p>
     </section>
 
-    <router-link to="/routine" class="routine-banner card">
+    <router-link v-if="!embedded" to="/today" class="routine-banner card">
       <span class="rb-emojis">
         <span
           v-for="(s, i) in routine.slots"
@@ -96,7 +110,7 @@ const stagesByPartFiltered = computed(() =>
       <span class="rb-arrow">→</span>
     </router-link>
 
-    <router-link v-if="state.projects?.length" to="/projects" class="project-banner card">
+    <router-link v-if="!embedded && state.projects?.length" to="/learn#projects" class="project-banner card">
       <span class="pb-text">🚲 새로운 모드: 프로젝트 — 맨땅에서</span>
       <span class="pb-arrow">→</span>
     </router-link>
@@ -112,7 +126,7 @@ const stagesByPartFiltered = computed(() =>
               class="chip-toggle"
               :class="{ active: selected[g.key].includes(opt) }"
               @click="toggleFilter(g.key, opt)"
-            >{{ opt }}</button>
+            >{{ optionLabel(opt) }}</button>
           </div>
         </div>
         <div class="filter-group filter-search">
@@ -162,7 +176,7 @@ const stagesByPartFiltered = computed(() =>
           <router-link
             v-for="m in missionsByStage[s.no]"
             :key="m.id"
-            :to="`/missions/${m.id}`"
+            :to="surfaceLink(`/missions/${m.id}`)"
             class="mission-card card"
           >
             <div class="mc-top">
@@ -172,7 +186,7 @@ const stagesByPartFiltered = computed(() =>
                   v-if="m.difficulty"
                   class="chip"
                   :class="'diff-' + String(m.difficulty).toLowerCase()"
-                >{{ m.difficulty }}</span>
+                >{{ optionLabel(m.difficulty) }}</span>
                 <span class="chip">{{ m.missionType }}</span>
                 <span v-if="m.modes?.length > 1" class="chip neutral">🤝 기획자 모드</span>
               </span>
@@ -244,6 +258,7 @@ const stagesByPartFiltered = computed(() =>
   font-weight: 600;
   padding: 6px 12px;
   white-space: nowrap;
+  min-height: 40px;
 }
 .chip-toggle.active { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
 .filter-search { flex: 1 1 200px; }
@@ -268,7 +283,7 @@ const stagesByPartFiltered = computed(() =>
   border-top: 1px solid var(--border);
 }
 .filter-count { font-size: 12.5px; color: var(--fg-dim); }
-.filter-reset { padding: 6px 14px; font-size: 12.5px; min-height: 0; }
+.filter-reset { padding: 6px 14px; font-size: 12.5px; min-height: 40px; }
 .empty-filter { text-align: center; padding: 20px; }
 
 .part { margin-bottom: 34px; }
@@ -291,10 +306,11 @@ const stagesByPartFiltered = computed(() =>
 .part-tagline { color: var(--fg-dim); font-size: 12.5px; }
 .stages { display: flex; flex-direction: column; gap: 18px; }
 .stage {
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
   padding: 18px 20px;
-  background: var(--bg-soft);
+  background: transparent;
 }
 .stage.empty { opacity: 0.55; }
 .stage-head { display: flex; gap: 14px; align-items: center; margin-bottom: 6px; }

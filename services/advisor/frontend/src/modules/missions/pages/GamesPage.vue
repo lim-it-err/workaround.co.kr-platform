@@ -8,6 +8,8 @@ import caseFileData from '../data/sampleCaseFiles.js'
 import { practiceCatalog } from '../games/practiceCatalog.js'
 import { usePractice } from '../store/practice.js'
 
+defineProps({ embedded: { type: Boolean, default: false } })
+
 const store = useMissions()
 const route = useRoute()
 const caseFiles = caseFileData.caseFiles
@@ -56,11 +58,15 @@ const snackMissions = computed(() =>
 const upcoming = [
   { emoji: '📈', name: '시즌제 스탯', desc: '4주 시즌, 안목·언어화·판단·교양 — 준비 중' },
 ]
+
+function learnLink(path) {
+  return { path, state: { from: '/learn' } }
+}
 </script>
 
 <template>
   <div class="games-page">
-    <section class="hero">
+    <section v-if="!embedded" class="hero">
       <h1>미니게임</h1>
       <p class="dim">데일리는 시즌 기록으로, 연습은 보상 없이 원하는 판을 몇 번이고.</p>
     </section>
@@ -73,7 +79,7 @@ const upcoming = [
     <section class="block catalog-block">
       <div class="catalog-title">
         <h2 class="sec">🧰 전체 게임 · 다시하기</h2>
-        <router-link to="/inflight">기내 팩 →</router-link>
+        <router-link to="/today#offline">오프라인 세션 →</router-link>
       </div>
       <div class="catalog-controls">
         <input v-model="catalogQuery" type="search" placeholder="게임 찾기" aria-label="게임 찾기" />
@@ -87,7 +93,7 @@ const upcoming = [
             <p>{{ game.description }}</p>
             <small>{{ game.rounds.length }}판 · 판당 약 {{ game.minutes }}분 · 미완료 {{ game.rounds.length - practice.completedIds(game.id).length }}</small>
           </div>
-          <router-link :to="`/games/practice/${game.id}/${practice.state.last?.gameId === game.id ? practice.state.last.roundId : game.rounds[0]?.id}`" class="btn">{{ practice.state.last?.gameId === game.id ? '이어서' : '연습' }}</router-link>
+          <router-link :to="learnLink(`/games/practice/${game.id}/${practice.state.last?.gameId === game.id ? practice.state.last.roundId : game.rounds[0]?.id}`)" class="btn">{{ practice.state.last?.gameId === game.id ? '이어서' : '연습' }}</router-link>
           <button v-if="practice.completedIds(game.id).length" class="clear-practice" @click="practice.clearGame(game.id)">이 게임 기록 지우기</button>
         </article>
       </div>
@@ -115,7 +121,7 @@ const upcoming = [
     <section class="block">
       <h2 class="sec">🔍 노코드 스낵 <span class="dim">— 코드를 짜지 않고 읽고 판정하는 미션</span></h2>
       <div class="snack-list">
-        <router-link v-for="m in snackMissions" :key="m.id" :to="`/missions/${m.id}`" class="snack card">
+        <router-link v-for="m in snackMissions" :key="m.id" :to="learnLink(`/missions/${m.id}`)" class="snack card">
           <span class="snack-emoji">{{ m.emoji }}</span>
           <span class="snack-body">
             <span class="snack-type">{{ m.missionType }} · {{ m.difficulty }}</span>
@@ -128,7 +134,7 @@ const upcoming = [
     <section class="block">
       <h2 class="sec">🎮 바로 플레이</h2>
       <div class="play-list">
-        <router-link to="/games/boundary" class="snack game-live card">
+        <router-link :to="learnLink('/games/boundary')" class="snack game-live card">
           <span class="snack-emoji">✂️</span>
           <span class="snack-body">
             <span class="snack-title">경계선 한 칸</span>
@@ -136,7 +142,7 @@ const upcoming = [
           </span>
           <span class="play-arrow">경계 긋기 →</span>
         </router-link>
-        <router-link to="/games/probe" class="snack game-live card">
+        <router-link :to="learnLink('/games/probe')" class="snack game-live card">
           <span class="snack-emoji">🔬</span>
           <span class="snack-body">
             <span class="snack-title">한 번만 물어본다면</span>
@@ -144,7 +150,7 @@ const upcoming = [
           </span>
           <span class="play-arrow">관측 →</span>
         </router-link>
-        <router-link to="/routine/swipe" class="snack game-live card">
+        <router-link :to="learnLink('/routine/swipe')" class="snack game-live card">
           <span class="snack-emoji">🃏</span>
           <span class="snack-body">
             <span class="snack-title">머지 or 반려</span>
@@ -155,7 +161,7 @@ const upcoming = [
         <router-link
           v-for="caseFile in caseFiles"
           :key="caseFile.id"
-          :to="`/games/case/${caseFile.id}`"
+          :to="learnLink(`/games/case/${caseFile.id}`)"
           class="snack game-live card"
         >
           <span class="snack-emoji">{{ caseFile.emoji }}</span>

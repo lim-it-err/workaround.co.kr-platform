@@ -2,16 +2,25 @@
 import { computed } from 'vue'
 import { useMissions } from '../store/missions.js'
 
+const props = defineProps({
+  embedded: { type: Boolean, default: false },
+  entrySurface: { type: String, default: '/learn' },
+})
+
 const store = useMissions()
 
 const projects = computed(() =>
   store.state.projects.map((p) => ({ ...p, progress: store.projectProgress(p.id) })),
 )
+
+function surfaceLink(path) {
+  return { path, state: { from: props.entrySurface } }
+}
 </script>
 
 <template>
   <div>
-    <section class="hero">
+    <section v-if="!embedded" class="hero">
       <h1>프로젝트 — 맨땅에서</h1>
       <p class="sub">이번엔 물려받을 코드가 없습니다.</p>
     </section>
@@ -20,7 +29,7 @@ const projects = computed(() =>
       <router-link
         v-for="p in projects"
         :key="p.id"
-        :to="`/projects/${p.id}`"
+        :to="surfaceLink(`/projects/${p.id}`)"
         class="project-card card"
       >
         <div class="pc-top">

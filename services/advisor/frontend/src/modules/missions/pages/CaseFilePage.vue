@@ -7,6 +7,8 @@ import { useMissions } from '../store/missions.js'
 
 const route = useRoute()
 const store = useMissions()
+const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
+const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
 
 const caseId = computed(() => (typeof route.params.caseId === 'string' ? route.params.caseId : ''))
 const caseFile = computed(() => caseFileData.caseFiles.find((entry) => entry.id === caseId.value) ?? null)
@@ -41,7 +43,7 @@ function chooseVerdict(key) {
 
 <template>
   <div class="case-page">
-    <router-link to="/games" class="back-link">← 미니게임</router-link>
+    <router-link :to="returnSurface" class="back-link">← {{ returnLabel }}</router-link>
 
     <template v-if="caseFile">
       <header class="hero">
@@ -68,7 +70,7 @@ function chooseVerdict(key) {
           :open="day.day === openedDays"
         >
           <summary>
-            <span>Day {{ day.day }} · {{ day.kind }}</span>
+            <span>{{ day.day }}일차 · {{ day.kind }}</span>
             <strong>{{ day.title }}</strong>
           </summary>
           <MarkdownBlock :source="day.content" />
@@ -104,7 +106,7 @@ function chooseVerdict(key) {
 
     <section v-else class="not-found card">
       <h1>사건 파일을 찾을 수 없습니다</h1>
-      <router-link to="/games">미니게임으로 돌아가기</router-link>
+      <router-link :to="returnSurface">{{ returnLabel }}로 돌아가기</router-link>
     </section>
   </div>
 </template>

@@ -61,7 +61,9 @@ function removeFile(i) {
   border: 1px solid var(--border);
   border-radius: 6px;
   color: var(--fg-dim);
-  width: 34px;
+  width: 40px;
+  min-height: 40px;
+  flex: 0 0 40px;
 }
 .remove:hover { color: var(--bad); border-color: var(--bad); }
 .content {

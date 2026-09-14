@@ -12,6 +12,8 @@ import {
 import { useMissions } from '../store/missions.js'
 
 const store = useMissions()
+const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
+const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
 
 const decisionOptions = [
   { value: 'merge', label: '✅ 머지' },
@@ -50,7 +52,7 @@ function decisionLabel(value) {
 
 <template>
   <div class="swipe-page">
-    <router-link to="/games" class="back-link">← 미니게임</router-link>
+    <router-link :to="returnSurface" class="back-link">← {{ returnLabel }}</router-link>
 
     <section class="hero">
       <div class="eyebrow">🃏 오늘의 판정 5장</div>
@@ -123,7 +125,7 @@ function decisionLabel(value) {
         <div><strong>{{ summary.bestStreak }}</strong><span>최고 연속 정답</span></div>
       </div>
       <button class="btn restart-button" @click="restart">같은 오늘 덱 다시 하기</button>
-      <router-link to="/games" class="drawer-link">카드 서랍으로 돌아가기</router-link>
+      <router-link :to="returnSurface" class="drawer-link">{{ returnLabel }}로 돌아가기</router-link>
     </section>
   </div>
 </template>

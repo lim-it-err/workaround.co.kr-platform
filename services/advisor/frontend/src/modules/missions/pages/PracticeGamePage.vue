@@ -7,6 +7,8 @@ import { usePractice } from '../store/practice.js'
 const route = useRoute()
 const router = useRouter()
 const practice = usePractice()
+const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
+const returnLabel = returnSurface === '/today' ? '오늘' : '전체 연습'
 const selected = ref('')
 const revealed = ref(false)
 const episode = ref(1)
@@ -43,13 +45,13 @@ function answer() {
 function move(mode) {
   if (!game.value || !round.value) return
   const target = nextPracticeRound(game.value, round.value.id, practice.completedIds(game.value.id), mode)
-  if (target) router.push(`/games/practice/${game.value.id}/${target.id}`)
+  if (target) router.push({ path: `/games/practice/${game.value.id}/${target.id}`, state: { from: returnSurface } })
 }
 
 function restart() {
   if (!game.value?.rounds?.length) return
   practice.clearGame(game.value.id)
-  router.push(`/games/practice/${game.value.id}/${game.value.rounds[0].id}`)
+  router.push({ path: `/games/practice/${game.value.id}/${game.value.rounds[0].id}`, state: { from: returnSurface } })
 }
 
 const resultText = computed(() => {
@@ -66,7 +68,7 @@ const resultText = computed(() => {
 <template>
   <div v-if="game && round" class="practice-page">
     <header class="practice-head">
-      <router-link to="/games">← 전체 게임</router-link>
+      <router-link :to="returnSurface">← {{ returnLabel }}</router-link>
       <span>{{ game.emoji }} {{ game.title }} · {{ progress }}</span>
     </header>
 
@@ -112,7 +114,7 @@ const resultText = computed(() => {
       <button class="btn danger" @click="practice.clearGame(game.id)">이 게임 연습 기록만 지우기</button>
     </nav>
   </div>
-  <div v-else class="card">존재하지 않는 연습 판입니다. <router-link to="/games">전체 게임으로 돌아가기</router-link></div>
+  <div v-else class="card">존재하지 않는 연습 판입니다. <router-link :to="returnSurface">{{ returnLabel }}으로 돌아가기</router-link></div>
 </template>
 
 <style scoped>

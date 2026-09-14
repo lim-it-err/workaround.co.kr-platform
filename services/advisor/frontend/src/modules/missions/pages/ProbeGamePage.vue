@@ -5,6 +5,8 @@ import { localDateKey } from '../store/seasonStats.js'
 import { useMissions } from '../store/missions.js'
 
 const store = useMissions()
+const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
+const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
 const today = localDateKey()
 const viewingDate = ref(today)
 
@@ -41,7 +43,7 @@ function displayDate(date) {
 
 <template>
   <div class="probe-page">
-    <router-link to="/games" class="back-link">← 미니게임</router-link>
+    <router-link :to="returnSurface" class="back-link">← {{ returnLabel }}</router-link>
 
     <template v-if="round">
       <header class="hero">

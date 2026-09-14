@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useMissions } from '../store/missions.js'
+import { clearDraftThrough, readDraft, writeDraft } from '../store/drafts.js'
 import MarkdownBlock from '../components/MarkdownBlock.vue'
 import CodeViewer from '../components/CodeViewer.vue'
 import FileSubmitEditor from '../components/FileSubmitEditor.vue'
@@ -15,6 +16,8 @@ import NicknamePrompt from '../components/NicknamePrompt.vue'
 const route = useRoute()
 const router = useRouter()
 const store = useMissions()
+const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
+const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
 
 const mission = computed(() => store.getMission(route.params.id))
 const isDomainLogic = computed(() => mission.value?.missionType === '도메인 로직 구현')
@@ -29,6 +32,7 @@ const MODE_META = {
   plannerMeeting: { label: '🤝 기획자 · 회의' },
   plannerReview: { label: '📋 기획자 · 검토' },
 }
+const DIFFICULTY_LABEL = { Easy: '쉬움', Normal: '보통', Hard: '어려움' }
 const requestedMode = typeof route.query.mode === 'string' ? route.query.mode : ''
 const mode = ref(mission.value?.modes?.includes(requestedMode) ? requestedMode : 'developer')
 
@@ -59,6 +63,130 @@ const files = ref(
 )
 const submitting = ref(false)
 
+// 설명 입력도 같은 초안 스냅샷의 description으로 보존한다.
+const explainText = ref(store.state.explanations[route.params.id]?.text ?? '')
+const draftStatus = ref('')
+const draftFailed = ref(false)
+const draftDirty = ref(false)
+let draftTimer = null
+let applyingDraft = false
+let savedSignature = ''
+
+function draftPayload() {
+  return {
+    files: files.value.map((file) => ({ name: file.path, body: file.content })),
+    description: explainText.value,
+  }
+}
+
+function signature(payload = draftPayload()) {
+  return JSON.stringify(payload)
+}
+
+function defaultPayload(targetMode) {
+  if (targetMode !== 'developer') return { files: [{ name: '', body: '' }], description: '' }
+  return {
+    files: latestSubmission.value?.files?.map((file) => ({ name: file.path, body: file.content }))
+      ?? [{ name: '', body: '' }],
+    description: store.state.explanations[route.params.id]?.text ?? '',
+  }
+}
+
+function applyPayload(payload) {
+  applyingDraft = true
+  files.value = (payload.files?.length ? payload.files : [{ name: '', body: '' }])
+    .map((file) => ({ path: file.name, content: file.body }))
+  explainText.value = payload.description ?? ''
+  savedSignature = signature()
+  draftDirty.value = false
+  draftFailed.value = false
+  applyingDraft = false
+}
+
+function restoreDraft(targetMode = mode.value) {
+  try {
+    const restored = readDraft(route.params.id, targetMode)
+    applyPayload(restored ?? defaultPayload(targetMode))
+    draftStatus.value = restored?.updatedAt
+      ? `저장됨 ${new Date(restored.updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`
+      : ''
+  } catch {
+    applyPayload(defaultPayload(targetMode))
+    draftStatus.value = '저장소를 읽지 못했습니다'
+  }
+}
+
+function saveDraftNow(targetMode = mode.value) {
+  if (draftTimer) clearTimeout(draftTimer)
+  draftTimer = null
+  const payload = draftPayload()
+  const currentSignature = signature(payload)
+  if (!draftDirty.value && currentSignature === savedSignature) return true
+
+  try {
+    const saved = writeDraft({
+      missionId: route.params.id,
+      mode: targetMode,
+      files: payload.files,
+      description: payload.description,
+    })
+    savedSignature = currentSignature
+    draftDirty.value = false
+    draftFailed.value = false
+    draftStatus.value = `저장됨 ${new Date(saved.updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`
+    return true
+  } catch {
+    draftDirty.value = true
+    draftFailed.value = true
+    draftStatus.value = '저장 실패'
+    return false
+  }
+}
+
+function scheduleDraftSave() {
+  if (applyingDraft) return
+  draftDirty.value = signature() !== savedSignature
+  if (!draftDirty.value) {
+    draftFailed.value = false
+    return
+  }
+  if (draftTimer) clearTimeout(draftTimer)
+  draftTimer = setTimeout(() => saveDraftNow(), 400)
+}
+
+watch(files, scheduleDraftSave, { deep: true })
+watch(explainText, scheduleDraftSave)
+watch(mode, (nextMode, previousMode) => {
+  if (draftDirty.value) saveDraftNow(previousMode)
+  restoreDraft(nextMode)
+})
+
+restoreDraft()
+
+function retryDraftSave() {
+  draftDirty.value = true
+  saveDraftNow()
+}
+
+function beforeUnload(event) {
+  if (draftDirty.value) saveDraftNow()
+  if (!draftFailed.value) return
+  event.preventDefault()
+  event.returnValue = ''
+}
+
+onMounted(() => window.addEventListener('beforeunload', beforeUnload))
+onBeforeUnmount(() => {
+  if (draftTimer) clearTimeout(draftTimer)
+  window.removeEventListener('beforeunload', beforeUnload)
+})
+
+onBeforeRouteLeave(() => {
+  if (draftDirty.value) saveDraftNow()
+  if (!draftFailed.value) return true
+  return window.confirm('초안을 저장하지 못했습니다. 저장하지 않고 이동할까요?')
+})
+
 // 닉네임 게이트: 제출 액션 전, 닉네임이 없으면 프롬프트를 띄우고 확인 시에만 이어간다.
 const showNicknamePrompt = ref(false)
 let pendingAction = null
@@ -87,22 +215,35 @@ function onNicknameCancelled() {
 async function doSubmit() {
   submitting.value = true
   const missionId = mission.value.id
+  saveDraftNow()
+  const submittedAt = new Date()
+  const submittedSignature = signature()
   const gotReview = await store.submitCode(missionId, files.value)
   // 백엔드가 리뷰를 만들지 못했을 때만(=대기 시간이 없었을 때만) 짧은 가짜 지연을 준다 —
   // 실제 리뷰를 기다렸다면 이미 충분히 기다린 것이므로 추가 지연은 없다.
   if (!gotReview) {
     await new Promise((r) => setTimeout(r, 900))
+  } else {
+    try {
+      const cleared = clearDraftThrough(missionId, mode.value, submittedAt)
+      if (cleared && signature() === submittedSignature) {
+        savedSignature = submittedSignature
+        draftDirty.value = false
+        draftFailed.value = false
+        draftStatus.value = '제출한 초안을 비웠습니다'
+      }
+    } catch {
+      draftFailed.value = true
+      draftStatus.value = '저장 실패'
+    }
   }
   submitting.value = false
-  router.push(`/missions/${missionId}/review`)
+  router.push({ path: `/missions/${missionId}/review`, state: { from: returnSurface } })
 }
 
 function submit() {
   requireNickname(doSubmit)
 }
-
-// 설명 훈련
-const explainText = ref(store.state.explanations[route.params.id]?.text ?? '')
 
 // 입력 원칙 — 선택 우선: 시작 뼈대 칩. 탭하면 템플릿이 삽입되고 채워 넣기만 하면 된다. 칩마다 1회.
 const EXPLAIN_CHIPS = computed(() => {
@@ -122,8 +263,26 @@ function insertExplainTemplate(i, template) {
 }
 
 function doSubmitExplanation() {
+  saveDraftNow()
+  const submittedAt = new Date()
+  const submittedSignature = signature()
   store.submitExplanation(mission.value.id, explainText.value)
-  router.push(`/missions/${mission.value.id}/review?focus=explain`)
+  try {
+    const cleared = clearDraftThrough(mission.value.id, mode.value, submittedAt)
+    if (cleared && signature() === submittedSignature) {
+      savedSignature = submittedSignature
+      draftDirty.value = false
+      draftStatus.value = '제출한 초안을 비웠습니다'
+    }
+  } catch {
+    draftFailed.value = true
+    draftStatus.value = '저장 실패'
+  }
+  router.push({
+    path: `/missions/${mission.value.id}/review`,
+    query: { focus: 'explain' },
+    state: { from: returnSurface },
+  })
 }
 
 function submitExplanation() {
@@ -133,7 +292,7 @@ function submitExplanation() {
 
 <template>
   <div v-if="mission">
-    <router-link to="/missions" class="back">← 미션 목록</router-link>
+    <router-link :to="returnSurface" class="back">← {{ returnLabel }}</router-link>
 
     <div class="head">
       <div class="head-meta">
@@ -143,7 +302,7 @@ function submitExplanation() {
           v-if="mission.difficulty"
           class="chip"
           :class="'diff-' + String(mission.difficulty).toLowerCase()"
-        >{{ mission.difficulty }}</span>
+        >{{ DIFFICULTY_LABEL[mission.difficulty] ?? mission.difficulty }}</span>
         <span v-if="mission.scope" class="chip neutral">📐 {{ mission.scope }}</span>
         <span class="chip neutral">{{ mission.domainEmoji }} {{ mission.domain }}</span>
       </div>
@@ -182,6 +341,10 @@ function submitExplanation() {
         @click="tab = t"
       >{{ t }}</button>
     </nav>
+    <div class="draft-state" :class="{ failed: draftFailed }" aria-live="polite">
+      <span>{{ draftStatus }}</span>
+      <button v-if="draftFailed" type="button" @click="retryDraftSave">다시 시도</button>
+    </div>
 
     <!-- 도메인 브리핑: 코드 전에 세상 먼저 -->
     <section v-if="tab === '도메인 브리핑'" id="mission-briefing" class="panel card">
@@ -304,7 +467,7 @@ function submitExplanation() {
       <template v-else>
         <p class="dim">
           로컬에서 작업한 결과 파일들을 붙여넣으세요. 파일 여러 개 제출 가능합니다.
-          제출하면 Reviewer Agent가 루브릭 기반으로 리뷰합니다.
+          제출하면 리뷰 에이전트가 평가 기준에 따라 검토합니다.
         </p>
         <FileSubmitEditor v-model="files" />
       </template>
@@ -483,9 +646,13 @@ h1 { font-size: 22px; margin: 0; }
   border-bottom: 2px solid transparent;
   white-space: nowrap;
   flex-shrink: 0;
+  min-height: 40px;
 }
 .tab.active { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
 .panel-title { font-size: 16px; margin: 0 0 10px; }
+.draft-state { min-height: 22px; margin: -12px 0 14px; color: var(--fg-dim); font-size: 12px; text-align: right; }
+.draft-state.failed { color: var(--bad); }
+.draft-state button { min-height: 40px; margin-left: 8px; border: 0; background: transparent; color: inherit; text-decoration: underline; }
 .block { margin-bottom: 16px; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }

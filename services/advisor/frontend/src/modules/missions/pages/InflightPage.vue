@@ -3,6 +3,8 @@ import { computed } from 'vue'
 import { practiceCatalog } from '../games/practiceCatalog.js'
 import { usePractice } from '../store/practice.js'
 
+defineProps({ embedded: { type: Boolean, default: false } })
+
 const practice = usePractice()
 const prefs = computed(() => practice.state.inflight)
 const tastes = [
@@ -42,9 +44,9 @@ function update(key, value) {
 
 <template>
   <div class="inflight" :style="{ '--flight-font': prefs.fontScale, '--flight-line': prefs.lineHeight }">
-    <section class="flight-hero card">
+    <section v-if="!embedded" class="flight-hero card">
       <div>
-        <span class="eyebrow">✈️ OFFLINE MODE</span>
+        <span class="eyebrow">✈️ 오프라인</span>
         <h1>기내 훈련 팩</h1>
         <p>네트워크 없이 읽고 판단합니다. 진행 기록은 이 기기에만 저장됩니다.</p>
       </div>
@@ -102,7 +104,7 @@ function update(key, value) {
 .remaining { align-self: flex-start; white-space: nowrap; background: var(--accent-soft); color: var(--accent); border-radius: 99px; padding: 6px 11px; font-size: 12px; }
 .resume { display: grid; grid-template-columns: auto 1fr auto; gap: 12px; margin-top: 12px; text-decoration: none; color: var(--fg); align-items: center; }.resume span:first-child { color: var(--good); font-size: 12px; font-weight: 700; }
 .controls { margin-top: 16px; display: grid; gap: 12px; }.control-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }.label { width: 44px; color: var(--fg-dim); font-size: 12px; font-weight: 700; }
-.pill { min-height: 38px; border: 1px solid var(--border); border-radius: 99px; background: var(--bg-soft); color: var(--fg-dim); padding: 6px 14px; }.pill.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.pill { min-height: 40px; border: 1px solid var(--border); border-radius: 99px; background: var(--bg-soft); color: var(--fg-dim); padding: 6px 14px; }.pill.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .compact { color: var(--fg-dim); font-size: 13px; gap: 18px; padding-left: 52px; }.compact label { display: inline-flex; align-items: center; gap: 6px; }.settings { border-top: 1px solid var(--border); padding-top: 12px; }
 .pack { margin-top: 24px; }.section-title { display: flex; justify-content: space-between; align-items: baseline; }.section-title h2 { margin: 0 0 10px; font-size: 18px; }.section-title span { color: var(--fg-dim); font-size: 12px; }
 .flight-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }.flight-card { display: flex; gap: 12px; align-items: center; text-decoration: none; color: var(--fg); padding: 15px; min-width: 0; }.flight-card:hover { border-color: var(--accent); }.icon { font-size: 24px; }.body { display: flex; flex-direction: column; min-width: 0; flex: 1; }.body small { color: var(--fg-dim); }.body strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.landing { margin-top: 22px; border-style: dashed; }.landing p { margin: 4px 0 0; color: var(--fg-dim); font-size: 13px; }.empty { color: var(--fg-dim); }

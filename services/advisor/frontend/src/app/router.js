@@ -8,7 +8,7 @@ export const router = createRouter({
     return { top: 0 }
   },
   routes: [
-    { path: '/', redirect: '/missions' },
+    { path: '/', redirect: '/today' },
     ...missionRoutes,
   ],
 })

@@ -296,7 +296,7 @@ function caseClueTitle(state, caseFile, dateStr) {
   const opened = Math.min(caseFile.days.length, Math.max(0, Number(progress?.openedDays) || 0))
   const canAdvance = progress?.lastOpenedDate && progress.lastOpenedDate < dateStr
   const day = Math.min(caseFile.days.length, opened + (canAdvance || opened === 0 ? 1 : 0))
-  return `${caseFile.title} · Day ${Math.max(1, day)}`
+  return `${caseFile.title} · ${Math.max(1, day)}일차`
 }
 
 function caseClueDone(state, caseFile, dateStr) {

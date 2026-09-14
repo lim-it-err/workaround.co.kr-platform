@@ -2,24 +2,47 @@
 // platform frontend로 이식할 때 이 배열을 그쪽 라우터에 spread 하면 된다.
 export const missionRoutes = [
   {
-    path: '/missions',
-    name: 'mission-list',
-    component: () => import('./pages/HomePage.vue'),
+    path: '/today',
+    name: 'today',
+    component: () => import('./pages/TodayPage.vue'),
+  },
+  {
+    path: '/learn',
+    name: 'learn',
+    component: () => import('./pages/LearnPage.vue'),
+  },
+  {
+    path: '/history',
+    name: 'history',
+    component: () => import('./pages/RecordsPage.vue'),
   },
   {
     path: '/routine',
-    name: 'routine-today',
-    component: () => import('./pages/RoutinePage.vue'),
-  },
-  {
-    path: '/games',
-    name: 'games',
-    component: () => import('./pages/GamesPage.vue'),
+    redirect: (to) => ({ path: '/today', query: to.query, hash: to.hash }),
   },
   {
     path: '/inflight',
-    name: 'inflight',
-    component: () => import('./pages/InflightPage.vue'),
+    redirect: (to) => ({ path: '/today', query: to.query, hash: '#offline' }),
+  },
+  {
+    path: '/missions',
+    redirect: (to) => ({ path: '/learn', query: to.query, hash: to.hash }),
+  },
+  {
+    path: '/games',
+    redirect: (to) => ({ path: '/learn', query: to.query, hash: '#practice' }),
+  },
+  {
+    path: '/projects',
+    redirect: (to) => ({ path: '/learn', query: to.query, hash: '#projects' }),
+  },
+  {
+    path: '/missions/history',
+    redirect: (to) => ({ path: '/history', query: to.query, hash: to.hash }),
+  },
+  {
+    path: '/season',
+    redirect: (to) => ({ path: '/history', query: to.query, hash: '#season' }),
   },
   {
     path: '/games/practice/:gameId/:roundId?',
@@ -47,16 +70,6 @@ export const missionRoutes = [
     component: () => import('./pages/SwipeReviewPage.vue'),
   },
   {
-    path: '/season',
-    name: 'season-stats',
-    component: () => import('./pages/SeasonPage.vue'),
-  },
-  {
-    path: '/missions/history',
-    name: 'mission-history',
-    component: () => import('./pages/HistoryPage.vue'),
-  },
-  {
     path: '/missions/:id',
     name: 'mission-detail',
     component: () => import('./pages/MissionPage.vue'),
@@ -65,11 +78,6 @@ export const missionRoutes = [
     path: '/missions/:id/review',
     name: 'mission-review',
     component: () => import('./pages/ReviewPage.vue'),
-  },
-  {
-    path: '/projects',
-    name: 'project-list',
-    component: () => import('./pages/ProjectsPage.vue'),
   },
   {
     path: '/projects/:id',

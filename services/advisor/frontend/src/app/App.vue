@@ -12,7 +12,7 @@ const router = useRouter()
 const { theme, toggleTheme } = usePlatformTheme()
 function exitAdvisor() {
   if (platformHome) window.location.assign(platformHome)
-  else router.push('/missions')
+  else router.push('/today')
 }
 
 const store = useMissions()
@@ -39,9 +39,9 @@ function onNicknameCancelled() {
       <StationHeader
         line-class="line-a"
         station-code="A"
-        title="Developer Advisor"
-        :prev-label="platformHome ? '← 환승 홀' : '← 미션 목록'"
-        :exit-label="platformHome ? '환승 홀로 나가기' : '미션 목록으로'"
+        title="개발자 어드바이저"
+        :prev-label="platformHome ? '← 환승 홀' : '← 오늘'"
+        :exit-label="platformHome ? '환승 홀로 나가기' : '오늘로'"
         next-label=""
         @exit="exitAdvisor"
       >
@@ -50,21 +50,17 @@ function onNicknameCancelled() {
           <button v-if="nickname" type="button" class="btn nickname-chip" title="닉네임 변경" @click="openNicknamePrompt">👤 {{ nickname }}</button>
         </template>
       </StationHeader>
-      <nav class="nav" aria-label="Advisor 메뉴">
-        <router-link to="/missions" class="nav-link" exact-active-class="current">미션 목록</router-link>
-        <router-link to="/routine" class="nav-link">오늘의 훈련</router-link>
-        <router-link to="/inflight" class="nav-link">기내 모드</router-link>
-        <router-link to="/season" class="nav-link">시즌</router-link>
-        <router-link to="/games" class="nav-link">미니게임</router-link>
-        <router-link to="/projects" class="nav-link">프로젝트</router-link>
-        <router-link to="/missions/history" class="nav-link">성장 기록</router-link>
+      <nav class="nav" aria-label="전역 메뉴">
+        <router-link to="/today" class="nav-link">오늘</router-link>
+        <router-link to="/learn" class="nav-link">배우기</router-link>
+        <router-link to="/history" class="nav-link">기록</router-link>
       </nav>
     </header>
     <main class="shell-main">
       <router-view />
     </main>
     <footer class="shell-footer">
-      prototype v0.1 — 콘텐츠는 에이전트 생성 샘플입니다
+      학습 기록은 이 브라우저에 우선 저장됩니다
     </footer>
 
     <NicknamePrompt
@@ -92,7 +88,7 @@ function onNicknameCancelled() {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-top: 14px;
   border-bottom: 1px solid var(--line);
 }
@@ -109,11 +105,13 @@ function onNicknameCancelled() {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  justify-content: center;
+  flex: 1 1 0;
 }
 .nav-link:hover {
   color: var(--accent-text);
 }
-.nav-link.router-link-exact-active, .nav-link.current {
+.nav-link.router-link-active, .nav-link.current {
   color: var(--accent-text);
   border-bottom-color: var(--accent);
   font-weight: 600;

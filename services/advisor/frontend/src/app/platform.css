@@ -55,12 +55,12 @@
   --panel: #FFFFFF;
   --panel-2: #F5F8FC;
   --panel-soft: rgba(16, 24, 38, 0.045);
-  --line: rgba(16, 24, 38, 0.12);
-  --line-strong: rgba(16, 24, 38, 0.22);
+  --line: rgba(16, 24, 38, 0.09);
+  --line-strong: rgba(16, 24, 38, 0.18);
   --text: #16202E;
   --text-2: #45536A;
-  --muted: #6B7A92;
-  --safety: #E9B92B;
+  --muted: #59677C;
+  --safety: #895F00;
   --exit: #0E8A46;
   --exit-hover: #0B7038;
   --danger: #C24557;
@@ -70,7 +70,7 @@
   --line-a: #3D4EC0;
   --line-a-text: #32409E;
   --line-w-text: #00793A;
-  --line-t-text: #96650E;
+  --line-t-text: #8A5B08;
   --line-d-text: #5A2FA8;
   --accent-ink: #FFFFFF;
 }
@@ -78,13 +78,11 @@
 
 /* StationHeader §3.1 skin, adapted only for the separate Advisor shell. */
 .station-sign {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--panel);
-  box-shadow: var(--shadow);
+  border-left: 3px solid var(--accent);
+  border-bottom: 1px solid var(--line-strong);
+  background: transparent;
 }
-.station-sign .band { height: 8px; background: var(--accent); }
+.station-sign .band { display: none; }
 .station-sign-in { display: flex; align-items: center; gap: 14px; padding: 16px clamp(14px, 2.4vw, 24px); }
 .station-prev, .station-next { flex: 0 0 auto; min-width: 7.5em; color: var(--text-2); font-size: .875rem; }
 .station-prev { background: none; border: 0; padding: 8px 0; text-align: left; }
@@ -94,7 +92,7 @@
 .station-code { width: 40px; height: 40px; flex: none; border-radius: 50%; border: 3px solid var(--accent); color: var(--accent-text); font-weight: 900; font-size: .875rem; display: grid; place-items: center; letter-spacing: .02em; }
 .station-center h3 { margin: 0; font-size: var(--fs-station); font-weight: 800; letter-spacing: -.02em; overflow-wrap: anywhere; }
 .station-center small { display: block; color: var(--muted); text-transform: uppercase; letter-spacing: .16em; font-size: .75rem; }
-.station-sub { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px clamp(14px, 2.4vw, 24px); border-top: 1px solid var(--line); background: var(--panel-2); font-size: .875rem; color: var(--text-2); }
+.station-sub { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px clamp(14px, 2.4vw, 24px); border-top: 1px solid var(--line); background: transparent; font-size: .875rem; color: var(--text-2); }
 .station-sub .spacer { flex: 1; }
 .station-sub .btn { min-height: 40px; }
 .station-sub .btn-ghost { border-color: var(--line-strong); }
