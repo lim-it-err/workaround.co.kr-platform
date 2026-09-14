@@ -1,0 +1,13 @@
+{
+  "capturedAt": "2026-09-14T03:13:53.629549+00:00",
+  "target": "frontend/public/mockups/simhub.html tone r3",
+  "hashes": {
+    "source": "ffc73f682a0637ab4493e37afd3a0f4945c210fe7966eb32bde208a19cd9eb86",
+    "snapshot": "ffc73f682a0637ab4493e37afd3a0f4945c210fe7966eb32bde208a19cd9eb86",
+    "dist": "ffc73f682a0637ab4493e37afd3a0f4945c210fe7966eb32bde208a19cd9eb86"
+  },
+  "build": "Node 24.19.0 / Vite 6.4.3 / Pages base / 48 modules",
+  "viewportHeights": 900,
+  "previousReport": "UX-TKT-102-r15.md",
+  "scope": "mockup only"
+}

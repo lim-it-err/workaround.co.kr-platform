@@ -1,0 +1,305 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "theme": "dark",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 50
+      },
+      "hero": {
+        "x": 20,
+        "y": 82,
+        "w": 335,
+        "h": 190.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 41,
+          "y": 220.25,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "멈춘 엘리베이터 시작"
+        },
+        {
+          "text": "시작",
+          "x": 303.9375,
+          "y": 367.796875,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "심야 택시 시작"
+        }
+      ],
+      "noteCount": 0,
+      "mainText": "추천 시나리오 · 시스템 설계\n멈춘 엘리베이터\n\n재시도와 상태 복구를 설계합니다.\n\n시작\n제품 판단\n심야 택시\n\n제한된 정보로 안전한 선택을 만듭니다.\n\n시작",
+      "headerOverlap": false,
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "멈춘 엘리베이터 시작",
+      "focus2": "심야 택시 시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 50
+      },
+      "hero": {
+        "x": 20,
+        "y": 82,
+        "w": 335,
+        "h": 190.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 41,
+          "y": 220.25,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "멈춘 엘리베이터 시작"
+        },
+        {
+          "text": "시작",
+          "x": 303.9375,
+          "y": 367.796875,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "심야 택시 시작"
+        }
+      ],
+      "noteCount": 0,
+      "mainText": "추천 시나리오 · 시스템 설계\n멈춘 엘리베이터\n\n재시도와 상태 복구를 설계합니다.\n\n시작\n제품 판단\n심야 택시\n\n제한된 정보로 안전한 선택을 만듭니다.\n\n시작",
+      "headerOverlap": false,
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "멈춘 엘리베이터 시작",
+      "focus2": "심야 택시 시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 50
+      },
+      "hero": {
+        "x": 20,
+        "y": 82,
+        "w": 350,
+        "h": 190.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 41,
+          "y": 220.25,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "멈춘 엘리베이터 시작"
+        },
+        {
+          "text": "시작",
+          "x": 318.9375,
+          "y": 367.796875,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "심야 택시 시작"
+        }
+      ],
+      "noteCount": 0,
+      "mainText": "추천 시나리오 · 시스템 설계\n멈춘 엘리베이터\n\n재시도와 상태 복구를 설계합니다.\n\n시작\n제품 판단\n심야 택시\n\n제한된 정보로 안전한 선택을 만듭니다.\n\n시작",
+      "headerOverlap": false,
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "멈춘 엘리베이터 시작",
+      "focus2": "심야 택시 시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 50
+      },
+      "hero": {
+        "x": 20,
+        "y": 82,
+        "w": 350,
+        "h": 190.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 41,
+          "y": 220.25,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "멈춘 엘리베이터 시작"
+        },
+        {
+          "text": "시작",
+          "x": 318.9375,
+          "y": 367.796875,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "심야 택시 시작"
+        }
+      ],
+      "noteCount": 0,
+      "mainText": "추천 시나리오 · 시스템 설계\n멈춘 엘리베이터\n\n재시도와 상태 복구를 설계합니다.\n\n시작\n제품 판단\n심야 택시\n\n제한된 정보로 안전한 선택을 만듭니다.\n\n시작",
+      "headerOverlap": false,
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "멈춘 엘리베이터 시작",
+      "focus2": "심야 택시 시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 32
+      },
+      "hero": {
+        "x": 360,
+        "y": 100,
+        "w": 720,
+        "h": 190.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 381,
+          "y": 238.25,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "멈춘 엘리베이터 시작"
+        },
+        {
+          "text": "시작",
+          "x": 1028.9375,
+          "y": 385.796875,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "심야 택시 시작"
+        }
+      ],
+      "noteCount": 0,
+      "mainText": "추천 시나리오 · 시스템 설계\n멈춘 엘리베이터\n\n재시도와 상태 복구를 설계합니다.\n\n시작\n제품 판단\n심야 택시\n\n제한된 정보로 안전한 선택을 만듭니다.\n\n시작",
+      "headerOverlap": false,
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "멈춘 엘리베이터 시작",
+      "focus2": "심야 택시 시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 32
+      },
+      "hero": {
+        "x": 360,
+        "y": 100,
+        "w": 720,
+        "h": 190.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 381,
+          "y": 238.25,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "멈춘 엘리베이터 시작"
+        },
+        {
+          "text": "시작",
+          "x": 1028.9375,
+          "y": 385.796875,
+          "w": 51.0625,
+          "h": 40,
+          "font": "13.3333px",
+          "ariaLabel": "심야 택시 시작"
+        }
+      ],
+      "noteCount": 0,
+      "mainText": "추천 시나리오 · 시스템 설계\n멈춘 엘리베이터\n\n재시도와 상태 복구를 설계합니다.\n\n시작\n제품 판단\n심야 택시\n\n제한된 정보로 안전한 선택을 만듭니다.\n\n시작",
+      "headerOverlap": false,
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "멈춘 엘리베이터 시작",
+      "focus2": "심야 택시 시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    }
+  ],
+  "events": []
+}
