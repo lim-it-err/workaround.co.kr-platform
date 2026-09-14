@@ -1,4 +1,4 @@
-﻿문서 상태: 작성완료
+﻿문서 상태: 수정중
 
 # 티켓 보드
 
@@ -50,8 +50,6 @@
 
 ## Ready
 
-- `TKT-126` `P1` `tone` `ready` `[FE]` 순환선 심볼 C안 + 파비콘 + 스플래시 보드 높이 (D-018, 소형)
-
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
 - `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
@@ -65,6 +63,7 @@
 
 ## Started
 
+- `TKT-126` `P1` `tone` `started` `[FE]` 순환선 심볼 C안 + 파비콘 + 스플래시 보드 높이 (D-018, 소형)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
