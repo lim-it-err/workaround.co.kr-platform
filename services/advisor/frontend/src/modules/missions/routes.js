@@ -17,6 +17,21 @@ export const missionRoutes = [
     component: () => import('./pages/RecordsPage.vue'),
   },
   {
+    path: '/courses',
+    name: 'courses',
+    component: () => import('./pages/CoursesPage.vue'),
+  },
+  {
+    path: '/courses/:courseId/sim/:missionId',
+    name: 'course-simulation',
+    component: () => import('./pages/CourseSimulationPage.vue'),
+  },
+  {
+    path: '/courses/:courseId',
+    name: 'course-detail',
+    component: () => import('./pages/CourseDetailPage.vue'),
+  },
+  {
     path: '/routine',
     redirect: (to) => ({ path: '/today', query: to.query, hash: to.hash }),
   },

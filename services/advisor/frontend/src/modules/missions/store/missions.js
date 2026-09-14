@@ -9,6 +9,7 @@ import caseFileData from '../data/sampleCaseFiles.js'
 import probeData from '../data/sampleProbeRounds.js'
 import seasons from '../data/sampleSeasons.js'
 import { extraMissions } from '../data/inflightContent.js'
+import { vienna1900CodingMissions } from '../data/courseVienna1900.js'
 import {
   beginBoundarySession,
   pickBoundaryRound,
@@ -24,11 +25,13 @@ import {
   normalizeSeasonStats,
   recordSeasonGain,
 } from './seasonStats.js'
+import { createCourseCatalog, findCourse } from './courseCatalog.js'
 
 const dailyProbeRounds = probeData.dailyProbeRounds ?? probeData.probeRounds
 const dailyBoundaryRounds = boundaryData.dailyBoundaryRounds ?? boundaryData.boundaryRounds
 
 const STORAGE_KEY = 'advisor.learner.v1'
+const baseMissions = [...sample.missions, ...extraMissions]
 
 // 백엔드 채팅 프리뷰 API. 백엔드가 죽어 있으면 아래 mock 응답으로 조용히 폴백한다.
 const API_BASE = import.meta.env.VITE_ADVISOR_API ?? 'http://localhost:8080/api/advisor'
@@ -616,7 +619,8 @@ const submissionMigrationNeeded = hasLegacySubmission(persisted.submissions)
 let journalUpdatedAt = persisted._sync?.journalUpdatedAt ?? null
 
 const state = reactive({
-  missions: [...sample.missions, ...extraMissions],
+  missions: baseMissions,
+  courses: createCourseCatalog(baseMissions),
   submissions: migrateSubmissions(persisted.submissions), // missionId -> [{ files, submittedAt, by }] (버전별, 재제출 시 append)
   explanations: persisted.explanations ?? {}, // missionId -> { text, submittedAt, by }
   chats: persisted.chats ?? {},               // missionId -> [{ role: 'me'|'agent', text, at }]
@@ -1030,6 +1034,11 @@ export function useMissions() {
 
     getMission(id) {
       return state.missions.find((m) => m.id === id)
+        ?? vienna1900CodingMissions.find((mission) => mission.id === id)
+    },
+
+    getCourse(id) {
+      return findCourse(state.courses, id)
     },
 
     missionStatus(id) {

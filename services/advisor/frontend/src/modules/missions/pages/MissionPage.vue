@@ -16,8 +16,12 @@ import NicknamePrompt from '../components/NicknamePrompt.vue'
 const route = useRoute()
 const router = useRouter()
 const store = useMissions()
-const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
-const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
+const requestedReturn = window.history.state?.from
+const returnSurface = requestedReturn === '/today' || /^\/courses\/[^/]+$/.test(requestedReturn ?? '')
+  ? requestedReturn
+  : '/learn'
+const returnLabel = window.history.state?.fromLabel
+  ?? (returnSurface === '/today' ? '오늘' : '배우기')
 
 const mission = computed(() => store.getMission(route.params.id))
 const isDomainLogic = computed(() => mission.value?.missionType === '도메인 로직 구현')
@@ -238,7 +242,10 @@ async function doSubmit() {
     }
   }
   submitting.value = false
-  router.push({ path: `/missions/${missionId}/review`, state: { from: returnSurface } })
+  router.push({
+    path: `/missions/${missionId}/review`,
+    state: { from: returnSurface, fromLabel: returnLabel },
+  })
 }
 
 function submit() {

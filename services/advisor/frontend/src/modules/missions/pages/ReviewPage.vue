@@ -6,8 +6,13 @@ import MarkdownBlock from '../components/MarkdownBlock.vue'
 
 const route = useRoute()
 const store = useMissions()
-const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
-const returnLabel = returnSurface === '/today' ? '오늘로' : '배우기로'
+const requestedReturn = window.history.state?.from
+const returnSurface = requestedReturn === '/today' || /^\/courses\/[^/]+$/.test(requestedReturn ?? '')
+  ? requestedReturn
+  : '/learn'
+const returnName = window.history.state?.fromLabel
+  ?? (returnSurface === '/today' ? '오늘' : '배우기')
+const returnLabel = returnSurface.startsWith('/courses/') ? '코스로' : `${returnName}로`
 
 const mission = computed(() => store.getMission(route.params.id))
 
@@ -71,7 +76,7 @@ function itemColor(item) {
 
 <template>
   <div v-if="mission">
-    <router-link :to="{ path: `/missions/${mission.id}`, state: { from: returnSurface } }" class="back">← 미션으로</router-link>
+    <router-link :to="{ path: `/missions/${mission.id}`, state: { from: returnSurface, fromLabel: returnName } }" class="back">← 미션으로</router-link>
     <h1>리뷰 — {{ mission.title }}</h1>
     <p v-if="review && !review.reviewedAt" class="proto-note">
       ⚠️ 이 미션은 아직 실제 백엔드 리뷰 샘플이 없어 <strong>미리 생성된 샘플 리뷰</strong>를 보여줍니다.
@@ -225,7 +230,7 @@ function itemColor(item) {
     <div class="actions">
       <span v-if="hasSubmission" class="saved-note">기록에 저장됨</span>
       <router-link to="/history" class="btn">내 기록 보기</router-link>
-      <router-link :to="{ path: `/missions/${mission.id}`, state: { from: returnSurface } }" class="btn">코드 고쳐서 재제출</router-link>
+      <router-link :to="{ path: `/missions/${mission.id}`, state: { from: returnSurface, fromLabel: returnName } }" class="btn">코드 고쳐서 재제출</router-link>
       <router-link :to="returnSurface" class="btn primary">{{ returnLabel }}</router-link>
     </div>
   </div>

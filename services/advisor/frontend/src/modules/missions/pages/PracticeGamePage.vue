@@ -7,8 +7,12 @@ import { usePractice } from '../store/practice.js'
 const route = useRoute()
 const router = useRouter()
 const practice = usePractice()
-const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
-const returnLabel = returnSurface === '/today' ? '오늘' : '전체 연습'
+const requestedReturn = window.history.state?.from
+const returnSurface = requestedReturn === '/today' || /^\/courses\/[^/]+$/.test(requestedReturn ?? '')
+  ? requestedReturn
+  : '/learn'
+const returnLabel = window.history.state?.fromLabel
+  ?? (returnSurface === '/today' ? '오늘' : '전체 연습')
 const selected = ref('')
 const revealed = ref(false)
 const episode = ref(1)
@@ -45,13 +49,19 @@ function answer() {
 function move(mode) {
   if (!game.value || !round.value) return
   const target = nextPracticeRound(game.value, round.value.id, practice.completedIds(game.value.id), mode)
-  if (target) router.push({ path: `/games/practice/${game.value.id}/${target.id}`, state: { from: returnSurface } })
+  if (target) router.push({
+    path: `/games/practice/${game.value.id}/${target.id}`,
+    state: { from: returnSurface, fromLabel: returnLabel },
+  })
 }
 
 function restart() {
   if (!game.value?.rounds?.length) return
   practice.clearGame(game.value.id)
-  router.push({ path: `/games/practice/${game.value.id}/${game.value.rounds[0].id}`, state: { from: returnSurface } })
+  router.push({
+    path: `/games/practice/${game.value.id}/${game.value.rounds[0].id}`,
+    state: { from: returnSurface, fromLabel: returnLabel },
+  })
 }
 
 const resultText = computed(() => {

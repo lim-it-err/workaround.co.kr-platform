@@ -6,6 +6,8 @@ describe('전체 게임 연습 카탈로그', () => {
     expect(practiceCatalog.map((game) => game.id)).toEqual([
       'reading', 'cinema', 'swipe', 'probe', 'boundary', 'case',
       'minimal-repro', 'concurrency-sequencing', 'bulkheads',
+      'v1900-a-style-classifier', 'v1900-4-succession',
+      'v1900-3-secession-hang', 'v1900-2-gold-damage', 'v1900-d-perspective',
     ])
     expect(practiceCatalog.every((game) => game.rounds.length > 0)).toBe(true)
   })
@@ -18,4 +20,3 @@ describe('전체 게임 연습 카탈로그', () => {
     expect(nextPracticeRound(game, game.rounds[0].id, [], 'random').id).toBe(game.rounds[1].id)
   })
 })
-
