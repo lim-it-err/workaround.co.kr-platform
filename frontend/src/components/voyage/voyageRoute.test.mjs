@@ -1,11 +1,14 @@
 import assert from 'node:assert/strict'
 import { EAST_EUROPE_2026 } from '../../data/voyages/east-europe-2026.js'
 import {
+  applyStopRecords,
   buildDayTimeline,
   buildRouteSegments,
   cityDayIndexes,
   currentCityId,
+  effectiveDaySpendTotal,
   findTripDayIndex,
+  isGoogleMapsUrl,
   projectCity,
   routeGauges
 } from './voyageRoute.js'
@@ -44,5 +47,26 @@ assert.ok(dayThree.some(item => item.title.includes("Papa's") && item.kind === '
 assert.ok(dayThree.some(item => item.kind === 'branch'), '상황별 분기가 시간표에 유지되어야 한다')
 assert.ok(buildDayTimeline(voyage, 6).length >= 3, '상세 세션이 없는 일차도 안전한 기본 시간표를 만든다')
 assert.deepEqual(cityDayIndexes(voyage, voyage.cities.find(city => city.id === 'prague-return')), [8, 9])
+
+const papa = dayThree.find(item => item.title.includes("Papa's"))
+const stopRecords = {
+  [papa.id]: {
+    place: '현장 식당',
+    dish: '굴라시',
+    localAmount: '850',
+    currency: 'CZK',
+    krwAmount: '70000',
+    note: '창가 자리',
+    mapUrl: 'https://maps.app.goo.gl/example',
+    photos: []
+  }
+}
+const editedDayThree = applyStopRecords(dayThree, stopRecords)
+assert.equal(editedDayThree.find(item => item.id === papa.id).title, '현장 식당 — 굴라시')
+assert.equal(editedDayThree.find(item => item.id === papa.id).spendItem.amount, 7)
+assert.ok(Math.abs(effectiveDaySpendTotal(voyage.days[2], dayThree, stopRecords) - 11.43) < 0.0001)
+assert.equal(isGoogleMapsUrl('https://maps.google.com/?q=Prague'), true)
+assert.equal(isGoogleMapsUrl('https://maps.app.goo.gl/example'), true)
+assert.equal(isGoogleMapsUrl('https://example.com/map'), false)
 
 console.log('voyage route: 9 stations, real projection, day cards and gauges pass')

@@ -32,9 +32,10 @@ after(async () => {
 
 async function serveStaticBuild(request, response) {
   const url = new URL(request.url, 'http://127.0.0.1')
-  const relativePath = decodeURIComponent(url.pathname).startsWith(publicBase)
-    ? decodeURIComponent(url.pathname).slice(publicBase.length)
-    : ''
+  const decodedPath = decodeURIComponent(url.pathname)
+  const relativePath = decodedPath.startsWith(publicBase)
+    ? decodedPath.slice(publicBase.length)
+    : decodedPath.replace(/^\/+/, '')
   let filePath = join(distRoot, relativePath || 'index.html')
   try {
     if ((await stat(filePath)).isDirectory()) filePath = join(filePath, 'index.html')
@@ -86,6 +87,9 @@ for (const scenario of [
     assert.equal(await page.getByRole('button', { name: '← 여행 목록', exact: true }).count(), 1)
     await page.getByRole('button', { name: '← 여행 목록', exact: true }).click()
     await page.getByRole('heading', { name: '여행 목록', exact: true }).waitFor()
+    assert.equal(await page.locator('.station-sign').count(), 0, '목록에 예전 역 간판이 남지 않아야 한다')
+    assert.equal(await page.locator('.voyage-index__badge').textContent(), 'V')
+    assert.equal(await page.locator('.voyage-current').count(), 1, '현재 여행만 히어로로 보여야 한다')
 
     for (const title of ['중부유럽 순환선', '아이슬란드', '스페인']) {
       assert.ok(await page.getByText(title).count(), `${title} 여행이 보여야 한다`)

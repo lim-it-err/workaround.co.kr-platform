@@ -45,14 +45,10 @@ export const JUNCTION_LINES = [
         rowStops: currentVoyage.title,
         map: { x: 463.4, y: 397.6, labelX: 482, labelY: 428, anchor: 'start' },
         mapStops: [
-          { x: 510.4, y: 414.7, labelX: 520, labelY: 436, label: '준비', anchor: 'start' },
-          { x: 548, y: 428.4, labelX: 558, labelY: 410, label: '노선도', anchor: 'start' },
-          { x: 585.6, y: 442.1, labelX: 595, labelY: 480, label: '기록', anchor: 'start' }
+          { x: 585.6, y: 442.1, labelX: 595, labelY: 466, label: '노선도', anchor: 'start' }
         ],
         sublinks: [
-          { label: '준비', page: 'voyage' },
-          { label: '노선도', page: 'voyage' },
-          { label: '기록', page: 'voyage' }
+          { label: '노선도', page: 'voyage' }
         ]
       }
     ]

@@ -155,6 +155,8 @@ for (const scenario of [
 
     const advisorHref = await page.getByRole('link', { name: /Developer Advisor/ }).getAttribute('href')
     assert.equal(advisorHref, `${publicBase}advisor/`)
+    const voyageEntry = page.getByRole('button', { name: /여행 노선/ }).locator('..')
+    assert.equal(await voyageEntry.getByRole('button', { name: '노선도', exact: true }).count(), 1)
 
     for (const [selector, value] of await overflow(page)) {
       assert.equal(value, 0, `${selector} 가로 넘침이 없어야 한다`)
@@ -169,6 +171,6 @@ for (const scenario of [
 
     await page.getByRole('button', { name: /여행 노선/ }).focus()
     await page.keyboard.press('Enter')
-    await page.getByRole('heading', { name: '오늘의 여행 지침서', exact: true }).waitFor()
+    await page.getByRole('heading', { name: '중부유럽 순환선', exact: true }).waitFor()
   })
 }

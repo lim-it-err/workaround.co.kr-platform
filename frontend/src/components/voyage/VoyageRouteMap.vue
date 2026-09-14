@@ -1,18 +1,26 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { voyageStorageKey } from '../../data/voyageStorage.js'
-import { downloadWritingBackup } from '../../staticWritingState.js'
+import {
+  downloadVoyageDayBackup,
+  parseVoyageDayBackup,
+  safeWriteJson
+} from '../../staticWritingState.js'
 import VoyagePreparationSheet from './VoyagePreparationSheet.vue'
 import {
   ROUTE_VIEWBOX,
+  applyStopRecords,
   buildDayTimeline,
   buildRouteSegments,
   cityDayIndexes,
   currentCityId,
+  effectiveDaySpendTotal,
   findTripDayIndex,
+  isGoogleMapsUrl,
   projectCity,
   routeGauges,
-  routeItemState
+  routeItemState,
+  stopRecordFromEntry
 } from './voyageRoute.js'
 
 const props = defineProps({
@@ -26,7 +34,11 @@ const emit = defineEmits(['back', 'exit', 'select-day'])
 const todayIndex = computed(() => findTripDayIndex(props.voyage))
 const selectedDayIndex = ref(resolveInitialDayIndex())
 const detail = ref(null)
+const detailDraft = ref(null)
+const detailMessage = ref('')
 const detailPanel = ref(null)
+const photoInput = ref(null)
+const restoreInput = ref(null)
 const returnFocus = ref(null)
 const mapExpanded = ref(typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches)
 const dayStorageKey = voyageStorageKey(props.voyage.id, 'days')
@@ -34,15 +46,34 @@ const dayRecords = ref(readDayRecords())
 const backupMessage = ref('')
 const activeCityId = computed(() => currentCityId(props.voyage, todayIndex.value))
 const isPreparation = computed(() => selectedDayIndex.value === -1)
-const selectedDay = computed(() => isPreparation.value ? null : props.voyage.days[selectedDayIndex.value])
+const effectiveVoyage = computed(() => ({
+  ...props.voyage,
+  days: props.voyage.days.map((day, index) => {
+    const entries = buildDayTimeline(props.voyage, index)
+    const stops = dayRecords.value[day.date]?.stops || {}
+    const total = effectiveDaySpendTotal(day, entries, stops)
+    return {
+      ...day,
+      actual: {
+        ...(day.actual || {}),
+        spend: { ...(day.actual?.spend || day.spend || {}), total }
+      }
+    }
+  })
+}))
+const selectedDay = computed(() => isPreparation.value ? null : effectiveVoyage.value.days[selectedDayIndex.value])
 const selectedSession = computed(() => (
   selectedDay.value?.plan?.session
     || (props.voyage.daySessions || []).find((session) => session.dayIndex === selectedDayIndex.value)
     || null
 ))
-const timeline = computed(() => isPreparation.value ? [] : buildDayTimeline(props.voyage, selectedDayIndex.value))
+const baselineTimeline = computed(() => isPreparation.value ? [] : buildDayTimeline(props.voyage, selectedDayIndex.value))
+const timeline = computed(() => applyStopRecords(
+  baselineTimeline.value,
+  selectedDay.value ? dayRecords.value[selectedDay.value.date]?.stops || {} : {}
+))
 const segments = computed(() => buildRouteSegments(props.voyage, todayIndex.value, selectedDayIndex.value))
-const gauges = computed(() => routeGauges(props.voyage, todayIndex.value))
+const gauges = computed(() => routeGauges(effectiveVoyage.value, todayIndex.value))
 const distanceProgress = computed(() => percent(gauges.value.completedDistance, gauges.value.totalDistance))
 const spendProgress = computed(() => percent(gauges.value.spent, gauges.value.budgetPlan))
 const currentStatus = computed(() => {
@@ -97,9 +128,9 @@ const detailPhotos = computed(() => {
       props.voyage.days[index]?.actual?.photos || props.voyage.days[index]?.photos || []
     ))
   }
-  const mealPhoto = detail.value.item.meal?.photo
-  const dayPhotos = selectedDay.value?.actual?.photos || selectedDay.value?.photos || []
-  return [mealPhoto, ...dayPhotos].filter(Boolean).map(normalizePhoto)
+  const seed = detail.value.item.meal?.photo
+  const photos = [...(detailDraft.value?.photos || []), seed].filter(Boolean).map(normalizePhoto)
+  return photos.filter((photo, index) => photos.findIndex((candidate) => candidate.src === photo.src) === index)
 })
 const cityDetail = computed(() => {
   if (detail.value?.type !== 'city') return null
@@ -116,8 +147,15 @@ watch(() => props.initialDayIndex, (value) => {
   if (Number.isInteger(value)) selectedDayIndex.value = clampDayIndex(value)
 })
 
-onMounted(() => window.addEventListener('keydown', handleEscape))
-onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
+onMounted(() => {
+  window.addEventListener('keydown', handleEscape)
+  window.addEventListener('resize', handleViewportResize)
+  handleViewportResize()
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleEscape)
+  window.removeEventListener('resize', handleViewportResize)
+})
 
 function clampDayIndex(index) {
   if (Number(index) === -1) return -1
@@ -136,6 +174,7 @@ function resolveInitialDayIndex() {
 function selectDay(index) {
   selectedDayIndex.value = clampDayIndex(index)
   detail.value = null
+  detailDraft.value = null
   emit('select-day', selectedDayIndex.value)
 }
 
@@ -147,15 +186,15 @@ function readDayRecords() {
   if (typeof window === 'undefined') return {}
   try {
     const parsed = JSON.parse(window.localStorage.getItem(dayStorageKey) || '{}')
-    return parsed?.records && typeof parsed.records === 'object' ? parsed.records : {}
+    return sanitizeDayRecords(parsed?.records)
   } catch (error) {
     return {}
   }
 }
 
 function persistDayRecords() {
-  if (typeof window === 'undefined') return
-  window.localStorage.setItem(dayStorageKey, JSON.stringify({ records: dayRecords.value }))
+  if (typeof window === 'undefined') return false
+  return safeWriteJson(window.localStorage, dayStorageKey, { records: dayRecords.value })
 }
 
 function updateSelectedRecord(patch) {
@@ -168,7 +207,7 @@ function updateSelectedRecord(patch) {
       ...patch
     }
   }
-  persistDayRecords()
+  if (!persistDayRecords()) backupMessage.value = '저장 공간이 부족합니다. 백업 후 사진 수를 줄여 주세요.'
 }
 
 function toggleSelectedStamp() {
@@ -177,11 +216,36 @@ function toggleSelectedStamp() {
 
 function backupRecords() {
   try {
-    persistDayRecords()
-    downloadWritingBackup(window.localStorage, dayStorageKey)
+    if (!persistDayRecords()) throw new Error('storage-full')
+    downloadVoyageDayBackup(window.localStorage, dayStorageKey, props.voyage.id)
     backupMessage.value = '기록 백업을 내려받았습니다.'
   } catch (error) {
     backupMessage.value = '백업 파일을 만들지 못했습니다.'
+  }
+}
+
+function requestRestore() {
+  restoreInput.value?.click()
+}
+
+async function restoreRecords(event) {
+  const file = event.target.files?.[0]
+  event.target.value = ''
+  if (!file) return
+  try {
+    if (file.size > 6 * 1024 * 1024) throw new Error('too-large')
+    const records = sanitizeDayRecords(parseVoyageDayBackup(await file.text(), props.voyage.id))
+    const previous = dayRecords.value
+    dayRecords.value = records
+    if (!persistDayRecords()) {
+      dayRecords.value = previous
+      throw new Error('storage-full')
+    }
+    backupMessage.value = '백업 기록을 이 브라우저에 복원했습니다.'
+  } catch (error) {
+    backupMessage.value = error.message === '다른 여행의 백업입니다.'
+      ? error.message
+      : '이 파일은 복원할 수 없습니다.'
   }
 }
 
@@ -194,6 +258,9 @@ async function openStop(item, event) {
   if (item.kind === 'move' || item.kind === 'branch') return
   returnFocus.value = event?.currentTarget || null
   detail.value = { type: 'stop', item }
+  const stored = dayRecords.value[selectedDay.value.date]?.stops?.[item.id]
+  detailDraft.value = stopRecordFromEntry(item, stored)
+  detailMessage.value = ''
   await nextTick()
   detailPanel.value?.focus()
 }
@@ -211,13 +278,139 @@ async function openCity(city, event) {
 
 async function closeDetail() {
   detail.value = null
+  detailDraft.value = null
+  detailMessage.value = ''
   await nextTick()
   returnFocus.value?.focus?.()
   returnFocus.value = null
 }
 
+function saveStopDetail() {
+  if (!detail.value?.item || !detailDraft.value || !selectedDay.value) return
+  if (!isGoogleMapsUrl(detailDraft.value.mapUrl.trim())) {
+    detailMessage.value = '구글 지도 HTTPS 링크만 입력할 수 있습니다.'
+    return
+  }
+  if (!validOptionalAmount(detailDraft.value.localAmount) || !validOptionalAmount(detailDraft.value.krwAmount)) {
+    detailMessage.value = '금액은 0 이상의 숫자로 입력해 주세요.'
+    return
+  }
+
+  const date = selectedDay.value.date
+  const record = sanitizeStopRecord(detailDraft.value)
+  const previous = dayRecords.value
+  dayRecords.value = {
+    ...dayRecords.value,
+    [date]: {
+      ...(dayRecords.value[date] || {}),
+      stops: {
+        ...(dayRecords.value[date]?.stops || {}),
+        [detail.value.item.id]: record
+      }
+    }
+  }
+  if (!persistDayRecords()) {
+    dayRecords.value = previous
+    detailMessage.value = '저장 공간이 부족합니다. 사진을 줄이거나 먼저 백업해 주세요.'
+    return
+  }
+  detailDraft.value = { ...record, photos: [...record.photos] }
+  detail.value = {
+    ...detail.value,
+    item: timeline.value.find((entry) => entry.id === detail.value.item.id) || detail.value.item
+  }
+  detailMessage.value = '이 브라우저에 저장했습니다.'
+}
+
+function choosePhoto() {
+  photoInput.value?.click()
+}
+
+async function addPhoto(event) {
+  const file = event.target.files?.[0]
+  event.target.value = ''
+  if (!file || !detailDraft.value) return
+  if (!/^image\/(png|jpe?g|gif|webp|avif)$/.test(file.type) || file.size > 1.5 * 1024 * 1024) {
+    detailMessage.value = '1.5MB 이하 PNG·JPG·GIF·WebP·AVIF 사진만 추가할 수 있습니다.'
+    return
+  }
+  try {
+    const src = await readFileAsDataUrl(file)
+    detailDraft.value.photos = [
+      ...detailDraft.value.photos,
+      { src, caption: file.name.slice(0, 100) }
+    ].slice(-4)
+    detailMessage.value = '사진을 추가했습니다. 아래 저장 버튼을 눌러 주세요.'
+  } catch (error) {
+    detailMessage.value = '사진을 읽지 못했습니다.'
+  }
+}
+
+function removePhoto(index) {
+  detailDraft.value.photos = detailDraft.value.photos.filter((_, photoIndex) => photoIndex !== index)
+  detailMessage.value = '사진을 목록에서 뺐습니다. 저장하면 반영됩니다.'
+}
+
 function handleEscape(event) {
   if (event.key === 'Escape' && detail.value) closeDetail()
+}
+
+function handleViewportResize() {
+  if (window.innerWidth >= 900) mapExpanded.value = true
+}
+
+function validOptionalAmount(value) {
+  if (value === '' || value === null || value === undefined) return true
+  const amount = Number(value)
+  return Number.isFinite(amount) && amount >= 0
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => resolve(reader.result), { once: true })
+    reader.addEventListener('error', reject, { once: true })
+    reader.readAsDataURL(file)
+  })
+}
+
+function sanitizePhoto(photo) {
+  if (!photo || typeof photo !== 'object') return null
+  const src = String(photo.src || '')
+  if (!/^data:image\/(png|jpe?g|gif|webp|avif);base64,/i.test(src)) return null
+  return { src, caption: String(photo.caption || '현장 사진').slice(0, 100) }
+}
+
+function sanitizeStopRecord(record) {
+  return {
+    place: String(record.place || '').slice(0, 120),
+    dish: String(record.dish || '').slice(0, 180),
+    localAmount: String(record.localAmount ?? '').slice(0, 30),
+    currency: String(record.currency || '').toUpperCase().slice(0, 8),
+    krwAmount: String(record.krwAmount ?? '').slice(0, 30),
+    note: String(record.note || '').slice(0, 1000),
+    mapUrl: isGoogleMapsUrl(String(record.mapUrl || '').trim()) ? String(record.mapUrl || '').trim() : '',
+    photos: (Array.isArray(record.photos) ? record.photos : []).map(sanitizePhoto).filter(Boolean).slice(0, 4)
+  }
+}
+
+function sanitizeDayRecords(records) {
+  if (!records || typeof records !== 'object' || Array.isArray(records)) return {}
+  return Object.fromEntries(Object.entries(records).flatMap(([date, record]) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !record || typeof record !== 'object') return []
+    const stops = record.stops && typeof record.stops === 'object' && !Array.isArray(record.stops)
+      ? Object.fromEntries(Object.entries(record.stops).flatMap(([id, stop]) => (
+        /^((timeline|meal|branch)-\d+-\d+)$/.test(id) && stop && typeof stop === 'object'
+          ? [[id, sanitizeStopRecord(stop)]]
+          : []
+      )))
+      : {}
+    return [[date, {
+      note: String(record.note || '').slice(0, 5000),
+      stamped: Boolean(record.stamped),
+      stops
+    }]]
+  }))
 }
 
 function percent(value, total) {
@@ -306,11 +499,14 @@ function entryFare(entry) {
     </nav>
 
     <header class="route-heading">
-      <div>
-        <p>{{ currentStatus }}</p>
-        <h2>{{ voyage.title }}</h2>
+      <div class="route-heading__identity">
+        <span class="route-heading__badge" aria-hidden="true">V</span>
+        <div>
+          <h2>{{ voyage.title }}</h2>
+          <p>노선도</p>
+        </div>
       </div>
-      <span>{{ selectedDayLabel }}</span>
+      <span>{{ currentStatus }} · {{ selectedDayLabel }}</span>
     </header>
 
     <section class="route-gauges" aria-label="여행 진행 계기판">
@@ -503,7 +699,11 @@ function entryFare(entry) {
               <textarea v-model="selectedRecord" rows="5" :placeholder="`${selectedDay.city}에서 남기고 싶은 것`"></textarea>
             </label>
             <footer>
-              <button type="button" class="ghost-button" @click="backupRecords">내 기록 백업</button>
+              <div class="route-record__actions">
+                <button type="button" class="ghost-button" @click="backupRecords">내 기록 백업</button>
+                <button type="button" class="ghost-button" @click="requestRestore">백업 복원</button>
+                <input ref="restoreInput" class="route-file-input" type="file" accept="application/json,.json" @change="restoreRecords" />
+              </div>
               <small role="status" aria-live="polite">{{ backupMessage || '이 브라우저에 자동 저장됩니다.' }}</small>
             </footer>
           </section>
@@ -539,28 +739,83 @@ function entryFare(entry) {
           <p class="route-detail__eyebrow">DAY {{ selectedDayIndex + 1 }} · {{ detail.item.arrival || detail.item.departure }}</p>
           <h3 id="route-stop-detail-title">{{ detail.item.title }}</h3>
           <p v-if="detail.item.detail" class="route-detail__copy">{{ detail.item.detail }}</p>
-          <dl v-if="detail.item.meal">
-            <dt>먹은 것</dt>
-            <dd>{{ detail.item.meal.dish }}</dd>
-            <dt>금액</dt>
-            <dd>{{ detail.item.spendItem ? formatWon(detail.item.spendItem.amount) : formatMealAmount(detail.item.meal) }}</dd>
-          </dl>
-          <a
-            v-if="detail.item.meal?.mapUrl"
-            class="route-detail__primary"
-            :href="detail.item.meal.mapUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >구글 지도에서 열기 ↗</a>
+          <form class="route-detail__form" @submit.prevent="saveStopDetail">
+            <div class="route-detail__grid">
+              <label>
+                <span>식당명</span>
+                <input v-model="detailDraft.place" name="place" maxlength="120" autocomplete="organization" placeholder="현장에서 들른 곳" />
+              </label>
+              <label>
+                <span>먹은 것</span>
+                <input v-model="detailDraft.dish" name="dish" maxlength="180" placeholder="메뉴나 주문한 것" />
+              </label>
+              <label>
+                <span>현지 금액</span>
+                <input v-model="detailDraft.localAmount" name="local-amount" type="number" inputmode="decimal" min="0" step="any" placeholder="0" />
+              </label>
+              <label>
+                <span>통화</span>
+                <input v-model="detailDraft.currency" name="currency" maxlength="8" autocapitalize="characters" placeholder="EUR" />
+              </label>
+              <label class="route-detail__wide">
+                <span>원화 금액</span>
+                <input v-model="detailDraft.krwAmount" name="krw-amount" type="number" inputmode="numeric" min="0" step="1" placeholder="원 단위" />
+              </label>
+              <label class="route-detail__wide">
+                <span>메모</span>
+                <textarea v-model="detailDraft.note" name="note" rows="3" maxlength="1000" placeholder="맛, 분위기, 다시 갈 이유"></textarea>
+              </label>
+              <label class="route-detail__wide">
+                <span>구글 지도 링크</span>
+                <input v-model="detailDraft.mapUrl" name="map-url" type="url" inputmode="url" placeholder="https://maps.google.com/…" />
+              </label>
+            </div>
+
+            <a
+              v-if="detailDraft.mapUrl && isGoogleMapsUrl(detailDraft.mapUrl)"
+              class="route-detail__primary"
+              :href="detailDraft.mapUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >구글 지도에서 열기 ↗</a>
+
+            <section class="route-detail__photo-editor" aria-labelledby="route-photo-title">
+              <div>
+                <h4 id="route-photo-title">사진</h4>
+                <button type="button" class="ghost-button" @click="choosePhoto">사진 첨부</button>
+                <input ref="photoInput" class="route-file-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif" @change="addPhoto" />
+              </div>
+              <p>사진은 최대 4장, 장당 1.5MB까지 이 브라우저에 저장됩니다.</p>
+              <div v-if="detailPhotos.length" class="route-detail__photos">
+                <figure v-for="(photo, index) in detailPhotos" :key="`${photo.src.slice(0, 48)}-${index}`">
+                  <img :src="photo.src" :alt="photo.caption || '현장 사진'" />
+                  <figcaption>{{ photo.caption }}</figcaption>
+                  <button
+                    v-if="index < detailDraft.photos.length"
+                    type="button"
+                    class="ghost-button"
+                    :aria-label="`${photo.caption || '사진'} 삭제`"
+                    @click="removePhoto(index)"
+                  >삭제</button>
+                </figure>
+              </div>
+              <p v-else class="route-detail__empty">사진이 아직 없습니다.</p>
+            </section>
+
+            <div class="route-detail__save">
+              <p role="status" aria-live="polite">{{ detailMessage || '저장 전에는 현재 화면에서만 보입니다.' }}</p>
+              <button type="submit">정차역 저장</button>
+            </div>
+          </form>
         </template>
 
-        <div v-if="detailPhotos.length" class="route-detail__photos">
+        <div v-if="detail.type === 'city' && detailPhotos.length" class="route-detail__photos">
           <figure v-for="photo in detailPhotos" :key="photo.src">
             <img :src="photo.src" :alt="photo.caption || '여행 사진'" />
             <figcaption>{{ photo.caption }}</figcaption>
           </figure>
         </div>
-        <p v-else class="route-detail__empty">사진이 아직 없습니다.</p>
+        <p v-else-if="detail.type === 'city'" class="route-detail__empty">사진이 아직 없습니다.</p>
       </aside>
     </div>
   </section>
@@ -583,11 +838,35 @@ function entryFare(entry) {
 
 .route-heading {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
   gap: 18px;
-  padding: clamp(28px, 6vw, 58px) 0 20px;
+  padding: 14px 0;
   border-bottom: 1px solid var(--line);
+}
+
+.route-heading__identity,
+.route-heading__identity > div {
+  min-width: 0;
+}
+
+.route-heading__identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.route-heading__badge {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  flex: none;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent-text);
+  font-size: 0.72rem;
+  font-weight: 900;
 }
 
 .route-heading h2,
@@ -597,11 +876,10 @@ function entryFare(entry) {
 }
 
 .route-heading h2 {
-  margin-top: 5px;
   color: var(--text);
-  font-size: clamp(2rem, 7vw, 4rem);
-  letter-spacing: -0.055em;
-  line-height: 1;
+  font-size: 1.05rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
 }
 
 .route-heading p,
@@ -612,8 +890,7 @@ function entryFare(entry) {
 
 .route-heading p {
   color: var(--accent-text);
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: 700;
 }
 
 .route-heading > span {
@@ -1204,6 +1481,21 @@ function entryFare(entry) {
   text-align: right;
 }
 
+.route-record__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.route-file-input {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .route-detail-backdrop {
   position: fixed;
   z-index: 80;
@@ -1216,9 +1508,9 @@ function entryFare(entry) {
   right: 0;
   bottom: 0;
   left: 0;
-  max-height: 72vh;
+  max-height: min(86vh, 86dvh);
   overflow: auto;
-  padding: 15px 20px 28px;
+  padding: 15px 20px 0;
   border: 1px solid var(--line-strong);
   border-bottom: 0;
   border-radius: 18px 18px 0 0;
@@ -1295,6 +1587,83 @@ function entryFare(entry) {
   font-weight: 800;
 }
 
+.route-detail__form {
+  display: grid;
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.route-detail__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(92px, 0.45fr);
+  gap: 13px 10px;
+}
+
+.route-detail__grid label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+  font-weight: 800;
+}
+
+.route-detail__grid label:nth-child(1),
+.route-detail__grid label:nth-child(2),
+.route-detail__wide {
+  grid-column: 1 / -1;
+}
+
+.route-detail__grid input,
+.route-detail__grid textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.45;
+}
+
+.route-detail__grid textarea {
+  resize: vertical;
+}
+
+.route-detail__grid input:focus,
+.route-detail__grid textarea:focus {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  outline-offset: 1px;
+}
+
+.route-detail__photo-editor {
+  display: grid;
+  gap: 9px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.route-detail__photo-editor > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.route-detail__photo-editor h4,
+.route-detail__photo-editor p,
+.route-detail__save p {
+  margin: 0;
+}
+
+.route-detail__photo-editor > p,
+.route-detail__save p {
+  color: var(--muted);
+  font-size: var(--fs-caption);
+}
+
 .route-detail__photos {
   display: grid;
   gap: 10px;
@@ -1302,6 +1671,7 @@ function entryFare(entry) {
 }
 
 .route-detail__photos figure {
+  position: relative;
   margin: 0;
 }
 
@@ -1319,10 +1689,41 @@ function entryFare(entry) {
   font-size: var(--fs-caption);
 }
 
+.route-detail__photos figure > button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+}
+
 .route-detail__empty {
   margin: 16px 0 0;
   padding-top: 14px;
   border-top: 1px solid var(--line);
+}
+
+.route-detail__save {
+  position: sticky;
+  z-index: 2;
+  bottom: 0;
+  display: grid;
+  gap: 8px;
+  margin: 0 -20px;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.route-detail__save button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 @keyframes route-pulse {
@@ -1350,7 +1751,7 @@ function entryFare(entry) {
     left: auto;
     width: 390px;
     max-height: none;
-    padding: 76px 26px 28px;
+    padding: 76px 26px 0;
     border-top: 0;
     border-right: 0;
     border-bottom: 0;
@@ -1364,6 +1765,13 @@ function entryFare(entry) {
 
   .route-detail__close {
     top: 18px;
+  }
+
+  .route-detail__save {
+    margin-right: -26px;
+    margin-left: -26px;
+    padding-right: 26px;
+    padding-left: 26px;
   }
 }
 
@@ -1383,13 +1791,12 @@ function entryFare(entry) {
 
 @media (max-width: 560px) {
   .route-heading {
-    align-items: flex-start;
-    flex-direction: column;
+    gap: 12px;
   }
 
   .route-heading > span {
-    max-width: none;
-    text-align: left;
+    max-width: 48%;
+    text-align: right;
   }
 
   .route-gauge p,

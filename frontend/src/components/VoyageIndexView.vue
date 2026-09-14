@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue'
-import StationHeader from './StationHeader.vue'
 import { ToneScheduleRow, ToneSectionRule } from './tone/index.js'
 
 const props = defineProps({
@@ -29,15 +28,13 @@ function cityCount(voyage) {
 
 <template>
   <section class="feature-shell line-v voyage-index">
-    <StationHeader
-      line-class="line-v"
-      station-code="V"
-      title="여행 목록"
-      status="운행 기록"
-      status-tone="ok"
-      summary="여행 3건"
-      @exit="$emit('exit')"
-    />
+    <header class="voyage-index__top">
+      <div>
+        <span class="voyage-index__badge" aria-hidden="true">V</span>
+        <h2>여행 목록</h2>
+      </div>
+      <button type="button" class="ghost-button" @click="$emit('exit')">홈으로</button>
+    </header>
 
     <section v-if="currentVoyage" class="voyage-current" aria-labelledby="current-voyage-title">
       <p class="voyage-current__status">지금 여행 중</p>
@@ -89,6 +86,39 @@ function cityCount(voyage) {
 .voyage-index {
   display: grid;
   gap: clamp(28px, 5vw, 52px);
+}
+
+.voyage-index__top,
+.voyage-index__top > div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.voyage-index__top {
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.voyage-index__top h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1.05rem;
+  letter-spacing: -0.025em;
+}
+
+.voyage-index__badge {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  flex: none;
+  border: 2px solid var(--accent, var(--line-v));
+  border-radius: 50%;
+  color: var(--accent-text, var(--line-v-text));
+  font-size: 0.72rem;
+  font-weight: 900;
 }
 
 .voyage-current {
@@ -150,6 +180,10 @@ function cityCount(voyage) {
 
 .voyage-list-section {
   max-width: 840px;
+}
+
+.voyage-list-section :deep(.tone-section-rule__line) {
+  background: var(--accent, var(--line-v));
 }
 
 .voyage-list-section.is-muted {

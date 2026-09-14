@@ -49,3 +49,40 @@ export function downloadWritingBackup(storage, voyageStorageKey, browser = globa
   browser.URL.revokeObjectURL(objectUrl)
   return anchor.download
 }
+
+export function buildVoyageDayBackup(storage, voyageStorageKey, voyageId, exportedAt = new Date().toISOString()) {
+  const stored = readJson(storage, voyageStorageKey, {})
+  return {
+    format: 'workaround-voyage-day-records',
+    version: 1,
+    exportedAt,
+    voyageId,
+    records: stored?.records && typeof stored.records === 'object' ? stored.records : {}
+  }
+}
+
+export function downloadVoyageDayBackup(storage, voyageStorageKey, voyageId, browser = globalThis) {
+  const backup = buildVoyageDayBackup(storage, voyageStorageKey, voyageId)
+  const blob = new browser.Blob([`${JSON.stringify(backup, null, 2)}\n`], { type: 'application/json' })
+  const objectUrl = browser.URL.createObjectURL(blob)
+  const anchor = browser.document.createElement('a')
+  anchor.href = objectUrl
+  anchor.download = `workaround-${voyageId}-records-${backup.exportedAt.slice(0, 10)}.json`
+  browser.document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  browser.URL.revokeObjectURL(objectUrl)
+  return anchor.download
+}
+
+export function parseVoyageDayBackup(text, voyageId) {
+  const backup = JSON.parse(text)
+  if (backup?.format !== 'workaround-voyage-day-records' || backup.version !== 1) {
+    throw new Error('지원하지 않는 여행 백업 형식입니다.')
+  }
+  if (backup.voyageId !== voyageId) throw new Error('다른 여행의 백업입니다.')
+  if (!backup.records || typeof backup.records !== 'object' || Array.isArray(backup.records)) {
+    throw new Error('여행 기록이 없는 백업입니다.')
+  }
+  return backup.records
+}

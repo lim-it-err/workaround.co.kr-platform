@@ -19,3 +19,9 @@ test('개통 정류장은 모두 대표 목적지를 갖고 미개통 정류장�
     assert.equal(station.entryPath, undefined)
   }
 })
+
+test('여행 노선은 통합 노선도 진입점 하나만 노출한다', () => {
+  const voyage = LINES.find((line) => line.code === 'V')
+  assert.deepEqual(voyage.mapStops.map((stop) => stop.label), ['노선도'])
+  assert.deepEqual(voyage.sublinks.map((link) => link.label), ['노선도'])
+})

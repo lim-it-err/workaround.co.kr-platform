@@ -149,6 +149,93 @@ export function buildDayTimeline(voyage, dayIndex) {
   return entries
 }
 
+function hasOwn(value, key) {
+  return Object.prototype.hasOwnProperty.call(value || {}, key)
+}
+
+function numericAmount(value) {
+  if (value === '' || value === null || value === undefined) return null
+  const amount = Number(value)
+  return Number.isFinite(amount) && amount >= 0 ? amount : null
+}
+
+export function stopRecordFromEntry(entry, stored = null) {
+  const source = stored && typeof stored === 'object' ? stored : {}
+  const seedWon = entry.spendItem?.amount === undefined
+    ? ''
+    : String(Math.round(Number(entry.spendItem.amount) * 10000))
+  return {
+    place: hasOwn(source, 'place') ? String(source.place || '') : String(entry.meal?.place || ''),
+    dish: hasOwn(source, 'dish') ? String(source.dish || '') : String(entry.meal?.dish || ''),
+    localAmount: hasOwn(source, 'localAmount') ? String(source.localAmount ?? '') : String(entry.meal?.amount ?? ''),
+    currency: hasOwn(source, 'currency') ? String(source.currency || '') : String(entry.meal?.currency || ''),
+    krwAmount: hasOwn(source, 'krwAmount') ? String(source.krwAmount ?? '') : seedWon,
+    note: hasOwn(source, 'note') ? String(source.note || '') : '',
+    mapUrl: hasOwn(source, 'mapUrl') ? String(source.mapUrl || '') : String(entry.meal?.mapUrl || ''),
+    photos: Array.isArray(source.photos) ? source.photos : []
+  }
+}
+
+export function applyStopRecords(entries, records = {}) {
+  return entries.map((entry) => {
+    const stored = records?.[entry.id]
+    if (!stored || typeof stored !== 'object') return entry
+    const record = stopRecordFromEntry(entry, stored)
+    const place = record.place.trim()
+    const dish = record.dish.trim()
+    const hasMeal = Boolean(place || dish || record.localAmount || record.currency)
+    const krwAmount = numericAmount(record.krwAmount)
+    const meal = hasMeal ? {
+      ...(entry.meal || {}),
+      place,
+      dish,
+      amount: numericAmount(record.localAmount),
+      currency: record.currency.trim(),
+      mapUrl: record.mapUrl.trim(),
+      photo: record.photos[0] || null
+    } : null
+
+    return {
+      ...entry,
+      title: place || dish ? `${place || '식사'} — ${dish || '메뉴 미입력'}` : entry.title,
+      kind: meal ? 'meal' : entry.kind === 'meal' ? 'stop' : entry.kind,
+      meal,
+      spendItem: krwAmount === null ? null : {
+        ...(entry.spendItem || {}),
+        label: place || entry.title,
+        amount: krwAmount / 10000
+      },
+      stopRecord: record
+    }
+  })
+}
+
+export function effectiveDaySpendTotal(day, entries, records = {}) {
+  const baseline = Number(day?.actual?.spend?.total ?? day?.spend?.total ?? 0)
+  return Math.max(0, Object.entries(records || {}).reduce((total, [entryId, record]) => {
+    if (!record || typeof record !== 'object' || !hasOwn(record, 'krwAmount')) return total
+    const entry = entries.find((item) => item.id === entryId)
+    const seed = Number(entry?.spendItem?.amount || 0)
+    const replacement = numericAmount(record.krwAmount)
+    return total - seed + (replacement === null ? 0 : replacement / 10000)
+  }, baseline))
+}
+
+export function isGoogleMapsUrl(value) {
+  if (!value) return true
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && (
+      url.hostname === 'maps.google.com'
+      || url.hostname === 'www.google.com' && url.pathname.startsWith('/maps')
+      || url.hostname === 'goo.gl' && url.pathname.startsWith('/maps')
+      || url.hostname === 'maps.app.goo.gl'
+    )
+  } catch (error) {
+    return false
+  }
+}
+
 export function routeGauges(voyage, todayIndex) {
   const isComplete = voyage.status === 'arrived' || todayIndex >= voyage.days.length
   const covered = (index) => isComplete || index <= todayIndex
