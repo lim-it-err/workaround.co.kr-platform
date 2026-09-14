@@ -135,6 +135,7 @@ const stagesByPartFiltered = computed(() =>
             v-model="search"
             type="text"
             class="search-input"
+            aria-label="미션 검색"
             placeholder="제목·도메인으로 찾기"
           />
         </div>

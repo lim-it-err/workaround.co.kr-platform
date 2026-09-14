@@ -12,6 +12,7 @@ export const JUNCTION_LINES = [
     id: 'archive',
     nameKo: '기록선',
     colorToken: 'junction-archive',
+    textColorToken: 'line-b-text',
     order: '환승 홀 → 블로그 → 여행',
     label: { x: 612, y: 220, anchor: 'start' },
     paths: ['M386 345 L576.5 235', 'M388 370 L594.9 445.5'],
@@ -57,6 +58,7 @@ export const JUNCTION_LINES = [
     id: 'lab',
     nameKo: '실험선',
     colorToken: 'junction-lab',
+    textColorToken: 'line-d-text',
     order: 'Advisor → 미스터리 트레인 → 발견 → 취향',
     label: { x: 400, y: 640, anchor: 'start' },
     paths: [
@@ -133,6 +135,7 @@ export const JUNCTION_LINES = [
     id: 'depot',
     nameKo: '기지선',
     colorToken: 'junction-depot',
+    textColorToken: 'line-w-text',
     order: 'Work → Runtime · 보호 구역',
     label: { x: 150, y: 232, anchor: 'end' },
     paths: ['M335 346 L186.8 260', 'M350 333 L291.6 172'],

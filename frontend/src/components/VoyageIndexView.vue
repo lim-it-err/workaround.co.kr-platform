@@ -24,6 +24,11 @@ function formatPeriod(voyage) {
 function cityCount(voyage) {
   return Array.isArray(voyage.cities) ? voyage.cities.length : 0
 }
+
+function voyageMeta(voyage, label) {
+  const count = cityCount(voyage)
+  return count > 0 ? `${count}개 도시 · ${label}` : label
+}
 </script>
 
 <template>
@@ -63,7 +68,7 @@ function cityCount(voyage) {
         :key="voyage.id"
         :label="formatPeriod(voyage)"
         :value="voyage.title"
-        :meta="`${cityCount(voyage)}개 도시 · 노선도`"
+        :meta="voyageMeta(voyage, '노선도')"
         interactive
         @select="$emit('open-voyage', voyage.id)"
       />
@@ -75,7 +80,7 @@ function cityCount(voyage) {
         :key="voyage.id"
         :label="formatPeriod(voyage)"
         :value="voyage.title"
-        :meta="`${cityCount(voyage)}개 도시 · 준비 중`"
+        :meta="voyageMeta(voyage, '준비 중')"
         disabled
       />
     </ToneSectionRule>

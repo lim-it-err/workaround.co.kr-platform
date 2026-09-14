@@ -97,6 +97,8 @@ for (const scenario of [
     assert.equal(await page.locator('.tone-schedule-row').count(), 2)
     assert.equal(await page.getByRole('button', { name: /아이슬란드/ }).count(), 1)
     assert.equal(await page.getByRole('button', { name: /스페인/ }).count(), 1)
+    assert.equal(await page.getByText('0개 도시', { exact: false }).count(), 0)
+    assert.deepEqual(await page.locator('.tone-schedule-row__value small').allTextContents(), ['노선도', '노선도'])
 
     if (process.env.VOYAGE_SCREENSHOT_DIR) {
       await page.screenshot({

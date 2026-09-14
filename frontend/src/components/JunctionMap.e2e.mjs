@@ -82,6 +82,33 @@ async function overflow(page) {
   }))
 }
 
+async function routeTextContrasts(page) {
+  return page.locator([
+    '.junction-line-name',
+    '.junction-route-group > h3',
+    '.junction-route-row:not(.upcoming) .junction-route-badge'
+  ].join(',')).evaluateAll(elements => {
+    const parse = value => (value.match(/[\d.]+/g) || []).slice(0, 3).map(Number)
+    const luminance = value => {
+      const [red, green, blue] = parse(value).map(channel => {
+        const normalized = channel / 255
+        return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4
+      })
+      return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+    }
+    const background = getComputedStyle(document.querySelector('.app-shell')).backgroundColor
+    const backgroundLuminance = luminance(background)
+    return elements.map(element => {
+      const style = getComputedStyle(element)
+      const foreground = element instanceof SVGElement ? style.fill : style.color
+      const foregroundLuminance = luminance(foreground)
+      const ratio = (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
+        / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+      return { label: element.textContent.trim(), foreground, background, ratio }
+    })
+  })
+}
+
 for (const scenario of [
   { width: 375, height: 812, theme: 'dark' },
   { width: 1440, height: 900, theme: 'light' }
@@ -158,6 +185,12 @@ for (const scenario of [
     const voyageEntry = page.getByRole('button', { name: /여행 노선/ }).locator('..')
     assert.equal(await voyageEntry.getByRole('button', { name: '노선도', exact: true }).count(), 1)
 
+    const contrasts = await routeTextContrasts(page)
+    assert.ok(
+      contrasts.every(({ ratio }) => ratio >= 4.5),
+      `노선색 텍스트 명암비는 4.5:1 이상이어야 한다: ${JSON.stringify(contrasts)}`
+    )
+
     for (const [selector, value] of await overflow(page)) {
       assert.equal(value, 0, `${selector} 가로 넘침이 없어야 한다`)
     }
@@ -172,5 +205,16 @@ for (const scenario of [
     await page.getByRole('button', { name: /여행 노선/ }).focus()
     await page.keyboard.press('Enter')
     await page.getByRole('heading', { name: '중부유럽 순환선', exact: true }).waitFor()
+    await page.getByRole('button', { name: /^3일차/ }).focus()
+    await page.keyboard.press('Enter')
+    const stationDetailTrigger = page.getByRole('button', { name: /Papa's/ })
+    await stationDetailTrigger.focus()
+    assert.notEqual(await stationDetailTrigger.evaluate(element => getComputedStyle(element).outlineStyle), 'none')
+    await page.keyboard.press('Enter')
+    const stationDetail = page.getByRole('dialog', { name: /Papa's/ })
+    await stationDetail.waitFor()
+    await page.keyboard.press('Escape')
+    assert.equal(await stationDetail.count(), 0)
+    assert.equal(await stationDetailTrigger.evaluate(element => element === document.activeElement), true)
   })
 }

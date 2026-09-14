@@ -150,13 +150,11 @@ watch(() => props.initialDayIndex, (value) => {
 })
 
 onMounted(async () => {
-  window.addEventListener('keydown', handleEscape)
   window.addEventListener('resize', handleViewportResize)
   handleViewportResize()
   await openRequestedTransferStop()
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', handleEscape)
   window.removeEventListener('resize', handleViewportResize)
 })
 
@@ -379,8 +377,36 @@ function removePhoto(index) {
   detailMessage.value = '사진을 목록에서 뺐습니다. 저장하면 반영됩니다.'
 }
 
-function handleEscape(event) {
-  if (event.key === 'Escape' && detail.value) closeDetail()
+function handleDetailKeydown(event) {
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    event.stopPropagation()
+    closeDetail()
+    return
+  }
+  if (event.key !== 'Tab') return
+  const focusable = [...detailPanel.value?.querySelectorAll([
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled]):not([type="hidden"])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])'
+  ].join(',')) || []].filter(element => element.getClientRects().length > 0)
+  if (!focusable.length) {
+    event.preventDefault()
+    detailPanel.value?.focus()
+    return
+  }
+  const first = focusable[0]
+  const last = focusable[focusable.length - 1]
+  if (event.shiftKey && (document.activeElement === first || document.activeElement === detailPanel.value)) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
 }
 
 function handleViewportResize() {
@@ -499,7 +525,7 @@ function tooltipPosition(segment) {
 }
 
 function segmentLabel(segment) {
-  return `DAY ${segment.dayIndex + 1} · ${segment.fromCity.name} → ${segment.toCity.name} · 운전 ${formatDrive(segment.driveMin)} · ${segment.km}km`
+  return `DAY ${segment.dayIndex + 1} · ${segment.fromCity.name}→${segment.toCity.name} · 운전 ${formatDrive(segment.driveMin)} · ${segment.km}km`
 }
 
 function stationAria(city) {
@@ -718,7 +744,7 @@ function entryFare(entry) {
           <section v-if="selectedDayState !== 'upcoming'" class="route-record" aria-labelledby="voyage-route-record-title">
             <header>
               <div>
-                <p>ACTUAL</p>
+                <p>기록</p>
                 <h4 id="voyage-route-record-title">이 날의 기록</h4>
               </div>
               <button
@@ -753,6 +779,7 @@ function entryFare(entry) {
         aria-modal="true"
         :aria-labelledby="detail.type === 'city' ? 'route-city-detail-title' : 'route-stop-detail-title'"
         tabindex="-1"
+        @keydown="handleDetailKeydown"
       >
         <div class="route-detail__grab" aria-hidden="true"></div>
         <button type="button" class="route-detail__close" aria-label="상세 닫기" @click="closeDetail">×</button>
@@ -770,7 +797,7 @@ function entryFare(entry) {
         </template>
 
         <template v-else>
-          <p class="route-detail__eyebrow">DAY {{ selectedDayIndex + 1 }} · {{ detail.item.arrival || detail.item.departure }}</p>
+          <p class="route-detail__eyebrow">{{ selectedDayIndex + 1 }}일차 · {{ detail.item.arrival || detail.item.departure }}</p>
           <h3 id="route-stop-detail-title">{{ detail.item.title }}</h3>
           <p v-if="detail.item.detail" class="route-detail__copy">{{ detail.item.detail }}</p>
           <a
@@ -1020,7 +1047,7 @@ function entryFare(entry) {
   stroke: var(--accent);
   stroke-linecap: round;
   pointer-events: stroke;
-  transition: stroke 140ms ease, opacity 140ms ease;
+  transition: stroke 140ms ease, opacity 140ms ease, filter 140ms ease;
 }
 
 .route-segment--upcoming path {
@@ -1042,6 +1069,10 @@ function entryFare(entry) {
 
 .route-segment:focus {
   outline: none;
+}
+
+.route-segment:focus-visible path {
+  filter: drop-shadow(0 0 4px var(--safety));
 }
 
 .route-tooltip {
@@ -1076,6 +1107,16 @@ function entryFare(entry) {
 .route-station {
   cursor: pointer;
   pointer-events: bounding-box;
+}
+
+.route-station:focus {
+  outline: none;
+}
+
+.route-station:focus-visible .route-station__dot {
+  stroke: var(--safety);
+  stroke-width: 6;
+  filter: drop-shadow(0 0 4px var(--safety));
 }
 
 .route-station--completed .route-station__dot {

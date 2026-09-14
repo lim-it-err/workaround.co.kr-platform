@@ -70,6 +70,7 @@ function onNicknameCancelled() {
         v-model="reviewText"
         class="deliverable-input mono"
         rows="18"
+        aria-label="검토서"
         :placeholder="plannerReview.deliverable"
       ></textarea>
       <div class="submit-row">

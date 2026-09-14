@@ -137,25 +137,25 @@ watch(filters, () => { visibleLimit.value = 30 }, { deep: true })
       <div class="filter-grid" aria-label="배우기 필터">
         <label>
           <span>시간</span>
-          <select v-model="filters.time">
+          <select v-model="filters.time" aria-label="시간">
             <option v-for="option in LEARN_TIME_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
           </select>
         </label>
         <label>
           <span>코드 작성</span>
-          <select v-model="filters.code">
+          <select v-model="filters.code" aria-label="코드 작성">
             <option v-for="option in LEARN_CODE_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
           </select>
         </label>
         <label>
           <span>형식</span>
-          <select v-model="filters.kind">
+          <select v-model="filters.kind" aria-label="형식">
             <option v-for="option in LEARN_KIND_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
           </select>
         </label>
         <label>
           <span>완료</span>
-          <select v-model="filters.status">
+          <select v-model="filters.status" aria-label="완료">
             <option v-for="option in LEARN_STATUS_OPTIONS" :key="option.value" :value="option.value">{{ option.label }}</option>
           </select>
         </label>

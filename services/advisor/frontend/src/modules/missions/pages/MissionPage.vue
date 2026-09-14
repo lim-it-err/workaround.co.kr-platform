@@ -527,6 +527,7 @@ function submitExplanation() {
         v-model="explainText"
         class="explain-input mono"
         rows="12"
+        aria-label="설명 훈련 답변"
         placeholder="말하듯이 써보세요. 에이전트가 논리 구조, 용어 선택, 비유의 적절성을 피드백합니다."
       ></textarea>
       <div class="submit-row">

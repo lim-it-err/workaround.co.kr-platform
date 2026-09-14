@@ -148,6 +148,7 @@ function onNicknameCancelled() {
           <textarea
             v-model="draft"
             rows="2"
+            aria-label="이해관계자에게 물을 내용"
             placeholder="협상하거나 챌린지해 보세요. 공개 입장 뒤에 무엇이 있을지 물어보세요."
             @keydown.enter.exact.prevent="sendDraft"
           ></textarea>
@@ -162,6 +163,7 @@ function onNicknameCancelled() {
         v-model="agreementText"
         class="deliverable-input mono"
         rows="10"
+        aria-label="합의문"
         :placeholder="plannerMeeting.deliverable"
       ></textarea>
       <div class="submit-row">

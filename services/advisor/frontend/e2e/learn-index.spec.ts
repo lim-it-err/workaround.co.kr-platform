@@ -22,6 +22,13 @@ test('코스·미션·사건·프로젝트·연습을 한 인덱스와 네 기�
   await expect(page.getByText('181개', { exact: true })).toBeVisible()
   await expect(page.locator('.index-row')).toHaveCount(30)
   await expect(page.locator('.filter-grid select')).toHaveCount(4)
+  await expect(page.getByRole('combobox', { name: '시간', exact: true })).toHaveCount(1)
+  await expect(page.getByRole('combobox', { name: '코드 작성', exact: true })).toHaveCount(1)
+  await expect(page.getByRole('combobox', { name: '형식', exact: true })).toHaveCount(1)
+  await expect(page.getByRole('combobox', { name: '완료', exact: true })).toHaveCount(1)
+  expect(await page.locator('input:not([type="hidden"]), select, textarea').evaluateAll(elements => (
+    elements.every(element => Boolean(element.getAttribute('aria-label') || element.getAttribute('aria-labelledby') || element.labels?.length))
+  ))).toBe(true)
   await expect(page.locator('.advanced-filters')).not.toHaveAttribute('open', '')
 
   await page.getByText('고급 필터').click()

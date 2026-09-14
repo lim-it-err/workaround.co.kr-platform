@@ -35,6 +35,7 @@ function cancel() {
         v-model="value"
         class="input"
         maxlength="12"
+        aria-label="닉네임"
         placeholder="예: 김부장"
         autofocus
         @keydown.enter="confirm"

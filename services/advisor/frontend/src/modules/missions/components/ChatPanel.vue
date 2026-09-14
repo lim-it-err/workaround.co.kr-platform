@@ -92,6 +92,7 @@ async function send() {
       <textarea
         v-model="draft"
         rows="2"
+        aria-label="Advisor에게 물을 내용"
         placeholder="예: 예산 '이하'가 엄격한 조건인가요? 60,000원 예산에 61,000원 와인은 절대 안 되나요?"
         @keydown.enter.exact.prevent="send"
       ></textarea>

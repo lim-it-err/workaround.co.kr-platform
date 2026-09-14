@@ -101,6 +101,11 @@ test('375px: the existing split-flap engine runs three phrases and tickers befor
   assert.equal(await page.locator('.site-loop-symbol').count(), 1)
   assert.equal(await page.locator('.arrival-grid, .splash-door-panel, .splash-flap-word').count(), 0)
   assert.equal(await page.getByRole('button', { name: '다시 재생', exact: true }).count(), 1)
+  assert.equal(await page.getByRole('img', { name: 'WORKING AROUND', exact: true }).count(), 1)
+  await page.keyboard.press('Tab')
+  const replayButton = page.getByRole('button', { name: '다시 재생', exact: true })
+  assert.equal(await replayButton.evaluate(element => element === document.activeElement), true)
+  assert.notEqual(await replayButton.evaluate(element => getComputedStyle(element).outlineStyle), 'none')
 
   await page.waitForTimeout(400)
   const first = await snapshot(page)

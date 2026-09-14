@@ -116,6 +116,7 @@ for (const scenario of [
       await page.getByRole('button', { name: '노선도 접기', exact: true }).click()
       assert.equal(await page.locator('.route-map-panel').isVisible(), false, '모바일에서는 다시 접을 수 있어야 한다')
       await page.getByRole('button', { name: '노선도 펼치기', exact: true }).click()
+      assert.equal(await page.getByRole('button', { name: '노선도 접기', exact: true }).getAttribute('aria-expanded'), 'true')
       const mapBox = await page.locator('.route-map-panel').boundingBox()
       const refreshedDayBox = await page.locator('.route-day-panel').boundingBox()
       assert.ok(refreshedDayBox.y < mapBox.y, '모바일에서는 오늘 카드가 지도보다 먼저 와야 한다')
@@ -124,19 +125,45 @@ for (const scenario of [
       assert.ok(mapBox.x < dayBox.x && Math.abs(mapBox.y - dayBox.y) < 10, '데스크톱에서는 지도와 일차 카드가 나란해야 한다')
     }
 
+    const hallstattToSalzburg = page.getByRole('link', { name: /^DAY 4 · 할슈타트→잘츠부르크 ·/ })
+    assert.equal(await hallstattToSalzburg.count(), 1, '구간 링크는 일차와 도시 쌍을 이름으로 제공해야 한다')
+    const mapKeyboardEntry = scenario.width < 900
+      ? page.locator('.route-map-control button')
+      : page.getByRole('button', { name: '홈으로', exact: true })
+    await mapKeyboardEntry.focus()
+    await page.keyboard.press('Tab')
+    const keyboardSegment = page.locator('.route-segment:focus')
+    assert.equal(await keyboardSegment.count(), 1, '노선도 다음 Tab은 첫 구간으로 이동해야 한다')
+    assert.notEqual(await keyboardSegment.locator('path').evaluate(element => getComputedStyle(element).filter), 'none')
+    for (let index = 0; index < 8; index += 1) await page.keyboard.press('Tab')
+    const keyboardStation = page.locator('.route-station:focus')
+    assert.equal(await keyboardStation.count(), 1, '구간 다음 Tab 순서는 첫 도시 정차역이어야 한다')
+    assert.notEqual(await keyboardStation.locator('.route-station__dot').evaluate(element => getComputedStyle(element).filter), 'none')
+
     const dayThreeSegment = page.getByRole('link', { name: /^DAY 3 ·/ }).first()
     await dayThreeSegment.focus()
     await page.keyboard.press('Enter')
     await page.getByRole('heading', { name: '첫 장거리·체스키크룸로프', exact: true }).waitFor()
+    assert.equal(await page.getByRole('button', { name: /^3일차/ }).getAttribute('aria-current'), 'date')
     assert.equal(await page.locator('.route-segment--active').count(), 1)
+    assert.equal(await page.locator('.route-record > header p').textContent(), '기록')
 
     await page.getByRole('button', { name: /Papa's/ }).click()
     const detail = page.getByRole('dialog')
     await detail.waitFor()
+    assert.match(await detail.locator('.route-detail__eyebrow').textContent(), /^3일차 ·/)
     assert.match(await detail.textContent(), /스비치코바 \+ 립 \+ 코젤/)
     assert.equal(await detail.getByLabel('원화 금액', { exact: true }).inputValue(), '66500')
     assert.match(await detail.textContent(), /사진이 아직 없습니다/)
     assert.equal(await detail.getByRole('link', { name: /구글 지도에서 열기/ }).getAttribute('target'), '_blank')
+
+    const detailClose = detail.getByRole('button', { name: '상세 닫기', exact: true })
+    const detailSave = detail.getByRole('button', { name: '정차역 저장', exact: true })
+    await detailClose.focus()
+    await page.keyboard.press('Shift+Tab')
+    assert.equal(await detailSave.evaluate(element => element === document.activeElement), true, '첫 제어 앞에서는 마지막 제어로 이동해야 한다')
+    await page.keyboard.press('Tab')
+    assert.equal(await detailClose.evaluate(element => element === document.activeElement), true, '마지막 제어 다음은 첫 제어로 돌아와야 한다')
 
     await detail.getByLabel('식당명', { exact: true }).fill('현장 식당')
     await detail.getByLabel('먹은 것', { exact: true }).fill('굴라시')
@@ -173,6 +200,7 @@ for (const scenario of [
     }
 
     await detail.getByRole('button', { name: '상세 닫기', exact: true }).click()
+    assert.equal(await page.evaluate(() => document.activeElement?.textContent?.includes('현장 식당')), true, '닫은 후 열었던 정차역으로 포커스가 돌아와야 한다')
     await page.reload()
     await page.getByRole('heading', { name: '중부유럽 순환선', exact: true }).waitFor()
     await page.getByRole('button', { name: /^3일차/ }).click()

@@ -44,7 +44,10 @@ function go(destination) {
           v-for="line in JUNCTION_LINES"
           :key="line.id"
           class="junction-map-line"
-          :style="{ '--route-color': `var(--${line.colorToken})` }"
+          :style="{
+            '--route-color': `var(--${line.colorToken})`,
+            '--route-text-color': `var(--${line.textColorToken})`
+          }"
         >
           <path
             v-for="(path, pathIndex) in line.paths"
@@ -98,7 +101,10 @@ function go(destination) {
         v-for="line in JUNCTION_LINES"
         :key="`${line.id}-list`"
         class="junction-route-group"
-        :style="{ '--route-color': `var(--${line.colorToken})` }"
+        :style="{
+          '--route-color': `var(--${line.colorToken})`,
+          '--route-text-color': `var(--${line.textColorToken})`
+        }"
       >
         <h3>{{ line.nameKo }}</h3>
         <p>{{ line.order }}</p>

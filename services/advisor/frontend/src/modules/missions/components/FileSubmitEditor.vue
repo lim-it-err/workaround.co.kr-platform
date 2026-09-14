@@ -26,6 +26,7 @@ function removeFile(i) {
         <input
           class="path mono"
           :value="f.path"
+          :aria-label="`파일 ${i + 1} 경로`"
           placeholder="예: src/main/java/wine/WineRecommender.java"
           @input="update(i, 'path', $event.target.value)"
         />
@@ -34,6 +35,7 @@ function removeFile(i) {
       <textarea
         class="content mono"
         :value="f.content"
+        :aria-label="`파일 ${i + 1} 내용`"
         rows="14"
         placeholder="IntelliJ에서 작성한 코드를 여기에 붙여넣으세요"
         @input="update(i, 'content', $event.target.value)"

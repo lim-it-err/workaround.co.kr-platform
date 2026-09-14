@@ -3469,7 +3469,7 @@ button {
 }
 
 .junction-line-name {
-  fill: var(--route-color);
+  fill: var(--route-text-color);
   font-size: 15px;
   font-weight: 850;
   letter-spacing: 0.08em;
@@ -3518,7 +3518,7 @@ button {
 
 .junction-route-group > h3 {
   margin: 0;
-  color: var(--route-color);
+  color: var(--route-text-color);
   font-size: 0.8rem;
   font-weight: 850;
   letter-spacing: 0.12em;
@@ -3560,8 +3560,10 @@ a.junction-route-row {
 }
 
 button.junction-route-row:hover,
-a.junction-route-row:hover {
-  color: var(--route-color);
+a.junction-route-row:hover,
+button.junction-route-row:focus-visible,
+a.junction-route-row:focus-visible {
+  color: var(--route-text-color);
 }
 
 .junction-route-badge {
@@ -3571,7 +3573,7 @@ a.junction-route-row:hover {
   height: 24px;
   border: 2px solid var(--route-color);
   border-radius: 50%;
-  color: var(--route-color);
+  color: var(--route-text-color);
   font-size: 0.7rem;
   font-weight: 850;
 }
@@ -3627,8 +3629,10 @@ a.junction-route-row:hover {
 }
 
 .junction-sublinks > a:hover,
-.junction-sublinks > button:hover {
-  color: var(--route-color);
+.junction-sublinks > button:hover,
+.junction-sublinks > a:focus-visible,
+.junction-sublinks > button:focus-visible {
+  color: var(--route-text-color);
   border-bottom-color: var(--route-color);
 }
 

@@ -182,6 +182,20 @@ async function assertNoPageOverflow(page) {
   }
 }
 
+async function findRenderedUppercaseEnglishLeaves(page) {
+  await page.locator('details').evaluateAll(elements => {
+    for (const element of elements) element.open = true
+  })
+  return page.locator('body *').evaluateAll(elements => elements
+    .filter(element => element.children.length === 0 && element.getClientRects().length > 0)
+    .map(element => ({
+      tag: element.tagName.toLowerCase(),
+      className: element.className,
+      text: element.innerText?.trim() || ''
+    }))
+    .filter(element => /\b[A-Z]{4,}\b/.test(element.text)))
+}
+
 const scenarios = [
   { width: 375, height: 812, theme: 'dark' },
   { width: 1440, height: 900, theme: 'light' }
@@ -220,6 +234,50 @@ for (const scenario of scenarios) {
     assert.equal(await page.locator('.tone-work-manager-details').evaluate(element => element.open), false)
     assert.equal(await page.locator('.version-chip-card:visible').count(), 0)
     assert.equal(await page.locator('.station-sign, .station-lead').count(), 0)
+    await page.locator('.tone-support-details summary').click()
+    assert.deepEqual(await page.locator('.tone-support-details .eyebrow').allTextContents(), [
+      '목표 버전',
+      '담당 현황',
+      '우선순위 정책',
+      '저장 방식',
+      '다음 작업 예상'
+    ])
+    const workEyebrows = await page.locator('.tone-work-page .eyebrow').allTextContents()
+    assert.equal(workEyebrows.some(label => /\b[A-Z]{4,}\b/.test(label)), false)
+    assert.deepEqual(await page.locator('.tone-support-details .prototype-rule-card > strong').allTextContents(), [
+      '큐 출처',
+      '자동',
+      '수동'
+    ])
+    assert.deepEqual(await page.locator('.tone-support-details .info-stack span').allTextContents(), [
+      '방식',
+      '감사 파일',
+      '대상 DB',
+      '감사 기록'
+    ])
+    await page.locator('.tone-work-manager-details summary').click()
+    assert.equal(await page.locator('.tone-work-layout .lane-card:visible').count(), 5)
+    assert.equal(await page.getByRole('combobox', { name: '목표 버전 수정', exact: true }).count(), 1)
+    assert.equal(await page.getByRole('combobox', { name: '우선순위 수정', exact: true }).count(), 1)
+    assert.equal(await page.getByRole('textbox', { name: '의존성 수정', exact: true }).count(), 1)
+    assert.deepEqual(await page.locator('.tone-work-layout .detail-stack > article > span').allTextContents(), [
+      '레인',
+      '목표 버전',
+      '목표 버전 수정',
+      '우선순위',
+      '우선순위 수정',
+      '진행 판정',
+      '목표',
+      '작업 항목',
+      '산출물',
+      '선행 조건',
+      '의존성',
+      '의존성 수정',
+      '질문',
+      '검토 메모',
+      'PR 준비 메모',
+      '메모'
+    ])
     await assertNoPageOverflow(page)
     if (process.env.TONE_TOOLS_SCREENSHOT_DIR) {
       await page.screenshot({
@@ -246,6 +304,11 @@ for (const scenario of scenarios) {
     assert.equal(await page.getByRole('button', { name: '상태 새로고침', exact: true }).count(), 1)
     assert.equal(await page.locator('.tone-support-details').evaluate(element => element.open), false)
     assert.equal(await page.locator('.station-sign, .station-lead, .runtime-card').count(), 0)
+    await page.locator('.tone-support-details summary').click()
+    assert.deepEqual(await page.locator('.tone-support-details .eyebrow').allTextContents(), [
+      '라우팅 규칙',
+      '배포 경로'
+    ])
     await assertNoPageOverflow(page)
     if (process.env.TONE_TOOLS_SCREENSHOT_DIR) {
       await page.screenshot({
@@ -275,5 +338,43 @@ for (const scenario of scenarios) {
         fullPage: true
       })
     }
+  })
+
+  test(`${scenario.width}px ${scenario.theme}: 전 정적 경로의 렌더 영어 대문자 간판은 0건이다`, async t => {
+    const page = await setup(t, scenario, 'blog')
+    const routes = [
+      { path: '/', enter: async () => {
+        await page.getByRole('button', { name: '환승 홀', exact: true }).click()
+        await page.getByRole('heading', { name: '환승 홀', exact: true }).waitFor()
+      } },
+      { path: '/blog', enter: async () => page.goto(`${base}blog`) },
+      { path: '/blog-district', enter: async () => page.goto(`${base}blog-district`) },
+      { path: '/studio', enter: async () => page.goto(`${base}studio`) },
+      { path: '/sim', enter: async () => page.goto(`${base}sim`) },
+      { path: '/work', enter: async () => page.goto(`${base}work`) },
+      { path: '/runtime', enter: async () => page.goto(`${base}runtime`) },
+      { path: '/voyage', enter: async () => page.goto(`${base}voyage`) }
+    ]
+    const results = []
+
+    for (const route of routes) {
+      await route.enter()
+      await page.locator('.portal-stage').waitFor()
+      const violations = await findRenderedUppercaseEnglishLeaves(page)
+      results.push({ path: route.path, violations })
+      if (process.env.TONE_TOOLS_SCREENSHOT_DIR) {
+        const slug = route.path === '/' ? 'root' : route.path.slice(1)
+        await page.screenshot({
+          path: `${process.env.TONE_TOOLS_SCREENSHOT_DIR}/render-copy-${slug}-${scenario.width}-${scenario.theme}.png`,
+          fullPage: true
+        })
+      }
+    }
+
+    assert.deepEqual(
+      results,
+      routes.map(route => ({ path: route.path, violations: [] })),
+      'details를 모두 펼친 렌더 leaf innerText에 대문자 영어 간판이 없어야 한다'
+    )
   })
 }
