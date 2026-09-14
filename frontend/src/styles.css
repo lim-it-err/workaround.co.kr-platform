@@ -108,12 +108,12 @@ button {
   --panel: #FFFFFF;
   --panel-2: #F5F8FC;
   --panel-soft: rgba(16, 24, 38, 0.045);
-  --line: rgba(16, 24, 38, 0.12);
-  --line-strong: rgba(16, 24, 38, 0.22);
+  --line: rgba(16, 24, 38, 0.09);
+  --line-strong: rgba(16, 24, 38, 0.18);
   --text: #16202E;
   --text-2: #45536A;
-  --muted: #6B7A92;
-  --safety: #E9B92B;
+  --muted: #59677C;
+  --safety: #895F00;
   --exit: #0E8A46;
   --exit-hover: #0B7038;
   --danger: #C24557;
@@ -127,24 +127,24 @@ button {
   --line-e: #0090C8;
   --line-e-text: #006E99;
   --line-t: #C8830E;
-  --line-t-text: #96650E;
+  --line-t-text: #8A5B08;
   --line-s: #657385;
   --line-s-text: #485869;
-  --line-w: #00A84D;
+  --line-w: #00863E;
   --line-w-text: #00793A;
   --line-r: #0052A4;
   --line-r-text: #0052A4;
   --line-d: #6E3FC0;
   --line-d-text: #5A2FA8;
   --line-p: #0E9C86;
-  --line-p-text: #0B7D6C;
+  --line-p-text: #087363;
   --line-v: #36566F;
   --line-v-text: #36566F;
   --junction-archive: #C0264F;
   --junction-lab: #3D4EC0;
-  --junction-depot: #1F8A4C;
-  --status-draft: #6B7A92;
-  --status-pub: #00A84D;
+  --junction-depot: #00863E;
+  --status-draft: #59677C;
+  --status-pub: #00863E;
   --status-arch: #9A6E2E;
 }
 
@@ -660,6 +660,18 @@ button {
   font-weight: 900;
   display: grid;
   place-items: center;
+}
+
+.app-shell[data-theme='light'] .roundel.line-e {
+  color: #081825;
+}
+
+.app-shell[data-theme='light'] .roundel.line-t {
+  color: #201A05;
+}
+
+.app-shell[data-theme='light'] .roundel.line-p {
+  color: #1F1A09;
 }
 
 .roundel.sm {
