@@ -48,6 +48,15 @@ watch(
 const explainFeedback = computed(() => store.getExplainFeedback(route.params.id))
 const reputation = computed(() => review.value?.reputation ?? null)
 const explanation = computed(() => store.state.explanations[route.params.id])
+const SEASON_STAT_LABELS = {
+  vision: '구조를 보는 눈',
+  voice: '설명하는 힘',
+  judgment: '판단하는 힘',
+  culture: '함께 일하는 힘',
+}
+const seasonGain = computed(() => [...(store.state.seasonStats?.gains ?? [])]
+  .reverse()
+  .find((gain) => gain.source === `mission-submit:${route.params.id}`) ?? null)
 
 // 입력 원칙 — 선택 우선: 결말 예측 투표 결과를 실제 결말과 대조.
 const prediction = computed(() => store.getEndingPrediction(route.params.id))
@@ -227,9 +236,15 @@ function itemColor(item) {
       </div>
     </section>
 
+    <section v-if="hasSubmission" class="completion-summary" aria-label="완료 요약">
+      <div>
+        <strong>기록에 저장됨</strong>
+        <span v-if="seasonGain">이번 시즌 · {{ SEASON_STAT_LABELS[seasonGain.stat] ?? seasonGain.stat }} +{{ seasonGain.amount }}</span>
+      </div>
+      <router-link to="/history" class="btn primary">내 기록 보기</router-link>
+    </section>
+
     <div class="actions">
-      <span v-if="hasSubmission" class="saved-note">기록에 저장됨</span>
-      <router-link to="/history" class="btn">내 기록 보기</router-link>
       <router-link :to="{ path: `/missions/${mission.id}`, state: { from: returnSurface, fromLabel: returnName } }" class="btn">코드 고쳐서 재제출</router-link>
       <router-link :to="returnSurface" class="btn primary">{{ returnLabel }}</router-link>
     </div>
@@ -307,8 +322,11 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
   border-radius: 10px;
   padding: 4px 16px;
 }
-.actions { display: flex; gap: 10px; margin-top: 8px; }
-.saved-note { align-self: center; color: var(--good); font-size: 13px; font-weight: 700; }
+.completion-summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 8px; padding: 14px 16px; border: 1px solid color-mix(in srgb, var(--good) 35%, transparent); border-radius: 12px; background: color-mix(in srgb, var(--good) 7%, transparent); }
+.completion-summary div { display: grid; gap: 3px; }
+.completion-summary strong { color: var(--good); font-size: 13.5px; }
+.completion-summary span { color: var(--fg-dim); font-size: 12.5px; }
+.actions { display: flex; gap: 10px; margin-top: 10px; }
 .ending-stamp {
   display: flex;
   align-items: center;
@@ -393,6 +411,8 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
   .overall-score { font-size: 34px; }
   .ending-stamp { flex-wrap: wrap; row-gap: 6px; }
   .hc { padding: 10px 12px; }
+  .completion-summary { align-items: stretch; flex-direction: column; }
+  .completion-summary .btn { min-height: 40px; text-align: center; }
   .actions { flex-wrap: wrap; }
   .actions .btn { flex: 1 1 auto; text-align: center; min-height: 40px; }
 }

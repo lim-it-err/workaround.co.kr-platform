@@ -1,35 +1,14 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 import { useMissions } from '../store/missions.js'
-import NicknamePrompt from '../components/NicknamePrompt.vue'
 
 defineProps({ embedded: { type: Boolean, default: false } })
 
-const router = useRouter()
 const store = useMissions()
 const { state, stages } = store
 
 const entries = computed(() => store.historyEntries())
 const DIFFICULTY_LABEL = { Easy: '쉬움', Normal: '보통', Hard: '어려움' }
-
-// 닉네임 게이트: 성장 기록 페이지 진입 시, 닉네임이 없으면 오버레이로 막는다.
-const showNicknamePrompt = ref(false)
-
-onMounted(() => {
-  if (!state.learner.nickname) {
-    showNicknamePrompt.value = true
-  }
-})
-
-function onNicknameConfirmed() {
-  showNicknamePrompt.value = false
-}
-
-function onNicknameCancelled() {
-  showNicknamePrompt.value = false
-  router.push('/today')
-}
 
 const submittedCount = computed(() => Object.keys(state.submissions).length)
 const explainedCount = computed(() => Object.keys(state.explanations).length)
@@ -131,12 +110,6 @@ function formatDate(iso) {
       <p>아직 기록이 없습니다. 세상은 여전히 if문 범벅인 채로 당신을 기다리고 있습니다.</p>
       <p class="dim">일단 <router-link to="/learn">와인 추천기</router-link>부터 뜯어보러 가볼까요?</p>
     </section>
-
-    <NicknamePrompt
-      v-if="showNicknamePrompt"
-      @confirmed="onNicknameConfirmed"
-      @cancelled="onNicknameCancelled"
-    />
   </div>
 </template>
 

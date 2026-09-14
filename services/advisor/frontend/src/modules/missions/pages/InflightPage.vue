@@ -18,14 +18,16 @@ const durations = [3, 10, 30, 60]
 const durationLabels = { 3: '3분 한 판', 10: '10분 세 판', 30: '30분 사건', 60: '60분 혼합 코스' }
 const courseSizes = { 3: 1, 10: 3, 30: 1, 60: 10 }
 
-const entries = computed(() => {
-  const selectedTaste = tastes.find((taste) => taste.id === prefs.value.taste)
+function entriesFor(options) {
+  const selectedTaste = tastes.find((taste) => taste.id === options.taste)
   const allowed = selectedTaste?.games
   return practiceCatalog.flatMap((game) => game.rounds.map((round) => ({ game, round })))
     .filter(({ game, round }) => !allowed || allowed.includes(game.id))
-    .filter(({ game, round }) => prefs.value.duration === 30 ? game.id === 'case' : (round.minutes ?? game.minutes) <= prefs.value.duration)
-    .filter(({ game, round }) => prefs.value.retryOnly ? practice.isCompleted(game.id, round.id) : (prefs.value.showSeen || !practice.isCompleted(game.id, round.id)))
-})
+    .filter(({ game, round }) => options.duration === 30 ? game.id === 'case' : (round.minutes ?? game.minutes) <= options.duration)
+    .filter(({ game, round }) => options.retryOnly ? practice.isCompleted(game.id, round.id) : (options.showSeen || !practice.isCompleted(game.id, round.id)))
+}
+
+const entries = computed(() => entriesFor(prefs.value))
 
 const recommended = computed(() => entries.value.slice(0, courseSizes[prefs.value.duration] ?? 3))
 const remaining = computed(() => practiceCatalog.reduce((sum, game) => sum + game.rounds.filter((round) => !practice.isCompleted(game.id, round.id)).length, 0))
@@ -36,9 +38,37 @@ const resume = computed(() => {
   const round = game?.rounds.find((entry) => entry.id === last.roundId)
   return game && round ? { game, round } : null
 })
+const recovery = computed(() => {
+  if (entries.value.length) return null
+  const longerDuration = durations.find((duration) => (
+    duration > prefs.value.duration
+    && entriesFor({ ...prefs.value, duration }).length > 0
+  ))
+  if (longerDuration) {
+    return {
+      kind: 'duration',
+      duration: longerDuration,
+      label: '시간 늘리기',
+      note: `${durationLabels[longerDuration]}으로 바꾸면 바로 시작할 수 있습니다.`,
+    }
+  }
+  return {
+    kind: 'reset',
+    label: '조건 초기화',
+    note: '완료 여부와 취향 조건을 풀어 다시 추천합니다.',
+  }
+})
 
 function update(key, value) {
   practice.setInflight({ [key]: value })
+}
+
+function recoverEmpty() {
+  if (recovery.value?.kind === 'duration') {
+    update('duration', recovery.value.duration)
+    return
+  }
+  practice.setInflight({ duration: 60, taste: 'random', showSeen: true, retryOnly: false })
 }
 </script>
 
@@ -87,7 +117,11 @@ function update(key, value) {
           <span aria-hidden="true">→</span>
         </router-link>
       </div>
-      <p v-else class="empty card">조건에 맞는 미열람 콘텐츠가 없습니다. ‘본 콘텐츠 포함’을 켜 보세요.</p>
+      <div v-else class="empty card" role="status">
+        <strong>조건에 맞는 콘텐츠가 없습니다.</strong>
+        <p>{{ recovery.note }}</p>
+        <button class="btn primary recovery" @click="recoverEmpty">{{ recovery.label }}</button>
+      </div>
     </section>
 
     <section class="landing card">
@@ -107,6 +141,6 @@ function update(key, value) {
 .pill { min-height: 40px; border: 1px solid var(--border); border-radius: 99px; background: var(--bg-soft); color: var(--fg-dim); padding: 6px 14px; }.pill.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .compact { color: var(--fg-dim); font-size: 13px; gap: 18px; padding-left: 52px; }.compact label { display: inline-flex; align-items: center; gap: 6px; }.settings { border-top: 1px solid var(--border); padding-top: 12px; }
 .pack { margin-top: 24px; }.section-title { display: flex; justify-content: space-between; align-items: baseline; }.section-title h2 { margin: 0 0 10px; font-size: 18px; }.section-title span { color: var(--fg-dim); font-size: 12px; }
-.flight-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }.flight-card { display: flex; gap: 12px; align-items: center; text-decoration: none; color: var(--fg); padding: 15px; min-width: 0; }.flight-card:hover { border-color: var(--accent); }.icon { font-size: 24px; }.body { display: flex; flex-direction: column; min-width: 0; flex: 1; }.body small { color: var(--fg-dim); }.body strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.landing { margin-top: 22px; border-style: dashed; }.landing p { margin: 4px 0 0; color: var(--fg-dim); font-size: 13px; }.empty { color: var(--fg-dim); }
+.flight-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }.flight-card { display: flex; gap: 12px; align-items: center; text-decoration: none; color: var(--fg); padding: 15px; min-width: 0; }.flight-card:hover { border-color: var(--accent); }.icon { font-size: 24px; }.body { display: flex; flex-direction: column; min-width: 0; flex: 1; }.body small { color: var(--fg-dim); }.body strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.landing { margin-top: 22px; border-style: dashed; }.landing p { margin: 4px 0 0; color: var(--fg-dim); font-size: 13px; }.empty { color: var(--fg-dim); }.empty strong { color: var(--fg); }.empty p { margin: 5px 0 13px; }.recovery { min-height: 40px; }
 @media (max-width: 600px) { .flight-hero { flex-direction: column; }.flight-list { grid-template-columns: 1fr; }.compact { padding-left: 0; }.settings { align-items: flex-start; flex-direction: column; }.body strong { white-space: normal; } }
 </style>
