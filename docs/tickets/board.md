@@ -55,7 +55,6 @@
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
 - `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
-- `TKT-116` `P2` `voyage` `ready` `[FE]` 여정 노선도 회고 모드(열차 점 재생) — 109 뒤 · codex-6
 - `TKT-122` `P2` `advisor` `ready` `[PM]` Advisor 시즌 수명주기 스펙
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 
@@ -82,6 +81,7 @@
 
 
 
+
 - `TKT-104` `P2` `advisor` `need_review` `[FE]` Inflight pill aria-pressed — 9개 선택·키보드·복원 검증, E2E 17/17·unit 44/44·build·375px 통과
 
 
@@ -92,6 +92,7 @@
 
 ## Finished
 
+- `TKT-116` `[FE]` 여정 노선도 회고 모드 — 도착 여행 열차 점 재생·일시정지·2단 속도·reduced-motion — r1 통과 (2026-09-14)
 - `TKT-120` `[SIM]` 시뮬 2화면 톤 전환 — 멈춘 엘리베이터·심야 택시, 지표 행·캔버스 예외 — r1 통과 (2026-09-14)
 - `TKT-133` `[FE]` Advisor 코스 시뮬 시드 고정 확률 도착 — 임계 이용률 표현·시간 내 미처리 — r1 통과 (2026-09-14)
 - `TKT-128` `[FE]` 원칙 4 잔존 일소 — voyage ACTUAL·0개 도시·Work/Runtime 접힌 상세 눈썹 한글화, 렌더 기준 13경로 0건 — r2 통과 (2026-09-14, 119 와 묶음 커밋)

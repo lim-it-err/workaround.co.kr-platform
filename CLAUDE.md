@@ -14,6 +14,7 @@
 - 기능을 티켓(`docs/tickets/`)으로 쪼개 Codex가 바로 구현할 수 있게 만든다. 티켓에는 `scope`(수정 허용 파일 범위)를 명시한다 (D-004).
 - **산출물을 PO 에게 올릴 때 PM 자체 평가(강점·약점·권고)를 함께 적는다** (PO 2026-09-14 "너의 생각을 나한테 같이 올려줘") — 링크만 전달하지 않는다.
 - **판정 1순위는 UX·가시성** (PO 2026-09-14): 게이트 그린이어도 실렌더가 원칙·목업에 어긋나면 반려. 코덱스의 `[반박]`·`[구체화 질문]` 은 다음 라운드 첫 순서로 답한다.
+- 메인 프런트 E2E(`frontend/src/**/*.e2e.mjs`)는 `createRequire` 로 playwright 를 찾는다 — PM 실행은 `NODE_PATH=services/advisor/frontend/node_modules node --test <파일>` (Pages base dist 를 먼저 빌드).
 - `need_review` 티켓을 **직접 검증**으로 리뷰한다: frontend `npm --prefix frontend run build`, gateway `mvn -q package`(+ 기동·`/api/health` 응답), 컨테이너 변경 시 compose 기동.
 - UI/UX 작업 전 `design/` 기준선 문서를 읽는다. 디자이너 트랙 산출물(`design/orchestrator_review/`, `design/review_done/`)은 보존한다.
 - 프로덕션 코드는 직접 수정하지 않는다 — 예외: PO 직접 지시.
