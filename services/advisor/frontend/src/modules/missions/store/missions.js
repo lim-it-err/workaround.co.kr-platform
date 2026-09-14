@@ -20,10 +20,14 @@ import {
   settleProbeSession,
 } from '../games/probeEngine.js'
 import {
+  activeSeason,
   buildSeasonOverview,
+  lifetimeTotals,
   localDateKey,
-  normalizeSeasonStats,
+  lockSeasonEnding,
+  normalizeSeasons,
   recordSeasonGain,
+  startNewSeason as createNewSeason,
 } from './seasonStats.js'
 import { createCourseCatalog, findCourse } from './courseCatalog.js'
 
@@ -616,6 +620,7 @@ function load() {
 
 const persisted = load()
 const submissionMigrationNeeded = hasLegacySubmission(persisted.submissions)
+const seasonMigrationNeeded = !persisted.seasons && !!persisted.seasonStats
 let journalUpdatedAt = persisted._sync?.journalUpdatedAt ?? null
 
 const state = reactive({
@@ -665,8 +670,8 @@ const state = reactive({
   cardForkChoices: persisted.cardForkChoices ?? {},
   // 카드 갈래를 최초 선택한 로컬 날짜. 당일 루틴 완료 판정에 사용한다.
   cardForkChoiceDates: persisted.cardForkChoiceDates ?? {},
-  // 4주 시즌 스탯. 구버전 저장 데이터에는 키가 없으므로 오늘을 시즌 시작일로 삼는다.
-  seasonStats: normalizeSeasonStats(persisted.seasonStats),
+  // 4주 시즌은 반복 인스턴스다. 구 seasonStats가 있으면 한 시즌으로 보존하고, 첫 방문은 명시적 시작을 기다린다.
+  seasons: normalizeSeasons(persisted.seasons, persisted.seasonStats),
 })
 
 const JOURNAL_KEYS = [
@@ -685,7 +690,7 @@ const JOURNAL_KEYS = [
   'caseProgress',
   'cardForkChoices',
   'cardForkChoiceDates',
-  'seasonStats',
+  'seasons',
 ]
 
 let syncBarrierNickname = ''
@@ -718,7 +723,7 @@ function persist({ syncJournal = true } = {}) {
       caseProgress: state.caseProgress,
       cardForkChoices: state.cardForkChoices,
       cardForkChoiceDates: state.cardForkChoiceDates,
-      seasonStats: state.seasonStats,
+      seasons: state.seasons,
       _sync: { journalUpdatedAt },
     }),
   )
@@ -727,7 +732,7 @@ function persist({ syncJournal = true } = {}) {
 
 // 단일 객체였던 구버전 제출은 메모리에서만 감싸 두지 않고, 로드 직후 배열 형태로 한 번 확정한다.
 // 서버 동기화는 앱 시작 루틴이 담당하므로 이 마이그레이션 쓰기에서는 journal 전송을 만들지 않는다.
-if (submissionMigrationNeeded) persist({ syncJournal: false })
+if (submissionMigrationNeeded || seasonMigrationNeeded) persist({ syncJournal: false })
 
 function afterInitialSync(nickname, operation) {
   const barrier = syncBarrierNickname === nickname ? syncBarrier : Promise.resolve(false)
@@ -826,7 +831,10 @@ function hasLocalRecords() {
     .some((records) => Object.values(records).some((versions) => versions?.length))
   if (versioned || objectHasValues(state.explanations) || objectHasValues(state.plannerSubmissions)) return true
   return JOURNAL_KEYS.some((key) => {
-    if (key === 'seasonStats') return (state.seasonStats?.gains?.length ?? 0) > 0
+    if (key === 'seasons') {
+      return Object.keys(state.seasons?.byId ?? {}).length > 0
+        || (state.seasons?.pendingGains?.length ?? 0) > 0
+    }
     return objectHasValues(state[key])
   })
 }
@@ -866,13 +874,17 @@ function applyRemoteJournal(remote) {
   const { updatedAt, data } = remoteJournalParts(remote)
   const localTime = new Date(journalUpdatedAt ?? 0).getTime()
   const remoteTime = new Date(updatedAt ?? 0).getTime()
-  const localHasJournal = JOURNAL_KEYS.some((key) => key === 'seasonStats'
-    ? (state.seasonStats?.gains?.length ?? 0) > 0
+  const localHasJournal = JOURNAL_KEYS.some((key) => key === 'seasons'
+    ? Object.keys(state.seasons?.byId ?? {}).length > 0
+      || (state.seasons?.pendingGains?.length ?? 0) > 0
     : objectHasValues(state[key]))
   if (remoteTime < localTime || (remoteTime === localTime && localHasJournal)) return
+  if (!('seasons' in data) && data.seasonStats) {
+    state.seasons = normalizeSeasons(undefined, data.seasonStats)
+  }
   for (const key of JOURNAL_KEYS) {
     if (!(key in data)) continue
-    state[key] = key === 'seasonStats' ? normalizeSeasonStats(data[key]) : data[key]
+    state[key] = key === 'seasons' ? normalizeSeasons(data[key]) : data[key]
   }
   journalUpdatedAt = updatedAt ?? journalUpdatedAt
 }
@@ -1006,7 +1018,18 @@ function startRecordSync(nickname = state.learner.nickname) {
 }
 
 function gainSeasonStat(stat, amount, source) {
-  return recordSeasonGain(state.seasonStats, { stat, amount, source })
+  const gain = { date: localDateKey(), stat, amount, source }
+  const current = activeSeason(state.seasons)
+  const result = recordSeasonGain(current, gain)
+  if (result.reason === 'ended') {
+    lockSeasonEnding(current, state.routineHistory, seasons.seasonEndings)
+  }
+  if (['ended', 'no-season'].includes(result.reason)) {
+    const duplicate = state.seasons.pendingGains.some((pending) =>
+      pending.stat === stat && pending.source === source)
+    if (!duplicate) state.seasons.pendingGains.push(gain)
+  }
+  return result
 }
 
 // 리뷰 조회 공통 헬퍼: 실제 저장된 리뷰가 있으면 그걸, 없으면(그리고 제출 이력이 있으면) 샘플로 폴백.
@@ -1154,8 +1177,39 @@ export function useMissions() {
       return true
     },
 
-    seasonOverview() {
-      return buildSeasonOverview(state.seasonStats, state.routineHistory, seasons.seasonEndings)
+    seasonOverview(seasonId = state.seasons.activeId) {
+      const season = seasonId ? state.seasons.byId[seasonId] ?? null : null
+      if (lockSeasonEnding(season, state.routineHistory, seasons.seasonEndings)) persist()
+      return buildSeasonOverview(season, state.routineHistory, seasons.seasonEndings)
+    },
+
+    pastSeasonOverviews() {
+      return Object.values(state.seasons.byId)
+        .filter((season) => season.id !== state.seasons.activeId && season.closedAt)
+        .sort((a, b) => b.start.localeCompare(a.start))
+        .map((season) => buildSeasonOverview(
+          season,
+          state.routineHistory,
+          seasons.seasonEndings,
+        ))
+    },
+
+    lifetimeSeasonTotals() {
+      return lifetimeTotals(state.seasons)
+    },
+
+    seasonGain(source) {
+      return [...(activeSeason(state.seasons)?.gains ?? [])]
+        .reverse()
+        .find((gain) => gain.source === source) ?? null
+    },
+
+    startNewSeason() {
+      const current = activeSeason(state.seasons)
+      if (lockSeasonEnding(current, state.routineHistory, seasons.seasonEndings)) persist()
+      const result = createNewSeason(state.seasons)
+      if (result.ok) persist()
+      return result
     },
 
     chooseCardFork(cardId, choiceKey) {
@@ -1251,8 +1305,8 @@ export function useMissions() {
     settleEndingPrediction(missionId, actualGrade) {
       if (!actualGrade || state.endingPredictions[missionId] !== actualGrade) return false
       const gained = gainSeasonStat('judgment', 2, `ending-prediction:${missionId}`)
-      if (gained) persist()
-      return gained
+      if (gained.ok || ['ended', 'no-season'].includes(gained.reason)) persist()
+      return gained.ok
     },
 
     // ---- 프로젝트 모드(맨땅에서): 여정 지도 캠페인 ----

@@ -14,7 +14,10 @@ function makeLocalStorage() {
 }
 
 async function loadStore(persisted = {}) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    seasonStats: { seasonStart: '2026-08-03', gains: [] },
+    ...persisted,
+  }))
   vi.resetModules()
   const { useMissions } = await import('../missions.js')
   return useMissions()
@@ -175,6 +178,34 @@ describe('missions store 특성화', () => {
 
     await loadStore(saved)
     expect(localStorage.setItem).toHaveBeenCalledTimes(3)
+  })
+
+  it('구 seasonStats를 seasons로 옮겨도 제출·프로젝트·게임·시즌 기록 수를 보존한다', async () => {
+    const persisted = {
+      submissions: {
+        's1-wine-01': [{ files: [], submittedAt: '2026-08-01T00:00:00.000Z' }],
+      },
+      projectSubmissions: {
+        'p-bike-01-01': { files: [], submittedAt: '2026-08-02T00:00:00.000Z' },
+      },
+      swipeSessions: { '2026-08-03': true },
+      seasonStats: {
+        seasonStart: '2026-08-03',
+        gains: [
+          { date: '2026-08-03', stat: 'vision', amount: 3, source: 'migration:1' },
+          { date: '2026-08-03', stat: 'culture', amount: 1, source: 'migration:2' },
+        ],
+      },
+    }
+
+    await loadStore(persisted)
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
+
+    expect(saved.submissions['s1-wine-01']).toHaveLength(1)
+    expect(Object.keys(saved.projectSubmissions)).toHaveLength(1)
+    expect(Object.keys(saved.swipeSessions)).toHaveLength(1)
+    expect(saved.seasons.byId['season-2026-08-03'].gains).toHaveLength(2)
+    expect(saved.seasonStats).toBeUndefined()
   })
 
   it('같은 날짜에는 같은 루틴 미션을 결정한다', async () => {
@@ -356,16 +387,50 @@ describe('missions store 특성화', () => {
   it('기존 저장 blob을 보존하며 루틴 체크를 교양 스탯에 하루 한 번 적립한다', async () => {
     const store = await loadStore({ learner: { nickname: '기존 사용자' } })
 
-    expect(store.state.seasonStats).toEqual({ seasonStart: '2026-08-03', gains: [] })
+    expect(store.state.seasons.activeId).toBe('season-2026-08-03')
+    expect(store.state.seasons.byId['season-2026-08-03'].gains).toEqual([])
     store.checkRoutineSlot(0)
     store.checkRoutineSlot(0)
 
     expect(store.seasonOverview().totals.culture).toBe(1)
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
     expect(saved.learner.nickname).toBe('기존 사용자')
-    expect(saved.seasonStats.gains).toEqual([
+    expect(saved.seasons.byId['season-2026-08-03'].gains).toEqual([
       { date: '2026-08-03', stat: 'culture', amount: 1, source: 'routine-check:0' },
     ])
+    expect(saved.seasonStats).toBeUndefined()
+  })
+
+  it('종료 뒤 거절된 적립을 보존하고 명시적 새 시즌의 첫 기록으로 재시도한다', async () => {
+    vi.setSystemTime(new Date('2026-08-31T09:00:00+09:00'))
+    const store = await loadStore({
+      seasonStats: {
+        seasonStart: '2026-08-03',
+        gains: [{ date: '2026-08-03', stat: 'vision', amount: 45, source: 'legacy' }],
+      },
+    })
+    const choice = store.boundaryRoundForDate().boundaries[0]
+
+    expect(store.chooseBoundary(choice.key)).toBe(true)
+    expect(store.state.seasons.pendingGains.length).toBeGreaterThanOrEqual(1)
+    const endingBefore = { ...store.seasonOverview().ending }
+    const endingIdentity = { id: endingBefore.id, title: endingBefore.title }
+    expect(endingIdentity.id).toBe('ending-vision')
+
+    const result = store.startNewSeason()
+
+    expect(result.ok).toBe(true)
+    expect(result.retried).toBeGreaterThanOrEqual(1)
+    expect(store.seasonOverview().seasonStart).toBe('2026-08-31')
+    expect(store.seasonOverview().total).toBeGreaterThanOrEqual(2)
+    expect(store.pastSeasonOverviews()).toHaveLength(1)
+    expect(store.pastSeasonOverviews()[0].ending).toMatchObject(endingBefore)
+    expect(store.pastSeasonOverviews()[0].total).toBe(45)
+
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
+    expect(saved.seasons.activeId).toBe('season-2026-08-31')
+    expect(saved.seasons.pendingGains).toEqual([])
+    expect(saved.seasons.byId['season-2026-08-03'].ending).toEqual(endingIdentity)
   })
 
   it('기존 제출 액션과 적중 결말을 4스탯에 중복 없이 적립한다', async () => {
@@ -439,7 +504,7 @@ describe('missions store 특성화', () => {
 
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
     expect(saved.probeSessions).toEqual(store.state.probeSessions)
-    expect(saved.seasonStats.gains.filter((gain) => gain.source.startsWith('probe-'))).toHaveLength(2)
+    expect(saved.seasons.byId['season-2026-08-03'].gains.filter((gain) => gain.source.startsWith('probe-'))).toHaveLength(2)
   })
 
   it('경계 게임은 최초 선택만 저장하고 안목과 권장 경계 판단을 한 번만 적립한다', async () => {
@@ -457,7 +522,7 @@ describe('missions store 특성화', () => {
 
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
     expect(saved.boundarySessions).toEqual(store.state.boundarySessions)
-    expect(saved.seasonStats.gains.filter((gain) => gain.source.startsWith('boundary-'))).toHaveLength(2)
+    expect(saved.seasons.byId['season-2026-08-03'].gains.filter((gain) => gain.source.startsWith('boundary-'))).toHaveLength(2)
   })
 
   it('카드 갈래는 최초 선택만 저장하고 교양을 카드당 한 번 적립한다', async () => {
@@ -473,7 +538,7 @@ describe('missions store 특성화', () => {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
     expect(saved.cardForkChoices).toEqual({ [cardId]: 'blessing' })
     expect(saved.cardForkChoiceDates).toEqual({ [cardId]: '2026-08-03' })
-    expect(saved.seasonStats.gains).toContainEqual({
+    expect(saved.seasons.byId['season-2026-08-03'].gains).toContainEqual({
       date: '2026-08-03',
       stat: 'culture',
       amount: 1,

@@ -54,9 +54,7 @@ const SEASON_STAT_LABELS = {
   judgment: '판단하는 힘',
   culture: '함께 일하는 힘',
 }
-const seasonGain = computed(() => [...(store.state.seasonStats?.gains ?? [])]
-  .reverse()
-  .find((gain) => gain.source === `mission-submit:${route.params.id}`) ?? null)
+const seasonGain = computed(() => store.seasonGain(`mission-submit:${route.params.id}`))
 
 // 입력 원칙 — 선택 우선: 결말 예측 투표 결과를 실제 결말과 대조.
 const prediction = computed(() => store.getEndingPrediction(route.params.id))

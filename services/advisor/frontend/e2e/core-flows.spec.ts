@@ -180,7 +180,10 @@ test('한 번만 물어본다면: 관측으로 가설을 흐리고 지목 뒤 �
     probeKey: 'slow-query',
     verdictKey: 'index',
   })
-  expect(persisted.seasonStats.gains.filter(
+  const seasonGains = persisted.seasons.activeId
+    ? persisted.seasons.byId[persisted.seasons.activeId].gains
+    : persisted.seasons.pendingGains
+  expect(seasonGains.filter(
     (gain: { source: string }) => gain.source.startsWith('probe-'),
   )).toHaveLength(2)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
@@ -222,7 +225,10 @@ test('경계선 한 칸: 같은 운명 구간과 타임아웃 결과를 보고 �
     roundId: 'boundary-transfer-01',
     chosenKey: 'debit-first',
   })
-  expect(persisted.seasonStats.gains.filter(
+  const seasonGains = persisted.seasons.activeId
+    ? persisted.seasons.byId[persisted.seasons.activeId].gains
+    : persisted.seasons.pendingGains
+  expect(seasonGains.filter(
     (gain: { source: string }) => gain.source.startsWith('boundary-'),
   )).toHaveLength(2)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
@@ -252,7 +258,10 @@ test('카드 갈래: 첫 선택을 저장하고 반대 입장도 본 뒤 새로�
   const persisted = await page.evaluate(() => JSON.parse(localStorage.getItem('advisor.learner.v1') ?? '{}'))
   expect(persisted.cardForkChoices['read-ggs-01']).toBe('blessing')
   expect(persisted.cardForkChoiceDates['read-ggs-01']).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-  expect(persisted.seasonStats.gains.filter(
+  const seasonGains = persisted.seasons.activeId
+    ? persisted.seasons.byId[persisted.seasons.activeId].gains
+    : persisted.seasons.pendingGains
+  expect(seasonGains.filter(
     (gain: { source: string }) => gain.source === 'card-fork:read-ggs-01',
   )).toHaveLength(1)
 
@@ -298,7 +307,10 @@ test('사건 파일: Day 1부터 몰아보고 근본 원인을 한 번 지목한
     openedDays: 5,
     verdict: 'cron-idempotency',
   })
-  expect(persisted.seasonStats.gains.filter((gain: { source: string }) => gain.source.startsWith('case-')))
+  const seasonGains = persisted.seasons.activeId
+    ? persisted.seasons.byId[persisted.seasons.activeId].gains
+    : persisted.seasons.pendingGains
+  expect(seasonGains.filter((gain: { source: string }) => gain.source.startsWith('case-')))
     .toHaveLength(2)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   expect(errors).toEqual([])

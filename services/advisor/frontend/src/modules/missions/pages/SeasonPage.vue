@@ -1,11 +1,19 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useMissions } from '../store/missions.js'
 
-defineProps({ embedded: { type: Boolean, default: false } })
+const props = defineProps({
+  embedded: { type: Boolean, default: false },
+  seasonId: { type: String, default: '' },
+  readonly: { type: Boolean, default: false },
+})
 
 const store = useMissions()
-const overview = computed(() => store.seasonOverview())
+const overview = computed(() => store.seasonOverview(props.seasonId || undefined))
+const pendingCount = computed(() => store.state.seasons.pendingGains.length)
+const statsTitleId = computed(() => `season-stats-${props.seasonId || 'current'}`)
+const endingTitleId = computed(() => `season-ending-${props.seasonId || 'current'}`)
+const startFeedback = ref('')
 
 const stats = [
   { key: 'vision', emoji: '👁', label: '안목', color: 'var(--accent-text)' },
@@ -14,14 +22,17 @@ const stats = [
   { key: 'culture', emoji: '📚', label: '교양', color: 'var(--good)' },
 ]
 
-const largestStat = computed(() => Math.max(1, ...stats.map((stat) => overview.value.totals[stat.key])))
+const largestStat = computed(() => Math.max(
+  1,
+  ...stats.map((stat) => overview.value?.totals[stat.key] ?? 0),
+))
 
 function statMeta(key) {
   return stats.find((stat) => stat.key === key) ?? { emoji: '✦', label: key }
 }
 
 function sourceLabel(source) {
-  const [kind, id] = source.split(':')
+  const [kind, id] = String(source ?? '').split(':')
   const mission = id ? store.getMission(id) : null
   if (kind === 'mission-submit') return mission ? `미션 제출 · ${mission.title}` : '미션 제출'
   if (kind === 'explanation') return mission ? `설명 훈련 · ${mission.title}` : '설명 훈련'
@@ -32,129 +43,170 @@ function sourceLabel(source) {
   if (kind === 'probe-best') return '한 번만 물어본다면 · 최선의 관측'
   if (kind === 'boundary-choice') return '경계선 한 칸 · 경계 선택'
   if (kind === 'boundary-recommended') return '경계선 한 칸 · 상황의 권장'
-  return source
+  return source || '이전 적립 기록'
 }
 
 function displayDate(date) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date))) return '날짜 미상'
   return new Date(`${date}T00:00:00`).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+}
+
+function beginSeason() {
+  const result = store.startNewSeason()
+  if (!result.ok) return
+  startFeedback.value = result.retried
+    ? `새 시즌을 시작하고 대기 중이던 적립 ${result.retried}건을 반영했습니다.`
+    : '새 시즌을 시작했습니다.'
 }
 </script>
 
 <template>
-  <div class="season-page">
-    <section v-if="!embedded" class="hero">
-      <div>
-        <div class="eyebrow">4주 성장 기록</div>
-        <h1>이번 시즌</h1>
-        <p>{{ overview.seasonStart }} — {{ overview.endDate }}</p>
-      </div>
-      <div class="day-badge" :class="{ ended: overview.ended }">
-        <strong>{{ overview.dDay }}</strong>
-        <span>{{ overview.ended ? '시즌 완료' : `${overview.day}일차` }}</span>
-      </div>
+  <div class="season-page" :class="{ 'is-readonly': readonly }">
+    <section v-if="!overview" class="season-empty" aria-label="이번 시즌 없음">
+      <p v-if="pendingCount">아직 시즌을 시작하지 않아 적립 {{ pendingCount }}건이 기다리고 있습니다.</p>
+      <p v-else>아직 시작한 시즌이 없습니다.</p>
+      <button v-if="!readonly" class="season-start" type="button" @click="beginSeason">새 시즌 시작</button>
     </section>
-    <div v-else class="season-inline-head">
-      <span>{{ overview.seasonStart }} — {{ overview.endDate }}</span>
-      <strong>{{ overview.ended ? '시즌 완료' : `${overview.day}일차 · ${overview.dDay}` }}</strong>
-    </div>
 
-    <section class="stat-card card" aria-labelledby="stats-title">
-      <div class="section-head">
-        <h2 id="stats-title">나의 4스탯</h2>
-        <span>총 {{ overview.total }}</span>
+    <template v-else>
+      <section v-if="!embedded" class="hero">
+        <div>
+          <h1>{{ readonly ? '지난 시즌' : '이번 시즌' }}</h1>
+          <p>{{ overview.seasonStart }} — {{ overview.endDate }}</p>
+        </div>
+        <div class="day-badge" :class="{ ended: overview.ended }">
+          <strong>{{ overview.dDay }}</strong>
+          <span>{{ overview.ended ? '시즌 완료' : `${overview.day}일차` }}</span>
+        </div>
+      </section>
+      <div v-else class="season-inline-head">
+        <span>{{ overview.seasonStart }} — {{ overview.endDate }}</span>
+        <strong>{{ readonly ? '읽기 전용' : overview.ended ? '시즌 완료' : `${overview.day}일차 · ${overview.dDay}` }}</strong>
       </div>
-      <div class="stats">
-        <div v-for="stat in stats" :key="stat.key" class="stat-row" :data-stat="stat.key">
-          <div class="stat-label"><span>{{ stat.emoji }}</span>{{ stat.label }}</div>
-          <div class="stat-track" :aria-label="`${stat.label} ${overview.totals[stat.key]}`">
-            <div
-              class="stat-fill"
-              :style="{ width: `${(overview.totals[stat.key] / largestStat) * 100}%`, background: stat.color }"
-            ></div>
+
+      <div v-if="!readonly && pendingCount" class="gain-notice" role="status">
+        <div>
+          <strong>{{ overview.ended ? '시즌이 끝나 적립하지 못했습니다.' : '적립을 기다리고 있습니다.' }}</strong>
+          <span>새 시즌을 시작하면 {{ pendingCount }}건을 첫 기록으로 다시 반영합니다.</span>
+        </div>
+        <button class="season-start" type="button" @click="beginSeason">새 시즌 시작</button>
+      </div>
+
+      <section class="stat-block" :aria-labelledby="statsTitleId">
+        <div class="section-head">
+          <h2 :id="statsTitleId">나의 4스탯</h2>
+          <span>총 {{ overview.total }}</span>
+        </div>
+        <div class="stats">
+          <div v-for="stat in stats" :key="stat.key" class="stat-row" :data-stat="stat.key">
+            <div class="stat-label"><span>{{ stat.emoji }}</span>{{ stat.label }}</div>
+            <div class="stat-track" :aria-label="`${stat.label} ${overview.totals[stat.key]}`">
+              <div
+                class="stat-fill"
+                :style="{ width: `${(overview.totals[stat.key] / largestStat) * 100}%`, background: stat.color }"
+              ></div>
+            </div>
+            <strong class="stat-value">{{ overview.totals[stat.key] }}</strong>
           </div>
-          <strong class="stat-value">{{ overview.totals[stat.key] }}</strong>
         </div>
-      </div>
-      <p class="perfect-days">모든 슬롯을 채운 날 {{ overview.perfectDays }}일</p>
-    </section>
+        <p class="perfect-days">모든 슬롯을 채운 날 {{ overview.perfectDays }}일</p>
+      </section>
 
-    <section class="log-block">
-      <div class="section-head">
-        <h2>최근 적립</h2>
-        <span>최대 10건</span>
-      </div>
-      <div v-if="overview.recentGains.length" class="gain-list">
-        <div v-for="(gain, index) in overview.recentGains" :key="`${gain.date}-${gain.source}-${index}`" class="gain card">
-          <span class="gain-icon">{{ statMeta(gain.stat).emoji }}</span>
-          <span class="gain-body">
-            <strong>{{ sourceLabel(gain.source) }}</strong>
-            <small>{{ displayDate(gain.date) }} · {{ statMeta(gain.stat).label }}</small>
-          </span>
-          <strong class="gain-amount">+{{ gain.amount }}</strong>
+      <section class="log-block">
+        <div class="section-head">
+          <h2>최근 적립</h2>
+          <span>최대 10건</span>
         </div>
-      </div>
-      <div v-else class="empty card">
-        아직 적립 기록이 없습니다. 오늘의 훈련에서 카드 하나를 읽어 보세요.
-      </div>
-    </section>
+        <div v-if="overview.recentGains.length" class="gain-list">
+          <div v-for="(gain, index) in overview.recentGains" :key="`${gain.date}-${gain.source}-${index}`" class="gain">
+            <span class="gain-icon">{{ statMeta(gain.stat).emoji }}</span>
+            <span class="gain-body">
+              <strong>{{ sourceLabel(gain.source) }}</strong>
+              <small>{{ displayDate(gain.date) }} · {{ statMeta(gain.stat).label }}</small>
+            </span>
+            <strong class="gain-amount">+{{ gain.amount }}</strong>
+          </div>
+        </div>
+        <p v-else class="empty">아직 적립 기록이 없습니다.</p>
+      </section>
 
-    <section v-if="overview.ended && overview.ending" class="ending card">
-      <div class="ending-mark">{{ overview.ending.emoji }}</div>
-      <div class="eyebrow">시즌 요약</div>
-      <h2>{{ overview.ending.title }}</h2>
-      <p class="epigraph">{{ overview.ending.epigraph }}</p>
-      <p class="narrative">{{ overview.ending.narrative }}</p>
-    </section>
+      <section v-if="overview.ended && overview.ending" class="ending" :aria-labelledby="endingTitleId">
+        <div class="ending-mark">{{ overview.ending.emoji }}</div>
+        <span>시즌 결말</span>
+        <h2 :id="endingTitleId">{{ overview.ending.title }}</h2>
+        <p class="epigraph">{{ overview.ending.epigraph }}</p>
+        <p class="narrative">{{ overview.ending.narrative }}</p>
+        <button
+          v-if="!readonly && !pendingCount"
+          class="season-start"
+          type="button"
+          @click="beginSeason"
+        >새 시즌 시작</button>
+      </section>
+    </template>
+
+    <p v-if="startFeedback" class="start-feedback" role="status">{{ startFeedback }}</p>
   </div>
 </template>
 
 <style scoped>
-.season-page { max-width: 640px; margin: 0 auto; }
+.season-page { width: 100%; max-width: 680px; min-width: 0; margin: 0 auto; }
+.hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
+.hero h1 { margin: 0 0 5px; font-size: 25px; }
+.hero p { margin: 0; color: var(--fg-dim); font-size: 13px; }
+.day-badge { flex: 0 0 auto; min-width: 84px; padding: 8px 0 10px 14px; border-left: 1px solid var(--line); text-align: right; }
+.day-badge strong, .day-badge span { display: block; }
+.day-badge strong { color: var(--accent-text); font-size: 18px; }
+.day-badge span { margin-top: 2px; color: var(--fg-dim); font-size: 11.5px; }
 .season-inline-head { display: flex; justify-content: space-between; gap: 14px; margin-bottom: 14px; color: var(--fg-dim); font-size: 13px; }
 .season-inline-head strong { color: var(--accent-text); }
-.hero { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
-.eyebrow { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: 0.04em; }
-.hero h1 { margin: 4px 0 5px; font-size: 25px; }
-.hero p { margin: 0; color: var(--fg-dim); font-size: 13px; }
-.day-badge { flex: 0 0 auto; min-width: 84px; padding: 11px 14px; text-align: center; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); border-radius: 14px; background: var(--accent-soft); }
-.day-badge strong, .day-badge span { display: block; }
-.day-badge strong { color: var(--accent); font-size: 18px; }
-.day-badge span { margin-top: 2px; color: var(--fg-dim); font-size: 11.5px; }
-.day-badge.ended { border-color: color-mix(in srgb, var(--good) 45%, transparent); background: color-mix(in srgb, var(--good) 8%, transparent); }
-.stat-card { padding: 20px; border-radius: 16px; }
+.season-empty { display: flex; min-height: 88px; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-block: 1px solid var(--line); }
+.season-empty p { margin: 0; color: var(--fg-dim); font-size: 13.5px; }
+.season-start { min-height: 44px; padding: 0 18px; border: 1px solid var(--accent); border-radius: 10px; background: var(--accent); color: var(--accent-ink); font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+.season-start:hover { filter: brightness(1.08); }
+.season-start:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.gain-notice { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 14px 0 20px; padding: 14px 0; border-block: 1px solid var(--warn); }
+.gain-notice div { display: grid; gap: 4px; }
+.gain-notice strong { color: var(--warn); font-size: 13.5px; }
+.gain-notice span { color: var(--fg-dim); font-size: 12px; line-height: 1.5; }
+.stat-block { padding: 18px 0; border-block: 1px solid var(--line); }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .section-head h2 { margin: 0; font-size: 16px; }
 .section-head span { color: var(--fg-dim); font-size: 12px; }
-.stats { display: flex; flex-direction: column; gap: 13px; }
-.stat-row { display: grid; grid-template-columns: 90px minmax(0, 1fr) 28px; align-items: center; gap: 10px; }
+.stats { display: flex; flex-direction: column; }
+.stat-row { display: grid; grid-template-columns: 90px minmax(0, 1fr) 28px; align-items: center; gap: 10px; min-height: 42px; border-top: 1px solid var(--line); }
+.stat-row:first-child { border-top: 0; }
 .stat-label { font-size: 13.5px; font-weight: 700; }
 .stat-label span { margin-right: 6px; }
-.stat-track { height: 10px; overflow: hidden; border-radius: 999px; background: var(--bg); border: 1px solid var(--border); }
-.stat-fill { min-width: 0; height: 100%; border-radius: inherit; transition: width 0.2s ease; }
+.stat-track { height: 4px; overflow: hidden; background: var(--line); }
+.stat-fill { min-width: 0; height: 100%; transition: width 0.2s ease; }
 .stat-value { text-align: right; font-size: 14px; }
-.perfect-days { margin: 15px 0 0; padding-top: 13px; border-top: 1px solid var(--border); color: var(--fg-dim); font-size: 12.5px; }
-.log-block { margin-top: 24px; }
-.gain-list { display: flex; flex-direction: column; gap: 8px; }
-.gain { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border-radius: 12px; }
-.gain-icon { font-size: 21px; }
+.perfect-days { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--line); color: var(--fg-dim); font-size: 12.5px; }
+.log-block { margin-top: 26px; }
+.gain-list { border-top: 1px solid var(--line); }
+.gain { display: flex; min-height: 58px; align-items: center; gap: 11px; border-bottom: 1px solid var(--line); }
+.gain-icon { font-size: 19px; }
 .gain-body { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; }
 .gain-body strong { overflow: hidden; font-size: 13.5px; text-overflow: ellipsis; white-space: nowrap; }
 .gain-body small { color: var(--fg-dim); font-size: 11.5px; }
 .gain-amount { color: var(--good); font-size: 15px; }
-.empty { padding: 18px; color: var(--fg-dim); font-size: 13.5px; text-align: center; }
-.ending { margin-top: 24px; padding: 24px; border-color: color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 16px; background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%), var(--bg-card); }
-.ending-mark { font-size: 38px; }
+.empty { margin: 0; padding: 18px 0; border-block: 1px solid var(--line); color: var(--fg-dim); font-size: 13.5px; }
+.ending { margin-top: 28px; padding: 24px 0 0 20px; border-top: 1px solid var(--line); border-left: 3px solid var(--accent); }
+.ending-mark { font-size: 34px; }
+.ending > span { display: block; margin-top: 6px; color: var(--accent-text); font-size: 12px; font-weight: 800; }
 .ending h2 { margin: 6px 0; font-size: 21px; }
-.epigraph { margin: 0; color: var(--accent); font-size: 13px; font-weight: 700; }
-.narrative { margin: 16px 0 0; font-size: 14px; line-height: 1.8; }
+.epigraph { margin: 0; color: var(--accent-text); font-size: 13px; font-weight: 700; }
+.narrative { margin: 16px 0 18px; font-size: 14px; line-height: 1.8; }
+.start-feedback { margin: 18px 0 0; color: var(--good); font-size: 13px; font-weight: 700; }
 
 @media (max-width: 480px) {
-  .season-inline-head { flex-direction: column; gap: 2px; }
+  .season-inline-head, .season-empty, .gain-notice { align-items: flex-start; flex-direction: column; }
   .hero h1 { font-size: 22px; }
-  .day-badge { min-width: 70px; padding: 9px 10px; }
-  .stat-card { padding: 16px; }
+  .day-badge { min-width: 70px; }
+  .season-empty .season-start, .gain-notice .season-start { width: 100%; }
   .stat-row { grid-template-columns: 74px minmax(0, 1fr) 24px; gap: 8px; }
   .stat-label { font-size: 12.5px; }
   .gain-body strong { font-size: 12.5px; }
+  .ending { padding-left: 14px; }
 }
 </style>
