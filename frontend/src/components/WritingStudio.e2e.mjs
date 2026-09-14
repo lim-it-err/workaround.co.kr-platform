@@ -160,7 +160,7 @@ test('054: publish sheet validation, published autosave and first publication da
   await sheet(page).getByRole('button', { name: '발행 확정' }).click()
   await page.waitForURL(`${base}blog/**`)
   assert.equal((await posts(page))[0].publishedAt, initialPublishedAt)
-  await page.getByRole('button', { name: 'Studio에서 편집' }).click()
+  await page.getByRole('button', { name: '이어서 쓰기 →' }).click()
   assert.equal(await body(page).inputValue(), '공개 상태를 유지하는 편집')
 })
 
@@ -213,7 +213,7 @@ test('056/055: archive drawer restores draft/public, preserves dates and exclude
   await page.locator('.post-body').waitFor()
   await page.reload()
   assert.match(await page.locator('.post-body').textContent(), /복원 본문/)
-  await page.getByRole('button', { name: '아카이브로', exact: true }).click()
+  await page.getByRole('button', { name: '← 보관함', exact: true }).click()
   await page.goBack()
   await page.locator('.post-body').waitFor()
   await page.goForward()

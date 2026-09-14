@@ -929,46 +929,21 @@ const activeBlogPost = computed(() => {
   }
   return publishedBlogPosts.value.find((post) => post.slug === activeBlogSlug.value) || null
 })
-const activeBlogPostIndex = computed(() =>
-  publishedBlogPosts.value.findIndex((post) => post.slug === activeBlogPost.value?.slug)
-)
-const adjacentBlogPosts = computed(() => ({
-  previous:
-    activeBlogPostIndex.value >= 0 ? publishedBlogPosts.value[activeBlogPostIndex.value + 1] || null : null,
-  next:
-    activeBlogPostIndex.value > 0 ? publishedBlogPosts.value[activeBlogPostIndex.value - 1] || null : null
-}))
-const blogHeroStats = computed(() => {
-  const latestPublished = publishedBlogPosts.value[0]
-  return [
-    { label: '공개', value: `${publishedBlogPosts.value.length}편` },
-    { label: '초안', value: `${draftBlogPosts.value.length}편` },
-    { label: '최근 발행', value: latestPublished ? formatDate(latestPublished.publishedAt) : '없음' }
-  ]
-})
-const blogSeriesGroups = computed(() => {
+const latestPublishedBlogPost = computed(() => publishedBlogPosts.value[0] || null)
+const blogArchiveYears = computed(() => {
   const groups = new Map()
   publishedBlogPosts.value.forEach((post) => {
-    const seriesTag = post.tags.find(isBlogSeriesTag)
-    if (!seriesTag) {
-      return
-    }
-    const label = seriesTag.slice(seriesTag.indexOf(':') + 1).trim()
+    const year = new Date(post.publishedAt).getFullYear()
+    const label = Number.isFinite(year) ? year : '날짜 미정'
     if (!groups.has(label)) {
       groups.set(label, [])
     }
     groups.get(label).push(post)
   })
-  return Array.from(groups, ([label, posts]) => ({ label, posts }))
+  return Array.from(groups, ([year, posts]) => ({ year, posts }))
 })
-const standalonePublishedBlogPosts = computed(() =>
-  publishedBlogPosts.value.filter((post) => !post.tags.some(isBlogSeriesTag))
-)
 const studioPreviewHtml = computed(() =>
   renderMarkdownToHtml(studioState.value.bodyMarkdown, studioState.value.tables)
-)
-const activeBlogReadingMinutes = computed(() =>
-  activeBlogPost.value ? Math.max(1, Math.ceil(countWords(activeBlogPost.value.bodyMarkdown) / 230)) : 0
 )
 
 const workWorkerSummary = computed(() => {
@@ -2748,6 +2723,39 @@ function formatDate(value) {
   }
 }
 
+function formatBlogDate(value) {
+  if (!value) {
+    return '날짜 미정'
+  }
+  try {
+    return new Date(value).toLocaleDateString('ko-KR', {
+      month: 'long',
+      day: 'numeric'
+    })
+  } catch (error) {
+    return value
+  }
+}
+
+function formatBlogLongDate(value) {
+  if (!value) {
+    return '날짜 미정'
+  }
+  try {
+    return new Date(value).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  } catch (error) {
+    return value
+  }
+}
+
+function blogCategory(post) {
+  return visibleBlogTags(post?.tags)[0] || '기록'
+}
+
 function readElevatorTickerDefault() {
   return typeof window === 'undefined' || window.innerWidth > 760
 }
@@ -3970,138 +3978,86 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else-if="page === 'bloghub'" class="feature-shell blog-shell">
-            <StationHeader
-              line-class="line-b"
-              station-code="B01"
-              title="읽기와 쓰기를 위한 조용한 승강장"
-              title-en="BLOG DISTRICT"
-              status="공개 운행"
-              status-tone="live"
-              summary="published 만 공개 · draft 는 Studio 안에서만"
-              @exit="openPage('junction')"
-            />
-            <section class="section-block blog-primary">
-              <article class="blog-primary-main">
-                <div>
-                  <p class="eyebrow">Line B · Blog District</p>
-                  <h3>읽고 쓰는 승강장</h3>
-                  <p class="blog-primary-copy">공개 글과 초안을 한곳에서</p>
-                </div>
+            <section class="blog-tone-page blog-hub-page">
+              <section v-if="latestPublishedBlogPost" class="blog-tone-hero">
+                <small>최근 글</small>
+                <h1>
+                  <button type="button" class="blog-text-link" @click="openBlogPost(latestPublishedBlogPost.slug)">
+                    {{ latestPublishedBlogPost.title }}
+                  </button>
+                </h1>
+                <p>{{ latestPublishedBlogPost.summary }}</p>
+              </section>
+              <section v-else class="blog-tone-hero">
+                <small>최근 글</small>
+                <h1>아직 공개된 글이 없습니다</h1>
+                <p>첫 기록은 글쓰기에서 시작할 수 있습니다.</p>
+              </section>
 
-                <div class="blog-primary-stats">
-                  <article v-for="item in blogHeroStats" :key="item.label">
-                    <span>{{ item.label }}</span>
-                    <strong class="num">{{ item.value }}</strong>
-                  </article>
-                </div>
+              <nav class="blog-tone-actions" aria-label="블로그 바로가기">
+                <button type="button" class="ghost-button" @click="openPage('writingStudio')">새 글 쓰기</button>
+                <button type="button" class="ghost-button" @click="openBlogArchive">보관함</button>
+              </nav>
 
-                <div class="blog-primary-actions">
-                  <button type="button" class="btn btn-exit" @click="openBlogArchive">아카이브 들어가기</button>
-                  <button type="button" class="btn btn-ghost" @click="openPage('writingStudio')">Writing Studio</button>
-                </div>
-              </article>
-
-              <aside class="blog-primary-list">
-                <div class="section-head compact">
-                  <h3>최근 발행</h3>
-                  <button type="button" class="text-button" @click="openBlogArchive">전체 보기</button>
-                </div>
-                <article v-for="post in publishedBlogPosts.slice(0, 3)" :key="post.id" class="blog-recent-item">
-                  <div>
-                    <time class="num">{{ formatDate(post.publishedAt) }}</time>
-                    <StatusBadge :status="post.status" />
-                  </div>
-                  <button type="button" @click="openBlogPost(post.slug)">{{ post.title }}</button>
+              <div class="blog-timetable" aria-label="최근 발행 글">
+                <article v-for="post in publishedBlogPosts.slice(1, 4)" :key="post.id" class="blog-timetable-row">
+                  <p class="blog-timetable-meta">
+                    <time>{{ formatBlogDate(post.publishedAt) }}</time> · {{ blogCategory(post) }}
+                  </p>
+                  <h2>
+                    <button type="button" class="blog-text-link" @click="openBlogPost(post.slug)">{{ post.title }}</button>
+                  </h2>
                 </article>
-              </aside>
+              </div>
             </section>
           </section>
 
           <section v-else-if="page === 'blogArchive'" class="feature-shell blog-shell">
-            <section class="section-block reading-shell archive-document">
-              <div class="section-head archive-head">
-                <div>
-                  <p class="eyebrow">Public Archive</p>
-                  <h3>공개 글 목록</h3>
-                </div>
-                <span>{{ publishedBlogPosts.length }}편</span>
-              </div>
+            <section class="blog-tone-page blog-archive-page">
+              <header class="blog-tone-hero">
+                <small>글 보관함</small>
+                <h1>생각이 지나간 자리</h1>
+              </header>
 
-              <section v-for="series in blogSeriesGroups" :key="series.label" class="archive-series">
-                <div class="archive-series-head">
-                  <p class="eyebrow">Series</p>
-                  <h4>{{ series.label }}</h4>
-                  <span>{{ series.posts.length }}편</span>
-                </div>
-                <div class="archive-list">
-                  <article v-for="post in series.posts" :key="post.id" class="archive-item">
-                    <time class="when num">{{ formatDate(post.publishedAt) }}</time>
-                    <div class="archive-item-main">
-                      <button type="button" class="archive-title" @click="openBlogPost(post.slug)">{{ post.title }}</button>
-                      <p class="summary">{{ post.summary }}</p>
-                      <div class="archive-meta">
-                        <span v-for="(tag, tagIndex) in visibleBlogTags(post.tags)" :key="`${post.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
-                        <StatusBadge :status="post.status" />
-                      </div>
-                    </div>
-                  </article>
+              <section v-for="group in blogArchiveYears" :key="group.year" class="blog-year-group">
+                <h2 class="blog-year-label">{{ group.year }}<template v-if="group.year !== '날짜 미정'">년</template></h2>
+                <div class="blog-archive-timetable">
+                  <button
+                    v-for="post in group.posts"
+                    :key="post.id"
+                    type="button"
+                    class="blog-archive-row"
+                    @click="openBlogPost(post.slug)"
+                  >
+                    <time>{{ formatBlogDate(post.publishedAt) }}</time>
+                    <strong>{{ post.title }}</strong>
+                  </button>
                 </div>
               </section>
 
-              <div class="archive-list">
-                <article v-for="post in standalonePublishedBlogPosts" :key="post.id" class="archive-item">
-                  <time class="when num">{{ formatDate(post.publishedAt) }}</time>
-                  <div class="archive-item-main">
-                    <button type="button" class="archive-title" @click="openBlogPost(post.slug)">{{ post.title }}</button>
-                    <p class="summary">{{ post.summary }}</p>
-                    <div class="archive-meta">
-                      <span v-for="(tag, tagIndex) in visibleBlogTags(post.tags)" :key="`${post.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
-                      <StatusBadge :status="post.status" />
-                    </div>
-                  </div>
-                </article>
-              </div>
-
-              <div class="badge-legend">
-                <StatusBadge status="published" />
-                <span>공개 글만 노출 · 초안과 보관은 Studio에서 관리</span>
-              </div>
+              <p v-if="blogArchiveYears.length === 0" class="blog-empty-copy">아직 공개된 글이 없습니다.</p>
             </section>
           </section>
 
           <section v-else-if="page === 'blogPost'" class="feature-shell blog-shell">
             <article v-if="activeBlogPost" class="post-detail">
-              <div class="post-meta-line">
-                <span>{{ formatDate(activeBlogPost.publishedAt) }} 발행</span>
-                <span>{{ formatDate(activeBlogPost.updatedAt) }} 수정</span>
-                <span class="num">읽기 {{ activeBlogReadingMinutes }}분</span>
-              </div>
-
-              <h1>{{ activeBlogPost.title }}</h1>
-              <p class="post-lead">{{ activeBlogPost.summary }}</p>
-              <div class="post-tags">
-                <span v-for="(tag, tagIndex) in visibleBlogTags(activeBlogPost.tags)" :key="`${activeBlogPost.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
-                <StatusBadge :status="activeBlogPost.status" />
-              </div>
+              <header class="post-tone-hero">
+                <h1>{{ activeBlogPost.title }}</h1>
+                <p>{{ formatBlogLongDate(activeBlogPost.publishedAt) }} · {{ blogCategory(activeBlogPost) }}</p>
+              </header>
 
               <div class="markdown-body post-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown, activeBlogPost.tables)"></div>
 
               <footer class="post-foot-nav">
-                <button v-if="adjacentBlogPosts.previous" type="button" class="ghost-button" @click="openBlogPost(adjacentBlogPosts.previous.slug)">
-                  이전 글
-                </button>
-                <button type="button" class="ghost-button" @click="openStudioForPost(activeBlogPost.id)">Studio에서 편집</button>
-                <button type="button" class="primary-button" @click="openBlogArchive">아카이브로</button>
-                <button v-if="adjacentBlogPosts.next" type="button" class="ghost-button" @click="openBlogPost(adjacentBlogPosts.next.slug)">
-                  다음 글
-                </button>
+                <button type="button" class="post-nav-link" @click="openBlogArchive">← 보관함</button>
+                <button type="button" class="post-nav-link" @click="openStudioForPost(activeBlogPost.id)">이어서 쓰기 →</button>
               </footer>
             </article>
-            <article v-else class="reading-shell blog-not-found" role="status">
-              <p class="eyebrow">404 / Blog District</p>
+            <article v-else class="blog-tone-page blog-not-found" role="status">
+              <p class="eyebrow">찾을 수 없음</p>
               <h3>공개 글을 찾을 수 없습니다</h3>
               <p>주소가 바뀌었거나 보관된 글입니다.</p>
-              <button type="button" class="primary-button" @click="openBlogArchive">공개 글 목록</button>
+              <button type="button" class="ghost-button" @click="openBlogArchive">공개 글 목록</button>
             </article>
           </section>
 
