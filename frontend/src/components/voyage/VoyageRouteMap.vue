@@ -43,6 +43,13 @@ const photoInput = ref(null)
 const restoreInput = ref(null)
 const returnFocus = ref(null)
 const mapExpanded = ref(typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches)
+const replayPhase = ref('idle')
+const replaySpeed = ref('normal')
+const replayFrameIndex = ref(-1)
+const replayMarker = ref(null)
+const reducedMotion = ref(false)
+let replayTimer = null
+let motionQuery = null
 const dayStorageKey = voyageStorageKey(props.voyage.id, 'days')
 const dayRecords = ref(readDayRecords())
 const backupMessage = ref('')
@@ -75,6 +82,34 @@ const timeline = computed(() => applyStopRecords(
   selectedDay.value ? dayRecords.value[selectedDay.value.date]?.stops || {} : {}
 ))
 const segments = computed(() => buildRouteSegments(props.voyage, todayIndex.value, selectedDayIndex.value))
+const replayAvailable = computed(() => props.voyage.status === 'arrived' && props.voyage.days.length > 0)
+const replayFrames = computed(() => {
+  const firstSegment = segments.value[0]
+  let point = firstSegment?.fromPoint || (props.voyage.cities[0] ? projectCity(props.voyage.cities[0]) : null)
+  const frames = []
+
+  props.voyage.days.forEach((day, dayIndex) => {
+    const daySegments = segments.value.filter((segment) => segment.dayIndex === dayIndex)
+    if (!daySegments.length) {
+      if (point) frames.push({ dayIndex, point })
+      return
+    }
+    daySegments.forEach((segment) => {
+      point = segment.toPoint
+      frames.push({ dayIndex, point })
+    })
+  })
+  return frames
+})
+const replayDelay = computed(() => replaySpeed.value === 'fast' ? 600 : 1200)
+const replayTransition = computed(() => reducedMotion.value ? '0ms' : `${Math.round(replayDelay.value * 0.72)}ms`)
+const replayStatus = computed(() => {
+  if (replayPhase.value === 'idle') return '여정 전체를 처음부터 돌아봅니다.'
+  if (replayPhase.value === 'completed') return '종착역까지 돌아봤습니다.'
+  const frame = replayFrames.value[Math.max(0, replayFrameIndex.value)]
+  const dayLabel = frame ? `${frame.dayIndex + 1}일차` : '출발역'
+  return replayPhase.value === 'paused' ? `${dayLabel}에서 멈춤` : `${dayLabel} 재생 중`
+})
 const gauges = computed(() => routeGauges(effectiveVoyage.value, todayIndex.value))
 const distanceProgress = computed(() => percent(gauges.value.completedDistance, gauges.value.totalDistance))
 const spendProgress = computed(() => percent(gauges.value.spent, gauges.value.budgetPlan))
@@ -151,11 +186,20 @@ watch(() => props.initialDayIndex, (value) => {
 
 onMounted(async () => {
   window.addEventListener('resize', handleViewportResize)
+  motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  reducedMotion.value = motionQuery.matches
+  motionQuery.addEventListener?.('change', handleMotionPreference)
   handleViewportResize()
   await openRequestedTransferStop()
 })
 onBeforeUnmount(() => {
+  clearReplayTimer()
+  motionQuery?.removeEventListener?.('change', handleMotionPreference)
   window.removeEventListener('resize', handleViewportResize)
+})
+
+watch(replayAvailable, (available) => {
+  if (!available) resetReplay()
 })
 
 function clampDayIndex(index) {
@@ -197,11 +241,80 @@ async function openRequestedTransferStop() {
   }
 }
 
-function selectDay(index) {
+function selectDay(index, fromReplay = false) {
+  if (!fromReplay && replayPhase.value === 'playing') pauseReplay()
   selectedDayIndex.value = clampDayIndex(index)
   detail.value = null
   detailDraft.value = null
   emit('select-day', selectedDayIndex.value)
+}
+
+function startOrToggleReplay() {
+  if (!replayAvailable.value || !replayFrames.value.length) return
+  if (replayPhase.value === 'playing') {
+    pauseReplay()
+    return
+  }
+  if (replayPhase.value === 'paused') {
+    replayPhase.value = 'playing'
+    scheduleReplayStep(160)
+    return
+  }
+
+  const firstSegment = segments.value[0]
+  replayFrameIndex.value = -1
+  replayMarker.value = firstSegment?.fromPoint || replayFrames.value[0].point
+  replayPhase.value = 'playing'
+  mapExpanded.value = true
+  scheduleReplayStep(220)
+}
+
+function pauseReplay() {
+  clearReplayTimer()
+  if (replayPhase.value === 'playing') replayPhase.value = 'paused'
+}
+
+function setReplaySpeed(speed) {
+  replaySpeed.value = speed
+  if (replayPhase.value === 'playing') scheduleReplayStep(160)
+}
+
+function scheduleReplayStep(delay = replayDelay.value) {
+  clearReplayTimer()
+  replayTimer = window.setTimeout(advanceReplay, delay)
+}
+
+function advanceReplay() {
+  if (replayPhase.value !== 'playing') return
+  const nextIndex = replayFrameIndex.value + 1
+  if (nextIndex >= replayFrames.value.length) {
+    replayPhase.value = 'completed'
+    clearReplayTimer()
+    return
+  }
+
+  const frame = replayFrames.value[nextIndex]
+  replayFrameIndex.value = nextIndex
+  replayMarker.value = frame.point
+  selectDay(frame.dayIndex, true)
+  scheduleReplayStep()
+}
+
+function resetReplay() {
+  clearReplayTimer()
+  replayPhase.value = 'idle'
+  replayFrameIndex.value = -1
+  replayMarker.value = null
+}
+
+function clearReplayTimer() {
+  if (replayTimer === null) return
+  window.clearTimeout(replayTimer)
+  replayTimer = null
+}
+
+function handleMotionPreference(event) {
+  reducedMotion.value = event.matches
 }
 
 function dayTabState(index) {
@@ -574,6 +687,25 @@ function entryFare(entry) {
       </div>
     </section>
 
+    <section v-if="replayAvailable" class="route-replay" aria-label="여정 회고 재생">
+      <div class="route-replay__summary">
+        <strong>여정 다시 보기</strong>
+        <span aria-live="polite">{{ replayStatus }}</span>
+      </div>
+      <div class="route-replay__controls">
+        <button
+          type="button"
+          class="route-replay__main"
+          :aria-label="replayPhase === 'playing' ? '여정 재생 일시정지' : '여정 재생 시작'"
+          @click="startOrToggleReplay"
+        >{{ replayPhase === 'playing' ? 'Ⅱ 일시정지' : replayPhase === 'paused' ? '▶ 이어서' : replayPhase === 'completed' ? '↻ 다시 재생' : '▶ 재생' }}</button>
+        <div class="route-replay__speed" role="group" aria-label="재생 속도">
+          <button type="button" :aria-pressed="replaySpeed === 'normal'" @click="setReplaySpeed('normal')">보통</button>
+          <button type="button" :aria-pressed="replaySpeed === 'fast'" @click="setReplaySpeed('fast')">빠르게</button>
+        </div>
+      </div>
+    </section>
+
     <div class="route-layout">
       <div class="route-map-control">
         <button
@@ -652,6 +784,20 @@ function entryFare(entry) {
                 >{{ dayRange(city.indexes) }}</text>
               </template>
             </a>
+          </g>
+
+          <g
+            v-if="replayMarker"
+            class="route-replay-marker"
+            :style="{
+              transform: `translate(${replayMarker.x}px, ${replayMarker.y}px)`,
+              '--replay-transition': replayTransition
+            }"
+            aria-hidden="true"
+          >
+            <circle class="route-replay-marker__halo" r="18" />
+            <circle class="route-replay-marker__dot" r="9" />
+            <circle class="route-replay-marker__core" r="3" />
           </g>
         </svg>
       </section>
@@ -1006,6 +1152,66 @@ function entryFare(entry) {
   background: var(--safety);
 }
 
+.route-replay {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.route-replay__summary {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.route-replay__summary strong {
+  font-size: var(--fs-body);
+}
+
+.route-replay__summary span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: var(--fs-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-replay__controls,
+.route-replay__speed {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.route-replay button {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.route-replay button:hover,
+.route-replay button:focus-visible,
+.route-replay button[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.route-replay__main {
+  min-width: 102px;
+}
+
 .route-layout {
   display: grid;
   gap: clamp(26px, 5vw, 48px);
@@ -1136,6 +1342,29 @@ function entryFare(entry) {
 .route-station--return .route-station__dot {
   fill: none;
   pointer-events: stroke;
+}
+
+.route-replay-marker {
+  pointer-events: none;
+  transform-box: view-box;
+  transform-origin: 0 0;
+  transition: transform var(--replay-transition) linear;
+}
+
+.route-replay-marker__halo {
+  fill: color-mix(in srgb, var(--accent) 20%, transparent);
+  stroke: var(--bg);
+  stroke-width: 3;
+}
+
+.route-replay-marker__dot {
+  fill: var(--accent);
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+
+.route-replay-marker__core {
+  fill: var(--bg);
 }
 
 .route-station__ring {
@@ -1916,6 +2145,19 @@ function entryFare(entry) {
     flex-direction: column;
   }
 
+  .route-replay {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .route-replay__controls {
+    justify-content: space-between;
+  }
+
+  .route-replay__summary span {
+    white-space: normal;
+  }
+
   .route-timetable__head,
   .route-timetable li {
     grid-template-columns: 42px 42px minmax(0, 1fr);
@@ -1946,6 +2188,10 @@ function entryFare(entry) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .route-replay-marker {
+    transition-duration: 0ms;
+  }
+
   .route-station__pulse {
     animation: none;
     opacity: 0.22;
