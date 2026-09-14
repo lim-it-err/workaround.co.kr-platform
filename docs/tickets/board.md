@@ -53,7 +53,6 @@
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
 - `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
-- `TKT-135` `P2` `advisor` `ready` `[FE]` Advisor 시즌 수명주기 — 종료 보존·명시적 새 시즌·평생 누적·마이그레이션 (126 뒤)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
@@ -63,12 +62,13 @@
 
 ## Started
 
-- `TKT-126` `P1` `tone` `started` `[FE]` 순환선 심볼 C안 + 파비콘 + 스플래시 보드 높이 (D-018, 소형)
+- `TKT-135` `P2` `advisor` `started` `[FE]` Advisor 시즌 수명주기 — 종료 보존·명시적 새 시즌·평생 누적·마이그레이션
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
 
 
 
@@ -91,6 +91,7 @@
 
 ## Finished
 
+- `TKT-126` `[FE]` 순환선 심볼 C안(SiteLoopSymbol·파비콘 SVG/16/32·환승 표식) + 스플래시 한 줄 보드·hairline 티커 — r1 통과 (2026-09-14)
 - `TKT-122` `[PM]` Advisor 시즌 수명주기 스펙 — `design/advisor-season-spec.md` (2026-09-14) → 구현 TKT-135
 - `TKT-116` `[FE]` 여정 노선도 회고 모드 — 도착 여행 열차 점 재생·일시정지·2단 속도·reduced-motion — r1 통과 (2026-09-14)
 - `TKT-120` `[SIM]` 시뮬 2화면 톤 전환 — 멈춘 엘리베이터·심야 택시, 지표 행·캔버스 예외 — r1 통과 (2026-09-14)
