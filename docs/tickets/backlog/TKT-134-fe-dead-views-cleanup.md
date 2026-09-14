@@ -15,3 +15,7 @@
 
 ## 질문/에스컬레이션
 - 없음.
+
+## PM 추가 (2026-09-14, REV-TKT-120-r1)
+- `frontend/src/components/taxiDispatch.e2e.mjs` 복귀 단계가 TKT-114 에서 제거된 격납고 `.sim-annex` 를 찾아 실패 — 현재 격납고 구조(히어로·행)에 맞게 selector 갱신. 시뮬 로직 단언은 그대로.
+
