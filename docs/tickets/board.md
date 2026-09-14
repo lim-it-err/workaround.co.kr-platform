@@ -73,13 +73,13 @@
 
 ## Started
 
-- `TKT-118` `P2` `tone` `started` `[FE]` 라이트 테마 톤 토큰 매핑 — 화면별 대비·hairline 검수 중
 - `TKT-121` `P2` `advisor` `started` `[FE]` Advisor 3표면 뼈대 + 톤 정합 + 초안 저장 — blocked 해제(PM 답변·`design/advisor-surfaces-spec.md`)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
 
 
 
@@ -98,6 +98,7 @@
 
 ## Finished
 
+- `TKT-118` `[FE]` 라이트 테마 톤 토큰 매핑 — r1 통과 (2026-09-14, [중요] W 글자 대비 → 119)
 - `TKT-114` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime 톤 전환 — r2 통과 (2026-09-14, r1 반려: 영어 상태 토큰·영어 제목)
 - `TKT-112` `[FE]` 여행 목록+노선도 톤 정합 — hairline 헤더·지도 주인공·홈 V 단일 진입 — r1 통과 (2026-09-14, [중요] ACTUAL 라벨 → 118)
 - `TKT-117` `[FE]` 정차역 상세 편집 — 식당·금액·메모·사진·지도 링크, 정적 저장 — r1 통과 (2026-09-14, 커밋은 112 와 묶음)

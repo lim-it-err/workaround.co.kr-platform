@@ -1,0 +1,329 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "theme": "dark",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 32
+      },
+      "hero": {
+        "x": 20,
+        "y": 82,
+        "w": 335,
+        "h": 188.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 41,
+          "y": 220.25,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        },
+        {
+          "text": "시작",
+          "x": 303.9375,
+          "y": 366.796875,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        }
+      ],
+      "note": {
+        "text": "화이트채플 합류(TKT-107) 시 히어로 교체 · 딥링크 /elevator /taxi 유지 (D-012)",
+        "x": 20,
+        "y": 484.34375,
+        "w": 335,
+        "h": 36
+      },
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "시작",
+      "focus2": "시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 375,
+        "h": 32
+      },
+      "hero": {
+        "x": 20,
+        "y": 82,
+        "w": 335,
+        "h": 188.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 41,
+          "y": 220.25,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        },
+        {
+          "text": "시작",
+          "x": 303.9375,
+          "y": 366.796875,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        }
+      ],
+      "note": {
+        "text": "화이트채플 합류(TKT-107) 시 히어로 교체 · 딥링크 /elevator /taxi 유지 (D-012)",
+        "x": 20,
+        "y": 484.34375,
+        "w": 335,
+        "h": 36
+      },
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "시작",
+      "focus2": "시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 32
+      },
+      "hero": {
+        "x": 20,
+        "y": 82,
+        "w": 350,
+        "h": 188.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 41,
+          "y": 220.25,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        },
+        {
+          "text": "시작",
+          "x": 318.9375,
+          "y": 366.796875,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        }
+      ],
+      "note": {
+        "text": "화이트채플 합류(TKT-107) 시 히어로 교체 · 딥링크 /elevator /taxi 유지 (D-012)",
+        "x": 20,
+        "y": 484.34375,
+        "w": 350,
+        "h": 36
+      },
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "시작",
+      "focus2": "시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 390,
+        "h": 32
+      },
+      "hero": {
+        "x": 20,
+        "y": 82,
+        "w": 350,
+        "h": 188.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 41,
+          "y": 220.25,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        },
+        {
+          "text": "시작",
+          "x": 318.9375,
+          "y": 366.796875,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        }
+      ],
+      "note": {
+        "text": "화이트채플 합류(TKT-107) 시 히어로 교체 · 딥링크 /elevator /taxi 유지 (D-012)",
+        "x": 20,
+        "y": 484.34375,
+        "w": 350,
+        "h": 36
+      },
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "시작",
+      "focus2": "시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 32
+      },
+      "hero": {
+        "x": 360,
+        "y": 100,
+        "w": 720,
+        "h": 188.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 381,
+          "y": 238.25,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        },
+        {
+          "text": "시작",
+          "x": 1028.9375,
+          "y": 384.796875,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        }
+      ],
+      "note": {
+        "text": "화이트채플 합류(TKT-107) 시 히어로 교체 · 딥링크 /elevator /taxi 유지 (D-012)",
+        "x": 360,
+        "y": 502.34375,
+        "w": 720,
+        "h": 18
+      },
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "시작",
+      "focus2": "시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "overflow": 0,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "w": 1440,
+        "h": 32
+      },
+      "hero": {
+        "x": 360,
+        "y": 100,
+        "w": 720,
+        "h": 188.25
+      },
+      "buttons": [
+        {
+          "text": "시작",
+          "x": 381,
+          "y": 238.25,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        },
+        {
+          "text": "시작",
+          "x": 1028.9375,
+          "y": 384.796875,
+          "w": 51.0625,
+          "h": 38,
+          "font": "13.3333px",
+          "ariaLabel": null
+        }
+      ],
+      "note": {
+        "text": "화이트채플 합류(TKT-107) 시 히어로 교체 · 딥링크 /elevator /taxi 유지 (D-012)",
+        "x": 360,
+        "y": 502.34375,
+        "w": 720,
+        "h": 18
+      },
+      "bg": "rgb(10, 15, 22)",
+      "color": "rgb(243, 246, 251)",
+      "scripts": 0,
+      "links": 0,
+      "external": [],
+      "focus1": "시작",
+      "focus2": "시작",
+      "firstSameURL": true,
+      "secondSameURL": true,
+      "clickSameURL": true
+    }
+  ],
+  "events": []
+}
