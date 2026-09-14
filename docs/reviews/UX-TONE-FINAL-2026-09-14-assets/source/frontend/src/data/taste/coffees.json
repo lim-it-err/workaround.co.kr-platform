@@ -1,0 +1,194 @@
+[
+  {
+    "id": "c01",
+    "name": "에티오피아 예가체프 (라이트 로스트)",
+    "region": "에티오피아",
+    "note": "자스민과 레몬, 홍차처럼 가벼운 바디의 라이트 로스트",
+    "profile": { "sweetness": 1, "body": -1, "acidity": 2, "fruitiness": 2, "roast": -2, "bitterness": -2, "adventurous": 1 },
+    "why": "밝은 산미와 화사한 과일향을 고른 당신에게, 예가체프의 홍차 같은 섬세함이 어울립니다."
+  },
+  {
+    "id": "c02",
+    "name": "파나마 게이샤 (라이트 로스트)",
+    "region": "파나마",
+    "note": "자스민과 베르가못, 우아하고 화사한 티 같은 커피",
+    "profile": { "sweetness": 1, "body": -2, "acidity": 2, "fruitiness": 2, "roast": -2, "bitterness": -2, "adventurous": 2 },
+    "why": "가볍고 낯선 개성을 고른 당신에게, 게이샤의 꽃향 가득한 우아함이 어울립니다."
+  },
+  {
+    "id": "c03",
+    "name": "케냐 AA (미디엄 로스트)",
+    "region": "케냐",
+    "note": "블랙커런트와 자몽, 쥬시하고 또렷한 산미",
+    "profile": { "sweetness": 1, "body": 1, "acidity": 2, "fruitiness": 2, "roast": 0, "bitterness": 0, "adventurous": 1 },
+    "why": "쥬시한 산미와 과일향을 고른 당신에게, 케냐 AA의 또렷한 베리향이 어울립니다."
+  },
+  {
+    "id": "c04",
+    "name": "르완다 (미디엄-라이트 로스트)",
+    "region": "르완다",
+    "note": "붉은 베리와 꽃향, 깔끔하고 밝은 한 잔",
+    "profile": { "sweetness": 1, "body": -1, "acidity": 2, "fruitiness": 2, "roast": -1, "bitterness": -1, "adventurous": 1 },
+    "why": "산뜻하고 밝은 결을 좋아하는 당신에게, 르완다의 붉은 베리향이 어울립니다."
+  },
+  {
+    "id": "c05",
+    "name": "에티오피아 내추럴 시다모 (미디엄-라이트 로스트)",
+    "region": "에티오피아",
+    "note": "블루베리와 와인 같은 발효향의 내추럴 프로세스",
+    "profile": { "sweetness": 2, "body": 0, "acidity": 1, "fruitiness": 2, "roast": -1, "bitterness": -1, "adventurous": 2 },
+    "why": "달콤하고 개성 강한 과일향을 고른 당신에게, 내추럴 시다모의 블루베리향이 어울립니다."
+  },
+  {
+    "id": "c06",
+    "name": "코스타리카 타라주 (미디엄 로스트)",
+    "region": "코스타리카",
+    "note": "꿀과 오렌지, 깔끔하고 균형 잡힌 산미",
+    "profile": { "sweetness": 1, "body": 0, "acidity": 2, "fruitiness": 1, "roast": 0, "bitterness": -1, "adventurous": 0 },
+    "why": "깔끔한 산미와 은은한 단맛을 고른 당신에게, 타라주의 균형 잡힌 결이 어울립니다."
+  },
+  {
+    "id": "c07",
+    "name": "콜롬비아 수프리모 (미디엄 로스트)",
+    "region": "콜롬비아",
+    "note": "카라멜과 견과, 부드럽게 균형 잡힌 클래식",
+    "profile": { "sweetness": 1, "body": 1, "acidity": 1, "fruitiness": 0, "roast": 0, "bitterness": 0, "adventurous": -1 },
+    "why": "익숙하고 균형 잡힌 한 잔을 고른 당신에게, 콜롬비아 수프리모의 부드러움이 어울립니다."
+  },
+  {
+    "id": "c08",
+    "name": "수마트라 만델링 (다크 로스트)",
+    "region": "인도네시아",
+    "note": "흙내음과 허브, 묵직하고 낮은 산미의 다크",
+    "profile": { "sweetness": 0, "body": 2, "acidity": -2, "fruitiness": -1, "roast": 2, "bitterness": 2, "adventurous": 1 },
+    "why": "묵직하고 낮은 산미를 고른 당신에게, 만델링의 흙내음 나는 무게감이 어울립니다."
+  },
+  {
+    "id": "c09",
+    "name": "브라질 산토스 (미디엄-다크 로스트)",
+    "region": "브라질",
+    "note": "고소한 견과와 초콜릿, 낮은 산미의 묵직한 베이스",
+    "profile": { "sweetness": 1, "body": 2, "acidity": -1, "fruitiness": -1, "roast": 1, "bitterness": 1, "adventurous": -1 },
+    "why": "고소하고 묵직한 결을 고른 당신에게, 브라질 산토스의 견과빛 단맛이 어울립니다."
+  },
+  {
+    "id": "c10",
+    "name": "과테말라 안티구아 (미디엄 로스트)",
+    "region": "과테말라",
+    "note": "다크초콜릿과 향신료, 묵직하고 균형 잡힌 바디",
+    "profile": { "sweetness": 1, "body": 1, "acidity": 1, "fruitiness": 0, "roast": 1, "bitterness": 1, "adventurous": 0 },
+    "why": "진한 초콜릿빛 균형을 고른 당신에게, 안티구아의 스파이시한 무게감이 어울립니다."
+  },
+  {
+    "id": "c11",
+    "name": "이탈리안 에스프레소 블렌드 (다크 로스트)",
+    "region": "블렌드",
+    "note": "다크초콜릿과 스모키함, 진하고 쌉쌀한 에스프레소",
+    "profile": { "sweetness": 0, "body": 2, "acidity": -1, "fruitiness": -1, "roast": 2, "bitterness": 2, "adventurous": -1 },
+    "why": "진하고 쌉쌀한 끝맛을 고른 당신에게, 이탈리안 블렌드의 스모키한 힘이 어울립니다."
+  },
+  {
+    "id": "c12",
+    "name": "프렌치 로스트 (다크 로스트)",
+    "region": "블렌드",
+    "note": "탄내와 스모키함이 강한 가장 진한 다크 로스트",
+    "profile": { "sweetness": -2, "body": 2, "acidity": -2, "fruitiness": -2, "roast": 2, "bitterness": 2, "adventurous": 0 },
+    "why": "가장 진하고 쌉쌀한 맛을 고른 당신에게, 프렌치 로스트의 강렬한 탄맛이 어울립니다."
+  },
+  {
+    "id": "c13",
+    "name": "하우스 블렌드 (미디엄 로스트)",
+    "region": "블렌드",
+    "note": "초콜릿과 견과, 누구에게나 편안한 데일리 블렌드",
+    "profile": { "sweetness": 1, "body": 1, "acidity": 0, "fruitiness": 0, "roast": 1, "bitterness": 0, "adventurous": -2 },
+    "why": "부담 없이 익숙한 한 잔을 고른 당신에게, 하우스 블렌드의 편안한 균형이 어울립니다."
+  },
+  {
+    "id": "c14",
+    "name": "하와이 코나 (미디엄 로스트)",
+    "region": "하와이",
+    "note": "부드러운 버터와 견과, 은은한 단맛의 매끄러운 커피",
+    "profile": { "sweetness": 2, "body": 1, "acidity": 0, "fruitiness": 0, "roast": 0, "bitterness": -1, "adventurous": 0 },
+    "why": "부드럽고 달큰한 결을 고른 당신에게, 코나의 매끄러운 버터빛 단맛이 어울립니다."
+  },
+  {
+    "id": "c15",
+    "name": "자메이카 블루마운틴 (미디엄 로스트)",
+    "region": "자메이카",
+    "note": "쌉쌀함 없이 매끈하고 섬세하게 균형 잡힌 커피",
+    "profile": { "sweetness": 1, "body": 1, "acidity": 1, "fruitiness": 0, "roast": 0, "bitterness": -2, "adventurous": 0 },
+    "why": "쌉쌀함 없는 부드러움을 고른 당신에게, 블루마운틴의 섬세한 균형이 어울립니다."
+  },
+  {
+    "id": "c16",
+    "name": "온두라스 (미디엄 로스트)",
+    "region": "온두라스",
+    "note": "카라멜과 사과, 부드럽고 달큰한 마일드 커피",
+    "profile": { "sweetness": 2, "body": 0, "acidity": 1, "fruitiness": 1, "roast": 0, "bitterness": -1, "adventurous": 0 },
+    "why": "달큰하고 부드러운 산미를 고른 당신에게, 온두라스의 카라멜빛 단맛이 어울립니다."
+  },
+  {
+    "id": "c17",
+    "name": "인도 몬순 말라바르 (미디엄-다크 로스트)",
+    "region": "인도",
+    "note": "묵직하고 스파이시하며 산미 없는 독특한 몬순 가공",
+    "profile": { "sweetness": 0, "body": 2, "acidity": -2, "fruitiness": -1, "roast": 1, "bitterness": 1, "adventurous": 2 },
+    "why": "묵직하고 낯선 개성을 고른 당신에게, 몬순 말라바르의 산미 없는 독특함이 어울립니다."
+  },
+  {
+    "id": "c18",
+    "name": "예멘 모카 마타리 (미디엄-다크 로스트)",
+    "region": "예멘",
+    "note": "와인 같은 발효향과 초콜릿, 야성적이고 이국적인 개성",
+    "profile": { "sweetness": 1, "body": 2, "acidity": 1, "fruitiness": 1, "roast": 1, "bitterness": 1, "adventurous": 2 },
+    "why": "진하면서 낯선 개성을 고른 당신에게, 모카 마타리의 야성적인 발효향이 어울립니다."
+  },
+  {
+    "id": "c19",
+    "name": "콜롬비아 무산소 발효 (미디엄-라이트 로스트)",
+    "region": "콜롬비아",
+    "note": "열대 과일과 시나몬, 강렬한 무산소 발효의 실험적 풍미",
+    "profile": { "sweetness": 2, "body": 1, "acidity": 1, "fruitiness": 2, "roast": -1, "bitterness": 0, "adventurous": 2 },
+    "why": "달콤하고 실험적인 풍미를 고른 당신에게, 무산소 발효의 강렬한 과일향이 어울립니다."
+  },
+  {
+    "id": "c20",
+    "name": "페루 유기농 (미디엄 로스트)",
+    "region": "페루",
+    "note": "고소한 견과와 낮은 산미, 부담 없는 유기농 커피",
+    "profile": { "sweetness": 1, "body": 0, "acidity": -1, "fruitiness": -1, "roast": 0, "bitterness": 0, "adventurous": -1 },
+    "why": "산미 없이 부드럽고 익숙한 결을 고른 당신에게, 페루 유기농의 순한 고소함이 어울립니다."
+  },
+  {
+    "id": "c21",
+    "name": "부룬디 (미디엄 로스트)",
+    "region": "부룬디",
+    "note": "자두와 흑설탕, 쥬시하고 달큰한 아프리카 커피",
+    "profile": { "sweetness": 2, "body": 0, "acidity": 2, "fruitiness": 2, "roast": 0, "bitterness": -1, "adventurous": 1 },
+    "why": "달콤하고 쥬시한 산미를 고른 당신에게, 부룬디의 흑설탕빛 과일향이 어울립니다."
+  },
+  {
+    "id": "c22",
+    "name": "멕시코 치아파스 (미디엄 로스트)",
+    "region": "멕시코",
+    "note": "초콜릿과 아몬드, 가볍고 부드러운 마일드 커피",
+    "profile": { "sweetness": 1, "body": -1, "acidity": 0, "fruitiness": -1, "roast": 1, "bitterness": 0, "adventurous": -1 },
+    "why": "가볍고 부담 없는 결을 고른 당신에게, 치아파스의 부드러운 초콜릿빛이 어울립니다."
+  },
+  {
+    "id": "c23",
+    "name": "탄자니아 피베리 (미디엄 로스트)",
+    "region": "탄자니아",
+    "note": "블랙베리와 자몽, 톡 쏘는 밝은 산미의 피베리",
+    "profile": { "sweetness": 1, "body": 0, "acidity": 2, "fruitiness": 1, "roast": 0, "bitterness": 0, "adventurous": 1 },
+    "why": "톡 쏘는 밝은 산미를 고른 당신에게, 탄자니아 피베리의 상큼함이 어울립니다."
+  },
+  {
+    "id": "c24",
+    "name": "디카페인 콜롬비아 (미디엄 로스트)",
+    "region": "콜롬비아",
+    "note": "카페인 없이 부드러운 초콜릿과 견과의 균형",
+    "profile": { "sweetness": 1, "body": 1, "acidity": -1, "fruitiness": 0, "roast": 1, "bitterness": 0, "adventurous": -1 },
+    "why": "부담 없이 부드러운 한 잔을 고른 당신에게, 디카페인 콜롬비아의 편안한 균형이 어울립니다."
+  }
+]

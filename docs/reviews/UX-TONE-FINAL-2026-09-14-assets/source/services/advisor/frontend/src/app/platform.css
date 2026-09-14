@@ -1,0 +1,103 @@
+/* TKT-071 tokens + Line A. Keep parity with frontend/src/styles.css.
+   Only the app shell bridges platform styling; missions remains portable. */
+:root {
+  color-scheme: dark;
+  --font-sans: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic",
+               "Apple SD Gothic Neo", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Cascadia Code", Consolas, "SF Mono", "Roboto Mono", monospace;
+  --fs-h2: clamp(1.5rem, 3vw, 2.1rem);
+  --fs-station: clamp(1.3rem, 2.6vw, 1.7rem);
+  --fs-body: 1rem;
+  --bg: #0D131C;
+  --bg-2: #111721;
+  --panel: #1A212D;
+  --panel-2: #212A38;
+  --panel-soft: rgba(255, 255, 255, 0.045);
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #F3F6FB;
+  --text-2: #AEB8C8;
+  --muted: #7C8AA0;
+  --safety: #F3C544;
+  --safety-ink: #201A05;
+  --exit: #17A757;
+  --exit-hover: #129149;
+  --danger: #E06A7A;
+  --shadow: 0 18px 44px rgba(2, 6, 12, 0.42);
+  --code-bg: #10161F;
+  --quote-bg: rgba(243, 197, 68, 0.06);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --line-a: #7C89F0;
+  --line-a-text: #A5AEF5;
+  --line-w-text: #6BD59B;
+  --line-t-text: #F5C86E;
+  --line-d-text: #BCA1F7;
+  --code-text: #F3F6FB;
+  --accent-ink: #0D131C;
+  /* Existing module vocabulary maps to the platform's semantic tokens. */
+  --bg-soft: var(--panel-2);
+  --bg-card: var(--panel);
+  --border: var(--line-strong);
+  --fg: var(--text);
+  --fg-dim: var(--text-2);
+  --accent: var(--line-a);
+  --accent-text: var(--line-a-text);
+  --accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
+  --good: var(--line-w-text);
+  --warn: var(--line-t-text);
+  --bad: var(--danger);
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #EDF1F6;
+  --bg-2: #E4EAF2;
+  --panel: #FFFFFF;
+  --panel-2: #F5F8FC;
+  --panel-soft: rgba(16, 24, 38, 0.045);
+  --line: rgba(16, 24, 38, 0.09);
+  --line-strong: rgba(16, 24, 38, 0.18);
+  --text: #16202E;
+  --text-2: #45536A;
+  --muted: #59677C;
+  --safety: #895F00;
+  --exit: #0E8A46;
+  --exit-hover: #0B7038;
+  --danger: #C24557;
+  --shadow: 0 16px 40px rgba(53, 77, 114, 0.14);
+  --code-bg: #101724;
+  --quote-bg: rgba(233, 185, 43, 0.10);
+  --line-a: #3D4EC0;
+  --line-a-text: #32409E;
+  --line-w-text: #00793A;
+  --line-t-text: #8A5B08;
+  --line-d-text: #5A2FA8;
+  --accent-ink: #FFFFFF;
+}
+.line-a { --accent: var(--line-a); --accent-text: var(--line-a-text); }
+
+/* StationHeader §3.1 skin, adapted only for the separate Advisor shell. */
+.station-sign {
+  border-left: 3px solid var(--accent);
+  border-bottom: 1px solid var(--line-strong);
+  background: transparent;
+}
+.station-sign .band { display: none; }
+.station-sign-in { display: flex; align-items: center; gap: 14px; padding: 16px clamp(14px, 2.4vw, 24px); }
+.station-prev, .station-next { flex: 0 0 auto; min-width: 7.5em; color: var(--text-2); font-size: .875rem; }
+.station-prev { background: none; border: 0; padding: 8px 0; text-align: left; }
+.station-prev:hover { color: var(--accent-text); }
+.station-next { text-align: right; }
+.station-center { flex: 1; display: flex; gap: 12px; align-items: center; justify-content: center; text-align: center; min-width: 0; }
+.station-code { width: 40px; height: 40px; flex: none; border-radius: 50%; border: 3px solid var(--accent); color: var(--accent-text); font-weight: 900; font-size: .875rem; display: grid; place-items: center; letter-spacing: .02em; }
+.station-center h3 { margin: 0; font-size: var(--fs-station); font-weight: 800; letter-spacing: -.02em; overflow-wrap: anywhere; }
+.station-center small { display: block; color: var(--muted); text-transform: uppercase; letter-spacing: .16em; font-size: .75rem; }
+.station-sub { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 10px clamp(14px, 2.4vw, 24px); border-top: 1px solid var(--line); background: transparent; font-size: .875rem; color: var(--text-2); }
+.station-sub .spacer { flex: 1; }
+.station-sub .btn { min-height: 40px; }
+.station-sub .btn-ghost { border-color: var(--line-strong); }
+@media (max-width: 760px) {
+  .station-prev, .station-next { display: none; }
+  .station-center { justify-content: flex-start; text-align: left; }
+  .station-sub .spacer { display: none; }
+}

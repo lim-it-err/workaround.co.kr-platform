@@ -1,0 +1,134 @@
+[
+  {
+    "w": 375,
+    "theme": "dark",
+    "empty": 0,
+    "resetRows": 30
+  },
+  {
+    "w": 375,
+    "theme": "dark",
+    "cards": [
+      {
+        "text": "📖\n독서 카드 · 3분\n총, 균, 쇠\n→",
+        "bg": "rgb(26, 33, 45)",
+        "border": "14px"
+      },
+      {
+        "text": "📖\n독서 카드 · 3분\n생각에 관한 생각\n→",
+        "bg": "rgb(26, 33, 45)",
+        "border": "14px"
+      },
+      {
+        "text": "📖\n독서 카드 · 3분\n블랙 스완\n→",
+        "bg": "rgb(26, 33, 45)",
+        "border": "14px"
+      }
+    ],
+    "courseGameReturn": 0
+  },
+  {
+    "w": 375,
+    "theme": "dark",
+    "replayControlsOnBoarding": 0
+  },
+  {
+    "w": 375,
+    "theme": "light",
+    "empty": 0,
+    "resetRows": 30
+  },
+  {
+    "w": 375,
+    "theme": "light",
+    "cards": [
+      {
+        "text": "📖\n독서 카드 · 3분\n총, 균, 쇠\n→",
+        "bg": "rgb(255, 255, 255)",
+        "border": "14px"
+      },
+      {
+        "text": "📖\n독서 카드 · 3분\n생각에 관한 생각\n→",
+        "bg": "rgb(255, 255, 255)",
+        "border": "14px"
+      },
+      {
+        "text": "📖\n독서 카드 · 3분\n블랙 스완\n→",
+        "bg": "rgb(255, 255, 255)",
+        "border": "14px"
+      }
+    ],
+    "courseGameReturn": 0
+  },
+  {
+    "w": 375,
+    "theme": "light",
+    "replayControlsOnBoarding": 0
+  },
+  {
+    "w": 1440,
+    "theme": "dark",
+    "empty": 0,
+    "resetRows": 30
+  },
+  {
+    "w": 1440,
+    "theme": "dark",
+    "cards": [
+      {
+        "text": "📖\n독서 카드 · 3분\n총, 균, 쇠\n→",
+        "bg": "rgb(26, 33, 45)",
+        "border": "14px"
+      },
+      {
+        "text": "📖\n독서 카드 · 3분\n생각에 관한 생각\n→",
+        "bg": "rgb(26, 33, 45)",
+        "border": "14px"
+      },
+      {
+        "text": "📖\n독서 카드 · 3분\n블랙 스완\n→",
+        "bg": "rgb(26, 33, 45)",
+        "border": "14px"
+      }
+    ],
+    "courseGameReturn": 0
+  },
+  {
+    "w": 1440,
+    "theme": "dark",
+    "replayControlsOnBoarding": 0
+  },
+  {
+    "w": 1440,
+    "theme": "light",
+    "empty": 0,
+    "resetRows": 30
+  },
+  {
+    "w": 1440,
+    "theme": "light",
+    "cards": [
+      {
+        "text": "📖\n독서 카드 · 3분\n총, 균, 쇠\n→",
+        "bg": "rgb(255, 255, 255)",
+        "border": "14px"
+      },
+      {
+        "text": "📖\n독서 카드 · 3분\n생각에 관한 생각\n→",
+        "bg": "rgb(255, 255, 255)",
+        "border": "14px"
+      },
+      {
+        "text": "📖\n독서 카드 · 3분\n블랙 스완\n→",
+        "bg": "rgb(255, 255, 255)",
+        "border": "14px"
+      }
+    ],
+    "courseGameReturn": 0
+  },
+  {
+    "w": 1440,
+    "theme": "light",
+    "replayControlsOnBoarding": 0
+  }
+]

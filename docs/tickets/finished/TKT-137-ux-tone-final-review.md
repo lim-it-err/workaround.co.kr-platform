@@ -2,7 +2,7 @@
 
 # TKT-137 `[UX]` 톤 브랜치 전 화면 최종 UX 검수 (병합 전) — 디자이너
 
-- 상태: ready · P1 · 담당: codex-8 · 의존: 없음(finished 22건 대상). 브랜치 `codex/v0.7.0-tone`. 규칙 `.agents/codex-designer.md`.
+- 상태: finished (2026-09-14, `docs/reviews/UX-TONE-FINAL-2026-09-14.md` 제출 — B1→TKT-143, I1→143, I2→138, I3→144(D-022), S1→142) · P1 · 담당: codex-8 · 의존: 없음(finished 22건 대상). 브랜치 `codex/v0.7.0-tone`. 규칙 `.agents/codex-designer.md`.
 - 근거: 릴리스 게이트(U-29). codex-5 감사 AS-R009 와 병행.
 - scope: 검수만 — 앱·목업·티켓·보드 무수정. 산출 `docs/reviews/UX-TONE-FINAL-2026-09-14.md`(+assets).
 
@@ -19,3 +19,6 @@
 
 ## 리뷰 기록
 - 없음.
+
+## 리뷰 기록
+- 2026-09-14 PM: 검수 채택. 블로커 B1(읽기용 카드 면 2곳) 병합 전 필수로 TKT-143. 나머지 이관 위와 같음.

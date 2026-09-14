@@ -19,3 +19,6 @@
 
 ## 리뷰 기록
 - 없음.
+
+## PM 추가 (2026-09-14, UX-TONE-FINAL I2 이관) — 40px 미달 조작부 일괄
+3. 메인 상단바 `환승 홀`·테마 버튼 높이 35.78px → ≥40. 모바일 스튜디오 `발행`·`글 도구` 너비 37.6/37.9 → ≥40, 저장 안내 `?`·백업 28×28 → ≥40(시각 무게는 늘리지 말고 hit area 만). Advisor `MissionPage.vue:559` 복귀 링크 16px·`PracticeGamePage.vue:189` 복귀 링크 20.8px → ≥40. scope 에 `styles.css:4266`, `WritingStudio.vue:645·648`, Advisor 두 페이지 추가. 완료 조건에 각 항목 bbox ≥40 단언(375).

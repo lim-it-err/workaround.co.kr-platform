@@ -1,0 +1,72 @@
+[
+  {
+    "id": "q1",
+    "a": "아침을 깨우는 진하고 묵직한 첫 모금",
+    "b": "은은하게 퍼지는 가볍고 산뜻한 첫 모금",
+    "axesA": { "roast": 2, "body": 1 },
+    "axesB": { "roast": -2, "body": -1 }
+  },
+  {
+    "id": "q2",
+    "a": "디저트처럼 달콤하게 감기는 맛",
+    "b": "군더더기 없이 드라이하게 떨어지는 맛",
+    "axesA": { "sweetness": 2 },
+    "axesB": { "sweetness": -2 }
+  },
+  {
+    "id": "q3",
+    "a": "혀끝을 톡 쏘는 상큼한 산미",
+    "b": "산미 없이 둥글고 차분한 결",
+    "axesA": { "acidity": 2, "fruitiness": 1 },
+    "axesB": { "acidity": -2, "fruitiness": -1 }
+  },
+  {
+    "id": "q4",
+    "a": "꽃과 베리가 피어나는 화사한 향",
+    "b": "흙과 견과가 떠오르는 구수한 향",
+    "axesA": { "fruitiness": 2 },
+    "axesB": { "fruitiness": -2 }
+  },
+  {
+    "id": "q5",
+    "a": "쌉쌀하게 길게 남는 진한 끝맛",
+    "b": "부드럽게 사라지는 순한 끝맛",
+    "axesA": { "bitterness": 2, "roast": 1 },
+    "axesB": { "bitterness": -2, "roast": -1 }
+  },
+  {
+    "id": "q6",
+    "a": "처음 만나는 낯선 개성에 끌린다",
+    "b": "늘 마시던 익숙한 편안함이 좋다",
+    "axesA": { "adventurous": 2 },
+    "axesB": { "adventurous": -2 }
+  },
+  {
+    "id": "q7",
+    "a": "한 모금에 입안을 꽉 채우는 묵직함",
+    "b": "물처럼 가볍게 넘어가는 산뜻함",
+    "axesA": { "body": 2, "roast": 1 },
+    "axesB": { "body": -2, "roast": -1 }
+  },
+  {
+    "id": "q8",
+    "a": "낯선 산지의 독특하고 강렬한 개성",
+    "b": "부드럽고 달콤한 익숙한 안정감",
+    "axesA": { "adventurous": 1, "sweetness": -1 },
+    "axesB": { "adventurous": -1, "sweetness": 1 }
+  },
+  {
+    "id": "q9",
+    "a": "다크 초콜릿처럼 진하고 쌉쌀하게",
+    "b": "상큼한 시트러스처럼 산뜻하게",
+    "axesA": { "bitterness": 1, "acidity": -1 },
+    "axesB": { "bitterness": -1, "acidity": 1 }
+  },
+  {
+    "id": "q10",
+    "a": "여름날의 청량하고 상큼한 한 잔",
+    "b": "겨울밤의 깊고 진중한 한 잔",
+    "axesA": { "acidity": 1, "fruitiness": 1 },
+    "axesB": { "acidity": -1, "fruitiness": -1 }
+  }
+]
