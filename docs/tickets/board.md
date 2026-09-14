@@ -60,8 +60,8 @@
 - `TKT-120` `P2` `tone` `ready` `[SIM]` 시뮬 2화면 톤 전환 — 110·114 뒤
 - `TKT-122` `P2` `advisor` `ready` `[PM]` Advisor 시즌 수명주기 스펙
 - `TKT-125` `P1` `voyage` `ready` `[FE]` 경험↔배움 환승 링크 — 정차역↔미션 (109·124 뒤)
+- `TKT-131` `P1` `advisor` `ready` `[FE]` Advisor 코스 시뮬 정정 — 집계 범위(디자이너 B1)·조건 변경 안내·배우기 active·성찰 절 (129 앞)
 - `TKT-129` `P2` `advisor` `ready` `[FE]` Advisor 배우기 통합 인덱스 + GamesPage 폐기 (124 뒤)
-- `TKT-130` `P2` `advisor` `ready` `[FE]` Advisor 흐름 결함 — Probe 순서·기내 빈 상태·결과→기록 (121 뒤)
 
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 
@@ -96,6 +96,7 @@
 
 ## Finished
 
+- `TKT-130` `[FE]` Advisor 흐름 결함 — Probe 인접 배치·기내 빈 상태 CTA·결과→기록·익명 기록 열람 — r1 통과 (2026-09-14)
 - `TKT-124` `[FE]` Advisor 코스 컨테이너 — 코스=정류장, 코딩/게임/시뮬 3형식, 비엔나 1900 12미션 진입 — r1 통과 (2026-09-14)
 - `TKT-121` `[FE]` Advisor 오늘·배우기·기록 3표면 + 톤 정합 + 초안 보호 — r1 통과 (2026-09-14, D-020 잠정)
 - `TKT-118` `[FE]` 라이트 테마 톤 토큰 매핑 — r1 통과 (2026-09-14, [중요] W 글자 대비 → 119)

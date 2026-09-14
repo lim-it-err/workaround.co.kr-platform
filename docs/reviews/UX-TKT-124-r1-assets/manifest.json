@@ -1,0 +1,48 @@
+{
+  "checkedAt": "2026-09-14T03:03:02.833Z",
+  "sources": [
+    {
+      "file": "services/advisor/frontend/src/app/App.vue",
+      "sha256": "db6c27062f26bf97767462eb68c496afd011fbc9138bb8ccb5383d6fbc9ce28f",
+      "currentSame": true
+    },
+    {
+      "file": "services/advisor/frontend/src/modules/missions/pages/CourseDetailPage.vue",
+      "sha256": "9b7f7de91bade501ca950ef2b81c6e54279348a6fdb033945fede32c4c47758c",
+      "currentSame": true
+    },
+    {
+      "file": "services/advisor/frontend/src/modules/missions/pages/CourseSimulationPage.vue",
+      "sha256": "65a5782c33af2e659b7d8e623d63c86940c0f64ba893b6a4a0ce35f6df5ead7f",
+      "currentSame": true
+    },
+    {
+      "file": "services/advisor/frontend/src/modules/missions/components/CourseList.vue",
+      "sha256": "8abc5d285672f234feb20fe79599cacd89d1e005e36d282aeb45bad5f5e7a3d3",
+      "currentSame": true
+    },
+    {
+      "file": "services/advisor/frontend/src/modules/missions/games/courseQueueSimulation.js",
+      "sha256": "7f7f2d81e92873c16a6a1c95a7f4fabcdd8f21aa7da58118bc9c865b1eb21c93",
+      "currentSame": true
+    },
+    {
+      "file": "services/advisor/frontend/src/modules/missions/store/courseCatalog.js",
+      "sha256": "4fa883675ec1682500b3e758acf9a3a9d539cc7a141e9aa791d6cf2ea0fbe2bb",
+      "currentSame": true
+    },
+    {
+      "file": "frontend/src/sim/taxiDispatch.js",
+      "sha256": "0540631f3c43014c41f21525179ad89c23f17ee58b3cbd65cd1bdd05ad3983ff",
+      "currentSame": true
+    }
+  ],
+  "build": "Node24.19.0 / Vite5.4.21 / Pages base / 116 modules",
+  "warning": "Initial index 503.14kB, existing warning",
+  "screenshots": 52,
+  "tests": {
+    "unit": "66/66",
+    "courseE2E": "3/3; copied test only goto paths adapted to Pages base, assertions unchanged"
+  },
+  "scope": "One task TKT-124; started need_review, PM finished during review"
+}
