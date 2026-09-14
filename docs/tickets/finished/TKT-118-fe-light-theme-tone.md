@@ -2,7 +2,7 @@
 
 # TKT-118 `[FE]` 라이트 테마 톤 정합 — 새 톤의 토큰 매핑
 
-- 상태: `need_review` (2026-09-14) · P2 · 담당: codex-1 · 의존: TKT-110
+- 상태: `finished` (2026-09-14, REV-TKT-118-r1 — 구 `need_review`) (2026-09-14) · P2 · 담당: codex-1 · 의존: TKT-110
 - 스펙: 목업(`frontend/public/mockups/*`) + `design/tone-principles-2026-09-09.md`. 브랜치 `codex/v0.7.0-tone`. **UX·가시성 1순위, [반박]/[구체화 질문] 의무.**
 - scope: `frontend/src/styles.css`(`[data-theme='light']` 블록), 각 화면 라이트 검수
 

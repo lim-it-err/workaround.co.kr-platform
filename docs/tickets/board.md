@@ -1,4 +1,4 @@
-﻿문서 상태: 수정중
+﻿문서 상태: 작성완료
 
 # 티켓 보드
 
@@ -61,8 +61,6 @@
 
 ## Started
 
-- `TKT-136` `P1` `tone` `ready` `[FE]` 홈 노선도 — 세 노선 직선 통과(목업 r16, PO "노선이 직선으로 통과하게끔")
-- `TKT-137` `P1` `tone` `ready` `[UX]` 톤 브랜치 전 화면 최종 UX 검수(병합 전) — codex-8
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -80,7 +78,9 @@
 
 
 
-- `TKT-104` `P2` `advisor` `need_review` `[FE]` Inflight pill aria-pressed — 9개 선택·키보드·복원 검증, E2E 17/17·unit 44/44·build·375px 통과
+
+- `TKT-138` `P1` `tone` `ready` `[FE]` v0.7.0 릴리스 게이트 블로커 — taxi E2E 구 selector·블로그 제목 hit area (AS-R009, 병합 전 필수)
+- `TKT-137` `P1` `tone` `ready` `[UX]` 톤 브랜치 전 화면 최종 UX 검수(병합 전) — codex-8 작성 중
 
 
 
@@ -90,6 +90,7 @@
 
 ## Finished
 
+- `TKT-136` `[FE]` 홈 노선도 — 세 노선 직선 통과(r16) — r1 통과 (2026-09-14)
 - `TKT-102` `[PM/디자이너]` 전 화면 톤 목업 r1~r16 — 홈 r16(세 노선 직선 통과)로 종결, 이후 목업은 앱이 스펙 (2026-09-14)
 - `TKT-135` `[FE]` Advisor 시즌 수명주기 — 반복 인스턴스·종료 보존·명시적 새 시즌·대기 적립·평생 누적·마이그레이션 — r1 통과 (2026-09-14)
 - `TKT-126` `[FE]` 순환선 심볼 C안(SiteLoopSymbol·파비콘 SVG/16/32·환승 표식) + 스플래시 한 줄 보드·hairline 티커 — r1 통과 (2026-09-14)

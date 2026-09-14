@@ -3,17 +3,17 @@
 2099:   width: min(100%, 760px);
 2100:   margin: 0 auto;
 2101: }
-2102: 
+2102:
 2103: .blog-tone-hero,
 2104: .post-tone-hero {
 2105:   padding: 10px 18px;
 2106:   border-left: 3px solid var(--line-b);
 2107: }
-2108: 
+2108:
 2109: .blog-tone-hero {
 2110:   margin: 24px 0 30px;
 2111: }
-2112: 
+2112:
 2113: .blog-tone-hero small,
 2114: .blog-tone-hero p,
 2115: .post-tone-hero p,
@@ -23,7 +23,7 @@
 2119: .blog-empty-copy {
 2120:   color: var(--muted);
 2121: }
-2122: 
+2122:
 2123: .blog-tone-hero h1,
 2124: .blog-tone-hero p,
 2125: .post-tone-hero h1,
@@ -33,18 +33,18 @@
 2129: .blog-year-label {
 2130:   margin: 0;
 2131: }
-2132: 
+2132:
 2133: .blog-tone-hero h1 {
 2134:   margin: 2px 0 7px;
 2135:   font-size: clamp(2rem, 6vw, 2.125rem);
 2136:   line-height: 1.22;
 2137:   letter-spacing: -0.04em;
 2138: }
-2139: 
+2139:
 2140: .blog-tone-hero p {
 2141:   line-height: 1.6;
 2142: }
-2143: 
+2143:
 2144: .blog-text-link,
 2145: .blog-archive-row,
 2146: .post-nav-link {
@@ -57,51 +57,51 @@
 2153:   text-align: left;
 2154:   cursor: pointer;
 2155: }
-2156: 
+2156:
 2157: .blog-text-link:hover,
 2158: .blog-archive-row:hover strong,
 2159: .post-nav-link:hover {
 2160:   color: var(--line-b-text);
 2161: }
-2162: 
+2162:
 2163: .blog-text-link:focus-visible,
 2164: .blog-archive-row:focus-visible,
 2165: .post-nav-link:focus-visible {
 2166:   outline: 2px solid var(--safety);
 2167:   outline-offset: 4px;
 2168: }
-2169: 
+2169:
 2170: .blog-tone-actions {
 2171:   display: flex;
 2172:   gap: 10px;
 2173:   margin: 28px 0;
 2174: }
-2175: 
+2175:
 2176: .blog-timetable-row {
 2177:   padding: 18px 0;
 2178:   border-bottom: 1px solid var(--line);
 2179: }
-2180: 
+2180:
 2181: .blog-timetable-meta,
 2182: .blog-year-label {
 2183:   font-size: var(--fs-caption);
 2184: }
-2185: 
+2185:
 2186: .blog-timetable-row h2 {
 2187:   margin-top: 5px;
 2188:   font-size: clamp(1.16rem, 3vw, 1.4rem);
 2189:   line-height: 1.4;
 2190:   letter-spacing: -0.025em;
 2191: }
-2192: 
+2192:
 2193: .blog-year-group {
 2194:   margin-top: 30px;
 2195: }
-2196: 
+2196:
 2197: .blog-year-label {
 2198:   font-weight: 600;
 2199: }
-2200: 
+2200:
 2201: .blog-archive-row {
 2202:   display: grid;
 2203:   grid-template-columns: 110px minmax(0, 1fr);
@@ -111,20 +111,20 @@
 2207:   border-bottom: 1px solid var(--line);
 2208:   line-height: 1.5;
 2209: }
-2210: 
+2210:
 2211: .blog-archive-row time,
 2212: .blog-archive-row strong {
 2213:   min-width: 0;
 2214: }
-2215: 
+2215:
 2216: .blog-archive-row strong {
 2217:   overflow-wrap: anywhere;
 2218: }
-2219: 
+2219:
 2220: .blog-empty-copy {
 2221:   margin: 30px 0 0;
 2222: }
-2223: 
+2223:
 2224: .post-detail {
 2225:   width: min(100%, 720px);
 2226:   margin: 0 auto;
@@ -133,40 +133,40 @@
 2229:   border-radius: 0;
 2230:   background: transparent;
 2231: }
-2232: 
+2232:
 2233: .post-tone-hero {
 2234:   margin: 18px 0 42px;
 2235: }
-2236: 
+2236:
 2237: .post-tone-hero h1 {
 2238:   margin-bottom: 10px;
 2239:   font-size: clamp(2.125rem, 7vw, 2.25rem);
 2240:   line-height: 1.2;
 2241:   letter-spacing: -0.04em;
 2242: }
-2243: 
+2243:
 2244: .post-tone-hero p {
 2245:   font-size: 0.875rem;
 2246: }
-2247: 
+2247:
 2248: .post-body {
 2249:   font-size: 1.0625rem;
 2250:   line-height: 1.85;
 2251: }
-2252: 
+2252:
 2253: .post-body p,
 2254: .post-body ul,
 2255: .post-body ol,
 2256: .post-body pre {
 2257:   margin-bottom: 24px;
 2258: }
-2259: 
+2259:
 2260: .post-body h2 {
 2261:   margin-top: 2.2em;
 2262:   padding-top: 1em;
 2263:   border-top: 1px solid var(--line);
 2264: }
-2265: 
+2265:
 2266: .post-body blockquote {
 2267:   margin: 34px 0;
 2268:   padding: 6px 0 6px 18px;
@@ -174,31 +174,31 @@
 2270:   background: transparent;
 2271:   color: var(--muted);
 2272: }
-2273: 
+2273:
 2274: .post-foot-nav {
 2275:   margin-top: 46px;
 2276:   padding-top: 24px;
 2277: }
-2278: 
+2278:
 2279: .post-nav-link {
 2280:   min-height: 40px;
 2281:   color: var(--muted);
 2282: }
-2283: 
+2283:
 2284: .blog-not-found {
 2285:   display: grid;
 2286:   justify-items: start;
 2287:   gap: 14px;
 2288:   padding: 28px 20px;
 2289: }
-2290: 
+2290:
 2291: @media (max-width: 699px) {
 2292:   .blog-archive-row {
 2293:     grid-template-columns: 74px minmax(0, 1fr);
 2294:   }
-2295: 
+2295:
 2296:   .post-detail {
 2297:     padding-inline: 2px;
 2298:   }
 2299: }
-2300: 
+2300:

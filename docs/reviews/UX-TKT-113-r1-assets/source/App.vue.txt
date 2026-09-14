@@ -14,12 +14,12 @@
 3993:                 <h1>아직 공개된 글이 없습니다</h1>
 3994:                 <p>첫 기록은 글쓰기에서 시작할 수 있습니다.</p>
 3995:               </section>
-3996: 
+3996:
 3997:               <nav class="blog-tone-actions" aria-label="블로그 바로가기">
 3998:                 <button type="button" class="ghost-button" @click="openPage('writingStudio')">새 글 쓰기</button>
 3999:                 <button type="button" class="ghost-button" @click="openBlogArchive">보관함</button>
 4000:               </nav>
-4001: 
+4001:
 4002:               <div class="blog-timetable" aria-label="최근 발행 글">
 4003:                 <article v-for="post in publishedBlogPosts.slice(1, 4)" :key="post.id" class="blog-timetable-row">
 4004:                   <p class="blog-timetable-meta">
@@ -32,14 +32,14 @@
 4011:               </div>
 4012:             </section>
 4013:           </section>
-4014: 
+4014:
 4015:           <section v-else-if="page === 'blogArchive'" class="feature-shell blog-shell">
 4016:             <section class="blog-tone-page blog-archive-page">
 4017:               <header class="blog-tone-hero">
 4018:                 <small>글 보관함</small>
 4019:                 <h1>생각이 지나간 자리</h1>
 4020:               </header>
-4021: 
+4021:
 4022:               <section v-for="group in blogArchiveYears" :key="group.year" class="blog-year-group">
 4023:                 <h2 class="blog-year-label">{{ group.year }}<template v-if="group.year !== '날짜 미정'">년</template></h2>
 4024:                 <div class="blog-archive-timetable">
@@ -55,20 +55,20 @@
 4034:                   </button>
 4035:                 </div>
 4036:               </section>
-4037: 
+4037:
 4038:               <p v-if="blogArchiveYears.length === 0" class="blog-empty-copy">아직 공개된 글이 없습니다.</p>
 4039:             </section>
 4040:           </section>
-4041: 
+4041:
 4042:           <section v-else-if="page === 'blogPost'" class="feature-shell blog-shell">
 4043:             <article v-if="activeBlogPost" class="post-detail">
 4044:               <header class="post-tone-hero">
 4045:                 <h1>{{ activeBlogPost.title }}</h1>
 4046:                 <p>{{ formatBlogLongDate(activeBlogPost.publishedAt) }} · {{ blogCategory(activeBlogPost) }}</p>
 4047:               </header>
-4048: 
+4048:
 4049:               <div class="markdown-body post-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown, activeBlogPost.tables)"></div>
-4050: 
+4050:
 4051:               <footer class="post-foot-nav">
 4052:                 <button type="button" class="post-nav-link" @click="openBlogArchive">← 보관함</button>
 4053:                 <button type="button" class="post-nav-link" @click="openStudioForPost(activeBlogPost.id)">이어서 쓰기 →</button>
@@ -81,6 +81,6 @@
 4060:               <button type="button" class="ghost-button" @click="openBlogArchive">공개 글 목록</button>
 4061:             </article>
 4062:           </section>
-4063: 
+4063:
 4064:           <WritingStudio
 4065:             v-else-if="page === 'writingStudio'"
