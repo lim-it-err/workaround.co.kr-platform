@@ -1,4 +1,4 @@
-﻿문서 상태: 작성완료
+﻿문서 상태: 수정중
 
 # 티켓 보드
 
@@ -6,6 +6,7 @@
 
 ## Backlog
 
+- `TKT-134` `P3` `tone` `backlog` `[FE]` 죽은 뷰·프로토타입 블록 정리 — 렌더 안 되는 영어 눈썹 소스 제거
 
 
 - `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
@@ -66,7 +67,6 @@
 
 ## Started
 
-- `TKT-128` `P3` `tone` `started` `[FE]` 원칙 4 잔존 일소 — **r1 반려**(Runtime 접힌 상세 영어 눈썹 2, 렌더 기준 전 화면 검사), 재작업 중
 - `TKT-133` `P3` `advisor` `ready` `[FE]` Advisor 코스 시뮬 시드 고정 확률 도착 — 임계 이용률 표현 (119 뒤)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
@@ -94,6 +94,7 @@
 
 ## Finished
 
+- `TKT-128` `[FE]` 원칙 4 잔존 일소 — voyage ACTUAL·0개 도시·Work/Runtime 접힌 상세 눈썹 한글화, 렌더 기준 13경로 0건 — r2 통과 (2026-09-14, 119 와 묶음 커밋)
 - `TKT-119` `[FE]` 접근성 정합 — 시트 포커스 트랩·Esc 복귀·SVG 접근 이름·라이트 노선 글자 대비·Advisor 입력 이름 — r1 통과 (2026-09-14, 커밋은 128 r2 와 묶음)
 - `TKT-125` `[FE]` 여행↔배움 환승 — 정차역 `이걸로 미션 만들기 →` / 미션 `이 미션의 정류장 ←`, hash 복귀 — r1 통과 (2026-09-14)
 - `TKT-129` `[FE]` Advisor 배우기 통합 인덱스(181개·4축 필터) + GamesPage 폐기 — r1 통과 (2026-09-14)
