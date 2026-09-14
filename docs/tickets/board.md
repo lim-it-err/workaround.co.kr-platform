@@ -67,13 +67,13 @@
 ## Started
 
 - `TKT-128` `P3` `tone` `started` `[FE]` 원칙 4 잔존 일소 — **r1 반려**(Runtime 접힌 상세 영어 눈썹 2, 렌더 기준 전 화면 검사), 재작업 중
-- `TKT-119` `P2` `tone` `started` `[FE]` 접근성 패스(키보드·aria·시트 포커스 트랩)
 - `TKT-133` `P3` `advisor` `ready` `[FE]` Advisor 코스 시뮬 시드 고정 확률 도착 — 임계 이용률 표현 (119 뒤)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
 
 
 
@@ -94,6 +94,7 @@
 
 ## Finished
 
+- `TKT-119` `[FE]` 접근성 정합 — 시트 포커스 트랩·Esc 복귀·SVG 접근 이름·라이트 노선 글자 대비·Advisor 입력 이름 — r1 통과 (2026-09-14, 커밋은 128 r2 와 묶음)
 - `TKT-125` `[FE]` 여행↔배움 환승 — 정차역 `이걸로 미션 만들기 →` / 미션 `이 미션의 정류장 ←`, hash 복귀 — r1 통과 (2026-09-14)
 - `TKT-129` `[FE]` Advisor 배우기 통합 인덱스(181개·4축 필터) + GamesPage 폐기 — r1 통과 (2026-09-14)
 - `TKT-132` `[FE]` Advisor 코스 시뮬 모델 충실도 — 결정론 다중 창구 큐·이용률 표시 — r1 통과 (2026-09-14, [중요] 확률 도착 → 133)
