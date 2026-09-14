@@ -55,8 +55,6 @@
 
 - `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
 - `TKT-116` `P2` `voyage` `ready` `[FE]` 여정 노선도 회고 모드(열차 점 재생) — 109 뒤 · codex-6
-- `TKT-128` `P3` `tone` `ready` `[FE]` 원칙 4 잔존 일소 — voyage ACTUAL·Work 접힌 상세 영어 눈썹·목록 0개 도시 — 114 뒤
-- `TKT-119` `P2` `tone` `ready` `[FE]` 접근성 패스(키보드·aria·시트 포커스 트랩)
 - `TKT-120` `P2` `tone` `ready` `[SIM]` 시뮬 2화면 톤 전환 — 110·114 뒤
 - `TKT-122` `P2` `advisor` `ready` `[PM]` Advisor 시즌 수명주기 스펙
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
@@ -68,6 +66,8 @@
 
 ## Started
 
+- `TKT-128` `P3` `tone` `started` `[FE]` 원칙 4 잔존 일소 — **r1 반려**(Runtime 접힌 상세 영어 눈썹 2, 렌더 기준 전 화면 검사), 재작업 중
+- `TKT-119` `P2` `tone` `started` `[FE]` 접근성 패스(키보드·aria·시트 포커스 트랩)
 - `TKT-133` `P3` `advisor` `ready` `[FE]` Advisor 코스 시뮬 시드 고정 확률 도착 — 임계 이용률 표현 (119 뒤)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
