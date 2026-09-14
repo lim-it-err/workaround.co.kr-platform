@@ -70,13 +70,13 @@
 
 ## Started
 
-- `TKT-129` `P2` `advisor` `started` `[FE]` Advisor 배우기 통합 인덱스 + GamesPage 폐기 구현 중 (124·132 뒤)
 - `TKT-133` `P3` `advisor` `ready` `[FE]` Advisor 코스 시뮬 시드 고정 확률 도착 — 임계 이용률 표현 (119 뒤)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
+
 
 
 
@@ -96,6 +96,7 @@
 
 ## Finished
 
+- `TKT-129` `[FE]` Advisor 배우기 통합 인덱스(181개·4축 필터) + GamesPage 폐기 — r1 통과 (2026-09-14)
 - `TKT-132` `[FE]` Advisor 코스 시뮬 모델 충실도 — 결정론 다중 창구 큐·이용률 표시 — r1 통과 (2026-09-14, [중요] 확률 도착 → 133)
 - `TKT-131` `[FE]` Advisor 코스 시뮬 정정 — 전체 집계·조건 변경 안내·배우기 active·성찰 절 — r1 통과 (2026-09-14, [중요] 모델 충실도 → 132)
 - `TKT-130` `[FE]` Advisor 흐름 결함 — Probe 인접 배치·기내 빈 상태 CTA·결과→기록·익명 기록 열람 — r1 통과 (2026-09-14)

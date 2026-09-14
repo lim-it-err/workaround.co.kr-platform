@@ -11,3 +11,4 @@
 
 ## PM 추가 (2026-09-14, REV-TKT-118-r1 이관)
 - [중요] 라이트 테마에서 W 노선색(`--line-w` #00863E)이 글자로 쓰인 곳(환승 홀 `기지선` 라벨 SVG/목록, `junction-route-badge` W) 4.13:1 → `--line-w-text` 로 교체(`styles.css` `color: var(--line-w)` 검색). 다른 노선색의 글자 사용도 같이 검사해 4.5:1 미만 0 으로.
+- (REV-TKT-129-r1) Advisor `/learn` 필터 select 4개(시간·코드 작성·형식·완료)에 `aria-label` 부여. 다른 화면의 이름 없는 select/input 도 함께 검사.
