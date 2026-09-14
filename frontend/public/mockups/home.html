@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>환승 홀 — 방사형 목업 r14</title><style>
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>환승 홀 — 45° 격자 목업 r15</title><style>
 :root{--bg:#0A0F16;--card:#0D131C;--tx:#F3F6FB;--tx2:#AEB8C8;--mut:#7C8AA0;--hair:rgba(255,255,255,.09);--hair2:rgba(255,255,255,.16);--ring:#E9EDF3;--safety:#F3C544;
 --keep:#E14D78;--try:#7C89F0;--run:#35C275;--dim:#7C8AA0}
 @media(prefers-color-scheme:light){:root{--bg:#EDF1F6;--card:#F7F9FC;--tx:#16202E;--tx2:#4B5A70;--mut:#6B7A90;--hair:rgba(10,20,40,.10);--hair2:rgba(10,20,40,.18);--ring:#16202E;--safety:#B8860B;--keep:#C0264F;--try:#3D4EC0;--run:#1F8A4C;--dim:#8A97AA}}
@@ -50,7 +50,7 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
 <div class="wrap">
 <section class="mapbox">
   <div class="k">환승 홀 · 기록선 · 실험선 · 기지선</div>
-  <svg class="map" viewBox="0 0 720 720" role="img" aria-label="workaround 환승 홀 — 세 노선 여덟 역 (45° 격자)">
+  <svg class="map" viewBox="0 0 720 720" role="img" aria-label="workaround 환승 홀 — 세 노선 여덟 역 · 45° 격자">
     <!-- 기록선 (Archive): 블로그(북동 45°) · 여행(동 0°) — r15: 모든 지선이 45° 격자 위 직선 -->
     <path class="br" d="M384 336 L545.3 174.7" stroke="var(--keep)"/>
     <circle class="stn" cx="437.8" cy="282.2" r="12" stroke="var(--keep)"/><text class="code" x="437.8" y="282.2">B</text><text class="nm" x="454" y="296">블로그</text>
@@ -64,27 +64,27 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
     <circle class="pstop" cx="600" cy="360" r="4.5" stroke="var(--keep)"/><text class="pg" x="600" y="384" text-anchor="middle">기록</text>
     <text class="ln" x="560" y="160" fill="var(--keep)">기록선</text>
 
-    <!-- 실험선 (Lab): Advisor(남동 45°) · 미스터리 트레인(남 90°) · 발견(남서 135°) · 취향(서 180°) -->
-    <path class="br" d="M384 384 L501.4 501.4" stroke="var(--try)"/>
-    <circle class="stn" cx="437.8" cy="437.8" r="12" stroke="var(--try)"/><text class="code" x="437.8" y="437.8">A</text><text class="nm" x="454" y="446">Advisor</text>
-    <circle class="pstop" cx="473.1" cy="473.1" r="4.5" stroke="var(--try)"/><text class="pg" x="488" y="490">코스 · 미션</text>
-    <path class="br" d="M360 394 L360 622" stroke="var(--try)"/>
-    <circle class="stn" cx="360" cy="470" r="12" stroke="var(--try)"/><text class="code" x="360" y="470">S</text><text class="nm" x="378" y="475">미스터리 트레인</text>
-    <circle class="pstop" cx="360" cy="520" r="4.5" stroke="var(--try)"/><text class="pg" x="374" y="524">격납고</text>
-    <circle class="pstop" cx="360" cy="560" r="4.5" stroke="var(--try)"/><text class="pg" x="374" y="564">엘베 · 택시</text>
-    <circle class="pstop" cx="360" cy="600" r="4.5" stroke="var(--try)"/><text class="pg" x="374" y="604">화이트채플</text>
+    <!-- 실험선 (Lab): 미스터리 트레인(남동 45°, 3정거장) · Advisor(남 90°) · 발견(남서 135°) · 취향(서 180°) -->
+    <path class="br" d="M384 384 L545.3 545.3" stroke="var(--try)"/>
+    <circle class="stn" cx="437.8" cy="437.8" r="12" stroke="var(--try)"/><text class="code" x="437.8" y="437.8">S</text><text class="nm" x="458" y="441">미스터리 트레인</text>
+    <circle class="pstop" cx="473.1" cy="473.1" r="4.5" stroke="var(--try)"/><text class="pg" x="488" y="484">격납고</text>
+    <circle class="pstop" cx="501.4" cy="501.4" r="4.5" stroke="var(--try)"/><text class="pg" x="516" y="512">엘베 · 택시</text>
+    <circle class="pstop" cx="529.7" cy="529.7" r="4.5" stroke="var(--try)"/><text class="pg" x="544" y="540">화이트채플</text>
+    <path class="br" d="M360 394 L360 560" stroke="var(--try)"/>
+    <circle class="stn" cx="360" cy="470" r="12" stroke="var(--try)"/><text class="code" x="360" y="470">A</text><text class="nm" x="346" y="486" text-anchor="end">Advisor</text>
+    <circle class="pstop" cx="360" cy="520" r="4.5" stroke="var(--try)"/><text class="pg" x="374" y="524">코스 · 미션</text>
     <path class="br todo" d="M336 384 L254 466" stroke="var(--try)"/>
-    <circle class="stn todo" cx="282.2" cy="437.8" r="12" stroke="var(--try)"/><text class="code todo" x="282.2" y="437.8">D</text><text class="nm todo" x="268" y="460" text-anchor="end">발견</text>
+    <circle class="stn todo" cx="282.2" cy="437.8" r="12" stroke="var(--try)"/><text class="code todo" x="282.2" y="437.8">D</text><text class="nm todo" x="264" y="440" text-anchor="end">발견</text>
     <path class="br todo" d="M326 360 L210 360" stroke="var(--try)"/>
     <circle class="stn todo" cx="250" cy="360" r="12" stroke="var(--try)"/><text class="code todo" x="250" y="360">P</text><text class="nm todo" x="250" y="338" text-anchor="middle">취향</text>
-    <text class="ln" x="360" y="650" text-anchor="middle" fill="var(--try)">실험선</text>
+    <text class="ln" x="360" y="598" text-anchor="middle" fill="var(--try)">실험선</text>
 
     <!-- 기지선 (Depot): Work(북서 225°) · Runtime(북 270°) — 보호 구역 -->
     <path class="br" d="M336 336 L218.6 218.6" stroke="var(--run)"/>
     <circle class="stn" cx="282.2" cy="282.2" r="12" stroke="var(--run)"/><text class="code" x="282.2" y="282.2">W</text><text class="nm" x="268" y="300" text-anchor="end">Work</text>
-    <circle class="pstop" cx="246.9" cy="246.9" r="4.5" stroke="var(--run)"/><text class="pg" x="233" y="240" text-anchor="end">작업 흐름</text>
+    <circle class="pstop" cx="246.9" cy="246.9" r="4.5" stroke="var(--run)"/><text class="pg" x="236" y="262" text-anchor="end">작업 흐름</text>
     <path class="br" d="M360 326 L360 160" stroke="var(--run)"/>
-    <circle class="stn" cx="360" cy="250" r="12" stroke="var(--run)"/><text class="code" x="360" y="250">R</text><text class="nm" x="344" y="254" text-anchor="end">Runtime</text>
+    <circle class="stn" cx="360" cy="250" r="12" stroke="var(--run)"/><text class="code" x="360" y="250">R</text><text class="nm" x="346" y="238" text-anchor="end">Runtime</text>
     <circle class="pstop" cx="360" cy="200" r="4.5" stroke="var(--run)"/><text class="pg" x="346" y="204" text-anchor="end">실행 상태</text>
     <text class="ln" x="360" y="140" text-anchor="middle" fill="var(--run)">기지선</text>
 
@@ -92,7 +92,7 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
     <circle cx="360" cy="360" r="28" fill="var(--card)" stroke="var(--ring)" stroke-width="5"/>
     <path class="hub" d="M368.8 333.4 A28 28 0 1 1 351.2 333.4"/>
     <circle class="hubdot" cx="360" cy="332" r="3.4"/>
-    <text class="hubname" x="406" y="386" text-anchor="start">환승 홀</text>
+    <text class="hubname" x="414" y="392" style="text-anchor:start">환승 홀</text>
   </svg>
   <p class="legend">환승 홀에서 세 노선이 나간다 · 큰 역 = 서비스 · 작은 역 = 화면(데스크톱)</p>
 </section>
