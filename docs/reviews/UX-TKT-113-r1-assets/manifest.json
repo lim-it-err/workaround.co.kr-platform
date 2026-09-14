@@ -1,0 +1,66 @@
+{
+  "checkedAt": "2026-09-14T00:38:29.309Z",
+  "build": "Node24.19.0 / Vite6.4.3 / Pages base / 48 modules",
+  "sources": [
+    {
+      "file": "src/App.vue",
+      "sha256": "7e3101877fa90d9cbc9db62e5c26a3d0c652b151c46eb1cdc459aadf4ad238b7",
+      "currentSame": true
+    },
+    {
+      "file": "src/styles.css",
+      "sha256": "b6abda0af530bc974ab295cf884086e76f29dce855a797d9da5833a5338e51ec",
+      "currentSame": true
+    },
+    {
+      "file": "src/components/StatusBadge.vue",
+      "sha256": "06003c43eddb4e0333a5c7283821b74e9187d79f0017e973329760c4ec040d77",
+      "currentSame": true
+    },
+    {
+      "file": "src/components/BlogTone.e2e.mjs",
+      "sha256": "752abf39a1e1adad5fca401992b432a8cb7e61da373e487ba64c693a3fc5fed1",
+      "currentSame": true
+    },
+    {
+      "file": "src/components/WritingStudio.e2e.mjs",
+      "sha256": "a7b0520e7360ea229df30ccaa1f208f3d89ea3e37a94fa8902fb5f1ea2190f3a",
+      "currentSame": true
+    },
+    {
+      "file": "public/mockups/blog-hub.html",
+      "sha256": "c8ddea12c2b0a5f1f8f1eabd7cae8b8d81d849327e25683af66e68707f0cbf03",
+      "currentSame": true
+    },
+    {
+      "file": "public/mockups/blog-archive.html",
+      "sha256": "c186e1ebe3dab6a0ef4a9d7ccda4bcec04be657e02408a26e91a36663b30b9d5",
+      "currentSame": true
+    },
+    {
+      "file": "public/mockups/blog-post.html",
+      "sha256": "88a37631631e9acbb02c1b6fab13184537cf9b763776d0d68c867841b471dd81",
+      "currentSame": true
+    }
+  ],
+  "buildFiles": [
+    {
+      "file": "index-DSQShre2.js",
+      "sha256": "d1e27d75acebb6d10b9d63fdce085cf825e650680ff0d6a550965cb77399d85c"
+    },
+    {
+      "file": "index-KrT350Xn.css",
+      "sha256": "08eedc5a843a123e59b27409c759137a85901f8322e1d1a04e556e29332a78f6"
+    }
+  ],
+  "screenshots": 37,
+  "primaryRenders": 18,
+  "missingRenders": 4,
+  "emptyRenders": 4,
+  "browserEvents": [],
+  "tests": {
+    "BlogTone": "2/2 passed",
+    "WritingStudio": "9/9 passed after setting STUDIO_TEST_URL; first attempt used default inactive 4174 port"
+  },
+  "scope": "Started while TKT-113 need_review; PM finished during verification. Existing PM verdict preserved."
+}
