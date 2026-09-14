@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import { EAST_EUROPE_2026 } from '../../data/voyages/east-europe-2026.js'
 import {
+  advisorTransferHref,
   applyStopRecords,
   buildDayTimeline,
   buildRouteSegments,
@@ -46,6 +47,13 @@ const dayThree = buildDayTimeline(voyage, 2)
 assert.ok(dayThree.some(item => item.title.includes("Papa's") && item.kind === 'meal'))
 assert.ok(dayThree.some(item => item.kind === 'branch'), '상황별 분기가 시간표에 유지되어야 한다')
 assert.ok(buildDayTimeline(voyage, 6).length >= 3, '상세 세션이 없는 일차도 안전한 기본 시간표를 만든다')
+const belvedere = buildDayTimeline(voyage, 6).find(item => item.stationId === 'day-6-belvedere')
+assert.equal(belvedere.missions[0].missionId, 'v1900-f-belvedere-route')
+assert.equal(
+  advisorTransferHref(belvedere.missions[0], '/workaround.co.kr-platform/'),
+  '/workaround.co.kr-platform/advisor/courses/vienna-1900'
+)
+assert.equal(buildDayTimeline(voyage, 0).some(item => item.missions.length), false, '연결 없는 정차역에는 환승 데이터가 없어야 한다')
 assert.deepEqual(cityDayIndexes(voyage, voyage.cities.find(city => city.id === 'prague-return')), [8, 9])
 
 const papa = dayThree.find(item => item.title.includes("Papa's"))

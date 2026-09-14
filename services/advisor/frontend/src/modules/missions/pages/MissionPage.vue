@@ -12,6 +12,7 @@ import ChatPanel from '../components/ChatPanel.vue'
 import PlannerMeetingPanel from '../components/PlannerMeetingPanel.vue'
 import PlannerReviewPanel from '../components/PlannerReviewPanel.vue'
 import NicknamePrompt from '../components/NicknamePrompt.vue'
+import { platformHomePath } from '../../../app/platformNavigation.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -22,6 +23,16 @@ const returnSurface = requestedReturn === '/today' || /^\/courses\/[^/]+$/.test(
   : '/learn'
 const returnLabel = window.history.state?.fromLabel
   ?? (returnSurface === '/today' ? '오늘' : '배우기')
+
+const VOYAGE_STOPS = {
+  'v1900-f-belvedere-route': 'day-6-belvedere',
+  'v1900-6-salt-mine': 'day-4-hallstatt',
+}
+const platformHome = platformHomePath(import.meta.env.BASE_URL)
+const voyageStopHref = computed(() => {
+  const stopId = VOYAGE_STOPS[String(route.params.id)]
+  return platformHome && stopId ? `${platformHome}voyage#voyage-stop-${encodeURIComponent(stopId)}` : ''
+})
 
 const mission = computed(() => store.getMission(route.params.id))
 const isDomainLogic = computed(() => mission.value?.missionType === '도메인 로직 구현')
@@ -314,6 +325,10 @@ function submitExplanation() {
         <span class="chip neutral">{{ mission.domainEmoji }} {{ mission.domain }}</span>
       </div>
       <h1>{{ mission.title }}</h1>
+      <a v-if="voyageStopHref" class="voyage-return" :href="voyageStopHref">
+        <span aria-hidden="true" class="voyage-return__loop"></span>
+        이 미션의 정류장 ←
+      </a>
     </div>
 
     <!-- 기획자 모드: 같은 문제, 다른 의자 -->
@@ -614,6 +629,38 @@ function submitExplanation() {
 .head { margin: 14px 0 18px; }
 .head-meta { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
 h1 { font-size: 22px; margin: 0; }
+.voyage-return {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-text);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.voyage-return:hover, .voyage-return:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+.voyage-return:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.voyage-return__loop {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+.voyage-return__loop::before {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--bg);
+  border-radius: 50%;
+  background: currentColor;
+  content: '';
+  transform: translateX(-50%);
+}
 .mode-select {
   display: inline-flex;
   gap: 2px;

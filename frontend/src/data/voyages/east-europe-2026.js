@@ -164,6 +164,11 @@ export const EAST_EUROPE_2026 = defineVoyage({
       am: '쇤브룬 궁전 — 서두르지 않고, 정원 열차 포함. 내부가 붐비면 정원 위주',
       pm: '카페 슈페를 또는 프뤼켈 (자허·첸트랄의 줄 대신) → 숙소 휴식',
       eve: '링 주변 산책 또는 일찍 휴식 — 운전 없는 날',
+      stations: [{
+        slot: 'am',
+        id: 'day-6-schoenbrunn',
+        missions: [{ courseId: 'vienna-1900', missionId: 'v1900-4-succession', label: '합스부르크 계승 규칙' }]
+      }],
       tip: '쇤브룬 내부는 개장 직후 첫 타임이 답. 정원은 무료·넓어서 사람이 흩어진다.',
       meals: [
         { slot: '아침', place: 'Anker Hauptbahnhof', dish: '베이커리', amount: null, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Anker%20Hauptbahnhof%20Vienna', photo: null },
@@ -186,6 +191,11 @@ export const EAST_EUROPE_2026 = defineVoyage({
       am: '벨베데레 상궁 (클림트)',
       pm: '14:00 출발 (운전 2시간 40분) → 부다페스트 체크인',
       eve: '★ 다뉴브 야경 크루즈 — 소형 보트 프로그램. 국회의사당·세체니 다리',
+      stations: [{
+        slot: 'am',
+        id: 'day-6-belvedere',
+        missions: [{ courseId: 'vienna-1900', missionId: 'v1900-f-belvedere-route', label: '벨베데레를 연대순으로 걷기' }]
+      }],
       tip: '크루즈는 인파에서 격리되는 방식의 야경이다. 대형 말고 소형.'
     },
     {
@@ -538,7 +548,13 @@ export const EAST_EUROPE_2026 = defineVoyage({
       success: '할슈타트를 단체 관광이 오기 전에 보고, 잘츠부르크에 밝을 때 들어간다.',
       timeline: [
         { time: '07:30', title: '출발', detail: '이날의 성패는 출발 시각이다. 운전 2시간 10분, 국경 통과 — 오스트리아 비네트 활성 상태로 진입한다.' },
-        { time: '09:40~12:00', title: '할슈타트', detail: '호수변 산책과 마르크트 광장, 전망 포인트. 단체 버스가 몰리기 전 시간대가 이 경유의 존재 이유다.' },
+        {
+          id: 'day-4-hallstatt',
+          time: '09:40~12:00',
+          title: '할슈타트',
+          detail: '호수변 산책과 마르크트 광장, 전망 포인트. 단체 버스가 몰리기 전 시간대가 이 경유의 존재 이유다.',
+          missions: [{ courseId: 'vienna-1900', missionId: 'v1900-6-salt-mine', label: '할슈타트 소금광산 7,000년' }]
+        },
         { time: '12:00~13:00', title: '점심', detail: '호수가 보이는 곳에서 가볍게. 트렁크 짐은 겉에서 보이지 않게 정리돼 있어야 한다.' },
         { time: '13:00~14:30', title: '잘츠부르크 이동', detail: '운전 1시간 20분. 도착하면 숙소 주차부터 해결한다.' },
         { time: '15:00~16:00', title: '체크인·휴식', detail: '이틀 연속 이동일 — 미라벨 전에 한 번 눕는다.' },

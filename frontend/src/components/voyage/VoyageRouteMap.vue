@@ -6,9 +6,11 @@ import {
   parseVoyageDayBackup,
   safeWriteJson
 } from '../../staticWritingState.js'
+import SiteLoopSymbol from '../tone/SiteLoopSymbol.vue'
 import VoyagePreparationSheet from './VoyagePreparationSheet.vue'
 import {
   ROUTE_VIEWBOX,
+  advisorTransferHref,
   applyStopRecords,
   buildDayTimeline,
   buildRouteSegments,
@@ -147,10 +149,11 @@ watch(() => props.initialDayIndex, (value) => {
   if (Number.isInteger(value)) selectedDayIndex.value = clampDayIndex(value)
 })
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('keydown', handleEscape)
   window.addEventListener('resize', handleViewportResize)
   handleViewportResize()
+  await openRequestedTransferStop()
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleEscape)
@@ -169,6 +172,31 @@ function resolveInitialDayIndex() {
     return Math.max(0, props.voyage.days.length - 1)
   }
   return clampDayIndex(todayIndex.value)
+}
+
+function transferHref(item) {
+  return advisorTransferHref(item?.missions?.[0], import.meta.env.BASE_URL)
+}
+
+async function openRequestedTransferStop() {
+  const prefix = '#voyage-stop-'
+  if (!window.location.hash.startsWith(prefix)) return
+  let requestedId = ''
+  try {
+    requestedId = decodeURIComponent(window.location.hash.slice(prefix.length))
+  } catch {
+    return
+  }
+  for (let dayIndex = 0; dayIndex < props.voyage.days.length; dayIndex += 1) {
+    const item = buildDayTimeline(props.voyage, dayIndex).find((entry) => entry.stationId === requestedId)
+    if (!item) continue
+    selectDay(dayIndex)
+    await nextTick()
+    const row = document.getElementById(`voyage-stop-${requestedId}`)
+    row?.scrollIntoView({ block: 'center' })
+    await openStop(item, { currentTarget: row?.querySelector('button') || null })
+    return
+  }
 }
 
 function selectDay(index) {
@@ -657,6 +685,7 @@ function entryFare(entry) {
               <li
                 v-for="entry in timeline"
                 :key="entry.id"
+                :id="entry.stationId ? `voyage-stop-${entry.stationId}` : undefined"
                 :class="[`route-stop--${entry.kind}`]"
                 role="row"
               >
@@ -669,6 +698,11 @@ function entryFare(entry) {
                     <small v-if="entry.detail">{{ entry.detail }}</small>
                   </button>
                   <span v-else><strong>{{ entry.title }}</strong><small v-if="entry.detail">{{ entry.detail }}</small></span>
+                  <a
+                    v-if="transferHref(entry)"
+                    class="route-transfer-link"
+                    :href="transferHref(entry)"
+                  ><SiteLoopSymbol aria-hidden="true" />이걸로 미션 만들기 →</a>
                 </div>
                 <span class="route-stop__fare" role="cell">{{ entryFare(entry) }}</span>
               </li>
@@ -739,6 +773,11 @@ function entryFare(entry) {
           <p class="route-detail__eyebrow">DAY {{ selectedDayIndex + 1 }} · {{ detail.item.arrival || detail.item.departure }}</p>
           <h3 id="route-stop-detail-title">{{ detail.item.title }}</h3>
           <p v-if="detail.item.detail" class="route-detail__copy">{{ detail.item.detail }}</p>
+          <a
+            v-if="transferHref(detail.item)"
+            class="route-transfer-link route-transfer-link--detail"
+            :href="transferHref(detail.item)"
+          ><SiteLoopSymbol aria-hidden="true" />이걸로 미션 만들기 →</a>
           <form class="route-detail__form" @submit.prevent="saveStopDetail">
             <div class="route-detail__grid">
               <label>
@@ -1323,6 +1362,33 @@ function entryFare(entry) {
   overflow-wrap: anywhere;
 }
 
+.route-transfer-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-text);
+  font-size: var(--fs-caption);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.route-transfer-link :deep(.site-loop-symbol-sm) {
+  width: 18px;
+}
+
+.route-transfer-link:hover,
+.route-transfer-link:focus-visible {
+  color: var(--safety);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.route-transfer-link:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
 .route-stop__name strong {
   color: var(--text);
   font-size: 0.86rem;
@@ -1557,6 +1623,10 @@ function entryFare(entry) {
 .route-detail__copy,
 .route-detail__empty {
   color: var(--text-2);
+}
+
+.route-transfer-link--detail {
+  margin-top: 4px;
 }
 
 .route-detail dl {

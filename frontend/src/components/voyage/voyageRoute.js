@@ -7,6 +7,20 @@ const ROUTE_BOUNDS = {
 
 export const ROUTE_VIEWBOX = { width: 720, height: 540, padding: 46 }
 
+export function advisorTransferHref(transfer, baseUrl = '/') {
+  const courseId = String(transfer?.courseId || '').trim()
+  const missionId = String(transfer?.missionId || '').trim()
+  if (!courseId && !missionId) return ''
+
+  const rawBase = String(baseUrl || '/').trim()
+  if (!rawBase.startsWith('/') || rawBase.startsWith('//') || /[?#\\]/.test(rawBase)) return ''
+  const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`
+  const target = courseId
+    ? `courses/${encodeURIComponent(courseId)}`
+    : `missions/${encodeURIComponent(missionId)}`
+  return `${base}advisor/${target}`
+}
+
 export function localDateKey(date = new Date()) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -93,16 +107,20 @@ function findSpendItem(day, title, meal) {
   }) || null
 }
 
+function fallbackTimeline(day) {
+  return [
+    { ...(day.stations || []).find((station) => station.slot === 'am'), time: '오전', title: day.plan?.am || day.am },
+    { ...(day.stations || []).find((station) => station.slot === 'pm'), time: '오후', title: day.plan?.pm || day.pm },
+    { ...(day.stations || []).find((station) => station.slot === 'eve'), time: '저녁', title: day.plan?.eve || day.eve }
+  ]
+}
+
 export function buildDayTimeline(voyage, dayIndex) {
   const day = voyage.days[dayIndex]
   if (!day) return []
 
   const session = (voyage.daySessions || []).find((item) => item.dayIndex === dayIndex)
-  const source = day.plan?.session?.timeline || session?.timeline || [
-    { time: '오전', title: day.plan?.am || day.am },
-    { time: '오후', title: day.plan?.pm || day.pm },
-    { time: '저녁', title: day.plan?.eve || day.eve }
-  ]
+  const source = day.plan?.session?.timeline || session?.timeline || fallbackTimeline(day)
   const meals = day.actual?.meals || day.meals || []
   const usedMeals = new Set()
   const entries = source.filter((item) => item.title && item.title !== '—').map((item, index) => {
@@ -110,10 +128,12 @@ export function buildDayTimeline(voyage, dayIndex) {
     const genericMealTitle = meal && /^(아침|점심|저녁|카페)$/.test(item.title.trim())
     return {
       id: `timeline-${dayIndex}-${index}`,
+      stationId: String(item.id || ''),
       ...splitTime(item.time),
       title: genericMealTitle ? `${meal.place} — ${meal.dish}` : item.title,
       detail: item.detail || '',
       kind: meal ? 'meal' : routeKind(`${item.title} ${item.detail || ''}`),
+      missions: Array.isArray(item.missions) ? item.missions.filter((mission) => mission?.courseId || mission?.missionId) : [],
       meal,
       spendItem: findSpendItem(day, item.title, meal)
     }
@@ -128,6 +148,8 @@ export function buildDayTimeline(voyage, dayIndex) {
       title: `${meal.place} — ${meal.dish}`,
       detail: '',
       kind: 'meal',
+      stationId: '',
+      missions: [],
       meal,
       spendItem: findSpendItem(day, meal.place, meal)
     })
@@ -141,6 +163,8 @@ export function buildDayTimeline(voyage, dayIndex) {
       title: `${branch.situation} → ${branch.action}`,
       detail: '',
       kind: 'branch',
+      stationId: '',
+      missions: [],
       meal: null,
       spendItem: null
     })
