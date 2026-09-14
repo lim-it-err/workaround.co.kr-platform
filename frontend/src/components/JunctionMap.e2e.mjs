@@ -111,14 +111,17 @@ async function routeTextContrasts(page) {
 
 for (const scenario of [
   { width: 375, height: 812, theme: 'dark' },
+  { width: 375, height: 812, theme: 'light' },
+  { width: 1440, height: 900, theme: 'dark' },
   { width: 1440, height: 900, theme: 'light' }
 ]) {
-  test(`${scenario.width}px ${scenario.theme}: 방사형 지도, 3묶음, 실제 이동과 가독성`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: 세 노선 직선 통과, 3묶음, 실제 이동과 가독성`, async t => {
     const page = await setup(t, scenario)
 
     assert.equal(await page.locator('.junction-route-group').count(), 3)
     assert.equal(await page.locator('.junction-route-row').count(), 8)
     assert.equal(await page.locator('.junction-route-row:is(a, button)').count(), 6)
+    assert.equal(await page.locator('.junction-branch').count(), 4)
     assert.equal(await page.locator('.junction-station').count(), 8)
     assert.equal(await page.getByText('Archive Line', { exact: true }).count(), 0)
 
@@ -126,24 +129,34 @@ for (const scenario of [
     const listBox = await page.locator('.junction-lines').boundingBox()
     if (scenario.width < 900) {
       assert.ok(mapBox.y < listBox.y, '모바일에서는 지도 다음에 목록이 와야 한다')
-      assert.equal(await page.locator('.junction-station.upcoming .junction-station-name:visible').count(), 0)
+      assert.equal(await page.locator('.junction-page-stop:visible').count(), 0)
+      assert.equal(await page.locator('.junction-station-name:visible').count(), 8)
     } else {
       assert.ok(mapBox.x < listBox.x && Math.abs(mapBox.y - listBox.y) < 10, '데스크톱에서는 지도와 목록이 나란해야 한다')
     }
 
-    const visibleMapTextSizes = await page.locator([
-      '.junction-station-code',
-      '.junction-station-name',
-      '.junction-page-stop text',
-      '.junction-line-name',
-      '.junction-hub-name'
-    ].join(',')).evaluateAll(elements => elements
-      .filter(element => element.getClientRects().length > 0)
-      .map(element => {
-        const matrix = element.getScreenCTM()
-        return parseFloat(getComputedStyle(element).fontSize) * Math.hypot(matrix.a, matrix.b)
-      }))
-    assert.ok(visibleMapTextSizes.every(size => size >= 10.95), `지도 글자 하한 미달: ${visibleMapTextSizes.join(', ')}`)
+    if (scenario.width < 900) {
+      const mobileStationSizes = await page.locator('.junction-station-name:visible')
+        .evaluateAll(elements => elements.map(element => parseFloat(getComputedStyle(element).fontSize)))
+      const mobileLineSizes = await page.locator('.junction-line-name:visible')
+        .evaluateAll(elements => elements.map(element => parseFloat(getComputedStyle(element).fontSize)))
+      assert.ok(mobileStationSizes.every(size => size === 24), `모바일 큰 역 이름은 24여야 한다: ${mobileStationSizes.join(', ')}`)
+      assert.ok(mobileLineSizes.every(size => size === 18), `모바일 노선 이름은 18이어야 한다: ${mobileLineSizes.join(', ')}`)
+    } else {
+      const visibleMapTextSizes = await page.locator([
+        '.junction-station-code',
+        '.junction-station-name',
+        '.junction-page-stop text',
+        '.junction-line-name',
+        '.junction-hub-name'
+      ].join(',')).evaluateAll(elements => elements
+        .filter(element => element.getClientRects().length > 0)
+        .map(element => {
+          const matrix = element.getScreenCTM()
+          return parseFloat(getComputedStyle(element).fontSize) * Math.hypot(matrix.a, matrix.b)
+        }))
+      assert.ok(visibleMapTextSizes.every(size => size >= 10.95), `지도 글자 하한 미달: ${visibleMapTextSizes.join(', ')}`)
+    }
 
     const mapTextOverlaps = await page.locator([
       '.junction-station-code',
@@ -169,6 +182,42 @@ for (const scenario of [
       return overlaps
     })
     assert.deepEqual(mapTextOverlaps, [], `지도 글자끼리 겹치면 안 된다: ${mapTextOverlaps.join(', ')}`)
+
+    const routeTextIntersections = await page.evaluate(() => {
+      const textSelectors = [
+        '.junction-station-name',
+        '.junction-page-stop text',
+        '.junction-line-name',
+        '.junction-hub-name'
+      ].join(',')
+      const texts = [...document.querySelectorAll(textSelectors)]
+        .filter(element => element.getClientRects().length > 0)
+        .map(element => ({ label: element.textContent.trim(), rect: element.getBoundingClientRect() }))
+
+      return [...document.querySelectorAll('.junction-branch')].flatMap((path, pathIndex) => {
+        const matrix = path.getScreenCTM()
+        const screenScale = Math.hypot(matrix.a, matrix.b)
+        const length = path.getTotalLength()
+        const step = 3 / screenScale
+        const collisions = new Set()
+        for (let distance = 0; distance <= length + step; distance += step) {
+          const point = path.getPointAtLength(Math.min(distance, length))
+          const x = matrix.a * point.x + matrix.c * point.y + matrix.e
+          const y = matrix.b * point.x + matrix.d * point.y + matrix.f
+          for (const text of texts) {
+            if (x > text.rect.left && x < text.rect.right && y > text.rect.top && y < text.rect.bottom) {
+              collisions.add(`${pathIndex}:${text.label}`)
+            }
+          }
+        }
+        return [...collisions]
+      })
+    })
+    assert.deepEqual(
+      routeTextIntersections,
+      [],
+      `노선이 역 코드 외 글자 bbox를 지나면 안 된다: ${routeTextIntersections.join(', ')}`
+    )
 
     const hitTargets = await page.locator([
       '.junction-route-row:is(a, button)',

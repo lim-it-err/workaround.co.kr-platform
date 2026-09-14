@@ -14,8 +14,8 @@ export const JUNCTION_LINES = [
     colorToken: 'junction-archive',
     textColorToken: 'line-b-text',
     order: '환승 홀 → 블로그 → 여행',
-    label: { x: 612, y: 220, anchor: 'start' },
-    paths: ['M386 345 L576.5 235', 'M388 370 L594.9 445.5'],
+    label: { x: 640, y: 364, anchor: 'start' },
+    paths: ['M90 360 L630 360'],
     stations: [
       {
         code: 'B',
@@ -24,11 +24,11 @@ export const JUNCTION_LINES = [
         lineClass: 'line-b',
         page: 'blogArchive',
         status: '읽고 쓰는 기록',
-        map: { x: 455.3, y: 305, labelX: 471, labelY: 270, anchor: 'start' },
+        map: { x: 250, y: 360, labelX: 250, labelY: 336, anchor: 'middle' },
         mapStops: [
-          { x: 498.6, y: 280, labelX: 506, labelY: 300, label: '아카이브', anchor: 'start' },
-          { x: 533.2, y: 260, labelX: 541, labelY: 280, label: '글 상세', anchor: 'start' },
-          { x: 567.8, y: 240, labelX: 576, labelY: 260, label: '스튜디오', anchor: 'start' }
+          { x: 200, y: 360, labelX: 200, labelY: 384, label: '아카이브', anchor: 'middle' },
+          { x: 160, y: 360, labelX: 160, labelY: 344, label: '글 상세', anchor: 'middle' },
+          { x: 120, y: 360, labelX: 120, labelY: 384, label: '스튜디오', anchor: 'middle' }
         ],
         sublinks: [
           { label: '공개 아카이브', page: 'blogArchive' },
@@ -44,9 +44,9 @@ export const JUNCTION_LINES = [
         page: 'voyage',
         status: '여정과 기억',
         rowStops: currentVoyage.title,
-        map: { x: 463.4, y: 397.6, labelX: 482, labelY: 428, anchor: 'start' },
+        map: { x: 470, y: 360, labelX: 470, labelY: 336, anchor: 'middle' },
         mapStops: [
-          { x: 585.6, y: 442.1, labelX: 595, labelY: 466, label: '노선도', anchor: 'start' }
+          { x: 520, y: 360, labelX: 520, labelY: 384, label: '노선도', anchor: 'middle' }
         ],
         sublinks: [
           { label: '노선도', page: 'voyage' }
@@ -60,12 +60,10 @@ export const JUNCTION_LINES = [
     colorToken: 'junction-lab',
     textColorToken: 'line-d-text',
     order: 'Advisor → 미스터리 트레인 → 발견 → 취향',
-    label: { x: 400, y: 640, anchor: 'start' },
+    label: { x: 612, y: 104, anchor: 'start' },
     paths: [
-      'M375 388 L460 533.2',
-      'M356 390 L316.6 606.2',
-      'M340 380 L239.8 480.2',
-      'M332 367 L195.8 404'
+      'M360 360 L607.5 112.5',
+      'M360 360 L204.4 515.6'
     ],
     stations: [
       {
@@ -78,9 +76,9 @@ export const JUNCTION_LINES = [
         render: 'static',
         status: '코스 · 미션',
         upcoming: false,
-        map: { x: 415, y: 455.3, labelX: 433, labelY: 462, anchor: 'start' },
+        map: { x: 437.8, y: 282.2, labelX: 454, labelY: 296, anchor: 'start' },
         mapStops: [
-          { x: 440, y: 498.6, labelX: 452, labelY: 504, label: '코스 · 미션', anchor: 'start' }
+          { x: 466.1, y: 253.9, labelX: 480, labelY: 268, label: '코스 · 미션', anchor: 'start' }
         ]
       },
       {
@@ -92,11 +90,11 @@ export const JUNCTION_LINES = [
         status: '격납고',
         subtitle: '심야 임시 운행',
         rowStops: '격납고 2대 대기',
-        map: { x: 340.9, y: 468.3, labelX: 316, labelY: 476, anchor: 'end' },
+        map: { x: 501.4, y: 218.6, labelX: 518, labelY: 232, anchor: 'start' },
         mapStops: [
-          { x: 332.2, y: 517.6, labelX: 316, labelY: 526, label: '격납고', anchor: 'end' },
-          { x: 325.2, y: 557, labelX: 315, labelY: 561, label: '엘베 · 택시', anchor: 'end' },
-          { x: 318.3, y: 596.4, labelX: 308, labelY: 600, label: '화이트채플', anchor: 'end' }
+          { x: 529.7, y: 190.3, labelX: 544, labelY: 204, label: '격납고', anchor: 'start' },
+          { x: 558, y: 162, labelX: 572, labelY: 176, label: '엘베 · 택시', anchor: 'start' },
+          { x: 586.3, y: 133.7, labelX: 600, labelY: 148, label: '화이트채플', anchor: 'start' }
         ],
         sublinks: [
           { label: '격납고', page: 'simhub' },
@@ -114,8 +112,8 @@ export const JUNCTION_LINES = [
         status: '연장 예정',
         upcoming: true,
         targetVersion: 'v0.8.0',
-        pathIndex: 2,
-        map: { x: 282.2, y: 437.8, labelX: 266, labelY: 420, anchor: 'end' }
+        pathIndex: 1,
+        map: { x: 282.2, y: 437.8, labelX: 266, labelY: 432, anchor: 'end' }
       },
       {
         code: 'P',
@@ -126,8 +124,8 @@ export const JUNCTION_LINES = [
         status: '연장 예정',
         upcoming: true,
         targetVersion: 'v0.9.0',
-        pathIndex: 3,
-        map: { x: 253.7, y: 388.5, labelX: 236, labelY: 378, anchor: 'end' }
+        pathIndex: 1,
+        map: { x: 232.7, y: 487.3, labelX: 216, labelY: 482, anchor: 'end' }
       }
     ]
   },
@@ -137,8 +135,8 @@ export const JUNCTION_LINES = [
     colorToken: 'junction-depot',
     textColorToken: 'line-w-text',
     order: 'Work → Runtime · 보호 구역',
-    label: { x: 150, y: 232, anchor: 'end' },
-    paths: ['M335 346 L186.8 260', 'M350 333 L291.6 172'],
+    label: { x: 504, y: 512, anchor: 'start' },
+    paths: ['M225.6 225.6 L494.4 494.4'],
     stations: [
       {
         code: 'W',
@@ -147,9 +145,9 @@ export const JUNCTION_LINES = [
         lineClass: 'line-w',
         page: 'work',
         status: '보호 구역',
-        map: { x: 264.7, y: 305, labelX: 248, labelY: 292, anchor: 'end' },
+        map: { x: 437.8, y: 437.8, labelX: 428, labelY: 452, anchor: 'end' },
         mapStops: [
-          { x: 221.4, y: 280, labelX: 246, labelY: 332, label: '작업 흐름', anchor: 'end' }
+          { x: 466.1, y: 466.1, labelX: 452, labelY: 480, label: '작업 흐름', anchor: 'end' }
         ]
       },
       {
@@ -159,9 +157,9 @@ export const JUNCTION_LINES = [
         lineClass: 'line-r',
         page: 'runtime',
         status: '보호 구역',
-        map: { x: 322.4, y: 256.6, labelX: 306, labelY: 243, anchor: 'end' },
+        map: { x: 282.2, y: 282.2, labelX: 266, labelY: 290, anchor: 'end' },
         mapStops: [
-          { x: 305.3, y: 209.6, labelX: 296, labelY: 200, label: '실행 상태', anchor: 'end' }
+          { x: 254, y: 254, labelX: 238, labelY: 262, label: '실행 상태', anchor: 'end' }
         ]
       }
     ]

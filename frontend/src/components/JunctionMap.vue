@@ -36,13 +36,13 @@ function go(destination) {
       <h3 id="junction-map-title">환승 홀 · 기록선 · 실험선 · 기지선</h3>
       <svg
         class="junction-map"
-        viewBox="120 130 540 540"
+        viewBox="0 0 720 720"
         role="img"
         aria-label="환승 홀에서 기록선, 실험선, 기지선으로 이어지는 여덟 정류장"
       >
         <g
           v-for="line in JUNCTION_LINES"
-          :key="line.id"
+          :key="`${line.id}-paths`"
           class="junction-map-line"
           :style="{
             '--route-color': `var(--${line.colorToken})`,
@@ -56,7 +56,34 @@ function go(destination) {
             :class="{ upcoming: line.stations.some((station) => station.upcoming && station.pathIndex === pathIndex) }"
             :d="path"
           />
+        </g>
 
+        <g
+          v-for="line in JUNCTION_LINES"
+          :key="`${line.id}-stops`"
+          class="junction-map-line"
+          :style="{
+            '--route-color': `var(--${line.colorToken})`,
+            '--route-text-color': `var(--${line.textColorToken})`
+          }"
+        >
+          <template v-for="station in line.stations" :key="`${station.code}-stops`">
+            <g v-for="stop in station.mapStops || []" :key="`${station.code}-${stop.label}`" class="junction-page-stop">
+              <circle :cx="stop.x" :cy="stop.y" r="4.5" />
+              <text :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
+            </g>
+          </template>
+        </g>
+
+        <g
+          v-for="line in JUNCTION_LINES"
+          :key="`${line.id}-stations`"
+          class="junction-map-line"
+          :style="{
+            '--route-color': `var(--${line.colorToken})`,
+            '--route-text-color': `var(--${line.textColorToken})`
+          }"
+        >
           <g
             v-for="station in line.stations"
             :key="station.code"
@@ -71,11 +98,6 @@ function go(destination) {
               :y="station.map.labelY"
               :text-anchor="station.map.anchor"
             >{{ station.mapName }}</text>
-
-            <g v-for="stop in station.mapStops || []" :key="`${station.code}-${stop.label}`" class="junction-page-stop">
-              <circle :cx="stop.x" :cy="stop.y" r="4.5" />
-              <text :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
-            </g>
           </g>
 
           <text
@@ -90,7 +112,7 @@ function go(destination) {
           <circle class="junction-hub-ring" :cx="JUNCTION.x" :cy="JUNCTION.y" r="28" />
           <path class="junction-hub-mark" d="M368.8 333.4 A28 28 0 1 1 351.2 333.4" />
           <circle class="junction-hub-dot" :cx="JUNCTION.x" cy="332" r="3.4" />
-          <text class="junction-hub-name" :x="JUNCTION.x" y="308">환승 홀</text>
+          <text class="junction-hub-name" :x="JUNCTION.x" y="306">환승 홀</text>
         </g>
       </svg>
       <p class="junction-map-legend">큰 역은 서비스 · 작은 역은 세부 화면</p>
@@ -140,3 +162,25 @@ function go(destination) {
     </nav>
   </section>
 </template>
+
+<style scoped>
+@media (max-width: 899px) {
+  .junction-station-code {
+    font-size: 19px;
+  }
+
+  .junction-station-name,
+  .junction-station.upcoming .junction-station-name {
+    display: block;
+    font-size: 24px;
+  }
+
+  .junction-line-name {
+    font-size: 18px;
+  }
+
+  .junction-hub-name {
+    font-size: 22px;
+  }
+}
+</style>
