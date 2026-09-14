@@ -73,7 +73,7 @@ async function setup(t, { width, height, theme }) {
     assert.deepEqual(apiRequests, [], '정적 여행 화면은 API를 호출하지 않아야 한다')
   })
   await page.goto(`${base}voyage`)
-  await page.getByRole('heading', { name: '오늘의 여행 지침서', exact: true }).waitFor()
+  await page.getByRole('heading', { name: '중부유럽 순환선', exact: true }).waitFor()
   return page
 }
 

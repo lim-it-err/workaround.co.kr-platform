@@ -1,8 +1,10 @@
+import { defineVoyage } from './schema.js'
+
 // Line V (Voyage) — 동유럽 노선 콘텐츠 (D-010, TKT-084)
 // 출처: 2026-07 일정 설계 대화에서 확정된 안. 콘텐츠는 PM(Claude) 전담.
 // 이 파일이 준비/일일 안내/기록 화면의 단일 데이터 소스다.
 
-export const EAST_EUROPE_2026 = {
+export const EAST_EUROPE_2026 = defineVoyage({
   id: 'east-europe-2026',
   title: '중부유럽 순환선',
   summary: '프라하에서 시작해 여덟 도시를 잇는 순환 여행',
@@ -556,4 +558,4 @@ export const EAST_EUROPE_2026 = {
       reverify: '비네트 활성·할슈타트 주차 요금은 전날 밤에 확인한다.'
     }
   ]
-}
+})

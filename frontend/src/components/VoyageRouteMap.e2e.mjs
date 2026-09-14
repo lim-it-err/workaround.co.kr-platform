@@ -74,9 +74,7 @@ async function setup(t, scenario) {
     assert.deepEqual(apiRequests, [], '정적 여행 화면은 API를 호출하지 않아야 한다')
   })
   await page.goto(`${base}voyage`)
-  await page.getByRole('heading', { name: '오늘의 여행 지침서', exact: true }).waitFor()
-  await page.getByRole('button', { name: '여정 노선도', exact: true }).click()
-  await page.getByRole('heading', { name: '여정 노선도', exact: true }).waitFor()
+  await page.getByRole('heading', { name: '중부유럽 순환선', exact: true }).waitFor()
   return page
 }
 
@@ -98,11 +96,20 @@ for (const scenario of [
     assert.match(await page.getByText('740km', { exact: false }).first().textContent(), /740km/)
     assert.match(await page.getByText('523만원', { exact: false }).first().textContent(), /523만원/)
 
-    const mapBox = await page.locator('.route-map-panel').boundingBox()
     const dayBox = await page.locator('.route-day-panel').boundingBox()
+    if (process.env.VOYAGE_ROUTE_SCREENSHOT_DIR) {
+      await page.screenshot({
+        path: `${process.env.VOYAGE_ROUTE_SCREENSHOT_DIR}/voyage-route-initial-${scenario.width}-${scenario.theme}.png`,
+        fullPage: true
+      })
+    }
     if (scenario.width < 900) {
-      assert.ok(mapBox.y < dayBox.y, '모바일에서는 지도 아래에 일차 카드가 와야 한다')
+      assert.equal(await page.locator('.route-map-panel').isVisible(), false, '모바일 첫 진입에서는 지도가 접혀야 한다')
+      await page.getByRole('button', { name: '노선도 펼치기', exact: true }).click()
+      const mapBox = await page.locator('.route-map-panel').boundingBox()
+      assert.ok(dayBox.y < mapBox.y, '모바일에서는 오늘 카드가 지도보다 먼저 와야 한다')
     } else {
+      const mapBox = await page.locator('.route-map-panel').boundingBox()
       assert.ok(mapBox.x < dayBox.x && Math.abs(mapBox.y - dayBox.y) < 10, '데스크톱에서는 지도와 일차 카드가 나란해야 한다')
     }
 
@@ -146,7 +153,19 @@ for (const scenario of [
       })
     }
 
-    await page.getByRole('button', { name: '같은 날짜로 돌아가기', exact: true }).click()
-    await page.getByRole('heading', { name: '브르노 경유 → 프라하', exact: true }).waitFor()
+    await page.getByRole('button', { name: 'DAY 0 출발 전 준비', exact: true }).click()
+    await page.getByRole('heading', { name: '여행 준비', exact: true }).waitFor()
+    if (process.env.VOYAGE_ROUTE_SCREENSHOT_DIR) {
+      await page.screenshot({
+        path: `${process.env.VOYAGE_ROUTE_SCREENSHOT_DIR}/voyage-route-day0-${scenario.width}-${scenario.theme}.png`,
+        fullPage: true
+      })
+    }
+    const flightCheck = page.getByRole('checkbox', { name: /항공권 OZ545/ })
+    await flightCheck.check()
+    assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('voyage:east-europe-2026:checklist'))), ['flight'])
+
+    await page.getByRole('button', { name: '← 여행 목록', exact: true }).click()
+    await page.getByRole('heading', { name: '여행 목록', exact: true }).waitFor()
   })
 }

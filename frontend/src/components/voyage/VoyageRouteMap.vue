@@ -1,6 +1,8 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import StationHeader from '../StationHeader.vue'
+import { voyageStorageKey } from '../../data/voyageStorage.js'
+import { downloadWritingBackup } from '../../staticWritingState.js'
+import VoyagePreparationSheet from './VoyagePreparationSheet.vue'
 import {
   ROUTE_VIEWBOX,
   buildDayTimeline,
@@ -15,22 +17,30 @@ import {
 
 const props = defineProps({
   voyage: { type: Object, required: true },
-  initialDayIndex: { type: Number, default: 0 }
+  initialDayIndex: { type: Number, default: null },
+  entryMode: { type: String, default: '' }
 })
 
 const emit = defineEmits(['back', 'exit', 'select-day'])
 
-const selectedDayIndex = ref(clampDayIndex(props.initialDayIndex))
+const todayIndex = computed(() => findTripDayIndex(props.voyage))
+const selectedDayIndex = ref(resolveInitialDayIndex())
 const detail = ref(null)
 const detailPanel = ref(null)
 const returnFocus = ref(null)
-const todayIndex = computed(() => findTripDayIndex(props.voyage))
+const mapExpanded = ref(typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches)
+const dayStorageKey = voyageStorageKey(props.voyage.id, 'days')
+const dayRecords = ref(readDayRecords())
+const backupMessage = ref('')
 const activeCityId = computed(() => currentCityId(props.voyage, todayIndex.value))
-const selectedDay = computed(() => props.voyage.days[selectedDayIndex.value])
+const isPreparation = computed(() => selectedDayIndex.value === -1)
+const selectedDay = computed(() => isPreparation.value ? null : props.voyage.days[selectedDayIndex.value])
 const selectedSession = computed(() => (
-  (props.voyage.daySessions || []).find((session) => session.dayIndex === selectedDayIndex.value) || null
+  selectedDay.value?.plan?.session
+    || (props.voyage.daySessions || []).find((session) => session.dayIndex === selectedDayIndex.value)
+    || null
 ))
-const timeline = computed(() => buildDayTimeline(props.voyage, selectedDayIndex.value))
+const timeline = computed(() => isPreparation.value ? [] : buildDayTimeline(props.voyage, selectedDayIndex.value))
 const segments = computed(() => buildRouteSegments(props.voyage, todayIndex.value, selectedDayIndex.value))
 const gauges = computed(() => routeGauges(props.voyage, todayIndex.value))
 const distanceProgress = computed(() => percent(gauges.value.completedDistance, gauges.value.totalDistance))
@@ -55,21 +65,40 @@ const projectedCities = computed(() => props.voyage.cities.map((city) => {
   }
 }))
 const daySpendText = computed(() => {
-  const total = selectedDay.value?.spend?.total
+  const total = selectedDay.value?.actual?.spend?.total ?? selectedDay.value?.spend?.total
   return total ? formatWon(total) : '기록 없음'
 })
 const selectedDayLabel = computed(() => {
   const day = selectedDay.value
-  if (!day) return ''
+  if (!day) return '체크리스트 · 예산 · 결정 기록'
   return `${formatDate(day.date)} · ${day.city}`
 })
+const selectedDayState = computed(() => {
+  if (isPreparation.value) return 'prep'
+  return routeItemState(props.voyage, selectedDayIndex.value, todayIndex.value)
+})
+const selectedDayStateLabel = computed(() => ({
+  prep: '출발 전',
+  completed: '실제 기록',
+  current: '오늘 · 계획과 기록',
+  upcoming: '계획'
+})[selectedDayState.value])
+const selectedRecord = computed({
+  get: () => selectedDay.value ? dayRecords.value[selectedDay.value.date]?.note || selectedDay.value.actual?.record || '' : '',
+  set: (value) => updateSelectedRecord({ note: value })
+})
+const selectedStamped = computed(() => (
+  selectedDay.value ? Boolean(dayRecords.value[selectedDay.value.date]?.stamped) : false
+))
 const detailPhotos = computed(() => {
   if (!detail.value) return []
   if (detail.value.type === 'city') {
-    return detail.value.city.indexes.flatMap((index) => props.voyage.days[index]?.photos || [])
+    return detail.value.city.indexes.flatMap((index) => (
+      props.voyage.days[index]?.actual?.photos || props.voyage.days[index]?.photos || []
+    ))
   }
   const mealPhoto = detail.value.item.meal?.photo
-  const dayPhotos = selectedDay.value?.photos || []
+  const dayPhotos = selectedDay.value?.actual?.photos || selectedDay.value?.photos || []
   return [mealPhoto, ...dayPhotos].filter(Boolean).map(normalizePhoto)
 })
 const cityDetail = computed(() => {
@@ -84,20 +113,76 @@ const cityDetail = computed(() => {
 })
 
 watch(() => props.initialDayIndex, (value) => {
-  selectedDayIndex.value = clampDayIndex(value)
+  if (Number.isInteger(value)) selectedDayIndex.value = clampDayIndex(value)
 })
 
 onMounted(() => window.addEventListener('keydown', handleEscape))
 onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
 
 function clampDayIndex(index) {
+  if (Number(index) === -1) return -1
   return Math.min(Math.max(Number(index) || 0, 0), props.voyage.days.length - 1)
+}
+
+function resolveInitialDayIndex() {
+  if (Number.isInteger(props.initialDayIndex)) return clampDayIndex(props.initialDayIndex)
+  if (props.entryMode === 'prep' || props.voyage.status === 'planned' || todayIndex.value < 0) return -1
+  if (props.entryMode === 'archive' || props.voyage.status === 'arrived' || todayIndex.value >= props.voyage.days.length) {
+    return Math.max(0, props.voyage.days.length - 1)
+  }
+  return clampDayIndex(todayIndex.value)
 }
 
 function selectDay(index) {
   selectedDayIndex.value = clampDayIndex(index)
   detail.value = null
   emit('select-day', selectedDayIndex.value)
+}
+
+function dayTabState(index) {
+  return routeItemState(props.voyage, index, todayIndex.value)
+}
+
+function readDayRecords() {
+  if (typeof window === 'undefined') return {}
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(dayStorageKey) || '{}')
+    return parsed?.records && typeof parsed.records === 'object' ? parsed.records : {}
+  } catch (error) {
+    return {}
+  }
+}
+
+function persistDayRecords() {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(dayStorageKey, JSON.stringify({ records: dayRecords.value }))
+}
+
+function updateSelectedRecord(patch) {
+  const date = selectedDay.value?.date
+  if (!date) return
+  dayRecords.value = {
+    ...dayRecords.value,
+    [date]: {
+      ...(dayRecords.value[date] || {}),
+      ...patch
+    }
+  }
+  persistDayRecords()
+}
+
+function toggleSelectedStamp() {
+  updateSelectedRecord({ stamped: !selectedStamped.value })
+}
+
+function backupRecords() {
+  try {
+    persistDayRecords()
+    downloadWritingBackup(window.localStorage, dayStorageKey)
+    backupMessage.value = '기록 백업을 내려받았습니다.'
+  } catch (error) {
+    backupMessage.value = '백업 파일을 만들지 못했습니다.'
+  }
 }
 
 function selectSegment(segment) {
@@ -215,27 +300,17 @@ function entryFare(entry) {
 
 <template>
   <section class="feature-shell line-v voyage-route-map">
-    <StationHeader
-      line-class="line-v"
-      station-code="V02-R"
-      title="여정 노선도"
-      title-en="ROUTE MAP"
-      :status="currentStatus"
-      status-tone="ok"
-      summary="지도 · 시간표 · 정차역 상세"
-      @exit="$emit('exit')"
-    >
-      <template #actions>
-        <button type="button" class="btn btn-ghost" @click="$emit('back')">같은 날짜로 돌아가기</button>
-      </template>
-    </StationHeader>
+    <nav class="route-nav" aria-label="여행 이동">
+      <button type="button" class="ghost-button" @click="$emit('back')">← 여행 목록</button>
+      <button type="button" class="ghost-button" @click="$emit('exit')">홈으로</button>
+    </nav>
 
     <header class="route-heading">
-      <span class="route-heading__badge" aria-hidden="true">V</span>
       <div>
-        <h3>{{ voyage.title }}</h3>
-        <p>{{ selectedDayLabel }}</p>
+        <p>{{ currentStatus }}</p>
+        <h2>{{ voyage.title }}</h2>
       </div>
+      <span>{{ selectedDayLabel }}</span>
     </header>
 
     <section class="route-gauges" aria-label="여행 진행 계기판">
@@ -250,7 +325,22 @@ function entryFare(entry) {
     </section>
 
     <div class="route-layout">
-      <section class="route-map-panel" aria-labelledby="route-map-title">
+      <div class="route-map-control">
+        <button
+          type="button"
+          class="ghost-button"
+          :aria-expanded="mapExpanded"
+          aria-controls="voyage-route-map-panel"
+          @click="mapExpanded = !mapExpanded"
+        >{{ mapExpanded ? '노선도 접기' : '노선도 펼치기' }}</button>
+      </div>
+
+      <section
+        v-show="mapExpanded"
+        id="voyage-route-map-panel"
+        class="route-map-panel"
+        aria-labelledby="route-map-title"
+      >
         <h3 id="route-map-title">순환선</h3>
         <svg
           class="route-map-svg"
@@ -316,13 +406,28 @@ function entryFare(entry) {
         </svg>
       </section>
 
-      <section class="route-day-panel" :id="`voyage-route-day-${selectedDayIndex + 1}`" aria-labelledby="voyage-route-day-title">
+      <section
+        class="route-day-panel"
+        :class="`is-${selectedDayState}`"
+        :id="`voyage-route-day-${selectedDayIndex + 1}`"
+        :aria-labelledby="isPreparation ? 'voyage-prep-title' : 'voyage-route-day-title'"
+      >
         <nav class="route-day-tabs" aria-label="일차 선택">
+          <button
+            type="button"
+            class="prep"
+            :class="{ active: isPreparation }"
+            :aria-current="isPreparation ? 'step' : undefined"
+            aria-label="DAY 0 출발 전 준비"
+            @click="selectDay(-1)"
+          >
+            0<small>준비</small>
+          </button>
           <button
             v-for="(day, index) in voyage.days"
             :key="day.date"
             type="button"
-            :class="{ active: index === selectedDayIndex, today: index === todayIndex }"
+            :class="[`is-${dayTabState(index)}`, { active: index === selectedDayIndex, today: index === todayIndex }]"
             :aria-current="index === selectedDayIndex ? 'date' : undefined"
             :aria-label="`${index + 1}일차 ${day.city}`"
             @click="selectDay(index)"
@@ -331,51 +436,78 @@ function entryFare(entry) {
           </button>
         </nav>
 
-        <header class="route-day-title">
-          <div>
-            <p>DAY {{ selectedDayIndex + 1 }}</p>
-            <h3 id="voyage-route-day-title">{{ selectedSession?.title || selectedDay.city }}</h3>
-          </div>
-          <span>{{ selectedDayLabel }}</span>
-        </header>
-        <p class="route-day-goal">{{ selectedSession?.success || selectedDay.tip }}</p>
+        <VoyagePreparationSheet v-if="isPreparation" :voyage="voyage" />
 
-        <div v-if="selectedDayIndex === todayIndex" class="route-now" role="status"><span>지금</span></div>
+        <template v-else>
+          <header class="route-day-title" :class="`is-${selectedDayState}`">
+            <div>
+              <p>DAY {{ selectedDayIndex + 1 }} · {{ selectedDayStateLabel }}</p>
+              <h3 id="voyage-route-day-title">{{ selectedSession?.title || selectedDay.city }}</h3>
+            </div>
+            <span>{{ selectedDayLabel }}</span>
+          </header>
+          <p class="route-day-goal">{{ selectedSession?.success || selectedDay.plan?.tip || selectedDay.tip }}</p>
 
-        <div class="route-timetable" role="table" :aria-label="`${selectedDayIndex + 1}일차 세로 시간표`">
-          <div class="route-timetable__head" role="row">
-            <span role="columnheader">도착</span>
-            <span role="columnheader">출발</span>
-            <span role="columnheader">정차역</span>
-            <span role="columnheader">요금</span>
+          <div v-if="selectedDayIndex === todayIndex" class="route-now" role="status"><span>지금</span></div>
+
+          <div class="route-timetable" role="table" :aria-label="`${selectedDayIndex + 1}일차 세로 시간표`">
+            <div class="route-timetable__head" role="row">
+              <span role="columnheader">도착</span>
+              <span role="columnheader">출발</span>
+              <span role="columnheader">{{ selectedDayState === 'completed' ? '실제 기록' : '계획' }}</span>
+              <span role="columnheader">요금</span>
+            </div>
+            <ol role="rowgroup">
+              <li
+                v-for="entry in timeline"
+                :key="entry.id"
+                :class="[`route-stop--${entry.kind}`]"
+                role="row"
+              >
+                <time role="cell">{{ entry.arrival || '' }}</time>
+                <time role="cell">{{ entry.departure || '' }}</time>
+                <div class="route-stop__name" role="cell">
+                  <span v-if="entry.kind === 'branch'">{{ entry.title }}</span>
+                  <button v-else-if="entry.kind !== 'move'" type="button" @click="openStop(entry, $event)">
+                    <strong>{{ entry.title }}</strong>
+                    <small v-if="entry.detail">{{ entry.detail }}</small>
+                  </button>
+                  <span v-else><strong>{{ entry.title }}</strong><small v-if="entry.detail">{{ entry.detail }}</small></span>
+                </div>
+                <span class="route-stop__fare" role="cell">{{ entryFare(entry) }}</span>
+              </li>
+            </ol>
+            <footer>
+              <span>이 날 지출<small v-if="selectedDay.actual?.spend?.pendingCount || selectedDay.spend?.pendingCount"> · 미확인 {{ selectedDay.actual?.spend?.pendingCount || selectedDay.spend.pendingCount }}건</small></span>
+              <strong>{{ daySpendText }}</strong>
+            </footer>
           </div>
-          <ol role="rowgroup">
-            <li
-              v-for="entry in timeline"
-              :key="entry.id"
-              :class="[`route-stop--${entry.kind}`]"
-              role="row"
-            >
-              <time role="cell">{{ entry.arrival || '' }}</time>
-              <time role="cell">{{ entry.departure || '' }}</time>
-              <div class="route-stop__name" role="cell">
-                <span v-if="entry.kind === 'branch'">{{ entry.title }}</span>
-                <button v-else-if="entry.kind !== 'move'" type="button" @click="openStop(entry, $event)">
-                  <strong>{{ entry.title }}</strong>
-                  <small v-if="entry.detail">{{ entry.detail }}</small>
-                </button>
-                <span v-else><strong>{{ entry.title }}</strong><small v-if="entry.detail">{{ entry.detail }}</small></span>
+
+          <blockquote v-if="selectedDay.plan?.tip || selectedDay.tip">{{ selectedDay.plan?.tip || selectedDay.tip }}</blockquote>
+
+          <section v-if="selectedDayState !== 'upcoming'" class="route-record" aria-labelledby="voyage-route-record-title">
+            <header>
+              <div>
+                <p>ACTUAL</p>
+                <h4 id="voyage-route-record-title">이 날의 기록</h4>
               </div>
-              <span class="route-stop__fare" role="cell">{{ entryFare(entry) }}</span>
-            </li>
-          </ol>
-          <footer>
-            <span>이 날 요금 합계<small v-if="selectedDay.spend?.pendingCount"> · 미확인 {{ selectedDay.spend.pendingCount }}건</small></span>
-            <strong>{{ daySpendText }}</strong>
-          </footer>
-        </div>
-
-        <blockquote v-if="selectedDay.tip">{{ selectedDay.tip }}</blockquote>
+              <button
+                type="button"
+                class="route-record__stamp"
+                :aria-pressed="selectedStamped"
+                @click="toggleSelectedStamp"
+              >{{ selectedStamped ? '✓ 다녀옴' : '다녀옴 표시' }}</button>
+            </header>
+            <label>
+              <span>기억 메모</span>
+              <textarea v-model="selectedRecord" rows="5" :placeholder="`${selectedDay.city}에서 남기고 싶은 것`"></textarea>
+            </label>
+            <footer>
+              <button type="button" class="ghost-button" @click="backupRecords">내 기록 백업</button>
+              <small role="status" aria-live="polite">{{ backupMessage || '이 브라우저에 자동 저장됩니다.' }}</small>
+            </footer>
+          </section>
+        </template>
       </section>
     </div>
 
@@ -440,41 +572,53 @@ function entryFare(entry) {
   min-width: 0;
 }
 
-.route-heading {
+.route-nav {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  padding: 15px 0;
+  padding-bottom: 14px;
   border-bottom: 1px solid var(--line);
 }
 
-.route-heading__badge {
-  display: grid;
-  width: 30px;
-  height: 30px;
-  place-items: center;
-  flex: none;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 900;
+.route-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: clamp(28px, 6vw, 58px) 0 20px;
+  border-bottom: 1px solid var(--line);
 }
 
-.route-heading h3,
-.route-heading p {
+.route-heading h2,
+.route-heading p,
+.route-heading > span {
   margin: 0;
 }
 
-.route-heading h3 {
+.route-heading h2 {
+  margin-top: 5px;
   color: var(--text);
-  font-size: 1rem;
+  font-size: clamp(2rem, 7vw, 4rem);
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.route-heading p,
+.route-heading > span {
+  color: var(--muted);
+  font-size: var(--fs-caption);
 }
 
 .route-heading p {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: var(--fs-caption);
+  color: var(--accent-text);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.route-heading > span {
+  max-width: 44%;
+  text-align: right;
 }
 
 .route-gauges {
@@ -523,6 +667,15 @@ function entryFare(entry) {
   display: grid;
   gap: clamp(26px, 5vw, 48px);
   margin-top: 22px;
+}
+
+.route-map-control {
+  display: flex;
+  justify-content: stretch;
+}
+
+.route-map-control button {
+  width: 100%;
 }
 
 .route-map-panel {
@@ -714,6 +867,15 @@ function entryFare(entry) {
   color: var(--safety);
 }
 
+.route-day-tabs button.is-upcoming:not(.active) {
+  opacity: 0.5;
+}
+
+.route-day-tabs button.prep {
+  min-width: 54px;
+  border-style: dashed;
+}
+
 .route-day-tabs small {
   font-size: 0.55rem;
   line-height: 1;
@@ -755,6 +917,12 @@ function entryFare(entry) {
 .route-day-goal {
   margin-top: 6px;
   color: var(--text-2);
+}
+
+.route-day-panel.is-upcoming .route-day-goal,
+.route-day-panel.is-upcoming .route-timetable,
+.route-day-panel.is-upcoming blockquote {
+  opacity: 0.56;
 }
 
 .route-now {
@@ -951,6 +1119,91 @@ function entryFare(entry) {
   font-style: italic;
 }
 
+.route-record {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.route-record > header,
+.route-record > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.route-record h4,
+.route-record p {
+  margin: 0;
+}
+
+.route-record p {
+  color: var(--accent-text);
+  font-size: var(--fs-caption);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.route-record h4 {
+  margin-top: 3px;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.route-record__stamp {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent-text);
+  font: inherit;
+  font-size: var(--fs-caption);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.route-record__stamp[aria-pressed='true'] {
+  border-style: solid;
+  background: var(--accent);
+  color: #fff;
+}
+
+.route-record label {
+  display: grid;
+  gap: 7px;
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+  font-weight: 800;
+}
+
+.route-record textarea {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.55;
+}
+
+.route-record textarea:focus {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  outline-offset: 1px;
+}
+
+.route-record > footer small {
+  color: var(--muted);
+  text-align: right;
+}
+
 .route-detail-backdrop {
   position: fixed;
   z-index: 80;
@@ -1088,6 +1341,10 @@ function entryFare(entry) {
     top: 18px;
   }
 
+  .route-map-control {
+    display: none;
+  }
+
   .route-detail {
     top: 0;
     left: auto;
@@ -1110,7 +1367,31 @@ function entryFare(entry) {
   }
 }
 
+@media (max-width: 899px) {
+  .route-day-panel {
+    order: 1;
+  }
+
+  .route-map-control {
+    order: 2;
+  }
+
+  .route-map-panel {
+    order: 3;
+  }
+}
+
 @media (max-width: 560px) {
+  .route-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .route-heading > span {
+    max-width: none;
+    text-align: left;
+  }
+
   .route-gauge p,
   .route-day-title {
     align-items: flex-start;
@@ -1133,6 +1414,16 @@ function entryFare(entry) {
 
   .route-station__days {
     display: none;
+  }
+
+  .route-record > header,
+  .route-record > footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .route-record > footer small {
+    text-align: left;
   }
 }
 

@@ -87,7 +87,7 @@ function findMeal(meals, item, usedMeals) {
 
 function findSpendItem(day, title, meal) {
   const haystack = `${title} ${meal?.place || ''}`.toLocaleLowerCase()
-  return (day.spend?.items || []).find((item) => {
+  return (day.actual?.spend?.items || day.spend?.items || []).find((item) => {
     const label = item.label.toLocaleLowerCase()
     return haystack.includes(label) || label.includes(meal?.place?.toLocaleLowerCase() || '__no-meal__')
   }) || null
@@ -98,12 +98,12 @@ export function buildDayTimeline(voyage, dayIndex) {
   if (!day) return []
 
   const session = (voyage.daySessions || []).find((item) => item.dayIndex === dayIndex)
-  const source = session?.timeline || [
-    { time: '오전', title: day.am },
-    { time: '오후', title: day.pm },
-    { time: '저녁', title: day.eve }
+  const source = day.plan?.session?.timeline || session?.timeline || [
+    { time: '오전', title: day.plan?.am || day.am },
+    { time: '오후', title: day.plan?.pm || day.pm },
+    { time: '저녁', title: day.plan?.eve || day.eve }
   ]
-  const meals = day.meals || []
+  const meals = day.actual?.meals || day.meals || []
   const usedMeals = new Set()
   const entries = source.filter((item) => item.title && item.title !== '—').map((item, index) => {
     const meal = findMeal(meals, item, usedMeals)
@@ -133,7 +133,7 @@ export function buildDayTimeline(voyage, dayIndex) {
     })
   })
 
-  ;(session?.branches || []).forEach((branch, index) => {
+  ;(day.plan?.session?.branches || session?.branches || []).forEach((branch, index) => {
     entries.push({
       id: `branch-${dayIndex}-${index}`,
       arrival: '',
@@ -158,7 +158,7 @@ export function routeGauges(voyage, todayIndex) {
   const totalDistance = (voyage.legs || []).reduce((total, leg) => total + (leg.km || 0), 0)
   const prepaid = (voyage.prepaid || []).reduce((total, item) => total + (item.amount || 0), 0)
   const tripSpend = voyage.days.reduce((total, day, index) => (
-    covered(index) ? total + (day.spend?.total || 0) : total
+    covered(index) ? total + (day.actual?.spend?.total ?? day.spend?.total ?? 0) : total
   ), 0)
   const budgetPlan = voyage.budget?.items?.reduce((total, item) => total + (item.amount || 0), 0)
     || voyage.budget?.plan

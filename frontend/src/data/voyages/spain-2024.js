@@ -1,4 +1,6 @@
-export const SPAIN_2024 = {
+import { defineVoyage } from './schema.js'
+
+export const SPAIN_2024 = defineVoyage({
   id: 'spain-2024-09',
   title: '스페인',
   summary: '내용 준비 중',
@@ -14,4 +16,4 @@ export const SPAIN_2024 = {
   days: [],
   daySessions: [],
   prepaid: []
-}
+})

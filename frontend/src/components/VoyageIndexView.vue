@@ -54,11 +54,8 @@ function cityCount(voyage) {
         </div>
       </dl>
       <div class="voyage-current__actions">
-        <button type="button" class="primary-button" @click="$emit('open-voyage', currentVoyage.id, 'daily')">
-          오늘 운행 안내
-        </button>
-        <button type="button" class="ghost-button" @click="$emit('open-voyage', currentVoyage.id, 'archive')">
-          여행 기록
+        <button type="button" class="primary-button" @click="$emit('open-voyage', currentVoyage.id)">
+          노선도 열기
         </button>
       </div>
     </section>
@@ -69,9 +66,9 @@ function cityCount(voyage) {
         :key="voyage.id"
         :label="formatPeriod(voyage)"
         :value="voyage.title"
-        :meta="`${cityCount(voyage)}개 도시 · 기록 보기`"
+        :meta="`${cityCount(voyage)}개 도시 · 노선도`"
         interactive
-        @select="$emit('open-voyage', voyage.id, 'archive')"
+        @select="$emit('open-voyage', voyage.id)"
       />
     </ToneSectionRule>
 

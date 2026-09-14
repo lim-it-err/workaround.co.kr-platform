@@ -13,6 +13,8 @@ import {
 const voyage = EAST_EUROPE_2026
 const todayIndex = findTripDayIndex(voyage, '2026-09-14')
 
+assert.ok(voyage.days.every(day => day.plan && day.actual), '모든 일차가 plan/actual 단일 스키마를 가져야 한다')
+
 assert.equal(voyage.cities.length, 9, '출발·복귀를 포함한 9개 정차역이 필요하다')
 assert.equal(voyage.legs.length, 8, '9개 정차역을 잇는 8개 구간이 필요하다')
 assert.equal(todayIndex, 6, '9월 14일은 7일차여야 한다')
