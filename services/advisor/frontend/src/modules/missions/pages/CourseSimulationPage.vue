@@ -81,13 +81,13 @@ function minutes(seconds) {
       </p>
       <dl>
         <div><dt>도착</dt><dd>{{ result.arrivals }}명</dd></div>
-        <div><dt>처리</dt><dd>{{ result.completed }}명</dd></div>
-        <div><dt>대기 중</dt><dd>{{ result.waiting }}명</dd></div>
+        <div><dt>시간 내 처리 시작</dt><dd>{{ result.completed }}명</dd></div>
+        <div><dt>시간 내 미처리</dt><dd>{{ result.unprocessed }}명</dd></div>
         <div><dt>최장 대기</dt><dd>{{ minutes(result.maxWaitSeconds) }}</dd></div>
         <div><dt>혼합 처리시간</dt><dd>{{ result.serviceSeconds }}초</dd></div>
         <div><dt>이용률</dt><dd>{{ result.utilizationPercent }}%</dd></div>
       </dl>
-      <p>도착은 한 시간에 같은 간격으로 배치하고 표기 처리시간을 그대로 쓰는 결정론적 다중 창구 큐입니다. 이동·복귀 시간과 tick 올림은 없습니다.</p>
+      <p>같은 조건에서 같은 결과를 재현하는 고정 시드 확률 도착입니다. 도착 간격은 지수분포로 만들고, 표기 처리시간은 그대로 쓰며 이동·복귀 시간과 tick 올림은 없습니다.</p>
     </section>
 
     <details v-if="questions.length" class="questions">
