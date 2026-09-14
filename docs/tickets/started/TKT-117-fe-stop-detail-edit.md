@@ -1,8 +1,8 @@
-문서 상태: 작성완료
+﻿문서 상태: 수정중
 
 # TKT-117 `[FE]` 정차역 상세 편집 — 식당·메뉴·금액·메모·사진·구글 지도 링크 (정적 모드)
 
-- 상태: ready · P1 · 담당: codex-6 · 의존: TKT-109 (need_review 시)
+- 상태: started (2026-09-14, codex-1 단독 운용 인박스 순서로 착수) · P1 · 담당: codex-1 · 의존: TKT-109 finished
 - 스펙: 목업(`frontend/public/mockups/*`) + `design/tone-principles-2026-09-09.md`. 브랜치 `codex/v0.7.0-tone`. **UX·가시성 1순위, [반박]/[구체화 질문] 의무.**
 - scope: `frontend/src/components/voyage/**`(정차역 시트), `frontend/src/staticWritingState.js`(패턴 재사용), 테스트
 

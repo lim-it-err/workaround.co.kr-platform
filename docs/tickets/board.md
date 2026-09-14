@@ -56,7 +56,6 @@
 - `TKT-112` `P2` `tone` `ready` `[FE]` 여행 목록+노선도 톤 정합 (재정의, 127 뒤)
 - `TKT-114` `P2` `tone` `ready` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime
 - `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
-- `TKT-117` `P1` `voyage` `ready` `[FE]` 정차역 상세 편집(식당·금액·사진·지도, 정적 모드) — 109 뒤 · codex-6
 - `TKT-116` `P2` `voyage` `ready` `[FE]` 여정 노선도 회고 모드(열차 점 재생) — 109 뒤 · codex-6
 - `TKT-121` `P2` `advisor` `ready` `[FE]` Advisor 화면 톤 정합 · codex-6
 - `TKT-118` `P2` `tone` `ready` `[FE]` 라이트 테마 톤 토큰 매핑 — 110 뒤
@@ -75,8 +74,7 @@
 
 ## Started
 
-- `TKT-113` `P2` `tone` `started` `[FE]` 블로그 3종 톤 전환
-
+- `TKT-117` `P1` `voyage` `started` `[FE]` 정차역 상세 편집 — codex-1 단독 운용 인박스 순서
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -99,6 +97,8 @@
 
 
 ## Finished
+
+- `TKT-113` `[FE]` 블로그 3종 톤 전환(허브·보관함·상세) — r1 통과 (2026-09-14)
 
 - `TKT-127` `[FE]` 여행 일원화 — 노선도 단일 화면·출발 전 역·오늘/기록 흡수, r1 통과 (2026-09-14)
 

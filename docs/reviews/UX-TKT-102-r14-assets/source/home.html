@@ -1,0 +1,121 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>환승 홀 — 방사형 목업 r14</title><style>
+:root{--bg:#0A0F16;--card:#0D131C;--tx:#F3F6FB;--tx2:#AEB8C8;--mut:#7C8AA0;--hair:rgba(255,255,255,.09);--hair2:rgba(255,255,255,.16);--ring:#E9EDF3;--safety:#F3C544;
+--keep:#E14D78;--try:#7C89F0;--run:#35C275;--dim:#7C8AA0}
+@media(prefers-color-scheme:light){:root{--bg:#EDF1F6;--card:#F7F9FC;--tx:#16202E;--tx2:#4B5A70;--mut:#6B7A90;--hair:rgba(10,20,40,.10);--hair2:rgba(10,20,40,.18);--ring:#16202E;--safety:#B8860B;--keep:#C0264F;--try:#3D4EC0;--run:#1F8A4C;--dim:#8A97AA}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.55 system-ui;-webkit-font-smoothing:antialiased}
+header.banner{position:fixed;inset:0 0 auto;z-index:20;padding:7px;text-align:center;background:#F3C544;color:#111;font-size:12px;font-weight:800}
+a{color:inherit;text-decoration:none}
+main{max-width:1120px;margin:auto;padding:58px 20px 80px}
+.top{display:flex;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid var(--hair);font-weight:700}
+.top svg{width:22px;height:22px;flex:none}.top small{margin-left:auto;color:var(--mut);font-weight:400;font-size:12px}
+.wrap{display:grid;gap:28px;margin-top:22px}
+@media(min-width:900px){.wrap{grid-template-columns:1.15fr 1fr;align-items:start}.mapbox{position:sticky;top:76px}}
+.mapbox{border-left:3px solid var(--safety);padding-left:14px}
+.mapbox .k{font-size:11px;letter-spacing:.14em;color:var(--mut);font-weight:700}
+svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
+.br{fill:none;stroke-width:5;stroke-linecap:round}
+.br.todo{stroke-dasharray:7 8;stroke-width:3.5;opacity:.7}
+.stn{fill:var(--card);stroke-width:4}
+.stn.todo{stroke-dasharray:3 3}
+.code{font-size:12px;font-weight:800;fill:var(--tx);text-anchor:middle;dominant-baseline:central}
+.code.todo{fill:var(--dim)}
+.nm{fill:var(--tx);font-size:15px;font-weight:700}.nm.todo{fill:var(--dim);font-weight:500}
+.pstop{fill:var(--card);stroke-width:2.5}
+.pg{fill:var(--tx2);font-size:11px}
+.ln{font-size:12px;letter-spacing:.12em;font-weight:800}
+.hub{fill:none;stroke:var(--safety);stroke-width:4;stroke-linecap:round}
+.hubdot{fill:var(--safety)}
+.hubname{fill:var(--safety);font-size:13px;font-weight:800;text-anchor:middle;letter-spacing:.04em}
+@media(max-width:899px){.pg,.pstop{display:none}.nm{font-size:24px}.nm.todo{font-size:22px}.code{font-size:19px}.stn{r:17px}.ln{font-size:18px}.br{stroke-width:7}.hubname{font-size:22px}}
+.legend{color:var(--mut);font-size:12px;margin-top:10px}
+.lines{min-width:0}
+.grp{margin-bottom:26px;border-left:3px solid var(--c);padding-left:14px}
+.grp h2{font-size:12px;letter-spacing:.14em;color:var(--c);font-weight:800;margin:0 0 2px}.grp h2 small{font-weight:400;letter-spacing:0;color:var(--mut)}
+.grp .ord{color:var(--mut);font-size:12px;margin:0 0 6px}
+.row{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--hair)}
+.grp .row:last-of-type{border-bottom:1px solid var(--hair)}
+.badge{width:24px;height:24px;border-radius:50%;border:2px solid var(--c);color:var(--c);display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+.row .name{font-weight:700}.row .aside{margin-left:auto;color:var(--mut);font-size:12px;white-space:nowrap}
+.row.dim .name,.row.dim .badge{color:var(--dim);border-color:var(--dim)}
+.sub{display:flex;flex-wrap:wrap;gap:14px;padding:0 0 12px 36px;font-size:13px;color:var(--tx2)}
+.sub a{border-bottom:1px solid var(--hair2)}
+</style>
+<header class="banner">MOCKUP — 실화면 아님 · tone r14 · 환승 홀 방사형 (PM)</header>
+<main>
+<div class="top">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.7 4.4 A9 9 0 1 1 8.3 4.4" fill="none" stroke="var(--safety)" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="3.4" r="1.4" fill="var(--safety)"/></svg>
+  환승 홀<small>목업 목차</small>
+</div>
+
+<div class="wrap">
+<section class="mapbox">
+  <div class="k">환승 홀 · 기록선 · 실험선 · 기지선</div>
+  <svg class="map" viewBox="0 0 720 720" role="img" aria-label="workaround 환승 홀 — 세 노선 여덟 역">
+    <!-- 남기는 선 (Archive): 블로그 · 여행 -->
+    <path class="br" d="M386 345 L576.5 235" stroke="var(--keep)"/>
+    <circle class="stn" cx="455.3" cy="305" r="12" stroke="var(--keep)"/><text class="code" x="455.3" y="305">B</text><text class="nm" x="471" y="291">블로그</text>
+    <circle class="pstop" cx="498.6" cy="280" r="4.5" stroke="var(--keep)"/><text class="pg" x="506" y="300">아카이브</text>
+    <circle class="pstop" cx="533.2" cy="260" r="4.5" stroke="var(--keep)"/><text class="pg" x="541" y="280">글 상세</text>
+    <circle class="pstop" cx="567.8" cy="240" r="4.5" stroke="var(--keep)"/><text class="pg" x="576" y="260">스튜디오</text>
+    <path class="br" d="M388 370 L594.9 445.5" stroke="var(--keep)"/>
+    <circle class="stn" cx="463.4" cy="397.6" r="12" stroke="var(--keep)"/><text class="code" x="463.4" y="397.6">V</text><text class="nm" x="482" y="428">여행</text>
+    <circle class="pstop" cx="510.4" cy="414.7" r="4.5" stroke="var(--keep)"/><text class="pg" x="520" y="436">준비</text>
+    <circle class="pstop" cx="548" cy="428.4" r="4.5" stroke="var(--keep)"/><text class="pg" x="558" y="450">노선도</text>
+    <circle class="pstop" cx="585.6" cy="442.1" r="4.5" stroke="var(--keep)"/><text class="pg" x="595" y="464">기록</text>
+    <text class="ln" x="612" y="220" fill="var(--keep)">기록선</text>
+
+    <!-- 해보는 선 (Lab): Advisor · 미스터리 트레인 · 발견 · 취향 -->
+    <path class="br" d="M375 388 L460 533.2" stroke="var(--try)"/>
+    <circle class="stn" cx="415" cy="455.3" r="12" stroke="var(--try)"/><text class="code" x="415" y="455.3">A</text><text class="nm" x="433" y="462">Advisor</text>
+    <circle class="pstop" cx="440" cy="498.6" r="4.5" stroke="var(--try)"/><text class="pg" x="452" y="504">코스 · 미션</text>
+    <path class="br" d="M356 390 L316.6 606.2" stroke="var(--try)"/>
+    <circle class="stn" cx="340.9" cy="468.3" r="12" stroke="var(--try)"/><text class="code" x="340.9" y="468.3">S</text><text class="nm" x="322" y="524" text-anchor="end">미스터리 트레인</text>
+    <circle class="pstop" cx="332.2" cy="517.6" r="4.5" stroke="var(--try)"/><text class="pg" x="322" y="522" text-anchor="end">격납고</text>
+    <circle class="pstop" cx="325.2" cy="557" r="4.5" stroke="var(--try)"/><text class="pg" x="315" y="561" text-anchor="end">엘베 · 택시</text>
+    <circle class="pstop" cx="318.3" cy="596.4" r="4.5" stroke="var(--try)"/><text class="pg" x="308" y="600" text-anchor="end">화이트채플</text>
+    <path class="br todo" d="M340 380 L239.8 480.2" stroke="var(--try)"/>
+    <circle class="stn todo" cx="282.2" cy="437.8" r="12" stroke="var(--try)"/><text class="code todo" x="282.2" y="437.8">D</text><text class="nm todo" x="266" y="458" text-anchor="end">발견</text>
+    <path class="br todo" d="M332 367 L195.8 404" stroke="var(--try)"/>
+    <circle class="stn todo" cx="253.7" cy="388.5" r="12" stroke="var(--try)"/><text class="code todo" x="253.7" y="388.5">P</text><text class="nm todo" x="236" y="378" text-anchor="end">취향</text>
+    <text class="ln" x="400" y="640" fill="var(--try)">실험선</text>
+
+    <!-- 돌리는 선 (Depot): Work · Runtime — 보호 구역 -->
+    <path class="br" d="M335 346 L186.8 260" stroke="var(--run)"/>
+    <circle class="stn" cx="264.7" cy="305" r="12" stroke="var(--run)"/><text class="code" x="264.7" y="305">W</text><text class="nm" x="248" y="292" text-anchor="end">Work</text>
+    <circle class="pstop" cx="221.4" cy="280" r="4.5" stroke="var(--run)"/><text class="pg" x="212" y="300" text-anchor="end">작업 흐름</text>
+    <path class="br" d="M350 333 L291.6 172" stroke="var(--run)"/>
+    <circle class="stn" cx="322.4" cy="256.6" r="12" stroke="var(--run)"/><text class="code" x="322.4" y="256.6">R</text><text class="nm" x="306" y="243" text-anchor="end">Runtime</text>
+    <circle class="pstop" cx="305.3" cy="209.6" r="4.5" stroke="var(--run)"/><text class="pg" x="296" y="200" text-anchor="end">실행 상태</text>
+    <text class="ln" x="150" y="232" text-anchor="end" fill="var(--run)">기지선</text>
+
+    <!-- 환승 홀 (C 심볼) -->
+    <circle cx="360" cy="360" r="28" fill="var(--card)" stroke="var(--ring)" stroke-width="5"/>
+    <path class="hub" d="M368.8 333.4 A28 28 0 1 1 351.2 333.4"/>
+    <circle class="hubdot" cx="360" cy="332" r="3.4"/>
+    <text class="hubname" x="360" y="308">환승 홀</text>
+  </svg>
+  <p class="legend">환승 홀에서 세 노선이 나간다 · 큰 역 = 서비스 · 작은 역 = 화면(데스크톱)</p>
+</section>
+
+<nav class="lines" aria-label="노선별 이동">
+  <section class="grp" style="--c:var(--keep)"><h2>기록선 <small>Archive Line</small></h2><p class="ord">환승 홀 → 블로그 → 여행</p>
+    <div class="row"><span class="badge">B</span><span class="name">블로그 본선</span><span class="aside">읽고 쓰는 기록</span></div>
+    <div class="sub"><a href="blog-archive.html">공개 아카이브</a><a href="blog-post.html">글 상세</a><a href="writing-studio.html">Writing Studio</a></div>
+    <div class="row"><span class="badge">V</span><span class="name">여행 노선</span><span class="aside">여정과 기억</span></div>
+    <div class="sub"><a href="voyage-prep.html">준비</a><a href="voyage-route.html">노선도</a><a href="voyage-archive.html">기록</a></div>
+  </section>
+  <section class="grp" style="--c:var(--try)"><h2>실험선 <small>Lab Line</small></h2><p class="ord">Advisor → 미스터리 트레인 → 발견 → 취향</p>
+    <div class="row"><span class="badge">A</span><span class="name">Developer Advisor</span><span class="aside">코스 · 미션</span></div>
+    <div class="row"><span class="badge">S</span><span class="name">미스터리 트레인</span><span class="aside">격납고</span></div>
+    <div class="sub"><a href="simhub.html">격납고</a><a href="simhub.html">엘리베이터</a><a href="simhub.html">택시</a><a href="simhub.html">화이트채플</a></div>
+    <div class="row dim"><span class="badge">D</span><span class="name">발견</span><span class="aside">연장 예정</span></div>
+    <div class="row dim"><span class="badge">P</span><span class="name">취향</span><span class="aside">연장 예정</span></div>
+  </section>
+  <section class="grp" style="--c:var(--run)"><h2>기지선 <small>Depot Line</small></h2><p class="ord">Work → Runtime · 보호 구역</p>
+    <div class="row"><span class="badge">W</span><span class="name">Work Manager</span><span class="aside">보호 구역</span></div>
+    <div class="row"><span class="badge">R</span><span class="name">Runtime Board</span><span class="aside">보호 구역</span></div>
+  </section>
+</nav>
+</div>
+</main>
+</html>
