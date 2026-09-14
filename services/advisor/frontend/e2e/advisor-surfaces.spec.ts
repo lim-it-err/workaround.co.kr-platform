@@ -104,6 +104,7 @@ test('핵심 조작부의 실제 높이는 모두 40px 이상이다', async ({ p
   }
 
   await page.goto('/learn')
+  await page.getByText('고급 필터').click()
   await expectMinimumHeight('.chip-toggle')
   await page.goto('/inflight')
   await expect(page.locator('.pill').first()).toBeVisible()

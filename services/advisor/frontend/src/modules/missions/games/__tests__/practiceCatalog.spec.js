@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { getPracticeGame, nextPracticeRound, practiceCatalog } from '../practiceCatalog.js'
+import { getPracticeGame, nextPracticeRound, practiceCatalog, standalonePracticeCatalog } from '../practiceCatalog.js'
 
 describe('전체 게임 연습 카탈로그', () => {
   it('기존·신규 게임을 모두 노출한다', () => {
@@ -10,6 +10,8 @@ describe('전체 게임 연습 카탈로그', () => {
       'v1900-3-secession-hang', 'v1900-2-gold-damage', 'v1900-d-perspective',
     ])
     expect(practiceCatalog.every((game) => game.rounds.length > 0)).toBe(true)
+    expect(standalonePracticeCatalog).toHaveLength(9)
+    expect(standalonePracticeCatalog.reduce((sum, game) => sum + game.rounds.length, 0)).toBe(131)
   })
 
   it('다음·미열람·무작위 이동을 계산한다', () => {

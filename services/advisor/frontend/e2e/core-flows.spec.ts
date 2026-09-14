@@ -10,10 +10,10 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/learn')
   // A document load can finish before Vue's initial routine persistence.
   // Wait for the mounted home before clearing/seeding browser-local fixtures.
-  await expect(page.locator('.mission-card')).toHaveCount(39)
+  await expect(page.locator('[data-content-index]')).toBeVisible()
   await page.evaluate(() => localStorage.clear())
   await page.reload()
-  await expect(page.locator('.mission-card')).toHaveCount(39)
+  await expect(page.locator('[data-content-index]')).toBeVisible()
 })
 
 test.afterEach(async ({ page }) => {
@@ -44,8 +44,11 @@ test('미션 완주: 홈에서 제출하고 샘플 리뷰의 핵심 섹션을 �
 
 test('필터: 난이도와 검색을 조합하고 초기화한다', async ({ page }) => {
   const missionCards = page.locator('.mission-card')
+  await page.getByLabel('형식').selectOption('mission')
+  await page.getByRole('button', { name: /더 보기/ }).click()
   await expect(missionCards).toHaveCount(39)
 
+  await page.getByText('고급 필터').click()
   await page.getByRole('button', { name: '쉬움', exact: true }).click()
   const easyCount = await missionCards.count()
   expect(easyCount).toBeGreaterThan(0)
@@ -56,7 +59,7 @@ test('필터: 난이도와 검색을 조합하고 초기화한다', async ({ pag
   await expect(page.getByRole('link', { name: new RegExp(WINE_TITLE) })).toBeVisible()
 
   await page.getByRole('button', { name: '필터 초기화' }).click()
-  await expect(missionCards).toHaveCount(39)
+  await expect(page.getByText('181개', { exact: true })).toBeVisible()
 })
 
 test('기획자 모드: 참석자는 보이지만 비공개 관심사는 DOM에 없다', async ({ page }) => {
@@ -116,8 +119,7 @@ test('머지 or 반려: 375px에서 5장 판정 후 세션 요약을 본다', as
   page.on('pageerror', (error) => errors.push(error.message))
   await page.setViewportSize({ width: 375, height: 812 })
 
-  await page.goto('/games')
-  await page.getByRole('link', { name: /머지 or 반려/ }).click()
+  await page.goto('/routine/swipe')
   await expect(page).toHaveURL(/\/routine\/swipe$/)
   await expect(page.getByText(/오늘의 판정 5장/)).toBeVisible()
 
@@ -152,8 +154,7 @@ test('한 번만 물어본다면: 관측으로 가설을 흐리고 지목 뒤 �
   })
   await page.reload()
 
-  await page.goto('/games')
-  await page.getByRole('link', { name: /한 번만 물어본다면/ }).click()
+  await page.goto('/games/probe')
   await expect(page).toHaveURL(/\/games\/probe$/)
   await expect(page.getByRole('heading', { name: '금요일 오후의 p99' })).toBeVisible()
 
@@ -201,8 +202,7 @@ test('경계선 한 칸: 같은 운명 구간과 타임아웃 결과를 보고 �
   })
   await page.reload()
 
-  await page.goto('/games')
-  await page.getByRole('link', { name: /경계선 한 칸/ }).click()
+  await page.goto('/games/boundary')
   await expect(page).toHaveURL(/\/games\/boundary$/)
   await expect(page.getByRole('heading', { name: '타행 이체의 세 단계' })).toBeVisible()
   await expect(page.locator('.flow-step')).toHaveCount(4)
@@ -237,9 +237,8 @@ test('카드 갈래: 첫 선택을 저장하고 반대 입장도 본 뒤 새로�
   page.on('pageerror', (error) => errors.push(error.message))
   await page.setViewportSize({ width: 375, height: 812 })
 
-  await page.goto('/games')
+  await page.goto('/games?card=read-ggs-01')
   const card = page.locator('[data-card-id="read-ggs-01"]')
-  await card.getByRole('button', { name: /총, 균, 쇠/ }).click()
   await expect(card.getByText('여러분 프로젝트에서 가장 오래된 초기 선택 — 지금 그것은 무엇에 가깝습니까?'))
     .toBeVisible()
 
@@ -259,7 +258,6 @@ test('카드 갈래: 첫 선택을 저장하고 반대 입장도 본 뒤 새로�
 
   await page.reload()
   const reloadedCard = page.locator('[data-card-id="read-ggs-01"]')
-  await reloadedCard.getByRole('button', { name: /총, 균, 쇠/ }).click()
   await expect(reloadedCard.getByText(/축복이라 느껴진다면/)).toBeVisible()
   await expect(reloadedCard.getByRole('button', { name: '🌾 축복 — 그 덕에 여기까지 왔다' }))
     .toHaveAttribute('aria-pressed', 'true')
@@ -275,8 +273,7 @@ test('사건 파일: Day 1부터 몰아보고 근본 원인을 한 번 지목한
   page.on('pageerror', (error) => errors.push(error.message))
   await page.setViewportSize({ width: 375, height: 812 })
 
-  await page.goto('/games')
-  await page.getByRole('link', { name: /사라지는 적립금/ }).click()
+  await page.goto('/games/case/case-vanishing-points-01')
 
   await expect(page).toHaveURL(/\/games\/case\/case-vanishing-points-01$/)
   await expect(page.getByRole('heading', { name: '사라지는 적립금' })).toBeVisible()

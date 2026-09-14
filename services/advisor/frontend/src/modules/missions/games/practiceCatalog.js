@@ -82,7 +82,7 @@ const coursePracticeGames = [
   )),
 ]
 
-export const practiceCatalog = [
+export const standalonePracticeCatalog = [
   game('reading', '독서 카드', '📖', '책의 통찰을 시스템 설계 질문으로 바꿉니다.', 3, cards.readingCards.map((card) => cardRound(card, 'reading')), 'reading'),
   game('cinema', '시사회 카드', '🎬', '영화 장면을 구조·운영의 언어로 읽습니다.', 3, cards.cinemaCards.map((card) => cardRound(card, 'cinema')), 'cinema'),
   game('swipe', '머지 or 반려', '🃏', '코드와 계약의 경계를 판정합니다.', 5, swipeData.swipeCards, 'swipe'),
@@ -90,6 +90,10 @@ export const practiceCatalog = [
   game('boundary', '경계선 한 칸', '✂️', '실패가 머물 트랜잭션 경계를 선택합니다.', 5, boundaryData.boundaryRounds, 'boundary'),
   game('case', '사건 파일', '🕵️', '5개 단서를 자유롭게 열어 근본 원인을 추리합니다.', 30, caseData.caseFiles, 'case'),
   ...newGameCatalog.map((entry) => game(entry.id, entry.title, entry.emoji, entry.description, entry.minutes, entry.rounds, 'choice')),
+]
+
+export const practiceCatalog = [
+  ...standalonePracticeCatalog,
   ...coursePracticeGames,
 ]
 
