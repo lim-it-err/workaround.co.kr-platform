@@ -59,7 +59,6 @@
 - `TKT-119` `P2` `tone` `ready` `[FE]` 접근성 패스(키보드·aria·시트 포커스 트랩)
 - `TKT-120` `P2` `tone` `ready` `[SIM]` 시뮬 2화면 톤 전환 — 110·114 뒤
 - `TKT-122` `P2` `advisor` `ready` `[PM]` Advisor 시즌 수명주기 스펙
-- `TKT-124` `P1` `advisor` `ready` `[FE]` Advisor 코스 컨테이너 — 코스=정류장, 형식 배지 (121 뒤)
 - `TKT-125` `P1` `voyage` `ready` `[FE]` 경험↔배움 환승 링크 — 정차역↔미션 (109·124 뒤)
 - `TKT-129` `P2` `advisor` `ready` `[FE]` Advisor 배우기 통합 인덱스 + GamesPage 폐기 (124 뒤)
 - `TKT-130` `P2` `advisor` `ready` `[FE]` Advisor 흐름 결함 — Probe 순서·기내 빈 상태·결과→기록 (121 뒤)
@@ -73,7 +72,7 @@
 
 ## Started
 
-- `TKT-121` `P2` `advisor` `started` `[FE]` Advisor 3표면 뼈대 + 톤 정합 + 초안 저장 — blocked 해제(PM 답변·`design/advisor-surfaces-spec.md`)
+- `TKT-124` `P1` `advisor` `started` `[FE]` Advisor 코스 컨테이너 — 코스=정류장, 형식 배지 (121 need_review 뒤)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -98,6 +97,7 @@
 
 ## Finished
 
+- `TKT-121` `[FE]` Advisor 오늘·배우기·기록 3표면 + 톤 정합 + 초안 보호 — r1 통과 (2026-09-14, D-020 잠정)
 - `TKT-118` `[FE]` 라이트 테마 톤 토큰 매핑 — r1 통과 (2026-09-14, [중요] W 글자 대비 → 119)
 - `TKT-114` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime 톤 전환 — r2 통과 (2026-09-14, r1 반려: 영어 상태 토큰·영어 제목)
 - `TKT-112` `[FE]` 여행 목록+노선도 톤 정합 — hairline 헤더·지도 주인공·홈 V 단일 진입 — r1 통과 (2026-09-14, [중요] ACTUAL 라벨 → 118)
