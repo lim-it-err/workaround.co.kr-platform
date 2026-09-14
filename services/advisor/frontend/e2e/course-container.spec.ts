@@ -45,11 +45,40 @@ test('시뮬 미션이 격납고 배차 엔진으로 대기 결과를 만들고 
   await page.locator('[data-mission-id="v1900-5-entry-queue"]').click()
 
   await expect(page).toHaveURL(/\/courses\/vienna-1900\/sim\/v1900-5-entry-queue$/)
+  await expect(page.getByRole('link', { name: '배우기' })).toHaveAttribute('aria-current', 'page')
   await expect(page.getByRole('heading', { name: '벨베데레 입장 큐' })).toBeVisible()
   await page.getByRole('button', { name: '대기열 돌려보기' }).click()
   await expect(page.getByRole('heading', { name: /평균 대기/ })).toBeVisible()
+  await expect(page.getByText('실행 조건 · 09시 · 창구 3개 · 사전 예약 35%')).toBeVisible()
+  const metrics = page.locator('.result dl')
+  await expect(metrics).toContainText('대기 중')
+  const arrivals = Number((await metrics.locator('dd').nth(0).innerText()).replace(/\D/g, ''))
+  const completed = Number((await metrics.locator('dd').nth(1).innerText()).replace(/\D/g, ''))
+  const waiting = Number((await metrics.locator('dd').nth(2).innerText()).replace(/\D/g, ''))
+  expect(completed + waiting).toBe(arrivals)
+
+  await page.locator('select').selectOption('10')
+  await expect(page.getByText('조건이 바뀌었습니다', { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: '바뀐 조건으로 다시 실행' })).toBeVisible()
+  await page.getByRole('button', { name: '바뀐 조건으로 다시 실행' }).click()
+  await expect(page.getByText('실행 조건 · 10시 · 창구 3개 · 사전 예약 35%')).toBeVisible()
+  await expect(page.getByText('조건이 바뀌었습니다', { exact: true })).toHaveCount(0)
+  await expect(page.getByText('생각해 볼 질문')).toBeVisible()
   await expect(page.getByText(/격납고의 배차 전이 엔진/)).toBeVisible()
   await page.getByRole('link', { name: '← 비엔나 1900 코스' }).click()
   await expect(page).toHaveURL(/\/courses\/vienna-1900$/)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+})
+
+test('코스 상세에서도 배우기를 현재 표면으로 표시하고 양 폭에서 넘치지 않는다', async ({ page }) => {
+  for (const width of [375, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/courses/vienna-1900')
+    await expect(page.getByRole('link', { name: '배우기' })).toHaveAttribute('aria-current', 'page')
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+
+    await page.goto('/courses/vienna-1900/sim/v1900-5-entry-queue')
+    await page.getByRole('button', { name: '대기열 돌려보기' }).click()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  }
 })

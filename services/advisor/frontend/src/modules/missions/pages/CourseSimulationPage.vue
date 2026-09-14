@@ -13,6 +13,16 @@ const hour = ref(sim.value?.arrivals?.[0]?.hour ?? '09')
 const counters = ref(sim.value?.counters ?? 3)
 const prebookedPercent = ref(Math.round((sim.value?.prebookedRatio ?? 0.35) * 100))
 const result = ref(null)
+const questions = computed(() => {
+  const entries = sim.value?.reflect ?? sim.value?.questions
+  return Array.isArray(entries) ? entries.filter((entry) => String(entry ?? '').trim()) : []
+})
+const reflectionNote = computed(() => sim.value?.reflectNote ?? sim.value?.note ?? '')
+const conditionsChanged = computed(() => Boolean(result.value) && (
+  result.value.hour !== hour.value
+  || result.value.counters !== counters.value
+  || Math.round(result.value.prebookedRatio * 100) !== prebookedPercent.value
+))
 
 function run() {
   result.value = runEntryQueueScenario(sim.value, {
@@ -54,25 +64,35 @@ function minutes(seconds) {
         <span>사전 예약 {{ prebookedPercent }}%</span>
         <input v-model.number="prebookedPercent" type="range" min="0" max="80" step="5" />
       </label>
-      <button class="btn primary run-button" @click="run">대기열 돌려보기</button>
+      <button class="btn primary run-button" @click="run">
+        {{ conditionsChanged ? '바뀐 조건으로 다시 실행' : '대기열 돌려보기' }}
+      </button>
     </section>
 
-    <section v-if="result" class="result" aria-live="polite">
-      <span>{{ result.hour }}시 결과</span>
+    <section v-if="result" class="result" :data-result-stale="conditionsChanged || undefined" aria-live="polite">
+      <div v-if="conditionsChanged" class="stale-result" role="status">
+        <strong>조건이 바뀌었습니다</strong>
+        <span>현재 선택으로 다시 실행해 결과를 갱신하세요.</span>
+      </div>
+      <span>{{ result.hour }}시 전체 실행 결과</span>
       <h2>평균 대기 {{ minutes(result.averageWaitSeconds) }}</h2>
+      <p class="run-conditions">
+        실행 조건 · {{ result.hour }}시 · 창구 {{ result.counters }}개 · 사전 예약 {{ Math.round(result.prebookedRatio * 100) }}%
+      </p>
       <dl>
         <div><dt>도착</dt><dd>{{ result.arrivals }}명</dd></div>
         <div><dt>처리</dt><dd>{{ result.completed }}명</dd></div>
+        <div><dt>대기 중</dt><dd>{{ result.waiting }}명</dd></div>
         <div><dt>최장 대기</dt><dd>{{ minutes(result.maxWaitSeconds) }}</dd></div>
         <div><dt>혼합 처리시간</dt><dd>{{ result.serviceSeconds }}초</dd></div>
       </dl>
       <p>창구는 차량, 관람객은 호출로 바꿔 격납고의 배차 전이 엔진을 재사용한 결정론적 연습 결과입니다.</p>
     </section>
 
-    <details class="questions">
+    <details v-if="questions.length" class="questions">
       <summary>생각해 볼 질문</summary>
-      <ol><li v-for="question in sim.questions" :key="question">{{ question }}</li></ol>
-      <p>{{ sim.note }}</p>
+      <ol><li v-for="question in questions" :key="question">{{ question }}</li></ol>
+      <p v-if="reflectionNote">{{ reflectionNote }}</p>
     </details>
   </div>
 
@@ -98,7 +118,11 @@ function minutes(seconds) {
 .run-button { min-height: 48px; margin-top: 4px; }
 .result { margin-top: 28px; padding: 20px 0 4px 20px; border-left: 3px solid var(--good); }
 .result h2 { margin: 5px 0 18px; }
-.result dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 0; border-top: 1px solid var(--line); }
+.stale-result { display: grid; gap: 2px; margin: -6px 0 16px; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--warn) 55%, transparent); border-radius: 8px; background: color-mix(in srgb, var(--warn) 9%, transparent); }
+.stale-result strong { color: var(--warn); }
+.stale-result span { color: var(--fg-dim); font-size: 12px; }
+.run-conditions { margin: -10px 0 14px; color: var(--fg-dim); font-size: 12px; }
+.result dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); margin: 0; border-top: 1px solid var(--line); }
 .result dl div { padding: 12px 8px 12px 0; border-bottom: 1px solid var(--line); }
 .result dt { color: var(--fg-dim); font-size: 11px; }
 .result dd { margin: 4px 0 0; font-weight: 750; font-variant-numeric: tabular-nums; }

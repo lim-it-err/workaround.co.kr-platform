@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import StationHeader from '../../../../../frontend/src/components/StationHeader.vue'
 import { useMissions } from '../modules/missions/store/missions.js'
 import NicknamePrompt from '../modules/missions/components/NicknamePrompt.vue'
@@ -9,7 +9,9 @@ import { usePlatformTheme } from './platformTheme.js'
 
 const platformHome = platformHomePath(import.meta.env.BASE_URL)
 const router = useRouter()
+const route = useRoute()
 const { theme, toggleTheme } = usePlatformTheme()
+const learnIsCurrent = computed(() => route.path === '/learn' || route.path === '/courses' || route.path.startsWith('/courses/'))
 function exitAdvisor() {
   if (platformHome) window.location.assign(platformHome)
   else router.push('/today')
@@ -52,7 +54,12 @@ function onNicknameCancelled() {
       </StationHeader>
       <nav class="nav" aria-label="전역 메뉴">
         <router-link to="/today" class="nav-link">오늘</router-link>
-        <router-link to="/learn" class="nav-link">배우기</router-link>
+        <router-link
+          to="/learn"
+          class="nav-link"
+          :class="{ current: learnIsCurrent }"
+          :aria-current="learnIsCurrent ? 'page' : undefined"
+        >배우기</router-link>
         <router-link to="/history" class="nav-link">기록</router-link>
       </nav>
     </header>

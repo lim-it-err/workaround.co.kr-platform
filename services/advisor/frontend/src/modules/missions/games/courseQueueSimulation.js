@@ -64,6 +64,16 @@ export function runEntryQueueScenario(sim, options = {}) {
   const sessionTicks = (SESSION_MINUTES * 60) / TICK_SECONDS
   let state = createState(counters, serviceSeconds)
   let created = 0
+  const completedIds = new Set()
+  const completedWaits = []
+
+  function collectCompleted() {
+    for (const entry of state.completedRequests) {
+      if (completedIds.has(entry.id)) continue
+      completedIds.add(entry.id)
+      completedWaits.push(entry.waitSeconds)
+    }
+  }
 
   for (let tick = 1; tick <= sessionTicks; tick += 1) {
     state.clock.elapsedSeconds = tick * TICK_SECONDS
@@ -73,28 +83,29 @@ export function runEntryQueueScenario(sim, options = {}) {
       state.activeRequests.push(request(`Visitor-${String(created).padStart(3, '0')}`, state.clock.elapsedSeconds))
     }
     state = advanceTaxiFleet(assignPendingTaxiRequests(state))
+    collectCompleted()
   }
 
   const drainLimit = sessionTicks * 2
   for (let tick = 0; state.activeRequests.length && tick < drainLimit; tick += 1) {
     state.clock.elapsedSeconds += TICK_SECONDS
     state = advanceTaxiFleet(assignPendingTaxiRequests(state))
+    collectCompleted()
   }
 
-  const waits = state.completedRequests.map((entry) => entry.waitSeconds)
-  const averageWaitSeconds = waits.length
-    ? Math.round(waits.reduce((sum, value) => sum + value, 0) / waits.length)
+  const averageWaitSeconds = completedWaits.length
+    ? Math.round(completedWaits.reduce((sum, value) => sum + value, 0) / completedWaits.length)
     : 0
 
   return {
     hour,
     arrivals: expectedArrivals,
-    completed: state.completedRequests.length,
+    completed: completedIds.size,
     waiting: state.activeRequests.length,
     counters,
     prebookedRatio,
     averageWaitSeconds,
-    maxWaitSeconds: waits.length ? Math.max(...waits) : 0,
+    maxWaitSeconds: completedWaits.length ? Math.max(...completedWaits) : 0,
     serviceSeconds: Math.round(serviceSeconds),
   }
 }
