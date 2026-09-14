@@ -53,11 +53,10 @@
 
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
-- `TKT-114` `P2` `tone` `ready` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime
 - `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
 - `TKT-116` `P2` `voyage` `ready` `[FE]` 여정 노선도 회고 모드(열차 점 재생) — 109 뒤 · codex-6
-- `TKT-121` `P2` `advisor` `ready` `[FE]` Advisor 화면 톤 정합 · codex-6
 - `TKT-118` `P2` `tone` `ready` `[FE]` 라이트 테마 톤 토큰 매핑 — 110 뒤
+- `TKT-128` `P3` `tone` `ready` `[FE]` 원칙 4 잔존 일소 — voyage ACTUAL·Work 접힌 상세 영어 눈썹·목록 0개 도시 — 114 뒤
 - `TKT-119` `P2` `tone` `ready` `[FE]` 접근성 패스(키보드·aria·시트 포커스 트랩)
 - `TKT-120` `P2` `tone` `ready` `[SIM]` 시뮬 2화면 톤 전환 — 110·114 뒤
 - `TKT-122` `P2` `advisor` `ready` `[PM]` Advisor 시즌 수명주기 스펙
@@ -73,6 +72,8 @@
 
 ## Started
 
+- `TKT-114` `P2` `tone` `started` `[FE]` 스튜디오 정합 + 격납고·Work·Runtime — **r1 반려**(Runtime 영어 상태 토큰·격납고 영어 제목), 재작업 중
+- `TKT-121` `P2` `advisor` `started` `[FE]` Advisor 화면 톤 정합 · codex-1 직속 인박스 위임
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
