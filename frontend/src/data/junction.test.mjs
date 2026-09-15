@@ -39,6 +39,20 @@ test('여행 노선은 통합 노선도 진입점 하나만 노출한다', () =>
   assert.deepEqual(voyage.sublinks.map((link) => link.label), ['노선도'])
 })
 
+test('미스터리 트레인은 격납고·엘리베이터·택시·화이트채플 경계를 명시한다', () => {
+  const simulation = LINES.find((line) => line.code === 'S')
+  assert.deepEqual(simulation.mapStops.map((stop) => stop.label), [
+    '격납고',
+    '엘리베이터',
+    '택시',
+    '화이트채플'
+  ])
+  assert.equal(simulation.mapStops.find((stop) => stop.page === 'elevator').staticAccess, 'server')
+  assert.equal(simulation.sublinks.find((link) => link.page === 'elevator').staticAccess, 'server')
+  assert.equal(simulation.mapStops.find((stop) => stop.label === '화이트채플').access, 'planned')
+  assert.equal(simulation.sublinks.find((link) => link.label === '화이트채플').access, 'planned')
+})
+
 test('세 노선은 환승 홀을 직선으로 통과하고 소속 역이 같은 선 위에 놓인다', () => {
   for (const line of JUNCTION_LINES) {
     const segments = line.paths.map(parseSegment)

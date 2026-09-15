@@ -241,7 +241,7 @@ describe('missions store 특성화', () => {
 
     const wednesday = store.routineForWeekday(3)
     expect(wednesday.slots[0]).toMatchObject({ kind: 'cardFork', missionId: null })
-    expect(wednesday.slots[0].linkTo).toMatch(/^\/games\?card=read-/)
+    expect(wednesday.slots[0].linkTo).toMatch(/^\/games\/practice\/reading\/read-/)
 
     const tuesday = store.routineForWeekday(2)
     expect(tuesday.slots[0].linkTo).toMatch(
@@ -262,7 +262,7 @@ describe('missions store 특성화', () => {
       manualCheckable: true,
       checkIndex: 0,
     })
-    expect(saturday.slots[0].linkTo).toMatch(/^\/games\?card=film-/)
+    expect(saturday.slots[0].linkTo).toMatch(/^\/games\/practice\/cinema\/film-/)
   })
 
   it('스와이프·사건 열람·예측·설명 칩을 당일 루틴 완료로 기록한다', async () => {
@@ -548,7 +548,7 @@ describe('missions store 특성화', () => {
 
   it('카드 갈래는 오늘 고른 경우만 자동 완료하고 과거 선택은 다시 읽기 체크로 완료한다', async () => {
     const first = await loadStore()
-    const assignedCardId = new URLSearchParams(first.routineToday().slots[2].linkTo.split('?')[1]).get('card')
+    const assignedCardId = first.routineToday().slots[2].linkTo.split('/').at(-1)
 
     expect(first.routineToday().slots[2]).toMatchObject({
       kind: 'cardFork',

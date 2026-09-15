@@ -15,6 +15,7 @@ import {
   buildLivePath,
   normalizeBasePath,
   readLiveRoute,
+  STATIC_UNAVAILABLE_LIVE_PAGES,
   stripBasePath,
   withBasePath
 } from './staticRouting.js'
@@ -25,11 +26,14 @@ import {
 } from './staticWritingState.js'
 
 const SPLASH_DURATION_MS = 10000
+const SPLASH_RETURN_DURATION_MS = 3000
+const SPLASH_SEEN_STORAGE_KEY = 'splash:seen'
+const SPLASH_SEEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 const APP_BASE_PATH = normalizeBasePath(import.meta.env.BASE_URL)
 const TEST_ROUTE_PATH = withBasePath('/test', APP_BASE_PATH)
 const VERSIONED_TEST_ROUTE_PATH = withBasePath('/test/v0-5-0', APP_BASE_PATH)
 const isStaticMode = import.meta.env.VITE_STATIC_MODE === 'true' || APP_BASE_PATH !== '/'
-const STATIC_UNAVAILABLE_PAGES = new Set(['simhub', 'elevator', 'taxi', 'work', 'runtime', 'ops', 'signals'])
+const STATIC_UNAVAILABLE_PAGES = new Set(STATIC_UNAVAILABLE_LIVE_PAGES)
 const LIVE_PAGES = [
   'junction',
   'simhub',
@@ -284,14 +288,18 @@ const studioLastSavedAt = ref('')
 const studioSavePhase = ref('saved')
 const writingBackupMessage = ref('')
 const staticModeMessage = ref('')
+const staticSimNotice = ref(null)
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
 const currentTickerIndex = ref(0)
 const currentSplashPhrase = ref(splashPhrases[0])
+const isReturnVisitSplash = ref(false)
+const splashDurationMs = ref(SPLASH_DURATION_MS)
 const splashBoardCells = ref(
   Array.from({ length: splashCellCount }, (_, index) => createSplashCellState(`splash-${index}`))
 )
 const currentTicker = computed(() => splashTickerMessages[currentTickerIndex.value])
+const splashAutoTransitionLabel = computed(() => `${splashDurationMs.value / 1000}초 후 자동 전환`)
 
 const orchestratorSlices = [
   {
@@ -1174,6 +1182,7 @@ let splashTimer
 let portalRefreshTimer
 let elevatorRefreshTimer
 let taxiSimulationTimer
+let staticSimNoticeTimer
 let workManagerExpiryTimer
 let studioAutosaveTimer
 let studioSavedSnapshot = ''
@@ -1327,6 +1336,44 @@ function createSplashCellState(key) {
   }
 }
 
+function readRecentSplashVisit() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  try {
+    const seenAt = window.localStorage.getItem(SPLASH_SEEN_STORAGE_KEY)
+    if (!seenAt) {
+      return false
+    }
+    const seenAtMs = Date.parse(seenAt)
+    if (!Number.isFinite(seenAtMs) || Date.now() - seenAtMs >= SPLASH_SEEN_MAX_AGE_MS) {
+      window.localStorage.removeItem(SPLASH_SEEN_STORAGE_KEY)
+      return false
+    }
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+function markSplashVisitComplete() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    window.localStorage.setItem(SPLASH_SEEN_STORAGE_KEY, new Date().toISOString())
+  } catch (error) {
+    // 저장할 수 없는 환경은 다음 방문도 첫 방문 흐름으로 시작한다.
+  }
+}
+
+function setSplashVisitMode(returnVisit) {
+  isReturnVisitSplash.value = returnVisit
+  splashDurationMs.value = returnVisit ? SPLASH_RETURN_DURATION_MS : SPLASH_DURATION_MS
+}
+
 function displaySplashCharacter(character) {
   return character === ' ' ? '\u00A0' : character
 }
@@ -1457,19 +1504,26 @@ function playSplashFlap() {
   splashAnimationRunId += 1
   const runId = splashAnimationRunId
   clearSplashAnimationTimers()
-  currentTickerIndex.value = 0
+  const phraseEntries = isReturnVisitSplash.value
+    ? [{ phrase: splashPhrases.at(-1), tickerIndex: splashTickerMessages.length - 1, delayMs: 0 }]
+    : splashPhrases.map((phrase, phraseIndex) => ({
+        phrase,
+        tickerIndex: phraseIndex,
+        delayMs: phraseIndex * 3300
+      }))
+  currentTickerIndex.value = phraseEntries[0].tickerIndex
 
   if (prefersReducedMotion.value) {
-    setSplashBoardToPhrase(splashPhrases[0])
+    setSplashBoardToPhrase(phraseEntries[0].phrase)
     return
   }
 
   resetSplashBoard()
-  splashPhrases.forEach((phrase, phraseIndex) => {
+  phraseEntries.forEach(({ phrase, tickerIndex, delayMs }) => {
     queueSplashAnimation(() => {
-      currentTickerIndex.value = phraseIndex
+      currentTickerIndex.value = tickerIndex
       animateSplashPhrase(phrase, runId)
-    }, phraseIndex * 3300)
+    }, delayMs)
   })
 }
 
@@ -1494,6 +1548,7 @@ onMounted(async () => {
   }
 
   if (!isTestRoute.value && page.value === 'splash') {
+    setSplashVisitMode(readRecentSplashVisit())
     playSplashFlap()
     scheduleSplashTransition()
   } else if (!isTestRoute.value) {
@@ -1514,10 +1569,10 @@ onMounted(async () => {
     elevatorRefreshTimer = window.setInterval(() => {
       loadElevatorState()
     }, 900)
-    taxiSimulationTimer = window.setInterval(() => {
-      advanceTaxiSimulation()
-    }, 1200)
   }
+  taxiSimulationTimer = window.setInterval(() => {
+    advanceTaxiSimulation()
+  }, 1200)
 })
 
 onBeforeUnmount(() => {
@@ -1526,6 +1581,7 @@ onBeforeUnmount(() => {
   window.clearInterval(portalRefreshTimer)
   window.clearInterval(elevatorRefreshTimer)
   window.clearInterval(taxiSimulationTimer)
+  window.clearTimeout(staticSimNoticeTimer)
   window.clearTimeout(workManagerExpiryTimer)
   window.clearTimeout(studioAutosaveTimer)
   window.removeEventListener('beforeunload', handleStudioBeforeUnload)
@@ -2209,10 +2265,37 @@ function toggleTheme() {
 }
 
 function replaySplashFlap() {
+  setSplashVisitMode(false)
   playSplashFlap()
   if (!isTestRoute.value && page.value === 'splash') {
     scheduleSplashTransition()
   }
+}
+
+function showStaticSimNotice(event) {
+  const rect = event?.currentTarget?.getBoundingClientRect()
+  const isMobile = window.innerWidth < 900
+  staticSimNotice.value = {
+    message: '서버 시뮬 · 정적 공개본에서는 준비 중',
+    x: !isMobile && rect
+      ? `${Math.min(window.innerWidth - 150, Math.max(150, rect.left + rect.width / 2))}px`
+      : undefined,
+    y: !isMobile && rect
+      ? `${Math.min(window.innerHeight - 70, Math.max(18, rect.bottom + 10))}px`
+      : undefined
+  }
+  window.clearTimeout(staticSimNoticeTimer)
+  staticSimNoticeTimer = window.setTimeout(() => {
+    staticSimNotice.value = null
+  }, 2500)
+}
+
+function openSimCard(card, event) {
+  if (isStaticMode && card.page === 'elevator') {
+    showStaticSimNotice(event)
+    return
+  }
+  openPage(card.page)
 }
 
 function openPage(nextPage) {
@@ -2224,6 +2307,8 @@ function openPage(nextPage) {
     }
     return
   }
+  window.clearTimeout(staticSimNoticeTimer)
+  staticSimNotice.value = null
   staticModeMessage.value = ''
   if (page.value === 'writingStudio' && nextPage !== 'writingStudio' && !prepareStudioTransition()) {
     return
@@ -2242,7 +2327,7 @@ function openPage(nextPage) {
     page.value = normalizeLivePage(nextPage)
   }
   syncBrowserLocation()
-  if (page.value === 'elevator') {
+  if (page.value === 'elevator' && !isStaticMode) {
     void activateElevatorPage()
   }
   window.requestAnimationFrame(() => {
@@ -2264,9 +2349,10 @@ function scheduleSplashTransition() {
   window.clearTimeout(splashTimer)
   splashTimer = window.setTimeout(() => {
     clearSplashAnimationTimers()
+    markSplashVisitComplete()
     page.value = 'junction'
     syncLiveLocation({ replace: true })
-  }, SPLASH_DURATION_MS)
+  }, splashDurationMs.value)
 }
 
 function directionGlyph(direction) {
@@ -3053,7 +3139,7 @@ function handleLocationPopState(event) {
     }
   }
 
-  if (page.value === 'elevator') {
+  if (page.value === 'elevator' && !isStaticMode) {
     void activateElevatorPage()
   }
   window.requestAnimationFrame(() => {
@@ -3288,7 +3374,7 @@ function persistStudioPostId(postId) {
         </div>
 
         <div class="splash-actions">
-          <p>10초 후 자동 전환</p>
+          <p>{{ splashAutoTransitionLabel }}</p>
           <button type="button" class="ghost-button" @click="replaySplashFlap">다시 재생</button>
         </div>
       </section>
@@ -3723,6 +3809,7 @@ function persistStudioPostId(postId) {
           <section v-else-if="page === 'junction'" class="junction-shell">
             <JunctionMap
               :disabled-pages="isStaticMode ? Array.from(STATIC_UNAVAILABLE_PAGES) : []"
+              :static-mode="isStaticMode"
               @open="openPage"
             />
 
@@ -3730,12 +3817,21 @@ function persistStudioPostId(postId) {
           </section>
 
           <section v-else-if="page === 'simhub'" class="feature-shell tone-page tone-sim-page line-s">
-            <section v-if="featuredSimCard" class="tone-page-hero" :class="featuredSimCard.accent">
+            <section
+              v-if="featuredSimCard"
+              class="tone-page-hero"
+              :class="[featuredSimCard.accent, { 'static-sim-locked': isStaticMode }]"
+            >
               <small>{{ featuredSimCard.kicker }}</small>
               <h1>{{ featuredSimCard.displayName }}</h1>
               <p>{{ featuredSimCard.summary }}</p>
-              <button type="button" class="primary-button" @click="openPage(featuredSimCard.page)">
-                {{ featuredSimCard.cta }}
+              <button
+                type="button"
+                class="primary-button"
+                :aria-label="isStaticMode ? `${featuredSimCard.displayName} · 서버 시뮬 · 정적 공개본에서는 준비 중` : undefined"
+                @click="openSimCard(featuredSimCard, $event)"
+              >
+                {{ isStaticMode ? '준비 중' : featuredSimCard.cta }}
               </button>
             </section>
 
@@ -3752,29 +3848,46 @@ function persistStudioPostId(postId) {
                   <h2>{{ card.displayName }}</h2>
                   <p>{{ card.summary }}</p>
                 </div>
-                <button type="button" class="ghost-button" @click="openPage(card.page)">
+                <button type="button" class="ghost-button" @click="openSimCard(card, $event)">
                   {{ card.cta }}
                 </button>
               </article>
             </div>
+
+            <p
+              v-if="staticSimNotice"
+              class="junction-access-toast"
+              :style="{ '--toast-x': staticSimNotice.x, '--toast-y': staticSimNotice.y }"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >{{ staticSimNotice.message }}</p>
           </section>
 
           <VoyageView v-else-if="page === 'voyage'" @exit="openPage('junction')" />
 
           <section v-else-if="page === 'elevator'" class="feature-shell sim-tone-page elevator-tone-page">
+            <p v-if="isStaticMode" class="static-preview-hairline" role="status">
+              정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다
+            </p>
             <StationHeader
               line-class="line-e"
               station-code="E01"
               title="멈춘 엘리베이터"
-              status="실시간 운행"
-              status-tone="live"
-              :summary="`23층 · 승강기 ${elevatorCars.length}대 · 정원 20명`"
+              :status="isStaticMode ? '화면 미리보기' : '실시간 운행'"
+              :status-tone="isStaticMode ? 'warn' : 'live'"
+              :summary="isStaticMode ? `23층 · 승강기 ${elevatorCars.length}대 · 정지 상태 미리보기` : `23층 · 승강기 ${elevatorCars.length}대 · 정원 20명`"
               :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
               :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
               @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
             />
 
-            <section class="section-block elevator-live-layout line-e">
+            <section
+              class="section-block elevator-live-layout line-e"
+              :class="{ 'static-sim-preview': isStaticMode }"
+              :inert="isStaticMode ? '' : null"
+              :aria-disabled="isStaticMode ? 'true' : undefined"
+            >
               <ElevatorCrossSection
                 :cars="elevatorCars"
                 :floors="elevatorFloorRows"
@@ -4617,20 +4730,20 @@ function persistStudioPostId(postId) {
                   </div>
                 </div>
 
-                <div class="path-steps">
-                  <div>UI / docs 정리</div>
-                  <div>티켓 acceptance 확인</div>
-                  <div>tests / CI 확인</div>
-                  <div>PR 정리</div>
-                  <div>tag / release</div>
-                </div>
+                <ol class="path-steps" aria-label="배포 레일 단계">
+                  <li><span>01</span><strong>UI / docs 정리</strong></li>
+                  <li><span>02</span><strong>티켓 acceptance 확인</strong></li>
+                  <li><span>03</span><strong>tests / CI 확인</strong></li>
+                  <li><span>04</span><strong>PR 정리</strong></li>
+                  <li><span>05</span><strong>tag / release</strong></li>
+                </ol>
               </article>
             </section>
               </div>
             </details>
           </section>
 
-          <nav v-if="!isTestRoute" class="mobile-quick-nav" :class="{ static: isStaticMode }" aria-label="빠른 환승">
+          <nav v-if="!isTestRoute" class="mobile-quick-nav" aria-label="빠른 환승">
             <button type="button" :class="{ active: page === 'junction' }" @click="openPage('junction')">노선도</button>
             <button
               type="button"
@@ -4640,7 +4753,6 @@ function persistStudioPostId(postId) {
               아카이브
             </button>
             <button
-              v-if="!isStaticMode"
               type="button"
               :class="{ active: ['simhub', 'elevator', 'taxi'].includes(page) }"
               @click="openPage('simhub')"

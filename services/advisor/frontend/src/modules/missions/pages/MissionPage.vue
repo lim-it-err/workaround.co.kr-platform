@@ -556,7 +556,7 @@ function submitExplanation() {
 </template>
 
 <style scoped>
-.back { font-size: 13px; text-decoration: none; color: var(--fg-dim); }
+.back { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; font-size: 13px; text-decoration: none; color: var(--fg-dim); }
 .endings-sub { color: var(--fg-dim); font-size: 12.5px; font-weight: 400; }
 .ending-rows { display: flex; flex-direction: column; gap: 8px; }
 .ending {

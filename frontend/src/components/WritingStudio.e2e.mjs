@@ -78,6 +78,10 @@ for (const theme of ['dark', 'light']) {
     assert.equal(await page.getByRole('button', { name: '지금 저장', exact: true }).count(), 0)
     assert.equal(await page.getByRole('textbox', { name: '요약', exact: true }).count(), 0)
     assert.equal(await page.locator('.writing-room .station-header, .studio-state-flow, .studio-sidebar').count(), 0)
+    for (const name of ['발행', '글 도구', '저장 안내와 백업']) {
+      const box = await page.getByRole('button', { name, exact: true }).boundingBox()
+      assert.ok(box.width >= 40 && box.height >= 40, `${name} 클릭 영역은 40px 이상이어야 한다`)
+    }
     await body(page).fill('첫 화면에서 바로 씁니다.')
     await saved(page)
     assert.match(await page.locator('.writer-save').textContent(), /저장됨 \d{2}:\d{2}/)
@@ -347,6 +351,8 @@ test('097: local storage disclosure, loss conditions and combined JSON download 
   await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ notes: { prague: '여행 기록' }, stamps: ['prague'] })), voyageStorageKey(VOYAGE.id, 'archive'))
   await page.getByRole('button', { name: '저장 안내와 백업' }).click()
   assert.match(await sheet(page).textContent(), /브라우저 데이터를 지우거나 시크릿 모드/)
+  const backupBox = await sheet(page).getByRole('button', { name: '내 기록 백업' }).boundingBox()
+  assert.ok(backupBox.width >= 40 && backupBox.height >= 40, '백업 클릭 영역은 40px 이상이어야 한다')
   const downloading = page.waitForEvent('download')
   await sheet(page).getByRole('button', { name: '내 기록 백업' }).click()
   const download = await downloading

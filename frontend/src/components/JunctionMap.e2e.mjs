@@ -86,27 +86,99 @@ async function routeTextContrasts(page) {
   return page.locator([
     '.junction-line-name',
     '.junction-route-group > h3',
-    '.junction-route-row:not(.upcoming) .junction-route-badge'
+    '.junction-route-group.protected > p',
+    '.junction-route-row .junction-route-badge',
+    '.junction-route-row.restricted .junction-route-name',
+    '.junction-route-row.restricted .junction-route-status',
+    '.junction-station.restricted .junction-station-code',
+    '.junction-station.restricted .junction-station-name',
+    '.junction-map-line.protected .junction-page-stop text'
   ].join(',')).evaluateAll(elements => {
     const parse = value => (value.match(/[\d.]+/g) || []).slice(0, 3).map(Number)
-    const luminance = value => {
-      const [red, green, blue] = parse(value).map(channel => {
+    const luminance = ([red, green, blue]) => {
+      const channels = [red, green, blue].map(channel => {
         const normalized = channel / 255
         return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4
       })
-      return 0.2126 * red + 0.7152 * green + 0.0722 * blue
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
     }
     const background = getComputedStyle(document.querySelector('.app-shell')).backgroundColor
-    const backgroundLuminance = luminance(background)
+    const backgroundRgb = parse(background)
+    const backgroundLuminance = luminance(backgroundRgb)
     return elements.map(element => {
       const style = getComputedStyle(element)
       const foreground = element instanceof SVGElement ? style.fill : style.color
-      const foregroundLuminance = luminance(foreground)
+      const foregroundRgb = parse(foreground)
+      let opacity = 1
+      let current = element
+      while (current && !current.classList.contains('app-shell')) {
+        opacity *= Number.parseFloat(getComputedStyle(current).opacity) || 1
+        current = current.parentElement
+      }
+      const renderedRgb = foregroundRgb.map((channel, index) => (
+        channel * opacity + backgroundRgb[index] * (1 - opacity)
+      ))
+      const foregroundLuminance = luminance(renderedRgb)
       const ratio = (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
         / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
-      return { label: element.textContent.trim(), foreground, background, ratio }
+      const dimmed = Boolean(element.closest('.restricted, .protected, .unavailable'))
+      return { label: element.textContent.trim(), foreground, background, opacity, ratio, dimmed }
     })
   })
+}
+
+async function assertRestrictedInteractions(page, scenario) {
+  const initialUrl = page.url()
+  const workRow = page.locator('.junction-route-row.protected').filter({ hasText: 'Work Manager' })
+  const workBox = await workRow.boundingBox()
+  await workRow.click()
+
+  const toast = page.locator('.junction-access-toast')
+  await toast.waitFor()
+  assert.equal(await toast.getAttribute('role'), 'status')
+  assert.equal(await toast.getAttribute('aria-live'), 'polite')
+  assert.equal(await toast.textContent(), '보호 구역 · 준비 중')
+  assert.equal(await page.locator('.junction-access-toast').count(), 1)
+  assert.equal(page.url(), initialUrl, '보호 구역 목록 행은 주소를 바꾸면 안 된다')
+  if (process.env.JUNCTION_SCREENSHOT_DIR) {
+    await page.screenshot({
+      path: `${process.env.JUNCTION_SCREENSHOT_DIR}/junction-toast-${scenario.width}-${scenario.theme}.png`
+    })
+  }
+
+  const toastBox = await toast.boundingBox()
+  if (scenario.width < 900) {
+    assert.ok(
+      scenario.height - (toastBox.y + toastBox.height) <= 24,
+      '모바일 토스트는 화면 하단에 고정돼야 한다'
+    )
+  } else {
+    assert.ok(
+      Math.abs((toastBox.x + toastBox.width / 2) - (workBox.x + workBox.width / 2)) <= 2,
+      '데스크톱 토스트는 누른 행 가까이에 정렬돼야 한다'
+    )
+  }
+
+  const runtimeMapStation = page.getByRole('button', { name: 'Runtime Board · 보호 구역 · 준비 중' })
+  await runtimeMapStation.focus()
+  await page.keyboard.press('Enter')
+  assert.equal(await toast.textContent(), '보호 구역 · 준비 중')
+  assert.equal(page.url(), initialUrl, '보호 구역 SVG 역은 주소를 바꾸면 안 된다')
+
+  const discoveryRow = page.locator('.junction-route-row.planned').filter({ hasText: '발견' })
+  await discoveryRow.focus()
+  await page.keyboard.press('Space')
+  assert.equal(await toast.textContent(), '예정 노선 · 준비 중')
+  assert.equal(page.url(), initialUrl, '예정 역 목록 행은 주소를 바꾸면 안 된다')
+
+  const palateMapStation = page.getByRole('button', { name: '취향 · 예정 노선 · 준비 중' })
+  await palateMapStation.locator('.junction-station-dot').click()
+  await palateMapStation.locator('.junction-station-dot').click()
+  assert.equal(await page.locator('.junction-access-toast').count(), 1, '연속 클릭에도 토스트는 하나여야 한다')
+  assert.equal(page.url(), initialUrl, '예정 SVG 역은 주소를 바꾸면 안 된다')
+
+  await page.waitForTimeout(2600)
+  assert.equal(await page.locator('.junction-access-toast').count(), 0, '토스트는 2.5초 뒤 제거돼야 한다')
 }
 
 for (const scenario of [
@@ -120,9 +192,11 @@ for (const scenario of [
 
     assert.equal(await page.locator('.junction-route-group').count(), 3)
     assert.equal(await page.locator('.junction-route-row').count(), 8)
-    assert.equal(await page.locator('.junction-route-row:is(a, button)').count(), 6)
+    assert.equal(await page.locator('.junction-route-row:is(a, button)').count(), 8)
     assert.equal(await page.locator('.junction-branch').count(), 4)
     assert.equal(await page.locator('.junction-station').count(), 8)
+    assert.equal(await page.locator('.junction-station.restricted').count(), 4)
+    assert.equal(await page.locator('.junction-route-row.restricted').count(), 4)
     assert.equal(await page.getByText('Archive Line', { exact: true }).count(), 0)
 
     const mapBox = await page.locator('.junction-map-box').boundingBox()
@@ -236,9 +310,13 @@ for (const scenario of [
 
     const contrasts = await routeTextContrasts(page)
     assert.ok(
-      contrasts.every(({ ratio }) => ratio >= 4.5),
-      `노선색 텍스트 명암비는 4.5:1 이상이어야 한다: ${JSON.stringify(contrasts)}`
+      contrasts.every(({ ratio, dimmed }) => ratio >= (dimmed ? 3 : 4.5)),
+      `활성 라벨은 4.5:1, 흐린 라벨은 3:1 이상이어야 한다: ${JSON.stringify(contrasts)}`
     )
+
+    const restrictedOpacity = await page.locator('[data-station-code="W"]')
+      .evaluate(element => Number.parseFloat(getComputedStyle(element.parentElement).opacity))
+    assert.equal(restrictedOpacity, scenario.theme === 'light' ? 0.8 : 0.55)
 
     for (const [selector, value] of await overflow(page)) {
       assert.equal(value, 0, `${selector} 가로 넘침이 없어야 한다`)
@@ -250,6 +328,8 @@ for (const scenario of [
         fullPage: true
       })
     }
+
+    await assertRestrictedInteractions(page, scenario)
 
     await page.getByRole('button', { name: /여행 노선/ }).focus()
     await page.keyboard.press('Enter')

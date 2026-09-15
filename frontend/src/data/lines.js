@@ -92,15 +92,16 @@ export const JUNCTION_LINES = [
         rowStops: '격납고 2대 대기',
         map: { x: 501.4, y: 218.6, labelX: 518, labelY: 232, anchor: 'start' },
         mapStops: [
-          { x: 529.7, y: 190.3, labelX: 544, labelY: 204, label: '격납고', anchor: 'start' },
-          { x: 558, y: 162, labelX: 572, labelY: 176, label: '엘베 · 택시', anchor: 'start' },
-          { x: 586.3, y: 133.7, labelX: 600, labelY: 148, label: '화이트채플', anchor: 'start' }
+          { x: 522.6, y: 197.4, labelX: 536, labelY: 210, label: '격납고', page: 'simhub', anchor: 'start' },
+          { x: 543.8, y: 176.2, labelX: 557, labelY: 189, label: '엘리베이터', page: 'elevator', staticAccess: 'server', anchor: 'start' },
+          { x: 565.1, y: 154.9, labelX: 578, labelY: 168, label: '택시', page: 'taxi', anchor: 'start' },
+          { x: 586.3, y: 133.7, labelX: 600, labelY: 147, label: '화이트채플', access: 'planned', upcoming: true, anchor: 'start' }
         ],
         sublinks: [
           { label: '격납고', page: 'simhub' },
-          { label: '엘리베이터', page: 'elevator' },
+          { label: '엘리베이터', page: 'elevator', staticAccess: 'server' },
           { label: '택시', page: 'taxi' },
-          { label: '화이트채플', page: 'simhub' }
+          { label: '화이트채플', access: 'planned', upcoming: true }
         ]
       },
       {
@@ -110,6 +111,7 @@ export const JUNCTION_LINES = [
         lineClass: 'line-d',
         page: null,
         status: '연장 예정',
+        access: 'planned',
         upcoming: true,
         targetVersion: 'v0.8.0',
         pathIndex: 1,
@@ -122,6 +124,7 @@ export const JUNCTION_LINES = [
         lineClass: 'line-p',
         page: null,
         status: '연장 예정',
+        access: 'planned',
         upcoming: true,
         targetVersion: 'v0.9.0',
         pathIndex: 1,
@@ -145,6 +148,7 @@ export const JUNCTION_LINES = [
         lineClass: 'line-w',
         page: 'work',
         status: '보호 구역',
+        access: 'protected',
         map: { x: 437.8, y: 437.8, labelX: 428, labelY: 452, anchor: 'end' },
         mapStops: [
           { x: 466.1, y: 466.1, labelX: 452, labelY: 480, label: '작업 흐름', anchor: 'end' }
@@ -157,6 +161,7 @@ export const JUNCTION_LINES = [
         lineClass: 'line-r',
         page: 'runtime',
         status: '보호 구역',
+        access: 'protected',
         map: { x: 282.2, y: 282.2, labelX: 266, labelY: 290, anchor: 'end' },
         mapStops: [
           { x: 254, y: 254, labelX: 238, labelY: 262, label: '실행 상태', anchor: 'end' }

@@ -54,7 +54,14 @@ async function serveStaticBuild(request, response) {
   response.end(await readFile(filePath))
 }
 
-async function setup(t, { width, height, reducedMotion = 'no-preference', theme = 'dark' }) {
+async function setup(t, {
+  width,
+  height,
+  reducedMotion = 'no-preference',
+  theme = 'dark',
+  seenAt = '',
+  storageUnavailable = false
+}) {
   const context = await browser.newContext({ viewport: { width, height }, reducedMotion })
   const page = await context.newPage()
   const errors = []
@@ -71,9 +78,22 @@ async function setup(t, { width, height, reducedMotion = 'no-preference', theme 
     assert.deepEqual(errors, [], 'no browser errors or warnings')
     assert.deepEqual(apiRequests, [], 'static splash makes no API requests')
   })
-  await page.addInitScript(selectedTheme => {
+  await page.addInitScript(({ selectedTheme, splashSeenAt, blockSplashStorage }) => {
     window.localStorage.setItem('workaround-theme', selectedTheme)
-  }, theme)
+    if (splashSeenAt) window.localStorage.setItem('splash:seen', splashSeenAt)
+    if (blockSplashStorage) {
+      const nativeGetItem = Storage.prototype.getItem
+      const nativeSetItem = Storage.prototype.setItem
+      Storage.prototype.getItem = function getItem(key) {
+        if (key === 'splash:seen') throw new DOMException('storage unavailable')
+        return nativeGetItem.call(this, key)
+      }
+      Storage.prototype.setItem = function setItem(key, value) {
+        if (key === 'splash:seen') throw new DOMException('storage unavailable')
+        return nativeSetItem.call(this, key, value)
+      }
+    }
+  }, { selectedTheme: theme, splashSeenAt: seenAt, blockSplashStorage: storageUnavailable })
   await page.goto(base)
   await page.locator('.splash-stage').waitFor()
   return page
@@ -91,6 +111,19 @@ async function snapshot(page) {
       .replace(/\s/g, ' ')
       .trim()
   }))
+}
+
+async function splashPanelSurface(page) {
+  return page.locator('.splash-panel').evaluate(element => {
+    const style = getComputedStyle(element)
+    return {
+      backgroundColor: style.backgroundColor,
+      backgroundImage: style.backgroundImage,
+      borderColor: style.borderTopColor,
+      borderStyle: style.borderTopStyle,
+      borderWidth: style.borderTopWidth
+    }
+  })
 }
 
 test('375px: the existing split-flap engine runs three phrases and tickers before the 10-second transition', async t => {
@@ -130,6 +163,13 @@ test('375px: the existing split-flap engine runs three phrases and tickers befor
   assert.equal(tickerStyle.borderTop, 'solid')
   assert.equal(tickerStyle.borderBottom, 'solid')
   assert.equal(tickerStyle.direction, 'row')
+  assert.deepEqual(await splashPanelSurface(page), {
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    backgroundImage: 'none',
+    borderColor: 'rgba(0, 0, 0, 0)',
+    borderStyle: 'solid',
+    borderWidth: '0px'
+  })
 
   await page.waitForTimeout(400)
   const first = await snapshot(page)
@@ -152,9 +192,78 @@ test('375px: the existing split-flap engine runs three phrases and tickers befor
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-opening.png` })
   }
   await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 2500 })
+  const seenAt = await page.evaluate(() => window.localStorage.getItem('splash:seen'))
+  assert.ok(Number.isFinite(Date.parse(seenAt)), '첫 방문 완료 시 ISO 방문 시각을 저장해야 한다')
   assert.equal(await page.locator('.station-topbar h2').textContent(), '환승 홀')
   assert.equal(Math.round((await page.locator('.station-topbar .site-loop-symbol').boundingBox()).width), 24)
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0)
+})
+
+test('recent visit: DOORS OPENING only and transition after 3 seconds', async t => {
+  const previousSeenAt = new Date(Date.now() - 60_000).toISOString()
+  const page = await setup(t, { width: 375, height: 812, seenAt: previousSeenAt })
+
+  assert.equal(await page.getByText('3초 후 자동 전환', { exact: true }).count(), 1)
+  await page.waitForTimeout(300)
+  const state = await snapshot(page)
+  assert.equal(state.phrase, 'DOORS OPENING')
+  assert.equal(state.ticker, '출구 번호에 서열 매기는 중…')
+  assert.ok(state.runningCells > 0, '재방문도 기존 반쪽 플랩 엔진으로 마지막 문구를 재생해야 한다')
+  if (process.env.SPLASH_SCREENSHOT_DIR) {
+    await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-return.png` })
+  }
+  await page.waitForTimeout(2200)
+  assert.equal(await page.locator('.splash-stage').count(), 1, '3초 전에는 스플래시가 남아야 한다')
+  await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 1500 })
+  const refreshedSeenAt = await page.evaluate(() => window.localStorage.getItem('splash:seen'))
+  assert.ok(Date.parse(refreshedSeenAt) > Date.parse(previousSeenAt), '재방문 완료 시각을 갱신해야 한다')
+})
+
+test('recent visit replay: 다시 재생 restores the full 10-second sequence', async t => {
+  const page = await setup(t, {
+    width: 1440,
+    height: 900,
+    seenAt: new Date(Date.now() - 60_000).toISOString()
+  })
+
+  assert.equal(await page.getByText('3초 후 자동 전환', { exact: true }).count(), 1)
+  await page.getByRole('button', { name: '다시 재생', exact: true }).click()
+  assert.equal(await page.getByText('10초 후 자동 전환', { exact: true }).count(), 1)
+  await page.waitForTimeout(3700)
+  const middle = await snapshot(page)
+  assert.equal(middle.phrase, 'MIND THE GAP')
+  assert.equal(middle.ticker, '지연 시간을 정성껏 반올림하는 중…')
+  assert.equal(await page.locator('.splash-stage').count(), 1, '재생 뒤에는 재방문 3초 타이머가 취소돼야 한다')
+  if (process.env.SPLASH_SCREENSHOT_DIR) {
+    await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-desktop-replay.png` })
+  }
+  await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 7000 })
+})
+
+test('expired or unavailable storage falls back to the first-visit flow', async t => {
+  const expiredPage = await setup(t, {
+    width: 375,
+    height: 812,
+    reducedMotion: 'reduce',
+    theme: 'light',
+    seenAt: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString()
+  })
+  assert.equal(await expiredPage.getByText('10초 후 자동 전환', { exact: true }).count(), 1)
+  assert.equal(await expiredPage.getByRole('img', { name: 'WORKING AROUND', exact: true }).count(), 1)
+  assert.equal(await expiredPage.evaluate(() => window.localStorage.getItem('splash:seen')), null)
+  if (process.env.SPLASH_SCREENSHOT_DIR) {
+    await expiredPage.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-light.png` })
+  }
+
+  const blockedPage = await setup(t, {
+    width: 375,
+    height: 812,
+    reducedMotion: 'reduce',
+    seenAt: new Date().toISOString(),
+    storageUnavailable: true
+  })
+  assert.equal(await blockedPage.getByText('10초 후 자동 전환', { exact: true }).count(), 1)
+  assert.equal(await blockedPage.getByRole('img', { name: 'WORKING AROUND', exact: true }).count(), 1)
 })
 
 test('1440px light reduced motion: static first phrase, loop symbol and zero overflow', async t => {
@@ -167,6 +276,13 @@ test('1440px light reduced motion: static first phrase, loop symbol and zero ove
   assert.equal(state.overflow, 0)
   assert.equal(await page.locator('.site-loop-symbol').count(), 1)
   assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), 'light')
+  assert.deepEqual(await splashPanelSurface(page), {
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    backgroundImage: 'none',
+    borderColor: 'rgba(0, 0, 0, 0)',
+    borderStyle: 'solid',
+    borderWidth: '0px'
+  })
   if (process.env.SPLASH_SCREENSHOT_DIR) {
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-desktop-reduced.png` })
   }

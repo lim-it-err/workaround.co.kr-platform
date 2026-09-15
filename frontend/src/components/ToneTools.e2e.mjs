@@ -182,6 +182,38 @@ async function assertNoPageOverflow(page) {
   }
 }
 
+async function assertPathStepRows(page) {
+  const list = page.getByRole('list', { name: '배포 레일 단계', exact: true })
+  const steps = list.locator('li')
+  assert.equal(await steps.count(), 5)
+  assert.deepEqual(await steps.locator(':scope > span').allTextContents(), ['01', '02', '03', '04', '05'])
+  const styles = await steps.evaluateAll(elements => elements.map(element => {
+    const style = getComputedStyle(element)
+    return {
+      backgroundColor: style.backgroundColor,
+      backgroundImage: style.backgroundImage,
+      borderRadius: style.borderRadius,
+      borderTopWidth: style.borderTopWidth,
+      borderRightWidth: style.borderRightWidth,
+      borderBottomWidth: style.borderBottomWidth,
+      borderLeftWidth: style.borderLeftWidth,
+      outlineStyle: style.outlineStyle
+    }
+  }))
+  for (const style of styles) {
+    assert.deepEqual(style, {
+      backgroundColor: 'rgba(0, 0, 0, 0)',
+      backgroundImage: 'none',
+      borderRadius: '0px',
+      borderTopWidth: '0px',
+      borderRightWidth: '0px',
+      borderBottomWidth: '1px',
+      borderLeftWidth: '0px',
+      outlineStyle: 'none'
+    })
+  }
+}
+
 async function findRenderedUppercaseEnglishLeaves(page) {
   await page.locator('details').evaluateAll(elements => {
     for (const element of elements) element.open = true
@@ -309,6 +341,7 @@ for (const scenario of scenarios) {
       '라우팅 규칙',
       '배포 경로'
     ])
+    await assertPathStepRows(page)
     await assertNoPageOverflow(page)
     if (process.env.TONE_TOOLS_SCREENSHOT_DIR) {
       await page.screenshot({
@@ -376,5 +409,24 @@ for (const scenario of scenarios) {
       routes.map(route => ({ path: route.path, violations: [] })),
       'details를 모두 펼친 렌더 leaf innerText에 대문자 영어 간판이 없어야 한다'
     )
+  })
+}
+
+for (const scenario of [
+  { width: 375, height: 812, theme: 'light' },
+  { width: 1440, height: 900, theme: 'dark' }
+]) {
+  test(`${scenario.width}px ${scenario.theme}: Runtime 배포 레일은 면 없는 번호 행이다`, async t => {
+    const page = await setup(t, scenario, 'runtime')
+    await page.getByRole('heading', { name: '응답 지연이 평소보다 깁니다', exact: true }).waitFor()
+    await page.locator('.tone-support-details summary').click()
+    await assertPathStepRows(page)
+    await assertNoPageOverflow(page)
+    if (process.env.TONE_TOOLS_SCREENSHOT_DIR) {
+      await page.screenshot({
+        path: `${process.env.TONE_TOOLS_SCREENSHOT_DIR}/runtime-${scenario.width}-${scenario.theme}.png`,
+        fullPage: true
+      })
+    }
   })
 }

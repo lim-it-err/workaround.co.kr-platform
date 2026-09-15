@@ -111,9 +111,9 @@ function recoverEmpty() {
     <section class="pack">
       <div class="section-title"><h2>이번 비행 추천</h2><span>{{ entries.length }}개 선택 가능</span></div>
       <div v-if="recommended.length" class="flight-list">
-        <router-link v-for="({ game, round }) in recommended" :key="`${game.id}:${round.id}`" :to="`/games/practice/${game.id}/${round.id}`" class="flight-card card">
-          <span class="icon">{{ game.emoji }}</span>
-          <span class="body"><small>{{ game.title }} · {{ round.minutes ?? game.minutes }}분</small><strong>{{ round.title }}</strong></span>
+        <router-link v-for="({ game, round }) in recommended" :key="`${game.id}:${round.id}`" :to="`/games/practice/${game.id}/${round.id}`" class="flight-card">
+          <strong>{{ round.title }}</strong>
+          <small>{{ game.title }} · {{ round.minutes ?? game.minutes }}분</small>
           <span aria-hidden="true">→</span>
         </router-link>
       </div>
@@ -141,6 +141,6 @@ function recoverEmpty() {
 .pill { min-height: 40px; border: 1px solid var(--border); border-radius: 99px; background: var(--bg-soft); color: var(--fg-dim); padding: 6px 14px; }.pill.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .compact { color: var(--fg-dim); font-size: 13px; gap: 18px; padding-left: 52px; }.compact label { display: inline-flex; align-items: center; gap: 6px; }.settings { border-top: 1px solid var(--border); padding-top: 12px; }
 .pack { margin-top: 24px; }.section-title { display: flex; justify-content: space-between; align-items: baseline; }.section-title h2 { margin: 0 0 10px; font-size: 18px; }.section-title span { color: var(--fg-dim); font-size: 12px; }
-.flight-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }.flight-card { display: flex; gap: 12px; align-items: center; text-decoration: none; color: var(--fg); padding: 15px; min-width: 0; }.flight-card:hover { border-color: var(--accent); }.icon { font-size: 24px; }.body { display: flex; flex-direction: column; min-width: 0; flex: 1; }.body small { color: var(--fg-dim); }.body strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.landing { margin-top: 22px; border-style: dashed; }.landing p { margin: 4px 0 0; color: var(--fg-dim); font-size: 13px; }.empty { color: var(--fg-dim); }.empty strong { color: var(--fg); }.empty p { margin: 5px 0 13px; }.recovery { min-height: 40px; }
-@media (max-width: 600px) { .flight-hero { flex-direction: column; }.flight-list { grid-template-columns: 1fr; }.compact { padding-left: 0; }.settings { align-items: flex-start; flex-direction: column; }.body strong { white-space: normal; } }
+.flight-list { display: grid; grid-template-columns: 1fr; gap: 0; border-top: 1px solid var(--line); }.flight-card { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: center; min-width: 0; min-height: 52px; padding: 10px 2px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; color: var(--fg); text-decoration: none; }.flight-card strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.flight-card small { color: var(--fg-dim); white-space: nowrap; }.flight-card:hover strong { color: var(--accent-text); }.landing { margin-top: 22px; border-style: dashed; }.landing p { margin: 4px 0 0; color: var(--fg-dim); font-size: 13px; }.empty { color: var(--fg-dim); }.empty strong { color: var(--fg); }.empty p { margin: 5px 0 13px; }.recovery { min-height: 40px; }
+@media (max-width: 600px) { .flight-hero { flex-direction: column; }.compact { padding-left: 0; }.settings { align-items: flex-start; flex-direction: column; }.flight-card { gap: 8px; }.flight-card small { font-size: 11px; } }
 </style>

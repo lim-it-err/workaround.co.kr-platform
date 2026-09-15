@@ -109,9 +109,11 @@ for (const theme of ['dark', 'light']) {
       })
       await screenshot(page, `taxi-${theme}-${width}`)
       await page.getByRole('button', { name: '미스터리 트레인으로 돌아가기', exact: true }).click()
-      await page.locator('.sim-annex').waitFor()
-      await page.getByRole('button', { name: '택시 승강장 열기', exact: true }).click()
-      await page.getByRole('button', { name: '수동 호출 추가', exact: true }).waitFor()
+      await page.locator('.tone-sim-page').waitFor()
+      assert.equal(await page.locator('.tone-sim-page .tone-page-hero').count(), 1)
+      assert.ok(await page.locator('.tone-sim-page .tone-service-row').count() > 0)
+      assert.equal(await page.locator('.tone-page-hero').getByRole('heading', { name: '멈춘 엘리베이터', exact: true }).count(), 1)
+      assert.equal(await page.locator('.tone-service-row').getByRole('heading', { name: '심야 택시', exact: true }).count(), 1)
     })
   }
 }

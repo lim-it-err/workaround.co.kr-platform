@@ -347,7 +347,7 @@ function makeCardForkRoutineSlot(state, {
   return makeRoutineSlot(state, {
     kind: 'cardFork',
     title: card?.bookTitle ?? null,
-    linkTo: card ? `/games?card=${card.id}` : '/games',
+    linkTo: card ? `/games/practice/reading/${card.id}` : '/games',
     emoji: card?.emoji ?? emoji,
     time,
     label,
@@ -521,7 +521,7 @@ function buildWeekend(state, seed, dateStr) {
       makeRoutineSlot(state, {
         kind: 'cinemaCard',
         title: card?.filmTitle ?? null,
-        linkTo: card ? `/games?card=${card.id}` : '/games',
+        linkTo: card ? `/games/practice/cinema/${card.id}` : '/games',
         emoji: card?.emoji ?? '🎬',
         time: '오전 세션',
         label: '시사회 카드 보기',

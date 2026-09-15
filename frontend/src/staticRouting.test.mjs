@@ -2,8 +2,10 @@ import assert from 'node:assert/strict'
 import { LINES } from './data/lines.js'
 import {
   buildLivePath,
+  isStaticPageUnavailable,
   normalizeBasePath,
   readLiveRoute,
+  STATIC_UNAVAILABLE_LIVE_PAGES,
   stripBasePath,
   withBasePath
 } from './staticRouting.js'
@@ -20,6 +22,12 @@ assert.deepEqual(readLiveRoute('/workaround.co.kr-platform/studio', projectBase)
 assert.equal(readLiveRoute('/workaround.co.kr-platform/', projectBase), null)
 assert.equal(buildLivePath('voyage', '', projectBase), '/workaround.co.kr-platform/voyage')
 assert.equal(buildLivePath('blogPost', '프라하 첫날', projectBase), '/workaround.co.kr-platform/blog/%ED%94%84%EB%9D%BC%ED%95%98%20%EC%B2%AB%EB%82%A0')
+assert.deepEqual(STATIC_UNAVAILABLE_LIVE_PAGES, ['work', 'runtime', 'ops', 'signals'])
+assert.equal(isStaticPageUnavailable('simhub'), false)
+assert.equal(isStaticPageUnavailable('taxi'), false)
+assert.equal(isStaticPageUnavailable('elevator'), false)
+assert.equal(isStaticPageUnavailable('work'), true)
+assert.equal(isStaticPageUnavailable('runtime'), true)
 
 console.log('static routing: project base and deep links pass')
 

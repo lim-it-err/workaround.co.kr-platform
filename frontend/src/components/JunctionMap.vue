@@ -1,12 +1,36 @@
 <script setup>
+import { onBeforeUnmount, ref } from 'vue'
 import { JUNCTION, JUNCTION_LINES } from '../data/lines.js'
 import { withBasePath } from '../staticRouting.js'
 
 const props = defineProps({
-  disabledPages: { type: Array, default: () => [] }
+  disabledPages: { type: Array, default: () => [] },
+  staticMode: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['open'])
+const accessToast = ref(null)
+let accessToastTimer
+
+function effectiveAccess(destination) {
+  if (destination?.access) return destination.access
+  return props.staticMode && destination?.staticAccess === 'server' ? 'static-server' : undefined
+}
+
+function isRestricted(destination) {
+  return ['protected', 'planned', 'static-server'].includes(effectiveAccess(destination))
+}
+
+function accessMessage(destination) {
+  const access = effectiveAccess(destination)
+  if (access === 'protected') return '보호 구역 · 준비 중'
+  if (access === 'static-server') return '서버 시뮬 · 정적 공개본에서는 준비 중'
+  return '예정 노선 · 준비 중'
+}
+
+function lineAccess(line) {
+  return line.stations.every(station => station.access === 'protected') ? 'protected' : undefined
+}
 
 function isUnavailable(destination) {
   return Boolean(destination?.page && props.disabledPages.includes(destination.page))
@@ -19,15 +43,42 @@ function entryHref(destination) {
 }
 
 function destinationTag(destination) {
-  if (destination.upcoming) return 'div'
+  if (isRestricted(destination)) return 'button'
   if (destination.entryPath) return 'a'
   return 'button'
 }
 
-function go(destination) {
-  if (destination.upcoming || destination.entryPath || !destination.page) return
+function showAccessToast(destination, event) {
+  const element = event?.currentTarget
+  const rect = element?.getBoundingClientRect()
+  const isMobile = window.innerWidth < 900
+
+  accessToast.value = {
+    message: accessMessage(destination),
+    x: !isMobile && rect
+      ? `${Math.min(window.innerWidth - 150, Math.max(150, rect.left + rect.width / 2))}px`
+      : undefined,
+    y: !isMobile && rect
+      ? `${Math.min(window.innerHeight - 70, Math.max(18, rect.bottom + 10))}px`
+      : undefined
+  }
+
+  window.clearTimeout(accessToastTimer)
+  accessToastTimer = window.setTimeout(() => {
+    accessToast.value = null
+  }, 2500)
+}
+
+function go(destination, event) {
+  if (isRestricted(destination)) {
+    showAccessToast(destination, event)
+    return
+  }
+  if (destination.entryPath || !destination.page) return
   emit('open', destination.page)
 }
+
+onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
 </script>
 
 <template>
@@ -44,6 +95,7 @@ function go(destination) {
           v-for="line in JUNCTION_LINES"
           :key="`${line.id}-paths`"
           class="junction-map-line"
+          :class="lineAccess(line)"
           :style="{
             '--route-color': `var(--${line.colorToken})`,
             '--route-text-color': `var(--${line.textColorToken})`
@@ -62,13 +114,29 @@ function go(destination) {
           v-for="line in JUNCTION_LINES"
           :key="`${line.id}-stops`"
           class="junction-map-line"
+          :class="lineAccess(line)"
           :style="{
             '--route-color': `var(--${line.colorToken})`,
             '--route-text-color': `var(--${line.textColorToken})`
           }"
         >
           <template v-for="station in line.stations" :key="`${station.code}-stops`">
-            <g v-for="stop in station.mapStops || []" :key="`${station.code}-${stop.label}`" class="junction-page-stop">
+            <g
+              v-for="stop in station.mapStops || []"
+              :key="`${station.code}-${stop.label}`"
+              class="junction-page-stop"
+              :class="{
+                restricted: isRestricted(stop),
+                planned: effectiveAccess(stop) === 'planned',
+                'static-server': effectiveAccess(stop) === 'static-server'
+              }"
+              :role="stop.page || isRestricted(stop) ? 'button' : undefined"
+              :tabindex="stop.page || isRestricted(stop) ? 0 : undefined"
+              :aria-label="isRestricted(stop) ? `${stop.label} · ${accessMessage(stop)}` : stop.page ? `${stop.label} 열기` : undefined"
+              @click="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
+              @keydown.enter.prevent="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
+              @keydown.space.prevent="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
+            >
               <circle :cx="stop.x" :cy="stop.y" r="4.5" />
               <text :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
             </g>
@@ -79,6 +147,7 @@ function go(destination) {
           v-for="line in JUNCTION_LINES"
           :key="`${line.id}-stations`"
           class="junction-map-line"
+          :class="lineAccess(line)"
           :style="{
             '--route-color': `var(--${line.colorToken})`,
             '--route-text-color': `var(--${line.textColorToken})`
@@ -88,7 +157,19 @@ function go(destination) {
             v-for="station in line.stations"
             :key="station.code"
             class="junction-station"
-            :class="{ upcoming: station.upcoming }"
+            :class="{
+              upcoming: station.upcoming,
+              restricted: isRestricted(station),
+              planned: station.access === 'planned',
+              protected: station.access === 'protected'
+            }"
+            :data-station-code="station.code"
+            :role="isRestricted(station) ? 'button' : undefined"
+            :tabindex="isRestricted(station) ? 0 : undefined"
+            :aria-label="isRestricted(station) ? `${station.nameKo} · ${accessMessage(station)}` : undefined"
+            @click="isRestricted(station) ? go(station, $event) : undefined"
+            @keydown.enter.prevent="isRestricted(station) ? go(station, $event) : undefined"
+            @keydown.space.prevent="isRestricted(station) ? go(station, $event) : undefined"
           >
             <circle class="junction-station-dot" :cx="station.map.x" :cy="station.map.y" r="12" />
             <text class="junction-station-code" :x="station.map.x" :y="station.map.y">{{ station.code }}</text>
@@ -123,6 +204,7 @@ function go(destination) {
         v-for="line in JUNCTION_LINES"
         :key="`${line.id}-list`"
         class="junction-route-group"
+        :class="lineAccess(line)"
         :style="{
           '--route-color': `var(--${line.colorToken})`,
           '--route-text-color': `var(--${line.textColorToken})`
@@ -135,11 +217,16 @@ function go(destination) {
           <component
             :is="destinationTag(station)"
             class="junction-route-row"
-            :class="{ upcoming: station.upcoming, unavailable: isUnavailable(station) }"
+            :class="{
+              upcoming: station.upcoming,
+              restricted: isRestricted(station),
+              planned: station.access === 'planned',
+              protected: station.access === 'protected',
+              unavailable: isUnavailable(station) && !isRestricted(station)
+            }"
             :type="destinationTag(station) === 'button' ? 'button' : undefined"
             :href="entryHref(station)"
-            :aria-disabled="station.upcoming ? 'true' : undefined"
-            @click="go(station)"
+            @click="go(station, $event)"
           >
             <span class="junction-route-badge" aria-hidden="true">{{ station.code }}</span>
             <span class="junction-route-name">{{ station.nameKo }}</span>
@@ -153,13 +240,28 @@ function go(destination) {
               :key="`${station.code}-${link.label}`"
               :type="destinationTag(link) === 'button' ? 'button' : undefined"
               :href="entryHref(link)"
-              :class="{ unavailable: isUnavailable(link) }"
-              @click="go(link)"
+              :class="{
+                unavailable: isUnavailable(link),
+                restricted: isRestricted(link),
+                planned: effectiveAccess(link) === 'planned',
+                'static-server': effectiveAccess(link) === 'static-server'
+              }"
+              :aria-label="isRestricted(link) ? `${link.label} · ${accessMessage(link)}` : undefined"
+              @click="go(link, $event)"
             >{{ link.label }}</component>
           </div>
         </div>
       </section>
     </nav>
+
+    <p
+      v-if="accessToast"
+      class="junction-access-toast"
+      :style="{ '--toast-x': accessToast.x, '--toast-y': accessToast.y }"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >{{ accessToast.message }}</p>
   </section>
 </template>
 

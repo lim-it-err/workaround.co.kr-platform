@@ -636,7 +636,7 @@ function formatModified(value) {
 <style scoped>
 .writing-room { display: flex; flex-direction: column; min-width: 0; min-height: calc(100dvh - 180px); }
 .writer-bar { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--line); }
-.writer-bar button { flex: none; min-height: 40px; padding: 8px 12px; font-size: .85rem; }
+.writer-bar button { flex: none; min-width: 40px; min-height: 40px; padding: 8px 12px; font-size: .85rem; }
 .writer-document { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .9rem; }
 .writer-save { margin-left: auto; white-space: nowrap; color: var(--text-2); font-size: .78rem; font-variant-numeric: tabular-nums; }
 .writer-save.saving { color: var(--safety); }
@@ -645,7 +645,7 @@ function formatModified(value) {
 .writer-bar .writer-tool-trigger { font-size: 1.15rem; padding: 4px 10px; }
 .writer-storage { display: flex; align-items: center; gap: 8px; width: min(100%, 720px); margin-inline: auto; padding: 8px 0; color: var(--text-2); font-size: .75rem; line-height: 1.5; }
 .writer-storage span { word-break: keep-all; }
-.writer-storage button { border: 1px solid var(--line-strong); border-radius: 50%; background: transparent; color: var(--text-2); width: 28px; height: 28px; flex: none; cursor: pointer; }
+.writer-storage button { border: 1px solid var(--line-strong); border-radius: 50%; background: transparent; color: var(--text-2); width: 40px; height: 40px; flex: none; cursor: pointer; }
 .writer-workspace { position: relative; display: flex; flex: 1; min-width: 0; }
 .writer-page { display: flex; flex: 1; flex-direction: column; width: min(100%, 720px); max-width: 720px; margin: 20px auto 0; min-width: 0; }
 .writer-editor { display: flex; flex: 1; flex-direction: column; gap: 24px; min-width: 0; }

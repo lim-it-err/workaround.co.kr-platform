@@ -166,6 +166,19 @@ for (const scenario of [
     assert.equal(await page.getByText('보관된 글', { exact: true }).count(), 0)
     assert.equal(await page.getByText('9월 8일 · 여행', { exact: true }).count(), 1)
     assert.equal(await page.locator('.blog-tone-page').evaluate(element => element.getBoundingClientRect().width <= 760), true)
+    const titleLinks = page.locator('.blog-text-link')
+    assert.equal(await titleLinks.count(), 3)
+    assert.equal(await titleLinks.evaluateAll(elements => elements.every(element => {
+      const box = element.getBoundingClientRect()
+      const style = getComputedStyle(element)
+      return box.height >= 40
+        && style.backgroundColor === 'rgba(0, 0, 0, 0)'
+        && style.borderTopWidth === '0px'
+    })), true, '최근 글 제목은 면 없이 40px 이상의 클릭 영역이어야 한다')
+    for (const name of ['환승 홀', scenario.theme === 'dark' ? '라이트 모드' : '다크 모드']) {
+      const box = await page.getByRole('button', { name, exact: true }).boundingBox()
+      assert.ok(box.width >= 40 && box.height >= 40, `${name} 클릭 영역은 40px 이상이어야 한다`)
+    }
     await assertNoOverflow(page, '.blog-tone-page')
 
     if (process.env.BLOG_SCREENSHOT_DIR) {

@@ -11,6 +11,12 @@ const LIVE_PAGE_PATHS = {
   runtime: '/runtime'
 }
 
+export const STATIC_UNAVAILABLE_LIVE_PAGES = Object.freeze(['work', 'runtime', 'ops', 'signals'])
+
+export function isStaticPageUnavailable(page) {
+  return STATIC_UNAVAILABLE_LIVE_PAGES.includes(page)
+}
+
 export function normalizeBasePath(baseUrl = '/') {
   const value = String(baseUrl || '/').trim()
   const withLeadingSlash = value.startsWith('/') ? value : `/${value}`
