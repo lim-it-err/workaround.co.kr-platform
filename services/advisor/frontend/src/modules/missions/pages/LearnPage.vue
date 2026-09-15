@@ -22,6 +22,7 @@ const route = useRoute()
 const learner = useMissions()
 const practice = usePractice()
 const visibleLimit = ref(30)
+const showAll = ref(false)
 const filters = reactive({
   query: '',
   time: 'all',
@@ -47,6 +48,16 @@ const filtered = computed(() => filterLearnCatalog(catalog.value, filters))
 const visibleItems = computed(() => filtered.value.slice(0, visibleLimit.value))
 const hiddenCount = computed(() => Math.max(0, filtered.value.length - visibleItems.value.length))
 const activeAdvancedCount = computed(() => filters.difficulty.length + filters.scope.length + filters.missionType.length)
+const courseItems = computed(() => catalog.value.filter((item) => item.kind === 'course'))
+const hasActiveFilters = computed(() => Boolean(
+  filters.query.trim()
+  || filters.time !== 'all'
+  || filters.code !== 'all'
+  || filters.kind !== 'all'
+  || filters.status !== 'all'
+  || activeAdvancedCount.value,
+))
+const isCatalogVisible = computed(() => showAll.value || hasActiveFilters.value)
 
 const lastPractice = computed(() => {
   const last = practice.state.last
@@ -116,16 +127,45 @@ watch(filters, () => { visibleLimit.value = 30 }, { deep: true })
       />
     </section>
 
-    <aside v-if="lastPractice" class="resume-row" aria-label="이어 하던 연습">
+    <section v-if="!isCatalogVisible" class="course-preview" aria-labelledby="featured-courses-title">
+      <div class="index-heading">
+        <h2 id="featured-courses-title">코스</h2>
+        <p>{{ courseItems.length }}개</p>
+      </div>
+      <div class="index-list">
+        <router-link
+          v-for="item in courseItems"
+          :key="item.id"
+          :to="learnLink(item.href)"
+          class="index-row"
+          data-course-preview
+          :data-course-id="item.sourceId"
+        >
+          <span class="row-emoji" aria-hidden="true">{{ item.emoji }}</span>
+          <span class="row-copy">
+            <span class="row-kicker">{{ item.kindLabel }} · {{ item.statusLabel }}</span>
+            <strong>{{ item.title }}</strong>
+            <small>{{ item.context }}</small>
+          </span>
+          <span class="row-meta">
+            <span>{{ item.minutes }}분</span>
+            <span>{{ item.writesCode ? '코드 작성' : '코드 없음' }}</span>
+          </span>
+          <span class="row-arrow" aria-hidden="true">→</span>
+        </router-link>
+      </div>
+    </section>
+
+    <aside v-if="lastPractice" class="resume-row" aria-label="이어 하던 것">
       <span aria-hidden="true">↗</span>
       <div>
-        <strong>이어 하던 연습</strong>
+        <strong>이어 하던 것</strong>
         <small>{{ lastPractice.game.title }} · {{ lastPractice.round.title ?? lastPractice.round.question }}</small>
       </div>
       <router-link :to="learnLink(lastPractice.href)">이어서</router-link>
     </aside>
 
-    <section class="catalog-controls" aria-labelledby="learn-index-title">
+    <section class="catalog-controls" aria-label="배울 거리 필터">
       <div class="search-row">
         <label class="search-field">
           <span>검색</span>
@@ -179,7 +219,19 @@ watch(filters, () => { visibleLimit.value = 30 }, { deep: true })
       </details>
     </section>
 
-    <section id="learn" class="content-index" data-content-index aria-labelledby="learn-index-title">
+    <button
+      v-if="!hasActiveFilters"
+      type="button"
+      class="catalog-disclosure"
+      aria-controls="learn"
+      :aria-expanded="showAll"
+      @click="showAll = !showAll"
+    >
+      <span>{{ showAll ? '전체 목록 접기' : `전체 ${catalog.length}개 보기` }}</span>
+      <span aria-hidden="true">{{ showAll ? '↑' : '↓' }}</span>
+    </button>
+
+    <section v-if="isCatalogVisible" id="learn" class="content-index" data-content-index aria-labelledby="learn-index-title">
       <div class="index-heading">
         <div>
           <span class="eyebrow">통합 인덱스</span>
@@ -232,6 +284,7 @@ watch(filters, () => { visibleLimit.value = 30 }, { deep: true })
 .surface-hero h1 { margin: 7px 0 5px; font-size: clamp(24px, 4vw, 34px); }
 .surface-hero p, .type-summary { margin: 0; color: var(--fg-dim); }
 .linked-card { margin: 0 0 26px; }
+.course-preview { margin: 0 0 24px; }
 .section-heading, .index-heading, .resume-row, .search-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 .section-heading h2, .index-heading h2 { margin: 3px 0 0; font-size: 20px; }
 .section-heading a { min-height: 42px; display: inline-flex; align-items: center; color: var(--accent-text); font-size: 13px; text-decoration: none; }
@@ -255,6 +308,8 @@ input, select { box-sizing: border-box; min-height: 42px; width: 100%; padding: 
 .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip-toggle { min-height: 40px; padding: 0 13px; }
 .chip-toggle[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
+.catalog-disclosure { width: 100%; min-height: 50px; padding: 0 2px; display: flex; align-items: center; justify-content: space-between; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--fg); font: inherit; font-weight: 800; cursor: pointer; }
+.catalog-disclosure:hover { color: var(--accent-text); }
 .content-index { padding-top: 28px; scroll-margin-top: 80px; }
 .index-heading p { margin: 0; color: var(--fg-dim); font-variant-numeric: tabular-nums; }
 .type-summary { margin-top: 10px; font-size: 13px; }
@@ -277,7 +332,6 @@ input, select { box-sizing: border-box; min-height: 42px; width: 100%; padding: 
 @media (max-width: 520px) {
   .surface-hero { padding-left: 15px; }
   .search-row { align-items: stretch; flex-direction: column; }
-  .filter-grid { grid-template-columns: 1fr; }
   .reset-button { align-self: stretch; }
   .advanced-group { grid-template-columns: 1fr; gap: 2px; }
   .index-row { grid-template-columns: 30px minmax(0, 1fr) 16px; gap: 9px; min-height: 82px; }

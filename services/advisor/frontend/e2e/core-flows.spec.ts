@@ -10,9 +10,10 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/learn')
   // A document load can finish before Vue's initial routine persistence.
   // Wait for the mounted home before clearing/seeding browser-local fixtures.
-  await expect(page.locator('[data-content-index]')).toBeVisible()
+  await expect(page.getByRole('button', { name: '전체 181개 보기' })).toBeVisible()
   await page.evaluate(() => localStorage.clear())
   await page.reload()
+  await page.getByRole('button', { name: '전체 181개 보기' }).click()
   await expect(page.locator('[data-content-index]')).toBeVisible()
 })
 
