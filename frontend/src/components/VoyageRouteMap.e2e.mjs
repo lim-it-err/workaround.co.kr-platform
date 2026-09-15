@@ -58,6 +58,7 @@ async function setup(t, scenario) {
     reducedMotion: 'reduce'
   })
   const page = await context.newPage()
+  await page.clock.setFixedTime(new Date('2026-09-14T12:00:00+02:00'))
   const errors = []
   const apiRequests = []
   page.on('pageerror', error => errors.push(error.message))
@@ -91,6 +92,8 @@ async function overflow(page) {
 
 for (const scenario of [
   { width: 375, height: 812, theme: 'dark' },
+  { width: 375, height: 812, theme: 'light' },
+  { width: 1440, height: 900, theme: 'dark' },
   { width: 1440, height: 900, theme: 'light' }
 ]) {
   test(`${scenario.width}px ${scenario.theme}: 지리 노선, 키보드 일차 선택, 정차역 상세`, async t => {
@@ -148,9 +151,35 @@ for (const scenario of [
     assert.equal(await page.locator('.route-segment--active').count(), 1)
     assert.equal(await page.locator('.route-record > header p').textContent(), '기록')
 
+    await page.getByRole('button', { name: /도착·주차/ }).click()
+    const compactDetail = page.getByRole('dialog')
+    await compactDetail.waitFor()
+    assert.equal(await compactDetail.locator('.route-detail__more').getAttribute('open'), null, '추가 기록이 없는 정차역은 더 적기가 접혀야 한다')
+    assert.equal(await compactDetail.getByLabel('먹은 것', { exact: true }).isVisible(), true)
+    assert.equal(await compactDetail.getByLabel('원화 금액', { exact: true }).isVisible(), true)
+    assert.equal(await compactDetail.getByLabel('메모', { exact: true }).isVisible(), true)
+    assert.equal(await compactDetail.getByLabel('식당명', { exact: true }).isVisible(), false)
+    if (scenario.width < 900) {
+      const saveBox = await compactDetail.getByRole('button', { name: '정차역 저장', exact: true }).boundingBox()
+      assert.ok(saveBox && saveBox.y >= 0 && saveBox.y + saveBox.height <= scenario.height, '375px 첫 화면에서 저장 버튼이 보여야 한다')
+      assert.equal(await compactDetail.evaluate(element => element.scrollTop), 0, '저장 버튼 확인에 시트 스크롤이 필요 없어야 한다')
+    }
+    if (process.env.VOYAGE_ROUTE_SCREENSHOT_DIR) {
+      await page.screenshot({
+        path: `${process.env.VOYAGE_ROUTE_SCREENSHOT_DIR}/voyage-route-compact-detail-${scenario.width}-${scenario.theme}.png`
+      })
+    }
+    await compactDetail.getByText('더 적기', { exact: true }).click()
+    assert.equal(await compactDetail.locator('.route-detail__more').getAttribute('open'), '', '더 적기로 추가 필드를 펼칠 수 있어야 한다')
+    assert.equal(await compactDetail.getByLabel('식당명', { exact: true }).isVisible(), true)
+    await compactDetail.getByText('더 적기', { exact: true }).click()
+    assert.equal(await compactDetail.locator('.route-detail__more').getAttribute('open'), null, '추가 필드를 다시 접을 수 있어야 한다')
+    await compactDetail.getByRole('button', { name: '상세 닫기', exact: true }).click()
+
     await page.getByRole('button', { name: /Papa's/ }).click()
     const detail = page.getByRole('dialog')
     await detail.waitFor()
+    assert.equal(await detail.locator('.route-detail__more').getAttribute('open'), '', '추가 기록이 있는 정차역은 더 적기가 자동으로 펼쳐져야 한다')
     assert.match(await detail.locator('.route-detail__eyebrow').textContent(), /^3일차 ·/)
     assert.match(await detail.textContent(), /스비치코바 \+ 립 \+ 코젤/)
     assert.equal(await detail.getByLabel('원화 금액', { exact: true }).inputValue(), '66500')

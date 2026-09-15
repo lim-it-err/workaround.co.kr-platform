@@ -38,6 +38,7 @@ const selectedDayIndex = ref(resolveInitialDayIndex())
 const detail = ref(null)
 const detailDraft = ref(null)
 const detailMessage = ref('')
+const detailMoreOpen = ref(false)
 const detailPanel = ref(null)
 const photoInput = ref(null)
 const restoreInput = ref(null)
@@ -398,7 +399,9 @@ async function openStop(item, event) {
   returnFocus.value = event?.currentTarget || null
   detail.value = { type: 'stop', item }
   const stored = dayRecords.value[selectedDay.value.date]?.stops?.[item.id]
-  detailDraft.value = stopRecordFromEntry(item, stored)
+  const draft = stopRecordFromEntry(item, stored)
+  detailDraft.value = draft
+  detailMoreOpen.value = hasSupplementalStopValue(draft, item)
   detailMessage.value = ''
   await nextTick()
   detailPanel.value?.focus()
@@ -419,6 +422,7 @@ async function closeDetail() {
   detail.value = null
   detailDraft.value = null
   detailMessage.value = ''
+  detailMoreOpen.value = false
   await nextTick()
   returnFocus.value?.focus?.()
   returnFocus.value = null
@@ -530,6 +534,12 @@ function validOptionalAmount(value) {
   if (value === '' || value === null || value === undefined) return true
   const amount = Number(value)
   return Number.isFinite(amount) && amount >= 0
+}
+
+function hasSupplementalStopValue(record, item) {
+  return ['place', 'localAmount', 'currency', 'mapUrl'].some(key => String(record?.[key] ?? '').trim())
+    || Boolean(record?.photos?.length)
+    || Boolean(item?.meal?.photo)
 }
 
 function readFileAsDataUrl(file) {
@@ -952,67 +962,79 @@ function entryFare(entry) {
             :href="transferHref(detail.item)"
           ><SiteLoopSymbol aria-hidden="true" />이걸로 미션 만들기 →</a>
           <form class="route-detail__form" @submit.prevent="saveStopDetail">
-            <div class="route-detail__grid">
-              <label>
-                <span>식당명</span>
-                <input v-model="detailDraft.place" name="place" maxlength="120" autocomplete="organization" placeholder="현장에서 들른 곳" />
-              </label>
+            <div class="route-detail__grid route-detail__grid--primary">
               <label>
                 <span>먹은 것</span>
                 <input v-model="detailDraft.dish" name="dish" maxlength="180" placeholder="메뉴나 주문한 것" />
               </label>
               <label>
-                <span>현지 금액</span>
-                <input v-model="detailDraft.localAmount" name="local-amount" type="number" inputmode="decimal" min="0" step="any" placeholder="0" />
-              </label>
-              <label>
-                <span>통화</span>
-                <input v-model="detailDraft.currency" name="currency" maxlength="8" autocapitalize="characters" placeholder="EUR" />
-              </label>
-              <label class="route-detail__wide">
                 <span>원화 금액</span>
                 <input v-model="detailDraft.krwAmount" name="krw-amount" type="number" inputmode="numeric" min="0" step="1" placeholder="원 단위" />
               </label>
-              <label class="route-detail__wide">
+              <label>
                 <span>메모</span>
                 <textarea v-model="detailDraft.note" name="note" rows="3" maxlength="1000" placeholder="맛, 분위기, 다시 갈 이유"></textarea>
               </label>
-              <label class="route-detail__wide">
-                <span>구글 지도 링크</span>
-                <input v-model="detailDraft.mapUrl" name="map-url" type="url" inputmode="url" placeholder="https://maps.google.com/…" />
-              </label>
             </div>
 
-            <a
-              v-if="detailDraft.mapUrl && isGoogleMapsUrl(detailDraft.mapUrl)"
-              class="route-detail__primary"
-              :href="detailDraft.mapUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >구글 지도에서 열기 ↗</a>
+            <details
+              class="route-detail__more"
+              :open="detailMoreOpen"
+              @toggle="detailMoreOpen = $event.currentTarget.open"
+            >
+              <summary>더 적기</summary>
+              <div class="route-detail__more-body">
+                <div class="route-detail__grid route-detail__grid--secondary">
+                  <label class="route-detail__wide">
+                    <span>식당명</span>
+                    <input v-model="detailDraft.place" name="place" maxlength="120" autocomplete="organization" placeholder="현장에서 들른 곳" />
+                  </label>
+                  <label>
+                    <span>현지 금액</span>
+                    <input v-model="detailDraft.localAmount" name="local-amount" type="number" inputmode="decimal" min="0" step="any" placeholder="0" />
+                  </label>
+                  <label>
+                    <span>통화</span>
+                    <input v-model="detailDraft.currency" name="currency" maxlength="8" autocapitalize="characters" placeholder="EUR" />
+                  </label>
+                  <label class="route-detail__wide">
+                    <span>구글 지도 링크</span>
+                    <input v-model="detailDraft.mapUrl" name="map-url" type="url" inputmode="url" placeholder="https://maps.google.com/…" />
+                  </label>
+                </div>
 
-            <section class="route-detail__photo-editor" aria-labelledby="route-photo-title">
-              <div>
-                <h4 id="route-photo-title">사진</h4>
-                <button type="button" class="ghost-button" @click="choosePhoto">사진 첨부</button>
-                <input ref="photoInput" class="route-file-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif" @change="addPhoto" />
+                <a
+                  v-if="detailDraft.mapUrl && isGoogleMapsUrl(detailDraft.mapUrl)"
+                  class="route-detail__primary"
+                  :href="detailDraft.mapUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >구글 지도에서 열기 ↗</a>
+
+                <section class="route-detail__photo-editor" aria-labelledby="route-photo-title">
+                  <div>
+                    <h4 id="route-photo-title">사진</h4>
+                    <button type="button" class="ghost-button" @click="choosePhoto">사진 첨부</button>
+                    <input ref="photoInput" class="route-file-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif" @change="addPhoto" />
+                  </div>
+                  <p>사진은 최대 4장, 장당 1.5MB까지 이 브라우저에 저장됩니다.</p>
+                  <div v-if="detailPhotos.length" class="route-detail__photos">
+                    <figure v-for="(photo, index) in detailPhotos" :key="`${photo.src.slice(0, 48)}-${index}`">
+                      <img :src="photo.src" :alt="photo.caption || '현장 사진'" />
+                      <figcaption>{{ photo.caption }}</figcaption>
+                      <button
+                        v-if="index < detailDraft.photos.length"
+                        type="button"
+                        class="ghost-button"
+                        :aria-label="`${photo.caption || '사진'} 삭제`"
+                        @click="removePhoto(index)"
+                      >삭제</button>
+                    </figure>
+                  </div>
+                  <p v-else class="route-detail__empty">사진이 아직 없습니다.</p>
+                </section>
               </div>
-              <p>사진은 최대 4장, 장당 1.5MB까지 이 브라우저에 저장됩니다.</p>
-              <div v-if="detailPhotos.length" class="route-detail__photos">
-                <figure v-for="(photo, index) in detailPhotos" :key="`${photo.src.slice(0, 48)}-${index}`">
-                  <img :src="photo.src" :alt="photo.caption || '현장 사진'" />
-                  <figcaption>{{ photo.caption }}</figcaption>
-                  <button
-                    v-if="index < detailDraft.photos.length"
-                    type="button"
-                    class="ghost-button"
-                    :aria-label="`${photo.caption || '사진'} 삭제`"
-                    @click="removePhoto(index)"
-                  >삭제</button>
-                </figure>
-              </div>
-              <p v-else class="route-detail__empty">사진이 아직 없습니다.</p>
-            </section>
+            </details>
 
             <div class="route-detail__save">
               <p role="status" aria-live="polite">{{ detailMessage || '저장 전에는 현재 화면에서만 보입니다.' }}</p>
@@ -1929,14 +1951,21 @@ function entryFare(entry) {
 
 .route-detail__form {
   display: grid;
-  gap: 18px;
+  gap: 12px;
   margin-top: 20px;
 }
 
 .route-detail__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(92px, 0.45fr);
   gap: 13px 10px;
+}
+
+.route-detail__grid--primary {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.route-detail__grid--secondary {
+  grid-template-columns: minmax(0, 1fr) minmax(92px, 0.45fr);
 }
 
 .route-detail__grid label {
@@ -1948,8 +1977,6 @@ function entryFare(entry) {
   font-weight: 800;
 }
 
-.route-detail__grid label:nth-child(1),
-.route-detail__grid label:nth-child(2),
 .route-detail__wide {
   grid-column: 1 / -1;
 }
@@ -1976,6 +2003,50 @@ function entryFare(entry) {
   border-color: var(--accent);
   outline: 2px solid color-mix(in srgb, var(--accent) 22%, transparent);
   outline-offset: 1px;
+}
+
+.route-detail__more {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.route-detail__more > summary {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+  font-weight: 850;
+  cursor: pointer;
+  list-style: none;
+}
+
+.route-detail__more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.route-detail__more > summary::after {
+  content: '+';
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.route-detail__more[open] > summary::after {
+  content: '−';
+}
+
+.route-detail__more > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.route-detail__more-body {
+  display: grid;
+  gap: 16px;
+  padding: 4px 0 18px;
 }
 
 .route-detail__photo-editor {
