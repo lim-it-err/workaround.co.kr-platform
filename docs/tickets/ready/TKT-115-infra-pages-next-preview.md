@@ -2,7 +2,7 @@
 
 # TKT-115 `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 빌드를 트렁크 배포에 동봉
 
-- 상태: ready · 우선순위: P1 · 담당: codex-2 · 의존: 없음
+- 상태: ready · 우선순위: P2 (2026-09-15 하향, U-38 — 병합이 배치 단위로 잦아져 `/next/` 의 긴급성 감소, 큰 전환 브랜치용으로 유지) · 담당: codex-2 · 의존: 없음
 - scope: `.github/workflows/deploy-github-pages.yml`, `infra/public-site/prepare-github-pages.mjs`
 - 브랜치: 작업은 `codex/v0.7.0-tone` 에서 하되 **워크플로 변경은 트렁크에도 필요** — need_review 시 PM 이 트렁크로 cherry-pick 한다.
 

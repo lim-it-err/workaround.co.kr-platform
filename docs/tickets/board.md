@@ -6,7 +6,6 @@
 
 ## Backlog
 
-- `TKT-134` `P3` `tone` `backlog` `[FE]` 죽은 뷰·프로토타입 블록 정리 — 렌더 안 되는 영어 눈썹 소스 제거
 
 
 - `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
@@ -32,7 +31,6 @@
 - `TKT-068` `P2` `infra` `진행 가능` `[INFRA]` RTX5070 Ollama 실제 구동 + 게이트웨이 연결 검증 (하드웨어 단계는 PO 협조 항목으로 분리 기록)
 - `TKT-074` `P1` `chore` `blocked/진행 불가` `[SIM]` S4 택시 지도 — 보드 SIM 배정과 PM 직접 수행 기록 충돌, 택시 단독 범위·5개 페이지 완료 기준 정렬 PM 대기 (스펙: `design/sim-taxi-spec.md`)
 - `TKT-075` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S5 - App.vue 컴포넌트 분해 [시안 적용]
-- `TKT-078` `P1` `v0.7.0` `진행 가능` `[INFRA]` 화이트채플 아케이드 편입 마감 — 라우팅·매니페스트 (코드 subtree 흡수는 2026-08-16 완료, D-003~005)
 
 ## Need Review
 
@@ -51,8 +49,24 @@
 
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
-- `TKT-115` `P1` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포
+- `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
+- `TKT-149` `P1` `research` `ready` `[조사]` 남은 일정 현장 정보 최신 확인 — codex-4 보고서
+- `TKT-159` `P1` `infra` `ready` `[INFRA]` 메인 E2E 통합 러너 `npm run e2e:all` (AS-R009 권고)
+- `TKT-078` `P1` `v0.7.0` `ready` `[INFRA]` 화이트채플 Pages 편입 — prepare-github-pages 병합 (09-15 승격, Pages 우선)
+- `TKT-152` `P2` `advisor` `ready` `[FE]` Advisor 초기 청크 lazy-load (502kB)
+- `TKT-154` `P2` `advisor` `ready` `[FE]` Advisor 리뷰 — 먼저 고칠 것 하나·상태별 CTA
+- `TKT-156` `P2` `advisor` `ready` `[콘텐츠]` Advisor 코스 2 "부다페스트 온천 큐" (새 파일)
+- `TKT-160` `P2` `infra` `ready` `[INFRA]` Pages 배포 후 스모크 job
+- `TKT-161` `P2` `tone` `ready` `[UX]` 접근성 검수 — VoiceOver·키보드 (codex-8)
+- `TKT-151` `P3` `voyage` `ready` `[FE]` 시각표 행 기록 표식 (REV-117 제안)
+- `TKT-147` `P3` `tone` `ready` `[FE]` 디자이너 제안 소묶음 — 재방문 읽기 시간·저장 안내 원
+- `TKT-134` `P3` `tone` `ready` `[FE]` 죽은 뷰·프로토타입 블록 정리 (09-15 승격)
+- `TKT-153` `P3` `advisor` `ready` `[FE]` Advisor 표기 소묶음 — 코스 시간·첫 시즌·시즌 빈 상태
+- `TKT-155` `P3` `advisor` `ready` `[FE]` Advisor 죽은 페이지 정리 (3표면 이후)
+- `TKT-157` `P3` `advisor` `ready` `[콘텐츠]` Advisor 사건 파일 신규 2편 (새 파일)
+- `TKT-158` `P3` `advisor` `ready` `[콘텐츠]` Advisor 스와이프 카드 20장 Java 21 (새 파일)
+- `TKT-092` `P3` `v0.4.1` `ready` `[BE]` Work Manager 반려 전이 API (09-15 승격)
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
@@ -61,6 +75,8 @@
 
 ## Started
 
+- `TKT-148` `P1` `voyage` `started` `[콘텐츠]` 남은 일정 링크 행 — **r1 반려**(tip 원문 복원·`[확인]` 제거) 재작업
+- `TKT-146` `P2` `tone` `started` `[FE]` E2E 안정화 — 스플래시 타이밍 허용치·병렬 내성
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -79,8 +95,6 @@
 
 
 
-- `TKT-142` `P2` `advisor` `ready` `[FE]` 배우기 첫 화면 축약(목록은 펼침 뒤) — PO 승인
-- `TKT-145` `P1` `tone` `ready` `[FE]` 홈 노선도 SVG 역 버튼 hit area ≥40 (UX-139 I1, 병합 전)
 
 
 
@@ -90,6 +104,9 @@
 
 ## Finished
 
+- `TKT-142` `[FE]` Advisor 배우기 첫 화면 축약 — 375 높이 1,244px(24.9%)·목록 0 — r1 통과 (2026-09-15)
+- `TKT-145` `[FE]` 홈 SVG 역 8개 hit area 40.5px·오클릭 0 — r1 통과 (2026-09-15, 병합 전 마지막 완료)
+- `TKT-150` `[FE]` 여행 백업 JSON 반영 스크립트(dry-run·사진 분리) — r1 통과 (2026-09-15)
 - `TKT-138` `[FE]` 릴리스 게이트 블로커 — taxi E2E 5/5·hit area 34곳 ≥40 — r1 통과 (2026-09-15)
 - `TKT-139` `[FE]` 홈 기지선·예정 역 흐림 + 토스트 — r1 통과 (2026-09-15, [중요] SVG 역 hit area → 145)
 - `TKT-140` `[FE]` 스플래시 재방문 3초 + 패널 면 제거 — r1 통과 (2026-09-15)
