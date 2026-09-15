@@ -1,6 +1,7 @@
 # Node / frontend generated files
 frontend/node_modules/
 frontend/dist/
+*.voyage-backup.json
 
 # Local toolchain / runtime caches
 tools/downloads/
