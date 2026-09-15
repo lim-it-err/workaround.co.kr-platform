@@ -1,0 +1,24 @@
+{
+  "checkedAtUTC": "2026-09-14T23:12:38.354273+00:00",
+  "sourceCount": 61,
+  "changedSinceSnapshot": [
+    "frontend/src/staticRouting.e2e.mjs",
+    "frontend/src/data/junction.test.mjs"
+  ],
+  "widths": [
+    375,
+    1440
+  ],
+  "heights": [
+    812,
+    900
+  ],
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "build": "Vite 6.4.3 / 49 modules / Pages base",
+  "e2e": "JunctionMap 4/4 independently executed",
+  "screenshots": 12,
+  "scope": "TKT-139 only; snapshot includes concurrent TKT-140/143 and in-progress TKT-144 changes, not reviewed here"
+}

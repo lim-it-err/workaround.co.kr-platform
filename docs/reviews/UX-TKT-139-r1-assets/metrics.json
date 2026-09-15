@@ -1,0 +1,1446 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "targets": [
+      {
+        "name": "발견 · 예정 노선 · 준비 중",
+        "code": "D",
+        "width": 31.549026489257812,
+        "height": 18.62664794921875,
+        "x": 136.7798614501953,
+        "y": 305.5875244140625,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "취향 · 예정 노선 · 준비 중",
+        "code": "P",
+        "width": 31.76013946533203,
+        "height": 18.415557861328125,
+        "x": 115.66875457763672,
+        "y": 326.6986083984375,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "Work Manager · 보호 구역 · 준비 중",
+        "code": "W",
+        "width": 35.34678649902344,
+        "height": 16.17333984375,
+        "x": 198.67987060546875,
+        "y": 309.8586120605469,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "Runtime Board · 보호 구역 · 준비 중",
+        "code": "R",
+        "width": 51.78340148925781,
+        "height": 14.355560302734375,
+        "x": 116.54548645019531,
+        "y": 244.16082763671875,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "D\n발견\n연장 예정",
+        "code": null,
+        "width": 304,
+        "height": 64.78125,
+        "x": 42,
+        "y": 1021.8125,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "P\n취향\n연장 예정",
+        "code": null,
+        "width": 304,
+        "height": 64.78125,
+        "x": 42,
+        "y": 1087.59375,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "W\nWork Manager\n보호 구역",
+        "code": null,
+        "width": 304,
+        "height": 64.78125,
+        "x": 42,
+        "y": 1228.03125,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "R\nRuntime Board\n보호 구역",
+        "code": null,
+        "width": 304,
+        "height": 64.78125,
+        "x": 42,
+        "y": 1293.8125,
+        "role": null,
+        "tag": "BUTTON"
+      }
+    ],
+    "contrasts": [
+      {
+        "label": "작업 흐름",
+        "foreground": "rgb(174, 184, 200)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 3.6053351830004634,
+        "dimmed": true
+      },
+      {
+        "label": "실행 상태",
+        "foreground": "rgb(174, 184, 200)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 3.6053351830004634,
+        "dimmed": true
+      },
+      {
+        "label": "기록선",
+        "foreground": "rgb(240, 124, 160)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 7.183238970829797,
+        "dimmed": false
+      },
+      {
+        "label": "D",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "발견",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "P",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "취향",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "실험선",
+        "foreground": "rgb(188, 161, 247)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 8.499596190178941,
+        "dimmed": false
+      },
+      {
+        "label": "W",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "Work",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "R",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "Runtime",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "기지선",
+        "foreground": "rgb(107, 213, 155)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 3.875267060932804,
+        "dimmed": true
+      },
+      {
+        "label": "기록선",
+        "foreground": "rgb(240, 124, 160)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 7.183238970829797,
+        "dimmed": false
+      },
+      {
+        "label": "B",
+        "foreground": "rgb(240, 124, 160)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 7.183238970829797,
+        "dimmed": false
+      },
+      {
+        "label": "V",
+        "foreground": "rgb(240, 124, 160)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 7.183238970829797,
+        "dimmed": false
+      },
+      {
+        "label": "실험선",
+        "foreground": "rgb(188, 161, 247)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 8.499596190178941,
+        "dimmed": false
+      },
+      {
+        "label": "A",
+        "foreground": "rgb(188, 161, 247)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 8.499596190178941,
+        "dimmed": false
+      },
+      {
+        "label": "S",
+        "foreground": "rgb(188, 161, 247)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 8.499596190178941,
+        "dimmed": false
+      },
+      {
+        "label": "D",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "발견",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "연장 예정",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "P",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "취향",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "연장 예정",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "기지선",
+        "foreground": "rgb(107, 213, 155)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 3.875267060932804,
+        "dimmed": true
+      },
+      {
+        "label": "Work → Runtime · 보호 구역",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "W",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "Work Manager",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "보호 구역",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "R",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "Runtime Board",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "보호 구역",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      }
+    ],
+    "toast": {
+      "text": "보호 구역 · 준비 중",
+      "width": 343,
+      "height": 37.71875,
+      "x": 16,
+      "y": 758.28125,
+      "role": "status",
+      "live": "polite"
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "targets": [
+      {
+        "name": "발견 · 예정 노선 · 준비 중",
+        "code": "D",
+        "width": 31.549026489257812,
+        "height": 18.62664794921875,
+        "x": 136.7798614501953,
+        "y": 305.5875244140625,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "취향 · 예정 노선 · 준비 중",
+        "code": "P",
+        "width": 31.76013946533203,
+        "height": 18.415557861328125,
+        "x": 115.66875457763672,
+        "y": 326.6986083984375,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "Work Manager · 보호 구역 · 준비 중",
+        "code": "W",
+        "width": 35.34678649902344,
+        "height": 16.17333984375,
+        "x": 198.67987060546875,
+        "y": 309.8586120605469,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "Runtime Board · 보호 구역 · 준비 중",
+        "code": "R",
+        "width": 51.78340148925781,
+        "height": 14.355560302734375,
+        "x": 116.54548645019531,
+        "y": 244.16082763671875,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "D\n발견\n연장 예정",
+        "code": null,
+        "width": 304,
+        "height": 64.78125,
+        "x": 42,
+        "y": 1021.8125,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "P\n취향\n연장 예정",
+        "code": null,
+        "width": 304,
+        "height": 64.78125,
+        "x": 42,
+        "y": 1087.59375,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "W\nWork Manager\n보호 구역",
+        "code": null,
+        "width": 304,
+        "height": 64.78125,
+        "x": 42,
+        "y": 1228.03125,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "R\nRuntime Board\n보호 구역",
+        "code": null,
+        "width": 304,
+        "height": 64.78125,
+        "x": 42,
+        "y": 1293.8125,
+        "role": null,
+        "tag": "BUTTON"
+      }
+    ],
+    "contrasts": [
+      {
+        "label": "작업 흐름",
+        "foreground": "rgb(69, 83, 106)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 4.25572394748666,
+        "dimmed": true
+      },
+      {
+        "label": "실행 상태",
+        "foreground": "rgb(69, 83, 106)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 4.25572394748666,
+        "dimmed": true
+      },
+      {
+        "label": "기록선",
+        "foreground": "rgb(168, 31, 67)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 6.292903827404894,
+        "dimmed": false
+      },
+      {
+        "label": "D",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "발견",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "P",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "취향",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "실험선",
+        "foreground": "rgb(90, 47, 168)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 7.6923839418112445,
+        "dimmed": false
+      },
+      {
+        "label": "W",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "Work",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "R",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "Runtime",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "기지선",
+        "foreground": "rgb(0, 121, 58)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 3.466759415218864,
+        "dimmed": true
+      },
+      {
+        "label": "기록선",
+        "foreground": "rgb(168, 31, 67)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 6.292903827404894,
+        "dimmed": false
+      },
+      {
+        "label": "B",
+        "foreground": "rgb(168, 31, 67)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 6.292903827404894,
+        "dimmed": false
+      },
+      {
+        "label": "V",
+        "foreground": "rgb(168, 31, 67)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 6.292903827404894,
+        "dimmed": false
+      },
+      {
+        "label": "실험선",
+        "foreground": "rgb(90, 47, 168)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 7.6923839418112445,
+        "dimmed": false
+      },
+      {
+        "label": "A",
+        "foreground": "rgb(90, 47, 168)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 7.6923839418112445,
+        "dimmed": false
+      },
+      {
+        "label": "S",
+        "foreground": "rgb(90, 47, 168)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 7.6923839418112445,
+        "dimmed": false
+      },
+      {
+        "label": "D",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "발견",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "연장 예정",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "P",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "취향",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "연장 예정",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "기지선",
+        "foreground": "rgb(0, 121, 58)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 3.466759415218864,
+        "dimmed": true
+      },
+      {
+        "label": "Work → Runtime · 보호 구역",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "W",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "Work Manager",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "보호 구역",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "R",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "Runtime Board",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "보호 구역",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      }
+    ],
+    "toast": {
+      "text": "보호 구역 · 준비 중",
+      "width": 343,
+      "height": 37.71875,
+      "x": 16,
+      "y": 758.28125,
+      "role": "status",
+      "live": "polite"
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "targets": [
+      {
+        "name": "발견 · 예정 노선 · 준비 중",
+        "code": "D",
+        "width": 45.3668212890625,
+        "height": 26.0194091796875,
+        "x": 361.34759521484375,
+        "y": 476.43438720703125,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "취향 · 예정 노선 · 준비 중",
+        "code": "P",
+        "width": 45.760589599609375,
+        "height": 25.6256103515625,
+        "x": 321.9671936035156,
+        "y": 515.8148193359375,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "Work Manager · 보호 구역 · 준비 중",
+        "code": "W",
+        "width": 48.90423583984375,
+        "height": 24.6353759765625,
+        "x": 480.362060546875,
+        "y": 483.5511779785156,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "Runtime Board · 보호 구역 · 준비 중",
+        "code": "R",
+        "width": 72.10116577148438,
+        "height": 19.59466552734375,
+        "x": 334.6132507324219,
+        "y": 360.99932861328125,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "D\n발견\n연장 예정",
+        "code": null,
+        "width": 490.90625,
+        "height": 48,
+        "x": 787.078125,
+        "y": 584.3125,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "P\n취향\n연장 예정",
+        "code": null,
+        "width": 490.90625,
+        "height": 48,
+        "x": 787.078125,
+        "y": 633.3125,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "W\nWork Manager\n보호 구역",
+        "code": null,
+        "width": 490.90625,
+        "height": 48,
+        "x": 787.078125,
+        "y": 756.96875,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "R\nRuntime Board\n보호 구역",
+        "code": null,
+        "width": 490.90625,
+        "height": 48,
+        "x": 787.078125,
+        "y": 805.96875,
+        "role": null,
+        "tag": "BUTTON"
+      }
+    ],
+    "contrasts": [
+      {
+        "label": "작업 흐름",
+        "foreground": "rgb(174, 184, 200)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 3.6053351830004634,
+        "dimmed": true
+      },
+      {
+        "label": "실행 상태",
+        "foreground": "rgb(174, 184, 200)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 3.6053351830004634,
+        "dimmed": true
+      },
+      {
+        "label": "기록선",
+        "foreground": "rgb(240, 124, 160)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 7.183238970829797,
+        "dimmed": false
+      },
+      {
+        "label": "D",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "발견",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "P",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "취향",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "실험선",
+        "foreground": "rgb(188, 161, 247)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 8.499596190178941,
+        "dimmed": false
+      },
+      {
+        "label": "W",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "Work",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "R",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "Runtime",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "기지선",
+        "foreground": "rgb(107, 213, 155)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 3.875267060932804,
+        "dimmed": true
+      },
+      {
+        "label": "기록선",
+        "foreground": "rgb(240, 124, 160)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 7.183238970829797,
+        "dimmed": false
+      },
+      {
+        "label": "B",
+        "foreground": "rgb(240, 124, 160)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 7.183238970829797,
+        "dimmed": false
+      },
+      {
+        "label": "V",
+        "foreground": "rgb(240, 124, 160)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 7.183238970829797,
+        "dimmed": false
+      },
+      {
+        "label": "실험선",
+        "foreground": "rgb(188, 161, 247)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 8.499596190178941,
+        "dimmed": false
+      },
+      {
+        "label": "A",
+        "foreground": "rgb(188, 161, 247)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 8.499596190178941,
+        "dimmed": false
+      },
+      {
+        "label": "S",
+        "foreground": "rgb(188, 161, 247)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 1,
+        "ratio": 8.499596190178941,
+        "dimmed": false
+      },
+      {
+        "label": "D",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "발견",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "연장 예정",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "P",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "취향",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "연장 예정",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "기지선",
+        "foreground": "rgb(107, 213, 155)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 3.875267060932804,
+        "dimmed": true
+      },
+      {
+        "label": "Work → Runtime · 보호 구역",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "W",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "Work Manager",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "보호 구역",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "R",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "Runtime Board",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      },
+      {
+        "label": "보호 구역",
+        "foreground": "rgb(243, 246, 251)",
+        "background": "rgb(13, 19, 28)",
+        "opacity": 0.55,
+        "ratio": 5.795093762605869,
+        "dimmed": true
+      }
+    ],
+    "toast": {
+      "text": "보호 구역 · 준비 중",
+      "width": 129.234375,
+      "height": 37.71875,
+      "x": 440.1953125,
+      "y": 518.171875,
+      "role": "status",
+      "live": "polite"
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "targets": [
+      {
+        "name": "발견 · 예정 노선 · 준비 중",
+        "code": "D",
+        "width": 45.3668212890625,
+        "height": 26.0194091796875,
+        "x": 361.34759521484375,
+        "y": 476.43438720703125,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "취향 · 예정 노선 · 준비 중",
+        "code": "P",
+        "width": 45.760589599609375,
+        "height": 25.6256103515625,
+        "x": 321.9671936035156,
+        "y": 515.8148193359375,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "Work Manager · 보호 구역 · 준비 중",
+        "code": "W",
+        "width": 48.90423583984375,
+        "height": 24.6353759765625,
+        "x": 480.362060546875,
+        "y": 483.5511779785156,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "Runtime Board · 보호 구역 · 준비 중",
+        "code": "R",
+        "width": 72.10116577148438,
+        "height": 19.59466552734375,
+        "x": 334.6132507324219,
+        "y": 360.99932861328125,
+        "role": "button",
+        "tag": "g"
+      },
+      {
+        "name": "D\n발견\n연장 예정",
+        "code": null,
+        "width": 490.90625,
+        "height": 48,
+        "x": 787.078125,
+        "y": 584.3125,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "P\n취향\n연장 예정",
+        "code": null,
+        "width": 490.90625,
+        "height": 48,
+        "x": 787.078125,
+        "y": 633.3125,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "W\nWork Manager\n보호 구역",
+        "code": null,
+        "width": 490.90625,
+        "height": 48,
+        "x": 787.078125,
+        "y": 756.96875,
+        "role": null,
+        "tag": "BUTTON"
+      },
+      {
+        "name": "R\nRuntime Board\n보호 구역",
+        "code": null,
+        "width": 490.90625,
+        "height": 48,
+        "x": 787.078125,
+        "y": 805.96875,
+        "role": null,
+        "tag": "BUTTON"
+      }
+    ],
+    "contrasts": [
+      {
+        "label": "작업 흐름",
+        "foreground": "rgb(69, 83, 106)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 4.25572394748666,
+        "dimmed": true
+      },
+      {
+        "label": "실행 상태",
+        "foreground": "rgb(69, 83, 106)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 4.25572394748666,
+        "dimmed": true
+      },
+      {
+        "label": "기록선",
+        "foreground": "rgb(168, 31, 67)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 6.292903827404894,
+        "dimmed": false
+      },
+      {
+        "label": "D",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "발견",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "P",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "취향",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "실험선",
+        "foreground": "rgb(90, 47, 168)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 7.6923839418112445,
+        "dimmed": false
+      },
+      {
+        "label": "W",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "Work",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "R",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "Runtime",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "기지선",
+        "foreground": "rgb(0, 121, 58)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 3.466759415218864,
+        "dimmed": true
+      },
+      {
+        "label": "기록선",
+        "foreground": "rgb(168, 31, 67)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 6.292903827404894,
+        "dimmed": false
+      },
+      {
+        "label": "B",
+        "foreground": "rgb(168, 31, 67)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 6.292903827404894,
+        "dimmed": false
+      },
+      {
+        "label": "V",
+        "foreground": "rgb(168, 31, 67)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 6.292903827404894,
+        "dimmed": false
+      },
+      {
+        "label": "실험선",
+        "foreground": "rgb(90, 47, 168)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 7.6923839418112445,
+        "dimmed": false
+      },
+      {
+        "label": "A",
+        "foreground": "rgb(90, 47, 168)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 7.6923839418112445,
+        "dimmed": false
+      },
+      {
+        "label": "S",
+        "foreground": "rgb(90, 47, 168)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 1,
+        "ratio": 7.6923839418112445,
+        "dimmed": false
+      },
+      {
+        "label": "D",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "발견",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "연장 예정",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "P",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "취향",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "연장 예정",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "기지선",
+        "foreground": "rgb(0, 121, 58)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 3.466759415218864,
+        "dimmed": true
+      },
+      {
+        "label": "Work → Runtime · 보호 구역",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "W",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "Work Manager",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "보호 구역",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "R",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "Runtime Board",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      },
+      {
+        "label": "보호 구역",
+        "foreground": "rgb(22, 32, 46)",
+        "background": "rgb(237, 241, 246)",
+        "opacity": 0.8,
+        "ratio": 7.934527338622988,
+        "dimmed": true
+      }
+    ],
+    "toast": {
+      "text": "보호 구역 · 준비 중",
+      "width": 129.234375,
+      "height": 37.71875,
+      "x": 440.1953125,
+      "y": 518.171875,
+      "role": "status",
+      "live": "polite"
+    }
+  }
+]

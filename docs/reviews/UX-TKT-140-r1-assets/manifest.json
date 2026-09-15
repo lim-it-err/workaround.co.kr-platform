@@ -1,0 +1,21 @@
+{
+  "checkedAtUTC": "2026-09-14T23:21:38.714113+00:00",
+  "sourceCount": 61,
+  "changedSinceSnapshot": [
+    "frontend/src/components/VoyageRouteMap.e2e.mjs",
+    "frontend/src/components/voyage/VoyageRouteMap.vue"
+  ],
+  "build": "Vite6.4.3 /49 modules /base=/workaround.co.kr-platform/",
+  "directE2E": "splashTone.e2e.mjs 6/6",
+  "screenshots": 30,
+  "widths": [
+    375,
+    1440
+  ],
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "heights": "Main captures 375x812/1440x900; final flap probes height900 both widths",
+  "note": "settle.json only tracks Vue static-half state; use visual-settle.json for effective CSS-rendered completion. Main first/return/replay screenshots are mid-animation at 1.8s, not final text samples."
+}

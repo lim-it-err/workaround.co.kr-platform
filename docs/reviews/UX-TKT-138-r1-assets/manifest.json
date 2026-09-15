@@ -1,0 +1,22 @@
+{
+  "checkedAtUTC": "2026-09-14T22:12:15.106292+00:00",
+  "sourceCount": 134,
+  "changedSinceSnapshot": [],
+  "primaryBase": "/workaround.co.kr-platform/",
+  "advisorBase": "/workaround.co.kr-platform/advisor/",
+  "widths": [
+    375,
+    1440
+  ],
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "screenshots": 31,
+  "targets": 34,
+  "builds": {
+    "main": "Vite 6.4.3 / 49 modules",
+    "advisor": "Vite 5.4.21 / 110 modules; 505.90 kB chunk warning"
+  },
+  "note": "Scripts use task-local paths; adapt paths on rerun. Direct mission/game entry returns to learn. Earlier harness expected course return and was corrected; no app route change."
+}
