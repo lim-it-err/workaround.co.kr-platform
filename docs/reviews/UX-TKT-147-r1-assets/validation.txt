@@ -1,0 +1,3 @@
+Direct validation: Vite 6.4.3 Pages-base build, 49 modules, success.
+Direct splashTone.e2e.mjs: 6 tests, 6 pass, 0 fail (virtual clock, Math.random=0.1 fixture).
+Native time/unchanged random: 4 environments in metrics.json plus 4 in timing-followup.json.
