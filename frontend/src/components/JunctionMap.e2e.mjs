@@ -195,6 +195,7 @@ for (const scenario of [
     assert.equal(await page.locator('.junction-route-row:is(a, button)').count(), 8)
     assert.equal(await page.locator('.junction-branch').count(), 4)
     assert.equal(await page.locator('.junction-station').count(), 8)
+    assert.equal(await page.locator('.junction-station-hit').count(), 8)
     assert.equal(await page.locator('.junction-station.restricted').count(), 4)
     assert.equal(await page.locator('.junction-route-row.restricted').count(), 4)
     assert.equal(await page.getByText('Archive Line', { exact: true }).count(), 0)
@@ -302,6 +303,39 @@ for (const scenario of [
       return [rect.width, rect.height]
     }))
     assert.ok(hitTargets.every(([width, height]) => width >= 40 && height >= 40), '모든 이동 링크는 40px 이상이어야 한다')
+
+    const svgStationHitTargets = await page.locator('.junction-station').evaluateAll(elements => elements.map(element => {
+      const rect = element.getBoundingClientRect()
+      const hitCircle = element.querySelector('.junction-station-hit')
+      return {
+        code: element.getAttribute('data-station-code'),
+        width: rect.width,
+        height: rect.height,
+        radius: Number(hitCircle?.getAttribute('r')),
+        pointerEvents: hitCircle ? getComputedStyle(hitCircle).pointerEvents : ''
+      }
+    }))
+    assert.equal(svgStationHitTargets.length, 8)
+    assert.ok(
+      svgStationHitTargets.every(({ width, height }) => width >= 40 && height >= 40),
+      `SVG 역 hit area는 모두 40px 이상이어야 한다: ${JSON.stringify(svgStationHitTargets)}`
+    )
+    assert.ok(
+      svgStationHitTargets.every(({ radius, pointerEvents }) => radius >= 20 && pointerEvents === 'all'),
+      `SVG 역은 투명 hit 원(r≥20, pointer-events: all)을 가져야 한다: ${JSON.stringify(svgStationHitTargets)}`
+    )
+
+    if (scenario.width >= 900) {
+      const detailStopCircle = page.locator('.junction-page-stop').filter({ hasText: '격납고' }).locator('circle')
+      const detailStopBox = await detailStopCircle.boundingBox()
+      const topmostOwner = await page.evaluate(({ x, y }) => (
+        document.elementFromPoint(x, y)?.closest('.junction-page-stop, .junction-station')?.getAttribute('class') ?? ''
+      ), {
+        x: detailStopBox.x + detailStopBox.width / 2,
+        y: detailStopBox.y + detailStopBox.height / 2
+      })
+      assert.match(topmostOwner, /junction-page-stop/, '큰 역 hit 원이 인접한 세부 화면 역을 가리면 안 된다')
+    }
 
     const advisorHref = await page.getByRole('link', { name: /Developer Advisor/ }).getAttribute('href')
     assert.equal(advisorHref, `${publicBase}advisor/`)

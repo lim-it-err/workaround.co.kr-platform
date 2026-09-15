@@ -112,6 +112,53 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
 
         <g
           v-for="line in JUNCTION_LINES"
+          :key="`${line.id}-stations`"
+          class="junction-map-line"
+          :class="lineAccess(line)"
+          :style="{
+            '--route-color': `var(--${line.colorToken})`,
+            '--route-text-color': `var(--${line.textColorToken})`
+          }"
+        >
+          <g
+            v-for="station in line.stations"
+            :key="station.code"
+            class="junction-station"
+            :class="{
+              upcoming: station.upcoming,
+              restricted: isRestricted(station),
+              planned: station.access === 'planned',
+              protected: station.access === 'protected'
+            }"
+            :data-station-code="station.code"
+            :role="isRestricted(station) ? 'button' : undefined"
+            :tabindex="isRestricted(station) ? 0 : undefined"
+            :aria-label="isRestricted(station) ? `${station.nameKo} · ${accessMessage(station)}` : undefined"
+            @click="isRestricted(station) ? go(station, $event) : undefined"
+            @keydown.enter.prevent="isRestricted(station) ? go(station, $event) : undefined"
+            @keydown.space.prevent="isRestricted(station) ? go(station, $event) : undefined"
+          >
+            <circle class="junction-station-hit" :cx="station.map.x" :cy="station.map.y" r="48" />
+            <circle class="junction-station-dot" :cx="station.map.x" :cy="station.map.y" r="12" />
+            <text class="junction-station-code" :x="station.map.x" :y="station.map.y">{{ station.code }}</text>
+            <text
+              class="junction-station-name"
+              :x="station.map.labelX"
+              :y="station.map.labelY"
+              :text-anchor="station.map.anchor"
+            >{{ station.mapName }}</text>
+          </g>
+
+          <text
+            class="junction-line-name"
+            :x="line.label.x"
+            :y="line.label.y"
+            :text-anchor="line.label.anchor"
+          >{{ line.nameKo }}</text>
+        </g>
+
+        <g
+          v-for="line in JUNCTION_LINES"
           :key="`${line.id}-stops`"
           class="junction-map-line"
           :class="lineAccess(line)"
@@ -141,52 +188,6 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
               <text :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
             </g>
           </template>
-        </g>
-
-        <g
-          v-for="line in JUNCTION_LINES"
-          :key="`${line.id}-stations`"
-          class="junction-map-line"
-          :class="lineAccess(line)"
-          :style="{
-            '--route-color': `var(--${line.colorToken})`,
-            '--route-text-color': `var(--${line.textColorToken})`
-          }"
-        >
-          <g
-            v-for="station in line.stations"
-            :key="station.code"
-            class="junction-station"
-            :class="{
-              upcoming: station.upcoming,
-              restricted: isRestricted(station),
-              planned: station.access === 'planned',
-              protected: station.access === 'protected'
-            }"
-            :data-station-code="station.code"
-            :role="isRestricted(station) ? 'button' : undefined"
-            :tabindex="isRestricted(station) ? 0 : undefined"
-            :aria-label="isRestricted(station) ? `${station.nameKo} · ${accessMessage(station)}` : undefined"
-            @click="isRestricted(station) ? go(station, $event) : undefined"
-            @keydown.enter.prevent="isRestricted(station) ? go(station, $event) : undefined"
-            @keydown.space.prevent="isRestricted(station) ? go(station, $event) : undefined"
-          >
-            <circle class="junction-station-dot" :cx="station.map.x" :cy="station.map.y" r="12" />
-            <text class="junction-station-code" :x="station.map.x" :y="station.map.y">{{ station.code }}</text>
-            <text
-              class="junction-station-name"
-              :x="station.map.labelX"
-              :y="station.map.labelY"
-              :text-anchor="station.map.anchor"
-            >{{ station.mapName }}</text>
-          </g>
-
-          <text
-            class="junction-line-name"
-            :x="line.label.x"
-            :y="line.label.y"
-            :text-anchor="line.label.anchor"
-          >{{ line.nameKo }}</text>
         </g>
 
         <g class="junction-hub">
@@ -266,6 +267,11 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
 </template>
 
 <style scoped>
+.junction-station-hit {
+  fill: transparent;
+  pointer-events: all;
+}
+
 @media (max-width: 899px) {
   .junction-station-code {
     font-size: 19px;
