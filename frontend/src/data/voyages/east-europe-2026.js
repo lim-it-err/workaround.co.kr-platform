@@ -203,21 +203,75 @@ export const EAST_EUROPE_2026 = defineVoyage({
       am: '세체니 온천 — 08~09시 입장이 혼잡 회피의 정답 (수영복 원단 래시가드 가능, 면 티셔츠 불가)',
       pm: '어부의 요새·마차시 성당·부다 왕궁 언덕 (푸니쿨라 이용)',
       eve: '여유 저녁 — 다음 날 장거리 전 짐 정리',
-      tip: '온천으로 하루를 열고 오후에 언덕. 여행 후반 회복 반나절.'
+      tip: '온천으로 하루를 열고 오후에 언덕. 여행 후반 회복 반나절.',
+      links: [
+        {
+          label: '세체니 온천 운영·예약',
+          url: 'https://www.szechenyibath.hu/opening-hours',
+          note: '방문일 운영시간과 예약 가능 여부를 확인합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: '마차시 성당 입장 안내',
+          url: 'https://matyas-templom.hu/en/',
+          note: '관람시간은 미사·행사에 따라 바뀔 수 있어 당일 확인합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: '부다 성 푸니쿨라',
+          url: 'https://bkk.hu/en/travel-information/special-and-heritage-transport-services/funicular/',
+          note: '운행·정비 여부와 티켓 안내를 확인합니다.',
+          checkedAt: '2026-09-15'
+        }
+      ]
     },
     {
       date: '2026-09-16', dow: '수', city: '브르노 경유 → 프라하', stay: '프라하', driveMin: 335,
       am: '09:00 출발 — 이날의 최대 변수는 도로가 아니라 출발 시각이다 (운전 3시간 20분)',
       pm: '브르노 점심 (관광 없이 식사만, 노출 1시간 이내) → 13:30 출발 → 15:45 프라하 도착 → 렌터카 반납(짐 실은 채) → 체크인',
       eve: '마지막 밤 — 비셰흐라드 노을 (현지인 산책 코스, 성벽 위 전경) 또는 못 가본 곳',
-      tip: '유일한 5시간대 운전일. 출국 전날이라 지연돼도 치명적이지 않다 — 이날 쓰라고 아껴둔 카드.'
+      tip: '유일한 5시간대 운전일. 출국 전날이라 지연돼도 치명적이지 않다 — 이날 쓰라고 아껴둔 카드.',
+      links: [
+        {
+          label: '브르노 공식 여행 안내',
+          url: 'https://www.gotobrno.cz/en/',
+          note: '점심 경유 중 필요한 현장 안내를 확인합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: '비셰흐라드 방문 안내',
+          url: 'https://prague.eu/en/objevujte/vysehrad/',
+          note: '야외 구역과 유료 시설의 당일 운영을 확인합니다.',
+          checkedAt: '2026-09-15'
+        }
+      ]
     },
     {
       date: '2026-09-17', dow: '목', city: '프라하 → 귀국', stay: '기내', driveMin: 0,
       am: '늦은 아침·짐 정리 → 체크아웃, 짐은 호텔 보관 → 몸만 가볍게 카페. 카를교를 제대로 보려면 08시 전 — 텅 비어 있다',
       pm: '14:30 짐 찾기 → 택시(볼트/우버, 30~40분) → 15:30 공항 → 15:50 체크인',
       eve: '18:50 OZ546 출발',
-      tip: '택스 리펀 물품이 있으면 캐리어 맨 위에 + 30분 일찍. 공항버스는 짐 동선 때문에 이 일정엔 안 맞다.'
+      tip: '택스 리펀 물품이 있으면 캐리어 맨 위에 + 30분 일찍. 공항버스는 짐 동선 때문에 이 일정엔 안 맞다.',
+      links: [
+        {
+          label: '카를교 공식 안내',
+          url: 'https://prague.eu/en/objevujte/charles-bridge-karluv-most/',
+          note: '이른 방문 전 공식 현장 안내를 확인합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: '프라하 공항 택스 리펀',
+          url: 'https://www.prg.aero/en/vat?terminal=reset&terminal_part=part',
+          note: '세관 확인 순서와 창구 위치를 출발 전에 확인합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: '프라하 공항 교통 안내',
+          url: 'https://www.prg.aero/en/transport-and-parking',
+          note: '택시 승하차와 당일 교통 공지를 확인합니다.',
+          checkedAt: '2026-09-15'
+        }
+      ]
     },
     {
       date: '2026-09-18', dow: '금', city: '인천', stay: '—', driveMin: 0,

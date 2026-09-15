@@ -81,7 +81,7 @@ const baselineTimeline = computed(() => isPreparation.value ? [] : buildDayTimel
 const timeline = computed(() => applyStopRecords(
   baselineTimeline.value,
   selectedDay.value ? dayRecords.value[selectedDay.value.date]?.stops || {} : {}
-))
+).map((entry) => ({ ...entry, recordMarker: stopRecordMarker(entry.stopRecord) })))
 const segments = computed(() => buildRouteSegments(props.voyage, todayIndex.value, selectedDayIndex.value))
 const replayAvailable = computed(() => props.voyage.status === 'arrived' && props.voyage.days.length > 0)
 const replayFrames = computed(() => {
@@ -666,6 +666,31 @@ function entryFare(entry) {
   if (entry.meal) return formatMealAmount(entry.meal)
   return '—'
 }
+
+function stopRecordMarker(record) {
+  if (!record) return null
+  const labels = []
+  const parts = []
+  if (String(record.note || '').trim()) {
+    labels.push('메모 있음')
+    parts.push('·')
+  }
+  const photoCount = Array.isArray(record.photos) ? record.photos.length : 0
+  if (photoCount) {
+    labels.push(`사진 ${photoCount}장`)
+    parts.push(`${photoCount}장`)
+  }
+  const rawWon = String(record.krwAmount ?? '').trim()
+  const won = Number(rawWon)
+  if (rawWon && Number.isFinite(won) && won >= 0) {
+    const formatted = won >= 10000 && won % 10000 === 0
+      ? `${(won / 10000).toLocaleString('ko-KR')}만원`
+      : `${won.toLocaleString('ko-KR')}원`
+    labels.push(`지출 ${formatted}`)
+    parts.push(formatted)
+  }
+  return parts.length ? { label: labels.join(', '), parts } : null
+}
 </script>
 
 <template>
@@ -876,8 +901,19 @@ function entryFare(entry) {
                 <div class="route-stop__name" role="cell">
                   <span v-if="entry.kind === 'branch'">{{ entry.title }}</span>
                   <button v-else-if="entry.kind !== 'move'" type="button" @click="openStop(entry, $event)">
-                    <strong>{{ entry.title }}</strong>
-                    <small v-if="entry.detail">{{ entry.detail }}</small>
+                    <span class="route-stop__button-copy">
+                      <span class="route-stop__headline">
+                        <strong>{{ entry.title }}</strong>
+                        <span
+                          v-if="entry.recordMarker"
+                          class="route-stop__record-marker"
+                          :aria-label="entry.recordMarker.label"
+                        >
+                          <span v-for="part in entry.recordMarker.parts" :key="part" aria-hidden="true">{{ part }}</span>
+                        </span>
+                      </span>
+                      <small v-if="entry.detail">{{ entry.detail }}</small>
+                    </span>
                   </button>
                   <span v-else><strong>{{ entry.title }}</strong><small v-if="entry.detail">{{ entry.detail }}</small></span>
                   <a
@@ -896,6 +932,22 @@ function entryFare(entry) {
           </div>
 
           <blockquote v-if="selectedDay.plan?.tip || selectedDay.tip">{{ selectedDay.plan?.tip || selectedDay.tip }}</blockquote>
+
+          <section
+            v-if="selectedDay.links?.length"
+            class="route-day-links"
+            aria-labelledby="voyage-route-links-title"
+          >
+            <h4 id="voyage-route-links-title">링크</h4>
+            <ul>
+              <li v-for="link in selectedDay.links" :key="link.url">
+                <a :href="link.url" target="_blank" rel="noopener">
+                  <strong>{{ link.label }} ↗</strong>
+                  <small v-if="link.note">{{ link.note }}</small>
+                </a>
+              </li>
+            </ul>
+          </section>
 
           <section v-if="selectedDayState !== 'upcoming'" class="route-record" aria-labelledby="voyage-route-record-title">
             <header>
@@ -1648,6 +1700,34 @@ function entryFare(entry) {
   cursor: pointer;
 }
 
+.route-stop__button-copy {
+  display: block;
+}
+
+.route-stop__headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.route-stop__headline strong {
+  min-width: 0;
+}
+
+.route-stop__record-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.45;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
 .route-stop__name strong,
 .route-stop__name small {
   display: block;
@@ -1752,6 +1832,60 @@ function entryFare(entry) {
   margin: 15px 0 0;
   color: var(--text-2);
   font-style: italic;
+}
+
+.route-day-links {
+  margin-top: 18px;
+}
+
+.route-day-links h4,
+.route-day-links ul {
+  margin: 0;
+}
+
+.route-day-links h4 {
+  padding-bottom: 7px;
+  color: var(--muted);
+  font-size: var(--fs-caption);
+  letter-spacing: 0.08em;
+}
+
+.route-day-links ul {
+  padding: 0;
+  border-bottom: 1px solid var(--line);
+  list-style: none;
+}
+
+.route-day-links a {
+  display: grid;
+  min-height: 44px;
+  align-content: center;
+  gap: 2px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+  color: var(--accent-text);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.route-day-links a:hover,
+.route-day-links a:focus-visible {
+  color: var(--safety);
+}
+
+.route-day-links a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+.route-day-links strong {
+  font-size: var(--fs-body);
+}
+
+.route-day-links small {
+  color: var(--muted);
+  font-size: var(--fs-caption);
+  line-height: 1.45;
 }
 
 .route-record {

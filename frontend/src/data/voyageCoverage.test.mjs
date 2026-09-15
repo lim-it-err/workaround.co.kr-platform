@@ -24,6 +24,20 @@ assert.equal(VOYAGE.rental.pickup.time, '16:30', '렌터카 인수 기준값이 
 assert.equal(VOYAGE.budget.plan, 850, '850만 원 계획값이 유지되어야 한다')
 assert.equal(VOYAGE.budget.ceiling, 950, '950만 원 상한값이 유지되어야 한다')
 
+const officialHosts = new Set(['www.szechenyibath.hu', 'matyas-templom.hu', 'bkk.hu', 'www.gotobrno.cz', 'prague.eu', 'www.prg.aero'])
+for (const date of ['2026-09-15', '2026-09-16', '2026-09-17']) {
+  const day = VOYAGE.days.find((item) => item.date === date)
+  assert.ok(day, `${date}: 일정이 필요하다`)
+  assert.ok(day.links.length >= 2, `${date}: 공식 링크가 2개 이상 필요하다`)
+  for (const link of day.links) {
+    assert.equal(link.checkedAt, '2026-09-15', `${date}: 링크 확인일이 필요하다`)
+    assert.ok(link.label && link.note, `${date}: 링크 라벨과 현장 메모가 필요하다`)
+    assert.equal(new URL(link.url).protocol, 'https:', `${date}: HTTPS 링크만 허용한다`)
+    assert.ok(officialHosts.has(new URL(link.url).hostname), `${date}: 공식 사이트만 허용한다`)
+  }
+}
+assert.deepEqual(VOYAGE.days.find((item) => item.date === '2026-09-14').links, [], '링크가 없는 날은 빈 배열이어야 한다')
+
 assert.equal(new Set(VOYAGE.budgetScenarios.map((item) => item.id)).size, VOYAGE.budgetScenarios.length, '예산안 ID는 고유해야 한다')
 assert.deepEqual(VOYAGE.budgetScenarios.map((item) => item.total), [750, 800, 850, 950], '예산 4단계가 모두 있어야 한다')
 
@@ -50,4 +64,4 @@ for (const session of VOYAGE.daySessions) {
   assert.ok(Object.values(session.checklist).flat().length >= 6, `${session.id}: 현장 체크리스트가 필요하다`)
 }
 
-console.log('voyage coverage: 12/12, lodging: 18, day sessions: 4, regressions: pass')
+console.log('voyage coverage: 12/12, lodging: 18, day sessions: 4, tail links: 3 days, regressions: pass')

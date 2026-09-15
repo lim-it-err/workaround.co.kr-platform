@@ -103,6 +103,24 @@ for (const scenario of [
     assert.match(await page.getByText('740km', { exact: false }).first().textContent(), /740km/)
     assert.match(await page.getByText('523만원', { exact: false }).first().textContent(), /523만원/)
 
+    await page.getByRole('button', { name: /^8일차/ }).click()
+    const officialLinks = page.locator('.route-day-links a')
+    assert.ok(await officialLinks.count() >= 2, '남은 일정에는 공식 링크가 2개 이상 보여야 한다')
+    for (const link of await officialLinks.all()) {
+      assert.equal(await link.getAttribute('target'), '_blank', '현장 링크는 새 창으로 열려야 한다')
+      assert.match(await link.getAttribute('rel'), /\bnoopener\b/, '현장 링크는 opener를 넘기지 않아야 한다')
+      assert.ok((await link.boundingBox()).height >= 40, '현장 링크 행은 40px 이상이어야 한다')
+    }
+    if (process.env.VOYAGE_ROUTE_SCREENSHOT_DIR) {
+      await page.screenshot({
+        path: `${process.env.VOYAGE_ROUTE_SCREENSHOT_DIR}/voyage-route-links-${scenario.width}-${scenario.theme}.png`,
+        fullPage: true
+      })
+    }
+    for (const [selector, value] of await overflow(page)) {
+      assert.equal(value, 0, `${selector} 공식 링크 화면의 가로 넘침이 없어야 한다`)
+    }
+
     const dayBox = await page.locator('.route-day-panel').boundingBox()
     if (process.env.VOYAGE_ROUTE_SCREENSHOT_DIR) {
       await page.screenshot({
@@ -151,7 +169,10 @@ for (const scenario of [
     assert.equal(await page.locator('.route-segment--active').count(), 1)
     assert.equal(await page.locator('.route-record > header p').textContent(), '기록')
 
-    await page.getByRole('button', { name: /도착·주차/ }).click()
+    const blankStopButton = page.getByRole('button', { name: /도착·주차/ })
+    const blankStopRow = page.locator('.route-timetable li').filter({ has: blankStopButton })
+    const blankStopHeight = (await blankStopRow.boundingBox()).height
+    await blankStopButton.click()
     const compactDetail = page.getByRole('dialog')
     await compactDetail.waitFor()
     assert.equal(await compactDetail.locator('.route-detail__more').getAttribute('open'), null, '추가 기록이 없는 정차역은 더 적기가 접혀야 한다')
@@ -174,7 +195,42 @@ for (const scenario of [
     assert.equal(await compactDetail.getByLabel('식당명', { exact: true }).isVisible(), true)
     await compactDetail.getByText('더 적기', { exact: true }).click()
     assert.equal(await compactDetail.locator('.route-detail__more').getAttribute('open'), null, '추가 필드를 다시 접을 수 있어야 한다')
+
+    await compactDetail.getByLabel('원화 금액', { exact: true }).fill('30000')
+    await compactDetail.getByLabel('메모', { exact: true }).fill('주차 위치 기록')
+    await compactDetail.locator('input[type="file"][accept^="image/"]').setInputFiles({
+      name: 'parking.png',
+      mimeType: 'image/png',
+      buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
+    })
+    await compactDetail.getByRole('button', { name: '정차역 저장', exact: true }).click()
+    assert.match(await compactDetail.getByRole('status').textContent(), /저장했습니다/)
     await compactDetail.getByRole('button', { name: '상세 닫기', exact: true }).click()
+
+    const recordMarker = blankStopRow.locator('.route-stop__record-marker')
+    assert.equal(await recordMarker.getAttribute('aria-label'), '메모 있음, 사진 1장, 지출 3만원')
+    assert.equal(await recordMarker.locator('span').allTextContents().then(parts => parts.join(' ')), '· 1장 3만원')
+    assert.ok((await blankStopButton.boundingBox()).height >= 40, '기록 표식 뒤에도 정차역 hit area는 40px 이상이어야 한다')
+    const markedStopHeight = (await blankStopRow.boundingBox()).height
+    assert.ok(Math.abs(markedStopHeight - blankStopHeight) < 0.5, `기록 표식은 행 높이를 늘리지 않아야 한다 (${blankStopHeight} → ${markedStopHeight})`)
+    for (const [selector, value] of await overflow(page)) {
+      assert.equal(value, 0, `${selector} 기록 표식 화면의 가로 넘침이 없어야 한다`)
+    }
+    if (process.env.VOYAGE_ROUTE_SCREENSHOT_DIR) {
+      await page.screenshot({
+        path: `${process.env.VOYAGE_ROUTE_SCREENSHOT_DIR}/voyage-route-row-marker-${scenario.width}-${scenario.theme}.png`,
+        fullPage: true
+      })
+    }
+
+    await blankStopButton.click()
+    const deleteDetail = page.getByRole('dialog')
+    await deleteDetail.getByLabel('원화 금액', { exact: true }).fill('')
+    await deleteDetail.getByLabel('메모', { exact: true }).fill('')
+    await deleteDetail.getByRole('button', { name: 'parking.png 삭제', exact: true }).click()
+    await deleteDetail.getByRole('button', { name: '정차역 저장', exact: true }).click()
+    await deleteDetail.getByRole('button', { name: '상세 닫기', exact: true }).click()
+    assert.equal(await recordMarker.count(), 0, '메모·사진·지출을 지우면 행 표식도 사라져야 한다')
 
     await page.getByRole('button', { name: /Papa's/ }).click()
     const detail = page.getByRole('dialog')
