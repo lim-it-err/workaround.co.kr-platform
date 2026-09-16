@@ -1,0 +1,5 @@
+Pages build: Vite6.4.3, 49 modules, success
+splashTone E2E: 7/7 passed, 0 failed
+Real-time final run: 8/8 steadyReadingMs >=1000, overflow0, pageerror0
+Initial premature visual-settlement samples discarded; final observer requires run0 as well as running CSS animations0.
+Source comparison: unchanged

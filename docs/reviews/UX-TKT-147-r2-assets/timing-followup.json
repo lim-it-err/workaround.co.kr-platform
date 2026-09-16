@@ -1,0 +1,146 @@
+[
+  {
+    "id": "random-375-dark",
+    "timing": {
+      "settledMs": 2163.2999999523163,
+      "leaveMs": 3782.7999999523163,
+      "lastSample": {
+        "elapsed": 4223.299999952316,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4253.200000047684,
+      "overflow": 0
+    },
+    "steadyReadingMs": 1619.5,
+    "readingUntilDetachMs": 2089.9000000953674,
+    "errors": []
+  },
+  {
+    "id": "random-375-light",
+    "timing": {
+      "settledMs": 2321.5999999046326,
+      "leaveMs": 3800.5999999046326,
+      "lastSample": {
+        "elapsed": 4240.099999904633,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4261.799999952316,
+      "overflow": 0
+    },
+    "steadyReadingMs": 1479,
+    "readingUntilDetachMs": 1940.2000000476837,
+    "errors": []
+  },
+  {
+    "id": "random-1440-dark",
+    "timing": {
+      "settledMs": 2324.199999809265,
+      "leaveMs": 3804.0999999046326,
+      "lastSample": {
+        "elapsed": 4243.5,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4269.099999904633,
+      "overflow": 0
+    },
+    "steadyReadingMs": 1479.9000000953674,
+    "readingUntilDetachMs": 1944.9000000953674,
+    "errors": []
+  },
+  {
+    "id": "random-1440-light",
+    "timing": {
+      "settledMs": 2164.5,
+      "leaveMs": 3805.5,
+      "lastSample": {
+        "elapsed": 4244.5,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4268,
+      "overflow": 0
+    },
+    "steadyReadingMs": 1641,
+    "readingUntilDetachMs": 2103.5,
+    "errors": []
+  },
+  {
+    "id": "worst-375-dark",
+    "timing": {
+      "settledMs": 1364.2999999523163,
+      "leaveMs": 3802,
+      "lastSample": {
+        "elapsed": 4241.400000095367,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4270.299999952316,
+      "overflow": 0
+    },
+    "steadyReadingMs": 2437.7000000476837,
+    "readingUntilDetachMs": 2906,
+    "errors": []
+  },
+  {
+    "id": "worst-375-light",
+    "timing": {
+      "settledMs": 1365,
+      "leaveMs": 3803.199999809265,
+      "lastSample": {
+        "elapsed": 4244.199999809265,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4269.299999952316,
+      "overflow": 0
+    },
+    "steadyReadingMs": 2438.199999809265,
+    "readingUntilDetachMs": 2904.2999999523163,
+    "errors": []
+  },
+  {
+    "id": "worst-1440-dark",
+    "timing": {
+      "settledMs": 1344.2000000476837,
+      "leaveMs": 3803.7000000476837,
+      "lastSample": {
+        "elapsed": 4244.299999952316,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4272.099999904633,
+      "overflow": 0
+    },
+    "steadyReadingMs": 2459.5,
+    "readingUntilDetachMs": 2927.899999856949,
+    "errors": []
+  },
+  {
+    "id": "worst-1440-light",
+    "timing": {
+      "settledMs": 1365.2999999523163,
+      "leaveMs": 3804.0999999046326,
+      "lastSample": {
+        "elapsed": 4245.399999856949,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4275.199999809265,
+      "overflow": 0
+    },
+    "steadyReadingMs": 2438.7999999523163,
+    "readingUntilDetachMs": 2909.899999856949,
+    "errors": []
+  }
+]
