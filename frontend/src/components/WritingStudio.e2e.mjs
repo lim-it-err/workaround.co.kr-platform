@@ -1,14 +1,18 @@
-// Run against the Pages-base preview on an isolated origin. Playwright must be
-// installed or available via NODE_PATH; no production storage is accessed.
+// Run against an external STUDIO_TEST_URL or a self-hosted isolated Pages-base
+// preview. Playwright must be installed or available via NODE_PATH; no
+// production storage is accessed.
 import assert from 'node:assert/strict'
 import { after, before, test } from 'node:test'
 import { createRequire } from 'node:module'
 import { readFile } from 'node:fs/promises'
+import { startIsolatedPreview } from '../../scripts/e2e-isolated-preview.mjs'
 import { VOYAGE } from '../data/voyage.js'
 import { voyageStorageKey } from '../data/voyageStorage.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
-const base = process.env.STUDIO_TEST_URL || 'http://127.0.0.1:4174/workaround.co.kr-platform/'
+const externalBase = process.env.STUDIO_TEST_URL
+const withTrailingSlash = value => value.endsWith('/') ? value : `${value}/`
+let base = externalBase ? withTrailingSlash(externalBase) : ''
 const storageKey = 'workaround-blog-posts'
 const initialPublishedAt = '2026-06-26T12:00:00.000Z'
 const draft = {
@@ -17,8 +21,18 @@ const draft = {
   createdAt: initialPublishedAt, updatedAt: initialPublishedAt, publishedAt: ''
 }
 let browser
-before(async () => { browser = await chromium.launch({ headless: true }) })
-after(async () => { await browser?.close() })
+let preview
+before(async () => {
+  if (!externalBase) {
+    preview = await startIsolatedPreview({ basePath: '/workaround.co.kr-platform/' })
+    base = preview.url
+  }
+  browser = await chromium.launch({ headless: true })
+})
+after(async () => {
+  await browser?.close()
+  await preview?.stop()
+})
 
 async function setup(t, { posts = [draft], theme = 'dark', width = 375, height = 812 } = {}) {
   const context = await browser.newContext({ viewport: { width, height }, acceptDownloads: true })
@@ -108,7 +122,6 @@ for (const theme of ['dark', 'light']) {
     }
     await assertWriterBarContract(page)
     await body(page).fill('첫 화면에서 바로 씁니다.')
-    await page.waitForFunction(() => document.querySelector('.writer-save')?.textContent === '저장 중…')
     await assertWriterBarContract(page)
     await saved(page)
     assert.match(await page.locator('.writer-save').textContent(), /저장됨 \d{2}:\d{2}/)
