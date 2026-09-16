@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url'
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
 const distRoot = fileURLToPath(new URL('../dist/', import.meta.url))
+const testClockTime = new Date('2026-09-15T12:00:00.000Z')
 let base = process.env.SPLASH_TEST_URL || ''
 let browser
 let server
@@ -60,10 +61,13 @@ async function setup(t, {
   reducedMotion = 'no-preference',
   theme = 'dark',
   seenAt = '',
-  storageUnavailable = false
+  storageUnavailable = false,
+  randomValue = 0.1
 }) {
   const context = await browser.newContext({ viewport: { width, height }, reducedMotion })
   const page = await context.newPage()
+  await page.clock.install({ time: testClockTime })
+  await page.clock.pauseAt(testClockTime)
   const errors = []
   const apiRequests = []
   page.on('pageerror', error => errors.push(error.message))
@@ -78,7 +82,9 @@ async function setup(t, {
     assert.deepEqual(errors, [], 'no browser errors or warnings')
     assert.deepEqual(apiRequests, [], 'static splash makes no API requests')
   })
-  await page.addInitScript(({ selectedTheme, splashSeenAt, blockSplashStorage }) => {
+  await page.addInitScript(({ selectedTheme, splashSeenAt, blockSplashStorage, fixedRandomValue }) => {
+    // Keep the flip count and stagger representative but repeatable under parallel CPU load.
+    Math.random = () => fixedRandomValue
     window.localStorage.setItem('workaround-theme', selectedTheme)
     if (splashSeenAt) window.localStorage.setItem('splash:seen', splashSeenAt)
     if (blockSplashStorage) {
@@ -93,10 +99,27 @@ async function setup(t, {
         return nativeSetItem.call(this, key, value)
       }
     }
-  }, { selectedTheme: theme, splashSeenAt: seenAt, blockSplashStorage: storageUnavailable })
+  }, {
+    selectedTheme: theme,
+    splashSeenAt: seenAt,
+    blockSplashStorage: storageUnavailable,
+    fixedRandomValue: randomValue
+  })
   await page.goto(base)
   await page.locator('.splash-stage').waitFor()
   return page
+}
+
+function clockTime(offsetMs = 0) {
+  return new Date(testClockTime.getTime() + offsetMs).toISOString()
+}
+
+async function finishSplashAt(page, remainingMs) {
+  await page.clock.runFor(remainingMs - 1)
+  assert.equal(await page.locator('.splash-stage').count(), 1, '정확한 전환 시각 직전에는 스플래시가 남아야 한다')
+  await page.clock.runFor(1)
+  await page.clock.resume()
+  await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 2000 })
 }
 
 async function snapshot(page) {
@@ -111,6 +134,17 @@ async function snapshot(page) {
       .replace(/\s/g, ' ')
       .trim()
   }))
+}
+
+async function waitForOpeningToSettle(page, maximumMs, stepMs = 20) {
+  let elapsedMs = 0
+  while (elapsedMs <= maximumMs) {
+    const state = await snapshot(page)
+    if (state.renderedPhrase === 'DOORS OPENING' && state.runningCells === 0) return elapsedMs
+    await page.clock.runFor(stepMs)
+    elapsedMs += stepMs
+  }
+  assert.fail(`DOORS OPENING이 ${maximumMs}ms 안에 정착해야 한다`)
 }
 
 async function splashPanelSurface(page) {
@@ -171,27 +205,27 @@ test('375px: the existing split-flap engine runs three phrases and tickers befor
     borderWidth: '0px'
   })
 
-  await page.waitForTimeout(400)
+  await page.clock.runFor(400)
   const first = await snapshot(page)
   assert.equal(first.phrase, 'WORKING AROUND')
   assert.equal(first.ticker, '에스컬레이터 방향 다수결로 정하는 중…')
   assert.ok(first.runningCells > 0, 'the retained half-panel engine is flipping')
-  await page.waitForTimeout(3100)
+  await page.clock.runFor(3100)
   const second = await snapshot(page)
   assert.equal(second.phrase, 'MIND THE GAP')
   assert.equal(second.ticker, '지연 시간을 정성껏 반올림하는 중…')
-  await page.waitForTimeout(3300)
+  await page.clock.runFor(3300)
   const third = await snapshot(page)
   assert.equal(third.phrase, 'DOORS OPENING')
   assert.equal(third.ticker, '출구 번호에 서열 매기는 중…')
-  await page.waitForTimeout(2200)
+  await page.clock.runFor(2500)
   const opening = await snapshot(page)
   assert.equal(opening.renderedPhrase, 'DOORS OPENING')
   assert.equal(opening.overflow, 0)
   if (process.env.SPLASH_SCREENSHOT_DIR) {
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-opening.png` })
   }
-  await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 2500 })
+  await finishSplashAt(page, 700)
   const seenAt = await page.evaluate(() => window.localStorage.getItem('splash:seen'))
   assert.ok(Number.isFinite(Date.parse(seenAt)), '첫 방문 완료 시 ISO 방문 시각을 저장해야 한다')
   assert.equal(await page.locator('.station-topbar h2').textContent(), '환승 홀')
@@ -199,45 +233,68 @@ test('375px: the existing split-flap engine runs three phrases and tickers befor
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0)
 })
 
-test('recent visit: DOORS OPENING only and transition after 3 seconds', async t => {
-  const previousSeenAt = new Date(Date.now() - 60_000).toISOString()
+test('recent visit: DOORS OPENING settles for at least 1 second before the 3.8-second transition', async t => {
+  const previousSeenAt = clockTime(-60_000)
   const page = await setup(t, { width: 375, height: 812, seenAt: previousSeenAt })
+  const returnDurationMs = 3800
 
-  assert.equal(await page.getByText('3초 후 자동 전환', { exact: true }).count(), 1)
-  await page.waitForTimeout(300)
+  assert.ok(returnDurationMs >= 3600 && returnDurationMs <= 4000)
+  assert.equal(await page.getByText('3.8초 후 자동 전환', { exact: true }).count(), 1)
+  await page.clock.runFor(300)
   const state = await snapshot(page)
   assert.equal(state.phrase, 'DOORS OPENING')
   assert.equal(state.ticker, '출구 번호에 서열 매기는 중…')
   assert.ok(state.runningCells > 0, '재방문도 기존 반쪽 플랩 엔진으로 마지막 문구를 재생해야 한다')
+  const settledAtMs = 300 + await waitForOpeningToSettle(page, 2500)
+  assert.ok(returnDurationMs - settledAtMs >= 1000, `정착 뒤 노출 ${returnDurationMs - settledAtMs}ms`)
   if (process.env.SPLASH_SCREENSHOT_DIR) {
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-return.png` })
   }
-  await page.waitForTimeout(2200)
-  assert.equal(await page.locator('.splash-stage').count(), 1, '3초 전에는 스플래시가 남아야 한다')
-  await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 1500 })
+  await finishSplashAt(page, returnDurationMs - settledAtMs)
   const refreshedSeenAt = await page.evaluate(() => window.localStorage.getItem('splash:seen'))
   assert.ok(Date.parse(refreshedSeenAt) > Date.parse(previousSeenAt), '재방문 완료 시각을 갱신해야 한다')
+})
+
+test('recent visit worst random: settlement stays within 2.8 seconds and transition waits a full second', async t => {
+  const page = await setup(t, {
+    width: 375,
+    height: 812,
+    seenAt: clockTime(-60_000),
+    randomValue: 0.99
+  })
+  const settledAtMs = await waitForOpeningToSettle(page, 2800)
+  const transitionAtMs = Math.max(3800, settledAtMs + 1000)
+  const settled = await snapshot(page)
+
+  assert.ok(settledAtMs <= 2800, `최악 난수 정착 ${settledAtMs}ms`)
+  assert.ok(transitionAtMs <= 4000, `재방문 총 시간 ${transitionAtMs}ms`)
+  assert.equal(settled.renderedPhrase, 'DOORS OPENING')
+  assert.equal(settled.overflow, 0)
+  if (process.env.SPLASH_SCREENSHOT_DIR) {
+    await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-return-worst.png` })
+  }
+  await finishSplashAt(page, transitionAtMs - settledAtMs)
 })
 
 test('recent visit replay: 다시 재생 restores the full 10-second sequence', async t => {
   const page = await setup(t, {
     width: 1440,
     height: 900,
-    seenAt: new Date(Date.now() - 60_000).toISOString()
+    seenAt: clockTime(-60_000)
   })
 
-  assert.equal(await page.getByText('3초 후 자동 전환', { exact: true }).count(), 1)
+  assert.equal(await page.getByText('3.8초 후 자동 전환', { exact: true }).count(), 1)
   await page.getByRole('button', { name: '다시 재생', exact: true }).click()
   assert.equal(await page.getByText('10초 후 자동 전환', { exact: true }).count(), 1)
-  await page.waitForTimeout(3700)
+  await page.clock.runFor(3700)
   const middle = await snapshot(page)
   assert.equal(middle.phrase, 'MIND THE GAP')
   assert.equal(middle.ticker, '지연 시간을 정성껏 반올림하는 중…')
-  assert.equal(await page.locator('.splash-stage').count(), 1, '재생 뒤에는 재방문 3초 타이머가 취소돼야 한다')
+  assert.equal(await page.locator('.splash-stage').count(), 1, '재생 뒤에는 재방문 단축 타이머가 취소돼야 한다')
   if (process.env.SPLASH_SCREENSHOT_DIR) {
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-desktop-replay.png` })
   }
-  await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 7000 })
+  await finishSplashAt(page, 6300)
 })
 
 test('expired or unavailable storage falls back to the first-visit flow', async t => {
@@ -246,7 +303,7 @@ test('expired or unavailable storage falls back to the first-visit flow', async 
     height: 812,
     reducedMotion: 'reduce',
     theme: 'light',
-    seenAt: new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString()
+    seenAt: clockTime(-31 * 24 * 60 * 60 * 1000)
   })
   assert.equal(await expiredPage.getByText('10초 후 자동 전환', { exact: true }).count(), 1)
   assert.equal(await expiredPage.getByRole('img', { name: 'WORKING AROUND', exact: true }).count(), 1)
@@ -259,7 +316,7 @@ test('expired or unavailable storage falls back to the first-visit flow', async 
     width: 375,
     height: 812,
     reducedMotion: 'reduce',
-    seenAt: new Date().toISOString(),
+    seenAt: clockTime(),
     storageUnavailable: true
   })
   assert.equal(await blockedPage.getByText('10초 후 자동 전환', { exact: true }).count(), 1)

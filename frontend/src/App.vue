@@ -26,7 +26,10 @@ import {
 } from './staticWritingState.js'
 
 const SPLASH_DURATION_MS = 10000
-const SPLASH_RETURN_DURATION_MS = 3000
+const SPLASH_RETURN_DURATION_MS = 3800
+const SPLASH_RETURN_SETTLE_LIMIT_MS = 2800
+const SPLASH_RETURN_READING_MS = 1000
+const SPLASH_RETURN_MAX_DURATION_MS = 4000
 const SPLASH_SEEN_STORAGE_KEY = 'splash:seen'
 const SPLASH_SEEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 const APP_BASE_PATH = normalizeBasePath(import.meta.env.BASE_URL)
@@ -1190,6 +1193,8 @@ let reducedMotionMediaQuery
 let reducedMotionMediaListener
 let splashAnimationRunId = 0
 let splashAnimationTimers = []
+let splashRunStartedAtMs = 0
+let settledSplashRunId = 0
 
 watch(theme, (nextTheme) => {
   if (typeof window !== 'undefined') {
@@ -1410,9 +1415,13 @@ function randomSplashRange(min, max) {
   return min + Math.random() * (max - min)
 }
 
-function buildSplashFlipSequence(targetCharacter, charIndex) {
+function buildSplashFlipSequence(targetCharacter, charIndex, compact = false) {
   const spins =
-    targetCharacter === ' ' ? (Math.random() < 0.3 ? 1 : 0) : 3 + (charIndex % 3) + Math.floor(Math.random() * 4)
+    targetCharacter === ' '
+      ? (Math.random() < 0.3 ? 1 : 0)
+      : compact
+        ? 3 + (charIndex % 2) + Math.floor(Math.random() * 3)
+        : 3 + (charIndex % 3) + Math.floor(Math.random() * 4)
   const sequence = []
   for (let spinIndex = 0; spinIndex < spins; spinIndex += 1) {
     sequence.push(splashLatinCharset.charAt(1 + Math.floor(Math.random() * (splashLatinCharset.length - 1))))
@@ -1468,7 +1477,7 @@ function animateSplashCellFlip(cell, nextCharacter, durationMs, settle, runId, o
   }, 0)
 }
 
-function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0) {
+function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0, onComplete = () => {}) {
   if (runId !== splashAnimationRunId) {
     return
   }
@@ -1478,9 +1487,30 @@ function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0
 
   animateSplashCellFlip(cell, nextCharacter, durationMs, isLast, runId, () => {
     if (!isLast) {
-      playSplashCellSequence(cell, sequence, stepDurationMs, runId, index + 1)
+      playSplashCellSequence(cell, sequence, stepDurationMs, runId, index + 1, onComplete)
+    } else {
+      onComplete()
     }
   })
+}
+
+function markReturnSplashSettled(runId) {
+  if (
+    runId !== splashAnimationRunId
+    || settledSplashRunId === runId
+    || !isReturnVisitSplash.value
+    || currentSplashPhrase.value !== splashPhrases.at(-1)
+  ) {
+    return
+  }
+  settledSplashRunId = runId
+  const settledAtMs = Math.max(0, Date.now() - splashRunStartedAtMs)
+  const transitionAtMs = Math.min(
+    SPLASH_RETURN_MAX_DURATION_MS,
+    Math.max(SPLASH_RETURN_DURATION_MS, settledAtMs + SPLASH_RETURN_READING_MS)
+  )
+  splashDurationMs.value = transitionAtMs
+  scheduleSplashTransition()
 }
 
 function animateSplashPhrase(phrase, runId) {
@@ -1488,14 +1518,23 @@ function animateSplashPhrase(phrase, runId) {
     return
   }
   const target = centerSplashPhrase(phrase)
+  const compact = isReturnVisitSplash.value
+  let pendingCells = splashBoardCells.value.length
   currentSplashPhrase.value = phrase
   splashBoardCells.value.forEach((cell, charIndex) => {
     const targetCharacter = target.charAt(charIndex) || ' '
-    const delayMs = 180 + charIndex * 45 + randomSplashRange(0, 36)
-    const stepDurationMs = 82 + randomSplashRange(-8, 12)
-    const sequence = buildSplashFlipSequence(targetCharacter, charIndex)
+    const delayMs = compact
+      ? 120 + charIndex * 30 + randomSplashRange(0, 24)
+      : 180 + charIndex * 45 + randomSplashRange(0, 36)
+    const stepDurationMs = compact
+      ? 64 + randomSplashRange(-6, 8)
+      : 82 + randomSplashRange(-8, 12)
+    const sequence = buildSplashFlipSequence(targetCharacter, charIndex, compact)
     queueSplashAnimation(() => {
-      playSplashCellSequence(cell, sequence, stepDurationMs, runId)
+      playSplashCellSequence(cell, sequence, stepDurationMs, runId, 0, () => {
+        pendingCells -= 1
+        if (pendingCells === 0) markReturnSplashSettled(runId)
+      })
     }, delayMs)
   })
 }
@@ -1503,6 +1542,8 @@ function animateSplashPhrase(phrase, runId) {
 function playSplashFlap() {
   splashAnimationRunId += 1
   const runId = splashAnimationRunId
+  splashRunStartedAtMs = Date.now()
+  settledSplashRunId = 0
   clearSplashAnimationTimers()
   const phraseEntries = isReturnVisitSplash.value
     ? [{ phrase: splashPhrases.at(-1), tickerIndex: splashTickerMessages.length - 1, delayMs: 0 }]
@@ -1519,6 +1560,15 @@ function playSplashFlap() {
   }
 
   resetSplashBoard()
+  if (isReturnVisitSplash.value) {
+    queueSplashAnimation(() => {
+      if (runId === splashAnimationRunId && settledSplashRunId !== runId) {
+        clearSplashAnimationTimers()
+        setSplashBoardToPhrase(splashPhrases.at(-1))
+        markReturnSplashSettled(runId)
+      }
+    }, SPLASH_RETURN_SETTLE_LIMIT_MS)
+  }
   phraseEntries.forEach(({ phrase, tickerIndex, delayMs }) => {
     queueSplashAnimation(() => {
       currentTickerIndex.value = tickerIndex
@@ -2347,12 +2397,14 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
 
 function scheduleSplashTransition() {
   window.clearTimeout(splashTimer)
+  const elapsedMs = Math.max(0, Date.now() - splashRunStartedAtMs)
+  const remainingMs = Math.max(0, splashDurationMs.value - elapsedMs)
   splashTimer = window.setTimeout(() => {
     clearSplashAnimationTimers()
     markSplashVisitComplete()
     page.value = 'junction'
     syncLiveLocation({ replace: true })
-  }, splashDurationMs.value)
+  }, remainingMs)
 }
 
 function directionGlyph(direction) {
@@ -3404,7 +3456,6 @@ function persistStudioPostId(postId) {
           <section v-if="isTestRoute" class="test-route-banner">
             <div class="section-head">
               <div>
-                <p class="eyebrow">QA Route</p>
                 <h3>{{ isVersionedTestRoute ? 'v0.5.0 프로토타입 레일' : '테스트 전용 진입점' }}</h3>
               </div>
               <span>
@@ -3459,7 +3510,6 @@ function persistStudioPostId(postId) {
             <section v-if="page === 'junction'" class="junction-shell prototype-shell">
               <section class="hero-panel prototype-hero">
                 <div>
-                  <p class="eyebrow">UI-v0.5.0 Junction</p>
                   <h3>메인 허브는 계속 라우터로 남기고, 새 시뮬레이터는 별도 승강장으로 확장합니다.</h3>
                   <p>
                     이 레일은 `v0.4.0` 실사용 포털을 덮지 않는 가상 화면입니다. 서울 지하철 환승 감각을 유지한 채
@@ -3479,7 +3529,6 @@ function persistStudioPostId(postId) {
               <section class="section-block">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Prototype Lines</p>
                     <h3>v0.5.0 승강장 분기</h3>
                   </div>
                   <span>기존 `/test?view=...` 와 섞지 않고 `/test/v0-5-0/...` 아래에서만 검토합니다.</span>
@@ -3523,7 +3572,6 @@ function persistStudioPostId(postId) {
                 <article class="surface-panel">
                   <div class="section-head">
                     <div>
-                      <p class="eyebrow">UX Pivot</p>
                       <h3>이번 버전에서 바꾸는 점</h3>
                     </div>
                   </div>
@@ -3539,7 +3587,6 @@ function persistStudioPostId(postId) {
                 <article class="surface-panel">
                   <div class="section-head">
                     <div>
-                      <p class="eyebrow">Mobile Route</p>
                       <h3>모바일 재배치 순서</h3>
                     </div>
                   </div>
@@ -3562,7 +3609,6 @@ function persistStudioPostId(postId) {
                 line-class="line-t"
                 station-code="T01"
                 title="가상 도시 수요 보드"
-                title-en="TAXI DISTRICT LAB"
                 prev-label="← 가상 레일"
                 status="가상 레일 프로토"
                 status-tone="warn"
@@ -3675,7 +3721,6 @@ function persistStudioPostId(postId) {
                 line-class="line-w"
                 station-code="W02"
                 title="worker 가시화 확장"
-                title-en="CREW BOARD"
                 prev-label="← 가상 레일"
                 status="가상 레일 프로토"
                 status-tone="warn"
@@ -3744,7 +3789,6 @@ function persistStudioPostId(postId) {
                 line-class="line-r"
                 station-code="R02"
                 title="실사용 레일과 가상 레일의 분리"
-                title-en="SIGNAL ROOM"
                 prev-label="← 가상 레일"
                 status="가상 레일 프로토"
                 status-tone="warn"

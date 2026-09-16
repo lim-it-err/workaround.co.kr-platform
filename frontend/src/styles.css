@@ -4399,6 +4399,25 @@ a.junction-route-row:focus-visible {
   flex: 1;
 }
 
+/* TKT-147 — 저장 안내는 28px 원으로 보이되 버튼의 40px hit area는 유지한다. */
+.writing-stage .writing-room .writer-storage button {
+  position: relative;
+  border-color: transparent;
+}
+
+.writing-stage .writing-room .writer-storage button::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  content: '';
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
 .topbar-actions {
   margin-left: auto;
   display: flex;

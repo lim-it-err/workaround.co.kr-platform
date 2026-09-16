@@ -118,6 +118,33 @@ for (const theme of ['dark', 'light']) {
   })
 }
 
+for (const width of [375, 1440]) {
+  for (const theme of ['dark', 'light']) {
+    test(`${width}px ${theme}: storage help keeps a 28px visual circle inside a 40px target`, async t => {
+      const page = await setup(t, { theme, width, height: width === 375 ? 812 : 900 })
+      const storageHelp = page.getByRole('button', { name: '저장 안내와 백업', exact: true })
+      const hitArea = await storageHelp.boundingBox()
+      assert.ok(hitArea.width >= 40 && hitArea.height >= 40, '저장 안내 클릭 영역은 40px 이상이어야 한다')
+      const visualCircle = await storageHelp.evaluate(element => {
+        const style = getComputedStyle(element, '::before')
+        return {
+          width: Number.parseFloat(style.width),
+          height: Number.parseFloat(style.height),
+          borderStyle: style.borderStyle
+        }
+      })
+      assert.deepEqual(visualCircle, { width: 28, height: 28, borderStyle: 'solid' })
+      for (const [, value] of await overflow(page)) assert.equal(value, 0)
+      if (process.env.STUDIO_SCREENSHOT_DIR) {
+        await page.screenshot({
+          path: `${process.env.STUDIO_SCREENSHOT_DIR}/storage-help-${width}-${theme}.png`,
+          fullPage: true
+        })
+      }
+    })
+  }
+}
+
 test('054/097: autosave, title-only draft, stable custom slug and editing-target reload', async t => {
   const page = await setup(t)
   await title(page).fill('첫 번째 기록')
