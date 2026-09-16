@@ -638,7 +638,7 @@ function formatModified(value) {
 .writer-bar { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .writer-bar button { flex: none; min-width: 40px; min-height: 40px; padding: 8px 12px; font-size: .85rem; }
 .writer-document { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: .9rem; }
-.writer-save { margin-left: auto; white-space: nowrap; color: var(--text-2); font-size: .78rem; font-variant-numeric: tabular-nums; }
+.writer-save { min-width: 0; margin-left: auto; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text-2); font-size: .78rem; font-variant-numeric: tabular-nums; }
 .writer-save.saving { color: var(--safety); }
 .writer-save.error { color: var(--danger); }
 .writer-bar .writer-more { font-size: 1.3rem; padding: 4px 10px; }

@@ -66,6 +66,30 @@ async function overflow(page) {
     return [selector, element ? Math.max(0, element.scrollWidth - element.clientWidth) : 0]
   }))
 }
+async function assertWriterBarContract(page) {
+  const contract = await page.locator('.writer-bar').evaluate((bar) => {
+    const bounds = bar.getBoundingClientRect()
+    const buttons = [...bar.querySelectorAll('button')]
+      .filter(button => getComputedStyle(button).display !== 'none')
+      .map(button => {
+        const box = button.getBoundingClientRect()
+        return { label: button.getAttribute('aria-label') || button.textContent.trim(), left: box.left, right: box.right, height: box.height }
+      })
+    const saveStyle = getComputedStyle(bar.querySelector('.writer-save'))
+    return {
+      left: bounds.left,
+      right: bounds.right,
+      buttons,
+      saveStyle: { minWidth: saveStyle.minWidth, overflowX: saveStyle.overflowX, textOverflow: saveStyle.textOverflow }
+    }
+  })
+  for (const button of contract.buttons) {
+    assert.ok(button.left >= contract.left - 0.5, `${button.label} 왼쪽이 상단바 안이어야 한다`)
+    assert.ok(button.right <= contract.right + 0.5, `${button.label} 오른쪽이 상단바 안이어야 한다`)
+    assert.ok(button.height >= 40, `${button.label} 높이는 40px 이상이어야 한다`)
+  }
+  assert.deepEqual(contract.saveStyle, { minWidth: '0px', overflowX: 'hidden', textOverflow: 'ellipsis' })
+}
 
 for (const theme of ['dark', 'light']) {
   test(`375px ${theme}: immediate typing, one status/primary, overlays and no overflow`, async t => {
@@ -82,9 +106,13 @@ for (const theme of ['dark', 'light']) {
       const box = await page.getByRole('button', { name, exact: true }).boundingBox()
       assert.ok(box.width >= 40 && box.height >= 40, `${name} 클릭 영역은 40px 이상이어야 한다`)
     }
+    await assertWriterBarContract(page)
     await body(page).fill('첫 화면에서 바로 씁니다.')
+    await page.waitForFunction(() => document.querySelector('.writer-save')?.textContent === '저장 중…')
+    await assertWriterBarContract(page)
     await saved(page)
     assert.match(await page.locator('.writer-save').textContent(), /저장됨 \d{2}:\d{2}/)
+    await assertWriterBarContract(page)
     for (const [, value] of await overflow(page)) assert.equal(value, 0)
     if (process.env.STUDIO_SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.STUDIO_SCREENSHOT_DIR}/studio-${theme}.png` })
     await page.getByRole('button', { name: '글 도구', exact: true }).click()
@@ -207,6 +235,7 @@ test('054: blocked save and cancelled exit/new-draft guard preserve input', asyn
   })
   await body(page).fill('저장 실패해도 입력은 유지')
   await page.waitForFunction(() => document.querySelector('.writer-save')?.textContent === '저장 실패')
+  await assertWriterBarContract(page)
   page.on('dialog', dialog => dialog.dismiss())
   await page.getByRole('button', { name: '블로그', exact: true }).click()
   assert.equal(await body(page).inputValue(), '저장 실패해도 입력은 유지')
@@ -378,6 +407,7 @@ test('097: local storage disclosure, loss conditions and combined JSON download 
   await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ notes: { prague: '여행 기록' }, stamps: ['prague'] })), voyageStorageKey(VOYAGE.id, 'archive'))
   await page.getByRole('button', { name: '저장 안내와 백업' }).click()
   assert.match(await sheet(page).textContent(), /브라우저 데이터를 지우거나 시크릿 모드/)
+  await assertWriterBarContract(page)
   const backupBox = await sheet(page).getByRole('button', { name: '내 기록 백업' }).boundingBox()
   assert.ok(backupBox.width >= 40 && backupBox.height >= 40, '백업 클릭 영역은 40px 이상이어야 한다')
   const downloading = page.waitForEvent('download')
