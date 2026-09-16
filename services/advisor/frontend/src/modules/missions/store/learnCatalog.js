@@ -86,19 +86,29 @@ function courseMissionDone(mission, learnerState, practiceState, practiceById) {
   return false
 }
 
-function courseStatus(course, learnerState, practiceState, practiceById) {
+export function courseProgress(course, learnerState, practiceState, practiceGames = []) {
+  const practiceById = new Map(practiceGames.map((game) => [game.id, game]))
   const completed = course.missions.filter((mission) => courseMissionDone(mission, learnerState, practiceState, practiceById)).length
+  const nextMission = course.missions.find((mission) => !courseMissionDone(mission, learnerState, practiceState, practiceById)) ?? null
   return {
     status: completed === course.missions.length ? 'completed' : completed ? 'in-progress' : 'not-started',
     progress: `${completed}/${course.missions.length}`,
+    nextMission,
   }
 }
 
-export function createLearnCatalog({ missions, courses, caseFiles, projects, practiceGames, learnerState, practiceState }) {
-  const practiceById = new Map(practiceGames.map((game) => [game.id, game]))
-
+export function createLearnCatalog({
+  missions,
+  courses,
+  caseFiles,
+  projects,
+  practiceGames,
+  coursePracticeGames = practiceGames,
+  learnerState,
+  practiceState,
+}) {
   const courseItems = courses.map((course) => {
-    const progress = courseStatus(course, learnerState, practiceState, practiceById)
+    const progress = courseProgress(course, learnerState, practiceState, coursePracticeGames)
     return normalizedItem({
       id: `course:${course.id}`,
       sourceId: course.id,
@@ -106,6 +116,7 @@ export function createLearnCatalog({ missions, courses, caseFiles, projects, pra
       title: course.title,
       context: `${course.stationCode} · ${course.subtitle} · ${course.missions.length}개 · ${progress.progress}`,
       minutes: course.missions.reduce((sum, mission) => sum + (mission.minutes ?? 0), 0),
+      nextMinutes: progress.nextMission?.minutes ?? null,
       writesCode: course.missions.some((mission) => mission.kind === 'coding'),
       status: progress.status,
       href: `/courses/${course.id}`,

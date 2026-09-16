@@ -3,9 +3,9 @@ import caseData from '../../data/sampleCaseFiles.js'
 import sample from '../../data/sampleContent.js'
 import projectData from '../../data/sampleProjects.js'
 import { extraMissions } from '../../data/inflightContent.js'
-import { standalonePracticeCatalog } from '../../games/practiceCatalog.js'
+import { practiceCatalog, standalonePracticeCatalog } from '../../games/practiceCatalog.js'
 import { createCourseCatalog } from '../courseCatalog.js'
-import { createLearnCatalog, filterLearnCatalog, summarizeLearnCatalog } from '../learnCatalog.js'
+import { courseProgress, createLearnCatalog, filterLearnCatalog, summarizeLearnCatalog } from '../learnCatalog.js'
 
 const missions = [...sample.missions, ...extraMissions]
 const emptyLearner = {
@@ -34,15 +34,15 @@ function defaultFilters(patch = {}) {
 }
 
 describe('배우기 통합 인덱스', () => {
-  it('다섯 콘텐츠 형식을 181개 단일 목록으로 정규화한다', () => {
+  it('다섯 콘텐츠 형식을 206개 단일 목록으로 정규화한다', () => {
     const catalog = makeCatalog()
-    expect(catalog).toHaveLength(181)
+    expect(catalog).toHaveLength(206)
     expect(Object.fromEntries(summarizeLearnCatalog(catalog).map((entry) => [entry.kind, entry.count]))).toEqual({
-      course: 2,
+      course: 3,
       mission: 39,
-      case: 8,
+      case: 10,
       project: 1,
-      practice: 131,
+      practice: 153,
     })
   })
 
@@ -79,5 +79,18 @@ describe('배우기 통합 인덱스', () => {
     expect(completed.some((item) => item.id === `mission:${mission.id}`)).toBe(true)
     expect(completed.some((item) => item.id === `case:${caseFile.id}`)).toBe(true)
     expect(completed.some((item) => item.id === `project:${project.id}`)).toBe(true)
+  })
+
+  it('코스 게임을 마치면 다음 회차가 실제 다음 미션으로 전진한다', () => {
+    const vienna = createCourseCatalog(missions).find((course) => course.id === 'vienna-1900')
+    const firstGame = practiceCatalog.find((game) => game.id === vienna.missions[0].id)
+    const progress = courseProgress(vienna, emptyLearner, {
+      completed: { [firstGame.id]: firstGame.rounds.map((round) => round.id) },
+    }, practiceCatalog)
+
+    expect(progress.status).toBe('in-progress')
+    expect(progress.progress).toBe('1/12')
+    expect(progress.nextMission.id).toBe('v1900-b-pigments')
+    expect(progress.nextMission.minutes).toBe(90)
   })
 })

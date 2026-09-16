@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { vienna1900Sims } from '../../data/courseVienna1900.js'
+import { budapestBathsSims } from '../../data/courseBudapestBaths.js'
 import { runEntryQueueScenario } from '../courseQueueSimulation.js'
 
 describe('비엔나 입장 대기열 전체 실행 집계', () => {
@@ -95,5 +96,25 @@ describe('비엔나 입장 대기열 전체 실행 집계', () => {
     expect(morePrebooked.averageWaitSeconds).toBeLessThan(baseline.averageWaitSeconds)
     expect(extraCounter.utilizationPercent).toBeLessThan(morePrebooked.utilizationPercent)
     expect(extraCounter.averageWaitSeconds).toBeLessThan(morePrebooked.averageWaitSeconds)
+  })
+})
+
+describe('부다페스트 온천 08–09시 고정 시드 큐', () => {
+  it.each(['08', '09'])('%s시 집계는 도착 ≥ 처리이고 정규화 이용률은 0..1이다', (hour) => {
+    const result = runEntryQueueScenario(budapestBathsSims[0], { hour, counters: 2 })
+    const normalizedUtilization = result.utilizationPercent / 100
+
+    expect(result.arrivals).toBeGreaterThanOrEqual(result.completed)
+    expect(result.completed + result.unprocessed).toBe(result.arrivals)
+    expect(normalizedUtilization).toBeGreaterThanOrEqual(0)
+    expect(normalizedUtilization).toBeLessThanOrEqual(1)
+  })
+
+  it.each(['08', '09'])('%s시에는 창구를 2개에서 3개로 늘리면 평균 대기가 줄어든다', (hour) => {
+    const twoCounters = runEntryQueueScenario(budapestBathsSims[0], { hour, counters: 2 })
+    const threeCounters = runEntryQueueScenario(budapestBathsSims[0], { hour, counters: 3 })
+
+    expect(threeCounters.averageWaitSeconds).toBeLessThan(twoCounters.averageWaitSeconds)
+    expect(threeCounters.utilizationPercent).toBeLessThan(twoCounters.utilizationPercent)
   })
 })

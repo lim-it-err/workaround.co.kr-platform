@@ -18,6 +18,10 @@ const selectedHypothesis = ref('')
 const revealed = ref(false)
 const completed = ref(false)
 const episode = ref(1)
+const sessionGameId = ref('')
+const sessionAnswered = ref([])
+const sessionCorrect = ref(0)
+const sessionFinished = ref(false)
 
 const game = computed(() => getPracticeGame(String(route.params.gameId)))
 const round = computed(() => getPracticeRound(String(route.params.gameId), String(route.params.roundId ?? '')))
@@ -29,8 +33,20 @@ const probeVerdict = computed(() => round.value?.type === 'probe'
   ? round.value.hypotheses.find((entry) => entry.key === selectedHypothesis.value) ?? null
   : null)
 const probeCorrect = computed(() => probeVerdict.value?.key === round.value?.answerKey)
+const sessionComplete = computed(() => Boolean(
+  game.value?.completionSummary
+  && game.value.rounds.length
+  && sessionAnswered.value.length >= game.value.rounds.length,
+))
 
 watch(() => route.fullPath, () => {
+  const nextGameId = String(route.params.gameId ?? '')
+  if (sessionGameId.value !== nextGameId) {
+    sessionGameId.value = nextGameId
+    sessionAnswered.value = []
+    sessionCorrect.value = 0
+    sessionFinished.value = false
+  }
   selected.value = ''
   selectedHypothesis.value = ''
   revealed.value = false
@@ -42,6 +58,7 @@ watch(() => route.fullPath, () => {
 function optionsFor(entry) {
   if (!entry) return []
   if ((entry.type === 'reading' || entry.type === 'cinema') && entry.fork?.choices) return entry.fork.choices
+  if (entry.type === 'swipe' && entry.choices?.length) return entry.choices
   if (entry.type === 'swipe') return [
     { key: 'merge', label: '머지' }, { key: 'reject', label: '반려' }, { key: 'question', label: '질문 먼저' },
   ]
@@ -49,6 +66,16 @@ function optionsFor(entry) {
   if (entry.type === 'boundary') return entry.boundaries.map((item) => ({ key: item.key, label: item.label }))
   if (entry.type === 'choice') return entry.choices
   return []
+}
+
+function optionLabel(entry, key) {
+  return optionsFor(entry).find((option) => option.key === key)?.label ?? key
+}
+
+function recordSessionAnswer() {
+  if (!game.value?.completionSummary || !round.value || sessionAnswered.value.includes(round.value.id)) return
+  sessionAnswered.value = [...sessionAnswered.value, round.value.id]
+  if (selected.value === round.value.correct) sessionCorrect.value += 1
 }
 
 function answer() {
@@ -66,6 +93,7 @@ function answer() {
   revealed.value = true
   completed.value = true
   practice.recordAttempt(game.value.id, round.value.id, selected.value || 'read')
+  recordSessionAnswer()
 }
 
 function move(mode) {
@@ -79,6 +107,9 @@ function move(mode) {
 
 function restart() {
   if (!game.value?.rounds?.length) return
+  sessionAnswered.value = []
+  sessionCorrect.value = 0
+  sessionFinished.value = false
   practice.clearGame(game.value.id)
   router.push({
     path: `/games/practice/${game.value.id}/${game.value.rounds[0].id}`,
@@ -88,13 +119,17 @@ function restart() {
 
 const resultText = computed(() => {
   if (!round.value) return ''
-  if (round.value.type === 'swipe') return round.value.explain
+  if (round.value.type === 'swipe') return [round.value.reason, round.value.explain].filter(Boolean).join('\n\n')
   if (round.value.type === 'probe') return round.value.resolution
   if (round.value.type === 'boundary') return `${round.value.outcomes[selected.value]?.scenario ?? ''}\n\n${round.value.recommendNote}`
   if (round.value.type === 'choice') return `${round.value.choices.find((entry) => entry.key === selected.value)?.aftermath ?? ''}\n\n${round.value.explanation}`
   const forkResponse = round.value.fork?.choices?.find((entry) => entry.key === selected.value)?.response
   return forkResponse ? `${forkResponse}\n\n${round.value.explanation}` : (round.value.explanation ?? round.value.csLink ?? round.value.systemReading ?? '')
 })
+
+function finishSession() {
+  if (sessionComplete.value) sessionFinished.value = true
+}
 </script>
 
 <template>
@@ -104,7 +139,17 @@ const resultText = computed(() => {
       <span>{{ game.emoji }} {{ game.title }} · {{ progress }}</span>
     </header>
 
-    <article class="card round-card">
+    <section v-if="sessionFinished" class="session-summary card" aria-live="polite">
+      <span class="session-summary-emoji" aria-hidden="true">🏁</span>
+      <h1>{{ game.title }} 완료</h1>
+      <p>{{ game.rounds.length }}장 중 {{ sessionCorrect }}장의 판정을 맞혔습니다.</p>
+      <div class="session-summary-actions">
+        <router-link to="/today" class="btn primary">오늘로 돌아가기</router-link>
+        <button class="btn" type="button" @click="restart">20장 다시 하기</button>
+      </div>
+    </section>
+
+    <article v-else class="card round-card">
       <span class="practice-chip">연습 모드 · 보상/연속 기록 없음</span>
       <h1>{{ round.title }}</h1>
       <p v-if="round.situation" class="situation">{{ round.situation }}</p>
@@ -162,7 +207,8 @@ const resultText = computed(() => {
         <section v-if="revealed && round.type !== 'probe'" class="result card" aria-live="polite">
           <strong>판 뒤집기</strong>
           <p class="preline">{{ resultText }}</p>
-          <p v-if="round.type === 'swipe'">권장 판정: {{ round.correct }} · 근거: {{ round.correctToken }}</p>
+          <p v-if="round.type === 'swipe'">권장 판정: {{ optionLabel(round, round.correct) }} · 근거: {{ round.correctToken }}</p>
+          <button v-if="sessionComplete" class="btn primary session-result-button" type="button" @click="finishSession">{{ game.rounds.length }}장 결과 보기</button>
         </section>
         <section v-if="round.type === 'probe' && completed" class="result card probe-resolution" aria-live="polite">
           <strong>{{ probeCorrect ? '가설 적중' : '가설 빗나감' }}</strong>
@@ -174,7 +220,7 @@ const resultText = computed(() => {
       </template>
     </article>
 
-    <nav class="round-nav" aria-label="연습 판 이동">
+    <nav v-if="!sessionFinished" class="round-nav" aria-label="연습 판 이동">
       <button class="btn" @click="restart">처음부터 다시</button>
       <button class="btn" @click="move('next')">다음 판</button>
       <button class="btn" @click="move('random')">무작위</button>
@@ -187,5 +233,6 @@ const resultText = computed(() => {
 
 <style scoped>
 .practice-page { max-width: 720px; margin: 0 auto; }.practice-head { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 12px; color: var(--fg-dim); font-size: 13px; }.practice-head a { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; text-decoration: none; }.round-card h1 { margin: 10px 0; font-size: 23px; }.practice-chip { color: var(--good); background: color-mix(in srgb, var(--good) 10%, transparent); border-radius: 99px; padding: 4px 9px; font-size: 11px; font-weight: 700; }.situation,.prompt { color: var(--fg-dim); }.code { overflow-x: auto; background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }.options { display: grid; gap: 8px; margin: 16px 0; }.options button,.episode-tabs button,.hypotheses button { text-align: left; border: 1px solid var(--border); background: var(--bg-soft); color: var(--fg); border-radius: 9px; padding: 11px 13px; min-height: 44px; }.options button.active,.episode-tabs button.active,.hypotheses button.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }.complete { margin-top: 12px; }.result { margin-top: 16px; border-color: color-mix(in srgb, var(--accent) 45%, transparent); }.preline { white-space: pre-line; }.episode-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0; }.episode-tabs button { text-align: center; }.episode { padding: 16px; }.episode h2 { margin: 3px 0; font-size: 17px; }.episode small { color: var(--accent); }.spoiler { margin-top: 14px; border: 1px dashed var(--border); border-radius: 10px; padding: 12px; }.spoiler summary { cursor: pointer; font-weight: 700; }.probe-followup { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 14px; align-items: start; margin-top: 16px; }.observation { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }.observation small,.hypothesis-panel > small { color: var(--accent); font-weight: 750; }.observation h2,.hypothesis-panel h2,.probe-resolution h2 { margin: 5px 0 9px; font-size: 16px; }.observation p { margin: 0; line-height: 1.65; }.hypotheses { display: grid; gap: 8px; }.hypotheses button { display: flex; align-items: center; justify-content: space-between; gap: 8px; }.hypotheses button small { color: var(--fg-dim); text-align: right; }.hypotheses button.eliminated { opacity: .45; }.hypotheses button:disabled { cursor: default; }.probe-resolution > strong { color: var(--accent); }.probe-resolution .info-note { color: var(--fg-dim); border-top: 1px solid var(--border); padding-top: 12px; }.round-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }.danger { color: var(--bad); margin-left: auto; }
+.session-result-button { width: 100%; margin-top: 12px; }.session-summary { padding: 28px 22px; text-align: center; }.session-summary-emoji { display: block; font-size: 36px; }.session-summary h1 { margin: 8px 0; font-size: 23px; }.session-summary p { color: var(--fg-dim); }.session-summary-actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 18px; }.session-summary-actions .btn { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 @media (max-width: 600px) { .practice-head { flex-direction: column; gap: 4px; }.round-card { padding: 16px; }.probe-followup { grid-template-columns: 1fr; }.hypotheses button { align-items: flex-start; flex-direction: column; }.hypotheses button small { text-align: left; }.round-nav .danger { margin-left: 0; width: 100%; } }
 </style>

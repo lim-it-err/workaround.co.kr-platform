@@ -5,6 +5,7 @@
  */
 
 import { extraCaseFiles } from './inflightContent.js'
+import { caseFilesSeries2 } from './caseFilesSeries2.js'
 
 const caseFiles = [
   {
@@ -151,4 +152,4 @@ const caseFiles = [
   },
 ];
 
-export default { caseFiles: [...caseFiles, ...extraCaseFiles] };
+export default { caseFiles: [...caseFiles, ...extraCaseFiles, ...caseFilesSeries2] };

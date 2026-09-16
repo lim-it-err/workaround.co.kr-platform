@@ -12,13 +12,13 @@ test.afterEach(async ({ page }) => {
   await page.evaluate(() => localStorage.clear()).catch(() => {})
 })
 
-test('375 첫 화면은 코스 2행과 네 기본 필터만 보이고 기존 높이의 1/3 이하이다', async ({ page }) => {
+test('375 첫 화면은 코스 3행과 네 기본 필터만 보이고 기존 높이의 1/3 이하이다', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 900 })
   await page.goto('/learn')
-  await expect(page.locator('[data-course-preview]')).toHaveCount(2)
+  await expect(page.locator('[data-course-preview]')).toHaveCount(3)
   await expect(page.locator('[data-content-index]')).toHaveCount(0)
-  await expect(page.locator('.index-row')).toHaveCount(2)
-  await expect(page.getByRole('button', { name: '전체 181개 보기' })).toBeVisible()
+  await expect(page.locator('.index-row')).toHaveCount(3)
+  await expect(page.getByRole('button', { name: '전체 206개 보기' })).toBeVisible()
   await expect(page.locator('.filter-grid select')).toHaveCount(4)
   await expect(page.getByRole('combobox', { name: '시간', exact: true })).toHaveCount(1)
   await expect(page.getByRole('combobox', { name: '코드 작성', exact: true })).toHaveCount(1)
@@ -36,19 +36,19 @@ test('필터를 고르면 통합 목록이 열리고 초기화하면 다시 첫 
 
   await page.getByRole('button', { name: '필터 초기화' }).click()
   await expect(page.locator('[data-content-index]')).toHaveCount(0)
-  await expect(page.locator('[data-course-preview]')).toHaveCount(2)
+  await expect(page.locator('[data-course-preview]')).toHaveCount(3)
 })
 
-test('전체 보기를 누르면 181개 통합 인덱스를 30개씩 연다', async ({ page }) => {
-  await page.getByRole('button', { name: '전체 181개 보기' }).click()
+test('전체 보기를 누르면 206개 통합 인덱스를 30개씩 연다', async ({ page }) => {
+  await page.getByRole('button', { name: '전체 206개 보기' }).click()
   await expect(page.getByRole('button', { name: '전체 목록 접기' })).toHaveAttribute('aria-expanded', 'true')
   await expect(page.locator('[data-content-index]')).toBeVisible()
-  await expect(page.getByText('코스 2')).toBeVisible()
+  await expect(page.getByText('코스 3')).toBeVisible()
   await expect(page.getByText('미션 39')).toBeVisible()
-  await expect(page.getByText('사건 파일 8')).toBeVisible()
+  await expect(page.getByText('사건 파일 10')).toBeVisible()
   await expect(page.getByText('프로젝트 1')).toBeVisible()
-  await expect(page.getByText('연습 131')).toBeVisible()
-  await expect(page.getByText('181개', { exact: true })).toBeVisible()
+  await expect(page.getByText('연습 153')).toBeVisible()
+  await expect(page.getByText('206개', { exact: true })).toBeVisible()
   await expect(page.locator('.index-row')).toHaveCount(30)
   expect(await page.locator('input:not([type="hidden"]), select, textarea').evaluateAll(elements => (
     elements.every(element => Boolean(element.getAttribute('aria-label') || element.getAttribute('aria-labelledby') || element.labels?.length))
@@ -62,11 +62,11 @@ test('전체 보기를 누르면 181개 통합 인덱스를 30개씩 연다', as
   expect(await page.locator('.index-row').evaluateAll(rows => rows.every(row => row.getAttribute('data-content-kind') === 'mission'))).toBe(true)
 })
 
-test('/games 별칭은 연습 131판만 보여 주고 실제 판의 심층 링크로 이어진다', async ({ page }) => {
+test('/games 별칭은 연습 153판만 보여 주고 실제 판의 심층 링크로 이어진다', async ({ page }) => {
   await page.goto('/games')
   await expect(page).toHaveURL(/\/learn#practice$/)
   await expect(page.getByLabel('형식')).toHaveValue('practice')
-  await expect(page.getByText('131개', { exact: true })).toBeVisible()
+  await expect(page.getByText('153개', { exact: true })).toBeVisible()
   await expect(page.getByText('시즌제 스탯 준비 중')).toHaveCount(0)
 
   const firstPractice = page.locator('[data-content-kind="practice"]').first()

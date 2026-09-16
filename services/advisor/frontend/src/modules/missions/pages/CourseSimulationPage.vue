@@ -2,13 +2,15 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { vienna1900Sims } from '../data/courseVienna1900.js'
+import { budapestBathsSims } from '../data/courseBudapestBaths.js'
 import { runEntryQueueScenario } from '../games/courseQueueSimulation.js'
 import { useMissions } from '../store/missions.js'
 
 const route = useRoute()
 const store = useMissions()
 const course = computed(() => store.getCourse(String(route.params.courseId)))
-const sim = computed(() => vienna1900Sims.find((entry) => entry.id === route.params.missionId) ?? null)
+const courseSims = [...vienna1900Sims, ...budapestBathsSims]
+const sim = computed(() => courseSims.find((entry) => entry.id === route.params.missionId) ?? null)
 const hour = ref(sim.value?.arrivals?.[0]?.hour ?? '09')
 const counters = ref(sim.value?.counters ?? 3)
 const prebookedPercent = ref(Math.round((sim.value?.prebookedRatio ?? 0.35) * 100))

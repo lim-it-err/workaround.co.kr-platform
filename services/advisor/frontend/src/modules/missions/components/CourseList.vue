@@ -1,9 +1,23 @@
 <script setup>
+import { computed } from 'vue'
+import { practiceCatalog } from '../games/practiceCatalog.js'
+import { formatDuration } from '../store/durationFormat.js'
+import { courseProgress } from '../store/learnCatalog.js'
 import { useMissions } from '../store/missions.js'
+import { usePractice } from '../store/practice.js'
 
 defineProps({ embedded: { type: Boolean, default: false } })
 
-const { state } = useMissions()
+const learner = useMissions()
+const practice = usePractice()
+const courseRows = computed(() => learner.state.courses.map((course) => {
+  const progress = courseProgress(course, learner.state, practice.state, practiceCatalog)
+  return {
+    ...course,
+    nextMinutes: progress.nextMission?.minutes ?? null,
+    totalMinutes: course.missions.reduce((sum, mission) => sum + (mission.minutes ?? 0), 0),
+  }
+}))
 </script>
 
 <template>
@@ -16,7 +30,7 @@ const { state } = useMissions()
 
     <div class="course-rows">
       <router-link
-        v-for="course in state.courses"
+        v-for="course in courseRows"
         :key="course.id"
         :to="`/courses/${course.id}`"
         class="course-row"
@@ -28,7 +42,10 @@ const { state } = useMissions()
           <strong>{{ course.title }}</strong>
           <span>{{ course.subtitle }}</span>
         </span>
-        <span class="course-count">{{ course.missionCount }}개</span>
+        <span class="course-time">
+          <strong>{{ course.nextMinutes === null ? '완료' : `다음 ${formatDuration(course.nextMinutes)}` }}</strong>
+          <small>전체 {{ formatDuration(course.totalMinutes) }} · {{ course.missionCount }}개</small>
+        </span>
         <span class="course-arrow" aria-hidden="true">→</span>
       </router-link>
     </div>
@@ -70,11 +87,13 @@ const { state } = useMissions()
 .course-copy small { color: var(--accent-text); font-size: 11px; font-weight: 750; }
 .course-copy strong { font-size: 17px; line-height: 1.35; transition: color .15s; }
 .course-copy span { overflow: hidden; color: var(--fg-dim); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
-.course-count { color: var(--fg-dim); font-size: 13px; font-variant-numeric: tabular-nums; }
+.course-time { display: grid; gap: 3px; text-align: right; white-space: nowrap; }
+.course-time strong { color: var(--fg); font-size: 12px; font-variant-numeric: tabular-nums; }
+.course-time small { color: var(--fg-dim); font-size: 11px; font-variant-numeric: tabular-nums; }
 .course-arrow { color: var(--accent-text); font-weight: 800; }
 @media (max-width: 520px) {
   .course-row { grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; }
-  .course-count { grid-column: 2; }
+  .course-time { grid-column: 2; justify-self: start; text-align: left; }
   .course-arrow { grid-column: 3; grid-row: 1 / span 2; }
   .course-copy span { white-space: normal; }
 }

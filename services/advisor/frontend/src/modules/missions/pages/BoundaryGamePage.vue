@@ -1,10 +1,19 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
-import { inspectBoundaryRound } from '../games/boundaryEngine.js'
+import boundaryData from '../data/sampleBoundaryRounds.js'
+import {
+  beginBoundarySession,
+  inspectBoundaryRound,
+  pickBoundaryRound,
+} from '../games/boundaryEngine.js'
 import { localDateKey } from '../store/seasonStats.js'
 import { useMissions } from '../store/missions.js'
 
 const store = useMissions()
+store.hydrateBoundaryGame(boundaryData.dailyBoundaryRounds ?? boundaryData.boundaryRounds, {
+  beginBoundarySession,
+  pickBoundaryRound,
+})
 const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
 const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
 const today = localDateKey()

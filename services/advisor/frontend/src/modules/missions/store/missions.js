@@ -1,24 +1,11 @@
 // missions 모듈 상태. 프로토타입: 콘텐츠는 정적 샘플, 제출물은 localStorage.
 // 실제 서비스에서는 이 파일만 API 클라이언트 호출로 교체된다 (모듈 밖 인터페이스는 동일).
 import { reactive } from 'vue'
-import sample from '../data/sampleContent.js'
+import sampleCatalog from '../data/missionCatalog.js'
 import projectSample from '../data/sampleProjects.js'
-import cards from '../data/sampleCards.js'
-import boundaryData from '../data/sampleBoundaryRounds.js'
-import caseFileData from '../data/sampleCaseFiles.js'
-import probeData from '../data/sampleProbeRounds.js'
+import { routineCards, routineCases } from '../data/routineCatalog.js'
 import seasons from '../data/sampleSeasons.js'
 import { extraMissions } from '../data/inflightContent.js'
-import { vienna1900CodingMissions } from '../data/courseVienna1900.js'
-import {
-  beginBoundarySession,
-  pickBoundaryRound,
-} from '../games/boundaryEngine.js'
-import {
-  beginProbeSession,
-  pickProbeRound,
-  settleProbeSession,
-} from '../games/probeEngine.js'
 import {
   activeSeason,
   buildSeasonOverview,
@@ -30,12 +17,15 @@ import {
   startNewSeason as createNewSeason,
 } from './seasonStats.js'
 import { createCourseCatalog, findCourse } from './courseCatalog.js'
+import { syncLearnerNickname } from './learnerIdentity.js'
 
-const dailyProbeRounds = probeData.dailyProbeRounds ?? probeData.probeRounds
-const dailyBoundaryRounds = boundaryData.dailyBoundaryRounds ?? boundaryData.boundaryRounds
+let fullSample = { sampleReviews: {}, sampleExplainFeedback: {}, sampleReputation: {} }
+let courseCodingMissions = []
+let probeAssets = null
+let boundaryAssets = null
 
 const STORAGE_KEY = 'advisor.learner.v1'
-const baseMissions = [...sample.missions, ...extraMissions]
+const baseMissions = [...sampleCatalog.missions, ...extraMissions]
 
 // 백엔드 채팅 프리뷰 API. 백엔드가 죽어 있으면 아래 mock 응답으로 조용히 폴백한다.
 const API_BASE = import.meta.env.VITE_ADVISOR_API ?? 'http://localhost:8080/api/advisor'
@@ -280,21 +270,20 @@ function noCodeReadLabel(mission) {
 }
 
 function pickForkCard(seed) {
-  const forkCards = cards.readingCards.filter((card) => cards.cardForks[card.id])
-  return pickBySeed(forkCards, seed)
+  return pickBySeed(routineCards.readingCards, seed)
 }
 
 function pickCaseFile(state, seed, dateStr) {
-  const viewedToday = caseFileData.caseFiles.find(
+  const viewedToday = routineCases.find(
     (caseFile) => state.caseProgress[caseFile.id]?.lastViewedDate === dateStr,
   )
   if (viewedToday) return viewedToday
 
-  const ongoing = caseFileData.caseFiles.filter((caseFile) => {
+  const ongoing = routineCases.filter((caseFile) => {
     const progress = state.caseProgress[caseFile.id]
     return progress && !progress.verdict && (progress.openedDays ?? 0) < caseFile.days.length
   })
-  return pickBySeed(ongoing, seed) ?? caseFileData.caseFiles[0] ?? null
+  return pickBySeed(ongoing, seed) ?? routineCases[0] ?? null
 }
 
 function caseClueTitle(state, caseFile, dateStr) {
@@ -313,7 +302,7 @@ function caseClueDone(state, caseFile, dateStr) {
 }
 
 function ongoingCaseBanner(state, dateStr) {
-  const caseFile = caseFileData.caseFiles.find((entry) => {
+  const caseFile = routineCases.find((entry) => {
     const progress = state.caseProgress[entry.id]
     return progress && !progress.verdict
   })
@@ -508,7 +497,7 @@ function buildFriday(state, seed, dateStr) {
 }
 
 function buildWeekend(state, seed, dateStr) {
-  const card = pickBySeed(cards.cinemaCards, seed)
+  const card = pickBySeed(routineCards.cinemaCards, seed)
   const cardDone = !!state.routineChecks[dateStr]?.[0]
 
   const projectPick = nextProjectSubMission(state, seed)
@@ -1037,11 +1026,11 @@ function gainSeasonStat(stat, amount, source) {
 function reviewVersions(missionId) {
   const stored = state.reviews[missionId]
   if (stored?.length) return stored
-  if (state.submissions[missionId]?.length && sample.sampleReviews[missionId]) {
-    const sampleReview = sample.sampleReviews[missionId]
+  if (state.submissions[missionId]?.length && fullSample.sampleReviews[missionId]) {
+    const sampleReview = fullSample.sampleReviews[missionId]
     return [
       {
-        content: { ...sampleReview, reputation: sample.sampleReputation?.[missionId] ?? null },
+        content: { ...sampleReview, reputation: fullSample.sampleReputation?.[missionId] ?? null },
         overall: sampleReview.overall,
         reviewedAt: null, // null = 샘플(프로토타입) 리뷰라는 표식
       },
@@ -1057,7 +1046,24 @@ export function useMissions() {
 
     getMission(id) {
       return state.missions.find((m) => m.id === id)
-        ?? vienna1900CodingMissions.find((mission) => mission.id === id)
+        ?? courseCodingMissions.find((mission) => mission.id === id)
+    },
+
+    hydrateMissionContent(sample, codingMissions = []) {
+      if (sample?.missions?.length) {
+        fullSample = sample
+        const detailed = new Map(sample.missions.map((mission) => [mission.id, mission]))
+        state.missions = state.missions.map((mission) => detailed.get(mission.id) ?? mission)
+      }
+      courseCodingMissions = codingMissions
+    },
+
+    hydrateProbeGame(rounds, engine) {
+      probeAssets = { rounds: rounds ?? [], ...engine }
+    },
+
+    hydrateBoundaryGame(rounds, engine) {
+      boundaryAssets = { rounds: rounds ?? [], ...engine }
     },
 
     getCourse(id) {
@@ -1120,18 +1126,20 @@ export function useMissions() {
     },
 
     probeRoundForDate(dateStr = localDateStr()) {
+      const dailyProbeRounds = probeAssets?.rounds ?? []
       const savedRoundId = state.probeSessions[dateStr]?.roundId
       return dailyProbeRounds.find((round) => round.id === savedRoundId)
-        ?? pickProbeRound(dailyProbeRounds, dateStr)
+        ?? probeAssets?.pickProbeRound(dailyProbeRounds, dateStr)
     },
 
     chooseProbe(probeKey) {
       const dateStr = localDateStr()
       if (state.probeSessions[dateStr]) return false
+      const dailyProbeRounds = probeAssets?.rounds ?? []
       const round = dailyProbeRounds.find(
-        (candidate) => candidate.id === pickProbeRound(dailyProbeRounds, dateStr)?.id,
+        (candidate) => candidate.id === probeAssets?.pickProbeRound(dailyProbeRounds, dateStr)?.id,
       )
-      const session = beginProbeSession(round, probeKey)
+      const session = probeAssets?.beginProbeSession(round, probeKey)
       if (!session) return false
 
       state.probeSessions[dateStr] = session
@@ -1142,8 +1150,9 @@ export function useMissions() {
     chooseProbeVerdict(verdictKey) {
       const dateStr = localDateStr()
       const session = state.probeSessions[dateStr]
+      const dailyProbeRounds = probeAssets?.rounds ?? []
       const round = dailyProbeRounds.find((candidate) => candidate.id === session?.roundId)
-      const settled = settleProbeSession(round, session, verdictKey)
+      const settled = probeAssets?.settleProbeSession(round, session, verdictKey)
       if (!session || settled === session) return false
 
       state.probeSessions[dateStr] = settled
@@ -1156,16 +1165,18 @@ export function useMissions() {
     },
 
     boundaryRoundForDate(dateStr = localDateStr()) {
+      const dailyBoundaryRounds = boundaryAssets?.rounds ?? []
       const savedRoundId = state.boundarySessions[dateStr]?.roundId
       return dailyBoundaryRounds.find((round) => round.id === savedRoundId)
-        ?? pickBoundaryRound(dailyBoundaryRounds, dateStr)
+        ?? boundaryAssets?.pickBoundaryRound(dailyBoundaryRounds, dateStr)
     },
 
     chooseBoundary(boundaryKey) {
       const dateStr = localDateStr()
       if (state.boundarySessions[dateStr]) return false
-      const round = pickBoundaryRound(dailyBoundaryRounds, dateStr)
-      const session = beginBoundarySession(round, boundaryKey)
+      const dailyBoundaryRounds = boundaryAssets?.rounds ?? []
+      const round = boundaryAssets?.pickBoundaryRound(dailyBoundaryRounds, dateStr)
+      const session = boundaryAssets?.beginBoundarySession(round, boundaryKey)
       if (!session) return false
 
       state.boundarySessions[dateStr] = session
@@ -1356,6 +1367,7 @@ export function useMissions() {
     setNickname(name) {
       const nickname = String(name ?? '').trim().slice(0, 12)
       state.learner.nickname = nickname
+      syncLearnerNickname(nickname)
       persist({ syncJournal: false })
       return startRecordSync(nickname)
     },
@@ -1456,7 +1468,7 @@ export function useMissions() {
 
     getExplainFeedback(missionId) {
       if (!state.explanations[missionId]) return null
-      return sample.sampleExplainFeedback[missionId] ?? null
+      return fullSample.sampleExplainFeedback[missionId] ?? null
     },
 
     // 평판은 리뷰 응답에 포함되어 함께 저장된다. index 미지정 시 최신 리뷰의 평판.

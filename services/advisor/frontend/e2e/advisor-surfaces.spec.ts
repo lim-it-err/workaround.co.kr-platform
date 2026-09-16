@@ -65,7 +65,7 @@ test('3표면과 기존 주소가 새 의미로 이어지고 화면이 넘치지
 
 test('초안은 탭 전환·목록 왕복·새로고침에서 여러 파일과 설명을 복원한다', async ({ page }) => {
   await page.goto('/learn')
-  await page.getByRole('button', { name: '전체 181개 보기' }).click()
+  await page.getByRole('button', { name: '전체 206개 보기' }).click()
   await page.getByRole('link', { name: new RegExp(MISSION_TITLE) }).click()
   await page.getByRole('button', { name: '제출', exact: true }).click()
   await page.getByPlaceholder('예: src/main/java/wine/WineRecommender.java').fill('src/Main.java')
@@ -82,7 +82,7 @@ test('초안은 탭 전환·목록 왕복·새로고침에서 여러 파일과 �
     .toEqual(['src/Main.java', 'src/MainTest.java'])
   await page.locator('.content').first().fill('class Main { int x; }')
   await page.getByRole('link', { name: '← 배우기' }).click()
-  await page.getByRole('button', { name: '전체 181개 보기' }).click()
+  await page.getByRole('button', { name: '전체 206개 보기' }).click()
   await page.getByRole('link', { name: new RegExp(MISSION_TITLE) }).click()
   await page.getByRole('button', { name: '제출', exact: true }).click()
   expect(await page.locator('.content').evaluateAll(nodes => nodes.map(node => (node as HTMLTextAreaElement).value)))

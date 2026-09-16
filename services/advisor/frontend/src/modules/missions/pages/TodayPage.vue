@@ -1,11 +1,13 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, defineAsyncComponent, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMissions } from '../store/missions.js'
-import InflightPage from './InflightPage.vue'
+
+const InflightPage = defineAsyncComponent(() => import('./InflightPage.vue'))
 
 const route = useRoute()
 const store = useMissions()
+const offlineOpen = ref(route.hash === '#offline')
 const routine = computed(() => store.routineToday())
 const caseBanner = computed(() => store.ongoingCaseBanner())
 
@@ -84,9 +86,14 @@ function check(slot) {
       </div>
     </details>
 
-    <details id="offline" class="secondary-block" :open="route.hash === '#offline'">
+    <details
+      id="offline"
+      class="secondary-block"
+      :open="route.hash === '#offline'"
+      @toggle="offlineOpen = $event.currentTarget.open"
+    >
       <summary>오프라인 세션 만들기 <span>비행 중에도 이어서</span></summary>
-      <InflightPage embedded />
+      <InflightPage v-if="offlineOpen" embedded />
     </details>
   </div>
 </template>

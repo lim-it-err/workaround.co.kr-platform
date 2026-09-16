@@ -1,10 +1,21 @@
 <script setup>
 import { computed, nextTick, ref } from 'vue'
-import { inspectProbeRound } from '../games/probeEngine.js'
+import probeData from '../data/sampleProbeRounds.js'
+import {
+  beginProbeSession,
+  inspectProbeRound,
+  pickProbeRound,
+  settleProbeSession,
+} from '../games/probeEngine.js'
 import { localDateKey } from '../store/seasonStats.js'
 import { useMissions } from '../store/missions.js'
 
 const store = useMissions()
+store.hydrateProbeGame(probeData.dailyProbeRounds ?? probeData.probeRounds, {
+  beginProbeSession,
+  pickProbeRound,
+  settleProbeSession,
+})
 const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
 const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
 const today = localDateKey()

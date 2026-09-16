@@ -1,4 +1,5 @@
-import { courseVienna1900 } from '../data/courseVienna1900.js'
+import { courseVienna1900Catalog } from '../data/courseVienna1900Catalog.js'
+import { courseBudapestBathsCatalog } from '../data/courseBudapestBathsCatalog.js'
 
 export const COURSE_FORMATS = {
   coding: { label: '코딩', className: 'coding' },
@@ -33,7 +34,8 @@ export function createCourseCatalog(baseMissions = []) {
       intro: '기존 미션을 한 정류장에 모았습니다. 익숙한 순서와 제출 기록은 그대로 유지됩니다.',
       missions: baseMissions.map(baseCourseMission),
     },
-    courseVienna1900,
+    courseVienna1900Catalog,
+    courseBudapestBathsCatalog,
   ].map(withStation)
 }
 

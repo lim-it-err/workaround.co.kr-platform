@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test'
 test.beforeEach(async ({ page }) => {
   await page.route('http://localhost:8080/**', (route) => route.abort())
   await page.goto('/learn')
-  await expect(page.locator('[data-course-id]')).toHaveCount(2)
+  await expect(page.locator('[data-course-id]')).toHaveCount(3)
   await page.evaluate(() => localStorage.clear())
 })
 

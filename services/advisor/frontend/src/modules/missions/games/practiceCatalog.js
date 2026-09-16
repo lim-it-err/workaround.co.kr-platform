@@ -3,6 +3,7 @@ import swipeData from '../data/sampleSwipeCards.js'
 import probeData from '../data/sampleProbeRounds.js'
 import boundaryData from '../data/sampleBoundaryRounds.js'
 import caseData from '../data/sampleCaseFiles.js'
+import swipeCardsJava21 from '../data/swipeCardsJava21.js'
 import { newGameCatalog } from '../data/inflightContent.js'
 import {
   courseVienna1900,
@@ -11,6 +12,11 @@ import {
   vienna1900ProbeRounds,
   vienna1900SwipeCards,
 } from '../data/courseVienna1900.js'
+import {
+  budapestBathsProbeRounds,
+  budapestBathsSwipeCards,
+  courseBudapestBaths,
+} from '../data/courseBudapestBaths.js'
 
 function cardRound(card, type) {
   return {
@@ -24,12 +30,12 @@ function cardRound(card, type) {
   }
 }
 
-function game(id, title, emoji, description, minutes, rounds, type = id) {
-  return { id, title, emoji, description, minutes, type, rounds: rounds.map((round) => ({ ...round, type, minutes: round.minutes ?? minutes })) }
+function game(id, title, emoji, description, minutes, rounds, type = id, settings = {}) {
+  return { id, title, emoji, description, minutes, type, ...settings, rounds: rounds.map((round) => ({ ...round, type, minutes: round.minutes ?? minutes })) }
 }
 
-function courseMission(id) {
-  return courseVienna1900.missions.find((mission) => mission.id === id)
+function courseMission(course, id) {
+  return course.missions.find((mission) => mission.id === id)
 }
 
 const coursePracticeGames = [
@@ -46,19 +52,19 @@ const coursePracticeGames = [
     )),
   game(
     'v1900-3-secession-hang',
-    courseMission('v1900-3-secession-hang').title,
+    courseMission(courseVienna1900, 'v1900-3-secession-hang').title,
     '🏛️',
     '관측 한 번으로 전시 배치 실패의 원인을 좁힙니다.',
-    courseMission('v1900-3-secession-hang').minutes,
+    courseMission(courseVienna1900, 'v1900-3-secession-hang').minutes,
     vienna1900ProbeRounds,
     'probe',
   ),
   game(
     'v1900-2-gold-damage',
-    courseMission('v1900-2-gold-damage').title,
+    courseMission(courseVienna1900, 'v1900-2-gold-damage').title,
     '✨',
     '복원팀이 감당할 손실을 보며 경계를 정합니다.',
-    courseMission('v1900-2-gold-damage').minutes,
+    courseMission(courseVienna1900, 'v1900-2-gold-damage').minutes,
     vienna1900BoundaryRounds,
     'boundary',
   ),
@@ -67,7 +73,7 @@ const coursePracticeGames = [
     entry.title,
     entry.emoji,
     `${courseVienna1900.title} 코스의 짧은 선택 연습입니다.`,
-    courseMission(entry.id)?.minutes ?? 5,
+    courseMission(courseVienna1900, entry.id)?.minutes ?? 5,
     entry.rounds.map((round) => ({
       ...round,
       question: round.prompt,
@@ -80,6 +86,24 @@ const coursePracticeGames = [
     })),
     'choice',
   )),
+  game(
+    'budapest-4-etiquette',
+    courseMission(courseBudapestBaths, 'budapest-4-etiquette').title,
+    courseBudapestBaths.emoji,
+    `${courseBudapestBaths.title} 코스의 이용 예절 판정 게임입니다.`,
+    courseMission(courseBudapestBaths, 'budapest-4-etiquette').minutes,
+    budapestBathsSwipeCards,
+    'swipe',
+  ),
+  game(
+    'budapest-5-water-signal',
+    courseMission(courseBudapestBaths, 'budapest-5-water-signal').title,
+    '🧪',
+    '한 번의 관측으로 물 성분 가설을 좁힙니다.',
+    courseMission(courseBudapestBaths, 'budapest-5-water-signal').minutes,
+    budapestBathsProbeRounds,
+    'probe',
+  ),
 ]
 
 export const standalonePracticeCatalog = [
@@ -90,6 +114,16 @@ export const standalonePracticeCatalog = [
   game('boundary', '경계선 한 칸', '✂️', '실패가 머물 트랜잭션 경계를 선택합니다.', 5, boundaryData.boundaryRounds, 'boundary'),
   game('case', '사건 파일', '🕵️', '5개 단서를 자유롭게 열어 근본 원인을 추리합니다.', 30, caseData.caseFiles, 'case'),
   ...newGameCatalog.map((entry) => game(entry.id, entry.title, entry.emoji, entry.description, entry.minutes, entry.rounds, 'choice')),
+  game(
+    'java21-spring3-swipe',
+    'Java 21 · Spring Boot 3 판정',
+    '☕',
+    '현대 Java와 Spring의 경계를 좋다·고친다로 판정합니다.',
+    5,
+    swipeCardsJava21,
+    'swipe',
+    { completionSummary: true },
+  ),
 ]
 
 export const practiceCatalog = [

@@ -2,11 +2,13 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { COURSE_FORMATS, courseMissionTarget } from '../store/courseCatalog.js'
+import { formatDuration } from '../store/durationFormat.js'
 import { useMissions } from '../store/missions.js'
 
 const route = useRoute()
 const store = useMissions()
 const course = computed(() => store.getCourse(String(route.params.courseId)))
+const totalMinutes = computed(() => course.value?.missions.reduce((sum, mission) => sum + (mission.minutes ?? 0), 0) ?? 0)
 
 function targetFor(mission) {
   const target = courseMissionTarget(course.value.id, mission)
@@ -38,7 +40,7 @@ function statusFor(mission) {
     <section aria-labelledby="course-timetable-title">
       <div class="section-head">
         <h2 id="course-timetable-title">미션 시각표</h2>
-        <span>{{ course.missionCount }}개</span>
+        <span>{{ course.missionCount }}개 · 전체 {{ formatDuration(totalMinutes) }}</span>
       </div>
       <div class="mission-rows">
         <router-link
@@ -51,7 +53,7 @@ function statusFor(mission) {
           <span class="sequence">{{ String(index + 1).padStart(2, '0') }}</span>
           <span class="mission-copy">
             <strong>{{ mission.title }}</strong>
-            <small>{{ mission.minutes ? `${mission.minutes}분` : '자유 진행' }}</small>
+            <small>{{ mission.minutes ? formatDuration(mission.minutes) : '자유 진행' }}</small>
           </span>
           <span class="format-badge" :class="COURSE_FORMATS[mission.kind]?.className">
             {{ COURSE_FORMATS[mission.kind]?.label }}

@@ -10,10 +10,10 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/learn')
   // A document load can finish before Vue's initial routine persistence.
   // Wait for the mounted home before clearing/seeding browser-local fixtures.
-  await expect(page.getByRole('button', { name: '전체 181개 보기' })).toBeVisible()
+  await expect(page.getByRole('button', { name: '전체 206개 보기' })).toBeVisible()
   await page.evaluate(() => localStorage.clear())
   await page.reload()
-  await page.getByRole('button', { name: '전체 181개 보기' }).click()
+  await page.getByRole('button', { name: '전체 206개 보기' }).click()
   await expect(page.locator('[data-content-index]')).toBeVisible()
 })
 
@@ -39,8 +39,8 @@ test('미션 완주: 홈에서 제출하고 샘플 리뷰의 핵심 섹션을 �
 
   await expect(page).toHaveURL(/\/missions\/s1-wine-01\/review$/)
   await expect(page.getByText('종합 점수')).toBeVisible()
-  await expect(page.getByRole('heading', { name: '🕵️ 히든 케이스 공개' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: /시나리오/ })).toBeVisible()
+  await expect(page.getByText('히든 케이스와 퀘스트', { exact: true })).toBeVisible()
+  await expect(page.getByText('시나리오', { exact: true })).toBeVisible()
 })
 
 test('필터: 난이도와 검색을 조합하고 초기화한다', async ({ page }) => {
@@ -60,7 +60,7 @@ test('필터: 난이도와 검색을 조합하고 초기화한다', async ({ pag
   await expect(page.getByRole('link', { name: new RegExp(WINE_TITLE) })).toBeVisible()
 
   await page.getByRole('button', { name: '필터 초기화' }).click()
-  await expect(page.getByText('181개', { exact: true })).toBeVisible()
+  await expect(page.getByText('206개', { exact: true })).toBeVisible()
 })
 
 test('기획자 모드: 참석자는 보이지만 비공개 관심사는 DOM에 없다', async ({ page }) => {

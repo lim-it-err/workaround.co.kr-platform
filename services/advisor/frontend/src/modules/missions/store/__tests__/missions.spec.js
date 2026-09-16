@@ -20,7 +20,24 @@ async function loadStore(persisted = {}) {
   }))
   vi.resetModules()
   const { useMissions } = await import('../missions.js')
-  return useMissions()
+  const [sampleModule, probeModule, probeEngine, boundaryModule, boundaryEngine] = await Promise.all([
+    import('../../data/sampleContent.js'),
+    import('../../data/sampleProbeRounds.js'),
+    import('../../games/probeEngine.js'),
+    import('../../data/sampleBoundaryRounds.js'),
+    import('../../games/boundaryEngine.js'),
+  ])
+  const store = useMissions()
+  store.hydrateMissionContent(sampleModule.default)
+  store.hydrateProbeGame(
+    probeModule.default.dailyProbeRounds ?? probeModule.default.probeRounds,
+    probeEngine,
+  )
+  store.hydrateBoundaryGame(
+    boundaryModule.default.dailyBoundaryRounds ?? boundaryModule.default.boundaryRounds,
+    boundaryEngine,
+  )
+  return store
 }
 
 function jsonResponse(value, status = 200) {

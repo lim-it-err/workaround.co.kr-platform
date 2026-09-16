@@ -15,6 +15,7 @@ import {
   filterLearnCatalog,
   summarizeLearnCatalog,
 } from '../store/learnCatalog.js'
+import { formatDuration } from '../store/durationFormat.js'
 import { useMissions } from '../store/missions.js'
 import { usePractice } from '../store/practice.js'
 
@@ -40,6 +41,7 @@ const catalog = computed(() => createLearnCatalog({
   caseFiles: caseFileData.caseFiles,
   projects: learner.state.projects,
   practiceGames: standalonePracticeCatalog,
+  coursePracticeGames: practiceCatalog,
   learnerState: learner.state,
   practiceState: practice.state,
 }))
@@ -93,7 +95,7 @@ function resetFilters() {
 }
 
 function applyHash(hash) {
-  const hashKinds = { '#practice': 'practice', '#projects': 'project', '#courses': 'course' }
+  const hashKinds = { '#practice': 'practice', '#projects': 'project', '#courses': 'course', '#cases': 'case' }
   if (hashKinds[hash]) filters.kind = hashKinds[hash]
   if (hash === '#learn') filters.kind = 'all'
 }
@@ -147,9 +149,15 @@ watch(filters, () => { visibleLimit.value = 30 }, { deep: true })
             <strong>{{ item.title }}</strong>
             <small>{{ item.context }}</small>
           </span>
-          <span class="row-meta">
-            <span>{{ item.minutes }}분</span>
-            <span>{{ item.writesCode ? '코드 작성' : '코드 없음' }}</span>
+          <span class="row-meta" :class="{ 'course-time': item.kind === 'course' }">
+            <template v-if="item.kind === 'course'">
+              <strong>{{ item.nextMinutes === null ? '완료' : `다음 ${formatDuration(item.nextMinutes)}` }}</strong>
+              <span>전체 {{ formatDuration(item.minutes) }}</span>
+            </template>
+            <template v-else>
+              <span>{{ formatDuration(item.minutes) }}</span>
+              <span>{{ item.writesCode ? '코드 작성' : '코드 없음' }}</span>
+            </template>
           </span>
           <span class="row-arrow" aria-hidden="true">→</span>
         </router-link>
@@ -261,9 +269,15 @@ watch(filters, () => { visibleLimit.value = 30 }, { deep: true })
             <strong>{{ item.title }}</strong>
             <small>{{ item.context }}</small>
           </span>
-          <span class="row-meta">
-            <span>{{ item.minutes }}분</span>
-            <span>{{ item.writesCode ? '코드 작성' : '코드 없음' }}</span>
+          <span class="row-meta" :class="{ 'course-time': item.kind === 'course' }">
+            <template v-if="item.kind === 'course'">
+              <strong>{{ item.nextMinutes === null ? '완료' : `다음 ${formatDuration(item.nextMinutes)}` }}</strong>
+              <span>전체 {{ formatDuration(item.minutes) }}</span>
+            </template>
+            <template v-else>
+              <span>{{ formatDuration(item.minutes) }}</span>
+              <span>{{ item.writesCode ? '코드 작성' : '코드 없음' }}</span>
+            </template>
           </span>
           <span class="row-arrow" aria-hidden="true">→</span>
         </router-link>
@@ -322,6 +336,7 @@ input, select { box-sizing: border-box; min-height: 42px; width: 100%; padding: 
 .row-copy strong { overflow-wrap: anywhere; line-height: 1.35; }
 .row-copy small { color: var(--fg-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .row-meta { display: grid; gap: 3px; color: var(--fg-dim); font-size: 11px; text-align: right; white-space: nowrap; }
+.course-time strong { color: var(--fg); font-size: 12px; }
 .row-arrow { color: var(--accent-text); }
 .empty-state { padding: 40px 0; color: var(--fg-dim); text-align: center; }
 .show-more { width: 100%; margin-top: 18px; }

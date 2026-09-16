@@ -14,6 +14,12 @@ const pendingCount = computed(() => store.state.seasons.pendingGains.length)
 const statsTitleId = computed(() => `season-stats-${props.seasonId || 'current'}`)
 const endingTitleId = computed(() => `season-ending-${props.seasonId || 'current'}`)
 const startFeedback = ref('')
+const showFirstRecordPrompt = computed(() => Boolean(
+  overview.value
+  && !props.readonly
+  && !overview.value.ended
+  && overview.value.total === 0,
+))
 
 const stats = [
   { key: 'vision', emoji: '👁', label: '안목', color: 'var(--accent-text)' },
@@ -65,7 +71,7 @@ function beginSeason() {
     <section v-if="!overview" class="season-empty" aria-label="이번 시즌 없음">
       <p v-if="pendingCount">아직 시즌을 시작하지 않아 적립 {{ pendingCount }}건이 기다리고 있습니다.</p>
       <p v-else>아직 시작한 시즌이 없습니다.</p>
-      <button v-if="!readonly" class="season-start" type="button" @click="beginSeason">새 시즌 시작</button>
+      <button v-if="!readonly" class="season-start" type="button" @click="beginSeason">첫 시즌 시작</button>
     </section>
 
     <template v-else>
@@ -92,7 +98,15 @@ function beginSeason() {
         <button class="season-start" type="button" @click="beginSeason">새 시즌 시작</button>
       </div>
 
-      <section class="stat-block" :aria-labelledby="statsTitleId">
+      <router-link v-if="showFirstRecordPrompt" class="first-record-row" to="/today">
+        <span>
+          <strong>오늘 첫 기록 만들기</strong>
+          <small>오늘의 한 판에서 시작하세요</small>
+        </span>
+        <span aria-hidden="true">→</span>
+      </router-link>
+
+      <section v-else class="stat-block" :aria-labelledby="statsTitleId">
         <div class="section-head">
           <h2 :id="statsTitleId">나의 4스탯</h2>
           <span>총 {{ overview.total }}</span>
@@ -112,7 +126,7 @@ function beginSeason() {
         <p class="perfect-days">모든 슬롯을 채운 날 {{ overview.perfectDays }}일</p>
       </section>
 
-      <section class="log-block">
+      <section v-if="!showFirstRecordPrompt" class="log-block">
         <div class="section-head">
           <h2>최근 적립</h2>
           <span>최대 10건</span>
@@ -169,6 +183,13 @@ function beginSeason() {
 .gain-notice div { display: grid; gap: 4px; }
 .gain-notice strong { color: var(--warn); font-size: 13.5px; }
 .gain-notice span { color: var(--fg-dim); font-size: 12px; line-height: 1.5; }
+.first-record-row { display: flex; min-height: 76px; align-items: center; justify-content: space-between; gap: 16px; border-block: 1px solid var(--line); color: var(--fg); text-decoration: none; }
+.first-record-row > span:first-child { display: grid; gap: 3px; }
+.first-record-row strong { font-size: 15px; }
+.first-record-row small { color: var(--fg-dim); font-size: 12px; }
+.first-record-row > span:last-child { color: var(--accent-text); font-weight: 800; }
+.first-record-row:hover strong, .first-record-row:focus-visible strong { color: var(--accent-text); }
+.first-record-row:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .stat-block { padding: 18px 0; border-block: 1px solid var(--line); }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .section-head h2 { margin: 0; font-size: 16px; }

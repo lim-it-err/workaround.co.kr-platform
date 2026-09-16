@@ -13,8 +13,8 @@ describe('TKT-098 기내 콘텐츠 팩', () => {
     expect(swipeData.swipeCards).toHaveLength(36)
     expect(probeData.probeRounds).toHaveLength(15)
     expect(boundaryData.boundaryRounds).toHaveLength(12)
-    expect(caseData.caseFiles).toHaveLength(8)
-    expect(caseData.caseFiles.flatMap((caseFile) => caseFile.days)).toHaveLength(40)
+    expect(caseData.caseFiles).toHaveLength(10)
+    expect(caseData.caseFiles.flatMap((caseFile) => caseFile.days)).toHaveLength(50)
     expect(inflightUnitCount).toBe(130)
   })
 

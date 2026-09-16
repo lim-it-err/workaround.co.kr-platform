@@ -2,6 +2,9 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useMissions } from '../store/missions.js'
+import sampleContent from '../data/sampleContent.js'
+import { vienna1900CodingMissions } from '../data/courseVienna1900.js'
+import { budapestBathsCodingMissions } from '../data/courseBudapestBaths.js'
 import { clearDraftThrough, readDraft, writeDraft } from '../store/drafts.js'
 import MarkdownBlock from '../components/MarkdownBlock.vue'
 import CodeViewer from '../components/CodeViewer.vue'
@@ -17,6 +20,7 @@ import { platformHomePath } from '../../../app/platformNavigation.js'
 const route = useRoute()
 const router = useRouter()
 const store = useMissions()
+store.hydrateMissionContent(sampleContent, [...vienna1900CodingMissions, ...budapestBathsCodingMissions])
 const requestedReturn = window.history.state?.from
 const returnSurface = requestedReturn === '/today' || /^\/courses\/[^/]+$/.test(requestedReturn ?? '')
   ? requestedReturn
