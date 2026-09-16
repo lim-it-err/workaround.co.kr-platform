@@ -1,0 +1,236 @@
+[
+  {
+    "width": 375,
+    "file": "splash",
+    "theme": "light",
+    "metrics": {
+      "overflow": 0,
+      "bg": "#EDF1F6",
+      "text": "#16202E"
+    }
+  },
+  {
+    "width": 375,
+    "file": "loop-symbol",
+    "theme": "light",
+    "metrics": {
+      "overflow": 0,
+      "bg": "#EDF1F6",
+      "text": "#16202E"
+    }
+  },
+  {
+    "width": 390,
+    "file": "splash",
+    "theme": "light",
+    "metrics": {
+      "overflow": 0,
+      "bg": "#EDF1F6",
+      "text": "#16202E"
+    }
+  },
+  {
+    "width": 390,
+    "file": "loop-symbol",
+    "theme": "light",
+    "metrics": {
+      "overflow": 0,
+      "bg": "#EDF1F6",
+      "text": "#16202E"
+    }
+  },
+  {
+    "width": 1440,
+    "file": "splash",
+    "theme": "light",
+    "metrics": {
+      "overflow": 0,
+      "bg": "#EDF1F6",
+      "text": "#16202E"
+    }
+  },
+  {
+    "width": 1440,
+    "file": "loop-symbol",
+    "theme": "light",
+    "metrics": {
+      "overflow": 0,
+      "bg": "#EDF1F6",
+      "text": "#16202E"
+    }
+  },
+  {
+    "keyboard": {
+      "focused": "시작 화면에서 보기 →",
+      "url": "http://127.0.0.1:4189/workaround.co.kr-platform/mockups/splash.html"
+    }
+  },
+  {
+    "from": "loop-symbol",
+    "href": "splash.html",
+    "title": "시작 화면 — split-flap 목업 r9"
+  },
+  {
+    "from": "loop-symbol",
+    "href": "index.html",
+    "title": "톤 목업"
+  },
+  {
+    "from": "splash",
+    "href": "splash.html",
+    "title": "시작 화면 — split-flap 목업 r9"
+  },
+  {
+    "from": "splash",
+    "href": "home.html",
+    "title": "환승 홀 — 순환선과 환승 지선 목업"
+  },
+  {
+    "gate": [
+      {
+        "name": "blog-archive.html",
+        "sha": "c186e1ebe3dab6a0ef4a9d7ccda4bcec04be657e02408a26e91a36663b30b9d5",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "blog-hub.html",
+        "sha": "c8ddea12c2b0a5f1f8f1eabd7cae8b8d81d849327e25683af66e68707f0cbf03",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "blog-post.html",
+        "sha": "88a37631631e9acbb02c1b6fab13184537cf9b763776d0d68c867841b471dd81",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "home-alt.html",
+        "sha": "6bd7c1b818e47b6ffa46741386e95b7b4e9f178eedaa7cf9759521bcad74d3cb",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "home.html",
+        "sha": "7c4b075cb4ea81df16eb190a603cf6cee608117a20242924a519cb1773934863",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "index.html",
+        "sha": "8b589062f82a739d63befa73d25bb1d9c9a830889b0b83bf846dcc103915cad3",
+        "distEqual": true,
+        "changed": true,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "loop-symbol.html",
+        "sha": "78a83cf432c9f4e4f62e54c5b4686f8ba6ef562ca63f4aad58d44e7e736f5966",
+        "distEqual": true,
+        "changed": false,
+        "new": true,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "runtime.html",
+        "sha": "9832c3c419e58a5c2c27f992308ee31811bb4c171e613fd4637529672c1f2e8d",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "simhub.html",
+        "sha": "992c46259c69684023e44acf9ea66e5e9c02d24aa6740357b025658b4091d2dd",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "splash.html",
+        "sha": "26d629748f821f92557cbe7158013af972657f47a62d595fcbc09a1477566f69",
+        "distEqual": true,
+        "changed": true,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "voyage-archive.html",
+        "sha": "70df60585b0b6488f6bc7c096552a9a35a7ff23c873414e9f680c4bcef16a1a1",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "voyage-daily.html",
+        "sha": "c558ed1af11f2c78572d9a1322c9097da7bd4b37feb341f5afb9ccf429c20fe3",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "voyage-prep.html",
+        "sha": "5bae714862c8b8e568e434eca0b06b34f082ffb51a6b256a8426d4aa9773db3a",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "voyage-route.html",
+        "sha": "d9e8c8050994259de91c87a7ba908e01031ea5f08435f55a3b20435c06bcb543",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "work.html",
+        "sha": "0aeb953dff69270b11f5828efa67b4195b58bdce4cb0029c8553db5097f798b8",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      },
+      {
+        "name": "writing-studio.html",
+        "sha": "b05b1998cbd2ad570087687b2e3a7a5c063eff99ed572bfafbbba8d1b8626f55",
+        "distEqual": true,
+        "changed": false,
+        "new": false,
+        "scripts": 0,
+        "external": false
+      }
+    ]
+  }
+]

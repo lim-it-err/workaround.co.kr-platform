@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-09-15T23:13:33.459104",
+  "changedTrackedSources": [
+    "services/advisor/frontend/src/modules/missions/data/sampleCaseFiles.js",
+    "services/advisor/frontend/src/modules/missions/data/__tests__/inflightContent.spec.js",
+    "services/advisor/frontend/src/modules/missions/pages/LearnPage.vue",
+    "services/advisor/frontend/src/modules/missions/games/__tests__/practiceCatalog.spec.js",
+    "services/advisor/frontend/src/modules/missions/store/__tests__/learnCatalog.spec.js"
+  ]
+}

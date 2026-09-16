@@ -1,0 +1,44 @@
+[
+  {
+    "id": "sweetness",
+    "label": "당도",
+    "lowLabel": "드라이",
+    "highLabel": "달콤"
+  },
+  {
+    "id": "body",
+    "label": "바디감",
+    "lowLabel": "가벼움",
+    "highLabel": "묵직함"
+  },
+  {
+    "id": "acidity",
+    "label": "산미",
+    "lowLabel": "낮은 산미",
+    "highLabel": "높은 산미"
+  },
+  {
+    "id": "fruitiness",
+    "label": "과일·꽃 향",
+    "lowLabel": "흙·견과",
+    "highLabel": "과일·꽃"
+  },
+  {
+    "id": "roast",
+    "label": "로스팅·숙성",
+    "lowLabel": "라이트·영",
+    "highLabel": "다크·오크"
+  },
+  {
+    "id": "bitterness",
+    "label": "쌉쌀함",
+    "lowLabel": "부드러움",
+    "highLabel": "쌉쌀함"
+  },
+  {
+    "id": "adventurous",
+    "label": "모험심",
+    "lowLabel": "익숙함",
+    "highLabel": "새로움"
+  }
+]

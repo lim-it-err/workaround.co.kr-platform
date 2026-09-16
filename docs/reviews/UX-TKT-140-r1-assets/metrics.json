@@ -1,0 +1,185 @@
+{
+  "results": [
+    {
+      "width": 375,
+      "theme": "dark",
+      "mode": "first",
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "none",
+      "border": "0px",
+      "borderColor": "rgba(0, 0, 0, 0)",
+      "radius": "0px",
+      "phrase": "WORKING AROUND",
+      "rendered": "WYVKRZG KROVNF",
+      "label": "10초 후 자동 전환",
+      "overflow": 0,
+      "button": {
+        "width": 97.390625,
+        "height": 53.8125,
+        "name": "다시 재생"
+      }
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "mode": "return",
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "none",
+      "border": "0px",
+      "borderColor": "rgba(0, 0, 0, 0)",
+      "radius": "0px",
+      "phrase": "DOORS OPENING",
+      "rendered": "DOVRS OYEQCGD",
+      "label": "3초 후 자동 전환",
+      "overflow": 0,
+      "button": {
+        "width": 97.390625,
+        "height": 53.8125,
+        "name": "다시 재생"
+      }
+    },
+    {
+      "width": 375,
+      "theme": "dark",
+      "mode": "replay",
+      "label": "10초 후 자동 전환",
+      "phrase": "WORKING AROUND"
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "mode": "first",
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "none",
+      "border": "0px",
+      "borderColor": "rgba(0, 0, 0, 0)",
+      "radius": "0px",
+      "phrase": "WORKING AROUND",
+      "rendered": "WORKISX KISKBT",
+      "label": "10초 후 자동 전환",
+      "overflow": 0,
+      "button": {
+        "width": 97.390625,
+        "height": 53.8125,
+        "name": "다시 재생"
+      }
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "mode": "return",
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "none",
+      "border": "0px",
+      "borderColor": "rgba(0, 0, 0, 0)",
+      "radius": "0px",
+      "phrase": "DOORS OPENING",
+      "rendered": "DOKRS OPEHIEG",
+      "label": "3초 후 자동 전환",
+      "overflow": 0,
+      "button": {
+        "width": 97.390625,
+        "height": 53.8125,
+        "name": "다시 재생"
+      }
+    },
+    {
+      "width": 375,
+      "theme": "light",
+      "mode": "replay",
+      "label": "10초 후 자동 전환",
+      "phrase": "WORKING AROUND"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "mode": "first",
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "none",
+      "border": "0px",
+      "borderColor": "rgba(0, 0, 0, 0)",
+      "radius": "0px",
+      "phrase": "WORKING AROUND",
+      "rendered": "WOLKING RROELE",
+      "label": "10초 후 자동 전환",
+      "overflow": 0,
+      "button": {
+        "width": 97.390625,
+        "height": 53.8125,
+        "name": "다시 재생"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "mode": "return",
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "none",
+      "border": "0px",
+      "borderColor": "rgba(0, 0, 0, 0)",
+      "radius": "0px",
+      "phrase": "DOORS OPENING",
+      "rendered": "DOORS UUZNIAG",
+      "label": "3초 후 자동 전환",
+      "overflow": 0,
+      "button": {
+        "width": 97.390625,
+        "height": 53.8125,
+        "name": "다시 재생"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "mode": "replay",
+      "label": "10초 후 자동 전환",
+      "phrase": "WORKING AROUND"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "mode": "first",
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "none",
+      "border": "0px",
+      "borderColor": "rgba(0, 0, 0, 0)",
+      "radius": "0px",
+      "phrase": "WORKING AROUND",
+      "rendered": "WOKKBNG QROYNX",
+      "label": "10초 후 자동 전환",
+      "overflow": 0,
+      "button": {
+        "width": 97.390625,
+        "height": 53.8125,
+        "name": "다시 재생"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "mode": "return",
+      "background": "rgba(0, 0, 0, 0)",
+      "image": "none",
+      "border": "0px",
+      "borderColor": "rgba(0, 0, 0, 0)",
+      "radius": "0px",
+      "phrase": "DOORS OPENING",
+      "rendered": "DOORS OPZNLUK",
+      "label": "3초 후 자동 전환",
+      "overflow": 0,
+      "button": {
+        "width": 97.390625,
+        "height": 53.8125,
+        "name": "다시 재생"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "mode": "replay",
+      "label": "10초 후 자동 전환",
+      "phrase": "WORKING AROUND"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,214 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "t": 1600,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "WORKING AROUND",
+      "ticker": "에스컬레이터 방향 다수결로 정하는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "t": 4800,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "MIND THE GAP",
+      "ticker": "지연 시간을 정성껏 반올림하는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "t": 8800,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "DOORS OPENING",
+      "ticker": "출구 번호에 서열 매기는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "transitionMs": 10652
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "t": 1600,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "WORKING AROUND",
+      "ticker": "에스컬레이터 방향 다수결로 정하는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "t": 4800,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "MIND THE GAP",
+      "ticker": "지연 시간을 정성껏 반올림하는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "t": 8800,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "DOORS OPENING",
+      "ticker": "출구 번호에 서열 매기는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "transitionMs": 10649
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "t": 1600,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "WORKING AROUND",
+      "ticker": "에스컬레이터 방향 다수결로 정하는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "t": 4800,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "MIND THE GAP",
+      "ticker": "지연 시간을 정성껏 반올림하는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "t": 8800,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "DOORS OPENING",
+      "ticker": "출구 번호에 서열 매기는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "transitionMs": 10663
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "t": 1600,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "WORKING AROUND",
+      "ticker": "에스컬레이터 방향 다수결로 정하는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "t": 4800,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "MIND THE GAP",
+      "ticker": "지연 시간을 정성껏 반올림하는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "t": 8800,
+    "errors": [],
+    "state": {
+      "overflow": 0,
+      "phrase": "DOORS OPENING",
+      "ticker": "출구 번호에 서열 매기는 중…",
+      "clippedCells": 0,
+      "smallTargets": [],
+      "heading": "workaround.co.kr",
+      "symbols": 1
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "transitionMs": 10678
+  },
+  {
+    "reduced": {
+      "running": 0,
+      "phrase": "WORKING AROUND"
+    }
+  },
+  {
+    "firstTab": "다시 재생"
+  },
+  {
+    "replay": "WORKING AROUND"
+  }
+]

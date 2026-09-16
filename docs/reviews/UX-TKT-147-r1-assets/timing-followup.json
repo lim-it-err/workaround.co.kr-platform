@@ -1,0 +1,70 @@
+[
+  {
+    "id": "375-dark",
+    "timing": {
+      "settledMs": 3080.2000000476837,
+      "leaveMs": 3799.0999999046326,
+      "lastSample": {
+        "elapsed": 4239.899999856949,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4270.200000047684
+    },
+    "steadyReadingMs": 718.8999998569489,
+    "readingUntilDetachMs": 1190,
+    "errors": []
+  },
+  {
+    "id": "375-light",
+    "timing": {
+      "settledMs": 2801.2999999523163,
+      "leaveMs": 3801.9000000953674,
+      "lastSample": {
+        "elapsed": 4241.799999952316,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4261.400000095367
+    },
+    "steadyReadingMs": 1000.6000001430511,
+    "readingUntilDetachMs": 1460.1000001430511,
+    "errors": []
+  },
+  {
+    "id": "1440-dark",
+    "timing": {
+      "settledMs": 2903,
+      "leaveMs": 3803.2000000476837,
+      "lastSample": {
+        "elapsed": 4243.200000047684,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4269.799999952316
+    },
+    "steadyReadingMs": 900.2000000476837,
+    "readingUntilDetachMs": 1366.7999999523163,
+    "errors": []
+  },
+  {
+    "id": "1440-light",
+    "timing": {
+      "settledMs": 2984.7999999523163,
+      "leaveMs": 3805.7999999523163,
+      "lastSample": {
+        "elapsed": 4263.400000095367,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4284.700000047684
+    },
+    "steadyReadingMs": 821,
+    "readingUntilDetachMs": 1299.9000000953674,
+    "errors": []
+  }
+]

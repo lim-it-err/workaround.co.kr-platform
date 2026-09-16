@@ -1,0 +1,65 @@
+{
+  "title": "낯선 도시에서 속도를 고르는 법",
+  "metaClickStayed": true,
+  "keyboardURL": "http://127.0.0.1:4195/workaround.co.kr-platform/blog/one-win-first-day",
+  "row": {
+    "x": 25,
+    "y": 420.4375,
+    "width": 321,
+    "height": 86.921875
+  },
+  "button": {
+    "x": 25,
+    "y": 462.375,
+    "width": 186.375,
+    "height": 25.984375
+  },
+  "contrast": [
+    {
+      "x": 24,
+      "y": 445,
+      "rgb": [
+        233,
+        238,
+        244
+      ],
+      "foreground": [
+        107,
+        122,
+        146
+      ],
+      "ratio": 3.731494818479869
+    },
+    {
+      "x": 40,
+      "y": 258,
+      "rgb": [
+        231,
+        236,
+        243
+      ],
+      "foreground": [
+        107,
+        122,
+        146
+      ],
+      "ratio": 3.6670894845582076
+    },
+    {
+      "x": 22,
+      "y": 535,
+      "rgb": [
+        234,
+        239,
+        245
+      ],
+      "foreground": [
+        107,
+        122,
+        146
+      ],
+      "ratio": 3.765227479003544
+    }
+  ],
+  "contrastMethod": "CSS foreground #6B7A92 against screenshot pixel immediately beside text; local gradient approximate"
+}

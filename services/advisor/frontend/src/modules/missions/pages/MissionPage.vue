@@ -1,7 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
 import { useMissions } from '../store/missions.js'
+import sampleContent from '../data/sampleContent.js'
+import { vienna1900CodingMissions } from '../data/courseVienna1900.js'
+import { budapestBathsCodingMissions } from '../data/courseBudapestBaths.js'
+import { clearDraftThrough, readDraft, writeDraft } from '../store/drafts.js'
 import MarkdownBlock from '../components/MarkdownBlock.vue'
 import CodeViewer from '../components/CodeViewer.vue'
 import FileSubmitEditor from '../components/FileSubmitEditor.vue'
@@ -11,10 +15,28 @@ import ChatPanel from '../components/ChatPanel.vue'
 import PlannerMeetingPanel from '../components/PlannerMeetingPanel.vue'
 import PlannerReviewPanel from '../components/PlannerReviewPanel.vue'
 import NicknamePrompt from '../components/NicknamePrompt.vue'
+import { platformHomePath } from '../../../app/platformNavigation.js'
 
 const route = useRoute()
 const router = useRouter()
 const store = useMissions()
+store.hydrateMissionContent(sampleContent, [...vienna1900CodingMissions, ...budapestBathsCodingMissions])
+const requestedReturn = window.history.state?.from
+const returnSurface = requestedReturn === '/today' || /^\/courses\/[^/]+$/.test(requestedReturn ?? '')
+  ? requestedReturn
+  : '/learn'
+const returnLabel = window.history.state?.fromLabel
+  ?? (returnSurface === '/today' ? '오늘' : '배우기')
+
+const VOYAGE_STOPS = {
+  'v1900-f-belvedere-route': 'day-6-belvedere',
+  'v1900-6-salt-mine': 'day-4-hallstatt',
+}
+const platformHome = platformHomePath(import.meta.env.BASE_URL)
+const voyageStopHref = computed(() => {
+  const stopId = VOYAGE_STOPS[String(route.params.id)]
+  return platformHome && stopId ? `${platformHome}voyage#voyage-stop-${encodeURIComponent(stopId)}` : ''
+})
 
 const mission = computed(() => store.getMission(route.params.id))
 const isDomainLogic = computed(() => mission.value?.missionType === '도메인 로직 구현')
@@ -29,6 +51,7 @@ const MODE_META = {
   plannerMeeting: { label: '🤝 기획자 · 회의' },
   plannerReview: { label: '📋 기획자 · 검토' },
 }
+const DIFFICULTY_LABEL = { Easy: '쉬움', Normal: '보통', Hard: '어려움' }
 const requestedMode = typeof route.query.mode === 'string' ? route.query.mode : ''
 const mode = ref(mission.value?.modes?.includes(requestedMode) ? requestedMode : 'developer')
 
@@ -59,6 +82,130 @@ const files = ref(
 )
 const submitting = ref(false)
 
+// 설명 입력도 같은 초안 스냅샷의 description으로 보존한다.
+const explainText = ref(store.state.explanations[route.params.id]?.text ?? '')
+const draftStatus = ref('')
+const draftFailed = ref(false)
+const draftDirty = ref(false)
+let draftTimer = null
+let applyingDraft = false
+let savedSignature = ''
+
+function draftPayload() {
+  return {
+    files: files.value.map((file) => ({ name: file.path, body: file.content })),
+    description: explainText.value,
+  }
+}
+
+function signature(payload = draftPayload()) {
+  return JSON.stringify(payload)
+}
+
+function defaultPayload(targetMode) {
+  if (targetMode !== 'developer') return { files: [{ name: '', body: '' }], description: '' }
+  return {
+    files: latestSubmission.value?.files?.map((file) => ({ name: file.path, body: file.content }))
+      ?? [{ name: '', body: '' }],
+    description: store.state.explanations[route.params.id]?.text ?? '',
+  }
+}
+
+function applyPayload(payload) {
+  applyingDraft = true
+  files.value = (payload.files?.length ? payload.files : [{ name: '', body: '' }])
+    .map((file) => ({ path: file.name, content: file.body }))
+  explainText.value = payload.description ?? ''
+  savedSignature = signature()
+  draftDirty.value = false
+  draftFailed.value = false
+  applyingDraft = false
+}
+
+function restoreDraft(targetMode = mode.value) {
+  try {
+    const restored = readDraft(route.params.id, targetMode)
+    applyPayload(restored ?? defaultPayload(targetMode))
+    draftStatus.value = restored?.updatedAt
+      ? `저장됨 ${new Date(restored.updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`
+      : ''
+  } catch {
+    applyPayload(defaultPayload(targetMode))
+    draftStatus.value = '저장소를 읽지 못했습니다'
+  }
+}
+
+function saveDraftNow(targetMode = mode.value) {
+  if (draftTimer) clearTimeout(draftTimer)
+  draftTimer = null
+  const payload = draftPayload()
+  const currentSignature = signature(payload)
+  if (!draftDirty.value && currentSignature === savedSignature) return true
+
+  try {
+    const saved = writeDraft({
+      missionId: route.params.id,
+      mode: targetMode,
+      files: payload.files,
+      description: payload.description,
+    })
+    savedSignature = currentSignature
+    draftDirty.value = false
+    draftFailed.value = false
+    draftStatus.value = `저장됨 ${new Date(saved.updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`
+    return true
+  } catch {
+    draftDirty.value = true
+    draftFailed.value = true
+    draftStatus.value = '저장 실패'
+    return false
+  }
+}
+
+function scheduleDraftSave() {
+  if (applyingDraft) return
+  draftDirty.value = signature() !== savedSignature
+  if (!draftDirty.value) {
+    draftFailed.value = false
+    return
+  }
+  if (draftTimer) clearTimeout(draftTimer)
+  draftTimer = setTimeout(() => saveDraftNow(), 400)
+}
+
+watch(files, scheduleDraftSave, { deep: true })
+watch(explainText, scheduleDraftSave)
+watch(mode, (nextMode, previousMode) => {
+  if (draftDirty.value) saveDraftNow(previousMode)
+  restoreDraft(nextMode)
+})
+
+restoreDraft()
+
+function retryDraftSave() {
+  draftDirty.value = true
+  saveDraftNow()
+}
+
+function beforeUnload(event) {
+  if (draftDirty.value) saveDraftNow()
+  if (!draftFailed.value) return
+  event.preventDefault()
+  event.returnValue = ''
+}
+
+onMounted(() => window.addEventListener('beforeunload', beforeUnload))
+onBeforeUnmount(() => {
+  if (draftTimer) clearTimeout(draftTimer)
+  window.removeEventListener('beforeunload', beforeUnload)
+})
+
+onBeforeRouteLeave(() => {
+  if (draftDirty.value) saveDraftNow()
+  if (!draftFailed.value) return true
+  return window.confirm('초안을 저장하지 못했습니다. 저장하지 않고 이동할까요?')
+})
+
 // 닉네임 게이트: 제출 액션 전, 닉네임이 없으면 프롬프트를 띄우고 확인 시에만 이어간다.
 const showNicknamePrompt = ref(false)
 let pendingAction = null
@@ -87,22 +234,38 @@ function onNicknameCancelled() {
 async function doSubmit() {
   submitting.value = true
   const missionId = mission.value.id
+  saveDraftNow()
+  const submittedAt = new Date()
+  const submittedSignature = signature()
   const gotReview = await store.submitCode(missionId, files.value)
   // 백엔드가 리뷰를 만들지 못했을 때만(=대기 시간이 없었을 때만) 짧은 가짜 지연을 준다 —
   // 실제 리뷰를 기다렸다면 이미 충분히 기다린 것이므로 추가 지연은 없다.
   if (!gotReview) {
     await new Promise((r) => setTimeout(r, 900))
+  } else {
+    try {
+      const cleared = clearDraftThrough(missionId, mode.value, submittedAt)
+      if (cleared && signature() === submittedSignature) {
+        savedSignature = submittedSignature
+        draftDirty.value = false
+        draftFailed.value = false
+        draftStatus.value = '제출한 초안을 비웠습니다'
+      }
+    } catch {
+      draftFailed.value = true
+      draftStatus.value = '저장 실패'
+    }
   }
   submitting.value = false
-  router.push(`/missions/${missionId}/review`)
+  router.push({
+    path: `/missions/${missionId}/review`,
+    state: { from: returnSurface, fromLabel: returnLabel },
+  })
 }
 
 function submit() {
   requireNickname(doSubmit)
 }
-
-// 설명 훈련
-const explainText = ref(store.state.explanations[route.params.id]?.text ?? '')
 
 // 입력 원칙 — 선택 우선: 시작 뼈대 칩. 탭하면 템플릿이 삽입되고 채워 넣기만 하면 된다. 칩마다 1회.
 const EXPLAIN_CHIPS = computed(() => {
@@ -122,8 +285,26 @@ function insertExplainTemplate(i, template) {
 }
 
 function doSubmitExplanation() {
+  saveDraftNow()
+  const submittedAt = new Date()
+  const submittedSignature = signature()
   store.submitExplanation(mission.value.id, explainText.value)
-  router.push(`/missions/${mission.value.id}/review?focus=explain`)
+  try {
+    const cleared = clearDraftThrough(mission.value.id, mode.value, submittedAt)
+    if (cleared && signature() === submittedSignature) {
+      savedSignature = submittedSignature
+      draftDirty.value = false
+      draftStatus.value = '제출한 초안을 비웠습니다'
+    }
+  } catch {
+    draftFailed.value = true
+    draftStatus.value = '저장 실패'
+  }
+  router.push({
+    path: `/missions/${mission.value.id}/review`,
+    query: { focus: 'explain' },
+    state: { from: returnSurface },
+  })
 }
 
 function submitExplanation() {
@@ -133,7 +314,7 @@ function submitExplanation() {
 
 <template>
   <div v-if="mission">
-    <router-link to="/missions" class="back">← 미션 목록</router-link>
+    <router-link :to="returnSurface" class="back">← {{ returnLabel }}</router-link>
 
     <div class="head">
       <div class="head-meta">
@@ -143,11 +324,23 @@ function submitExplanation() {
           v-if="mission.difficulty"
           class="chip"
           :class="'diff-' + String(mission.difficulty).toLowerCase()"
-        >{{ mission.difficulty }}</span>
+        >{{ DIFFICULTY_LABEL[mission.difficulty] ?? mission.difficulty }}</span>
         <span v-if="mission.scope" class="chip neutral">📐 {{ mission.scope }}</span>
         <span class="chip neutral">{{ mission.domainEmoji }} {{ mission.domain }}</span>
       </div>
       <h1>{{ mission.title }}</h1>
+      <a v-if="voyageStopHref" class="voyage-return" :href="voyageStopHref">
+        <svg
+          aria-hidden="true"
+          class="voyage-return__loop"
+          focusable="false"
+          viewBox="0 0 96 96"
+        >
+          <path d="M58 18.55 A33 33 0 1 1 38 18.55" />
+          <circle cx="48" cy="16" r="4" />
+        </svg>
+        이 미션의 정류장 ←
+      </a>
     </div>
 
     <!-- 기획자 모드: 같은 문제, 다른 의자 -->
@@ -182,6 +375,10 @@ function submitExplanation() {
         @click="tab = t"
       >{{ t }}</button>
     </nav>
+    <div class="draft-state" :class="{ failed: draftFailed }" aria-live="polite">
+      <span>{{ draftStatus }}</span>
+      <button v-if="draftFailed" type="button" @click="retryDraftSave">다시 시도</button>
+    </div>
 
     <!-- 도메인 브리핑: 코드 전에 세상 먼저 -->
     <section v-if="tab === '도메인 브리핑'" id="mission-briefing" class="panel card">
@@ -304,7 +501,7 @@ function submitExplanation() {
       <template v-else>
         <p class="dim">
           로컬에서 작업한 결과 파일들을 붙여넣으세요. 파일 여러 개 제출 가능합니다.
-          제출하면 Reviewer Agent가 루브릭 기반으로 리뷰합니다.
+          제출하면 리뷰 에이전트가 평가 기준에 따라 검토합니다.
         </p>
         <FileSubmitEditor v-model="files" />
       </template>
@@ -342,6 +539,7 @@ function submitExplanation() {
         v-model="explainText"
         class="explain-input mono"
         rows="12"
+        aria-label="설명 훈련 답변"
         placeholder="말하듯이 써보세요. 에이전트가 논리 구조, 용어 선택, 비유의 적절성을 피드백합니다."
       ></textarea>
       <div class="submit-row">
@@ -362,7 +560,7 @@ function submitExplanation() {
 </template>
 
 <style scoped>
-.back { font-size: 13px; text-decoration: none; color: var(--fg-dim); }
+.back { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; font-size: 13px; text-decoration: none; color: var(--fg-dim); }
 .endings-sub { color: var(--fg-dim); font-size: 12.5px; font-weight: 400; }
 .ending-rows { display: flex; flex-direction: column; gap: 8px; }
 .ending {
@@ -444,6 +642,33 @@ function submitExplanation() {
 .head { margin: 14px 0 18px; }
 .head-meta { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
 h1 { font-size: 22px; margin: 0; }
+.voyage-return {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-text);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.voyage-return:hover, .voyage-return:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+.voyage-return:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.voyage-return__loop {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  overflow: visible;
+}
+.voyage-return__loop path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 5;
+}
+.voyage-return__loop circle {
+  fill: currentColor;
+}
 .mode-select {
   display: inline-flex;
   gap: 2px;
@@ -483,9 +708,13 @@ h1 { font-size: 22px; margin: 0; }
   border-bottom: 2px solid transparent;
   white-space: nowrap;
   flex-shrink: 0;
+  min-height: 40px;
 }
 .tab.active { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
 .panel-title { font-size: 16px; margin: 0 0 10px; }
+.draft-state { min-height: 22px; margin: -12px 0 14px; color: var(--fg-dim); font-size: 12px; text-align: right; }
+.draft-state.failed { color: var(--bad); }
+.draft-state button { min-height: 40px; margin-left: 8px; border: 0; background: transparent; color: inherit; text-decoration: underline; }
 .block { margin-bottom: 16px; }
 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }

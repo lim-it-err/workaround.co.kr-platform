@@ -24,7 +24,8 @@ for (const width of [375, 1280]) for (const theme of ['dark', 'light']) {
       await page.locator('.shell-main > *').first().waitFor()
       await expect(page.locator('.shell')).toHaveAttribute('data-theme', theme)
       await expect(page.locator('.station-code')).toHaveText('A')
-      await expect(page.getByRole('button', { name: '미션 목록으로', exact: true })).toBeVisible()
+      await expect(page.getByRole('button', { name: '오늘로', exact: true })).toBeVisible()
+      await expect(page.getByRole('navigation', { name: '전역 메뉴' }).getByRole('link')).toHaveCount(3)
       await overflow()
       if (['/missions', '/season', '/games/practice/minimal-repro'].includes(route)) {
         await page.screenshot({ path: testInfo.outputPath(`${route.replaceAll('/', '-')}.png`), fullPage: true })
@@ -46,6 +47,7 @@ for (const width of [375, 1280]) for (const theme of ['dark', 'light']) {
     await page.screenshot({ path: testInfo.outputPath('code.png') })
     await page.getByRole('button', { name: '제출', exact: true }).click()
     const editor = page.getByPlaceholder('IntelliJ에서 작성한 코드를 여기에 붙여넣으세요')
+    await expect(editor).toHaveAccessibleName('파일 1 내용')
     await editor.fill('public class FrameCheck {}')
     expect(await editor.evaluate(el => getComputedStyle(el).color)).toBe('rgb(243, 246, 251)')
     await page.getByRole('button', { name: '제출하고 리뷰 받기' }).click()
@@ -57,8 +59,8 @@ for (const width of [375, 1280]) for (const theme of ['dark', 'light']) {
     await overflow()
     await page.screenshot({ path: testInfo.outputPath('nickname.png') })
     await page.getByRole('button', { name: '닫기', exact: true }).click()
-    await page.getByRole('button', { name: '미션 목록으로', exact: true }).click()
-    await expect(page).toHaveURL(/\/missions$/)
+    await page.getByRole('button', { name: '오늘로', exact: true }).click()
+    await expect(page).toHaveURL(/\/today$/)
 
     if (width === 375) {
       await page.evaluate(() => { document.documentElement.style.fontSize = '200%' })

@@ -4,7 +4,7 @@
 
 ## 기준선 (먼저 읽을 것)
 
-- **트렁크는 `codex/v0.6.0-line` 이다 (D-002).** `main`은 v0.2.0에서 정지한 화석 — main 기준으로 작업하지 않는다. `claude/ux-overhaul-stale-base-2026-08-16` 브랜치는 낡은 main 기준 작업의 보존본으로 **병합 금지.**
+- **트렁크는 `codex/v0.6.0-line` 이다 (D-002).** **2026-09-14~: 톤 전환 작업 브랜치 = `codex/v0.7.0-tone` (D-016) — 트렁크는 동결, 여행 콘텐츠·핫픽스만 cherry-pick.** `main`은 v0.2.0에서 정지한 화석 — main 기준으로 작업하지 않는다. `claude/ux-overhaul-stale-base-2026-08-16` 브랜치는 낡은 main 기준 작업의 보존본으로 **병합 금지.**
 - 이 저장소는 **통합 모선**이다 (D-003·D-004): 확장은 repo 신설이 아니라 모노레포 폴더로 받는다. 편입 대상 — developer advisor, 화이트채플, +1(Q-013).
 - 제품 방향: **블로그 중심 첫 공개 사이트 + 실험 놀이터** (`docs/roadmap.md`, 2026-07-05 PO 확정). 운영 도구(Work Manager)는 보호 경로 뒤.
 
@@ -12,6 +12,10 @@
 
 - `docs/` 전반(architecture·service-policy·ticket-policy·roadmap·releases·decisions)을 관리한다 — 설계의 단일 진실.
 - 기능을 티켓(`docs/tickets/`)으로 쪼개 Codex가 바로 구현할 수 있게 만든다. 티켓에는 `scope`(수정 허용 파일 범위)를 명시한다 (D-004).
+- **산출물을 PO 에게 올릴 때 PM 자체 평가(강점·약점·권고)를 함께 적는다** (PO 2026-09-14 "너의 생각을 나한테 같이 올려줘") — 링크만 전달하지 않는다.
+- **디자인·UX 가 애매하면 PM 선에서 의문을 갖고 즉시 PO 에게 올린다** (PO 2026-09-14, U-35) — 판정 보고마다 `[PM 의문]` 항목(어색한 점 + 권고). 통과와 별개.
+- **판정 1순위는 UX·가시성** (PO 2026-09-14): 게이트 그린이어도 실렌더가 원칙·목업에 어긋나면 반려. 코덱스의 `[반박]`·`[구체화 질문]` 은 다음 라운드 첫 순서로 답한다.
+- 메인 프런트 E2E(`frontend/src/**/*.e2e.mjs`)는 `createRequire` 로 playwright 를 찾는다 — PM 실행은 `NODE_PATH=services/advisor/frontend/node_modules node --test <파일>` (Pages base dist 를 먼저 빌드).
 - `need_review` 티켓을 **직접 검증**으로 리뷰한다: frontend `npm --prefix frontend run build`, gateway `mvn -q package`(+ 기동·`/api/health` 응답), 컨테이너 변경 시 compose 기동.
 - UI/UX 작업 전 `design/` 기준선 문서를 읽는다. 디자이너 트랙 산출물(`design/orchestrator_review/`, `design/review_done/`)은 보존한다.
 - 프로덕션 코드는 직접 수정하지 않는다 — 예외: PO 직접 지시.

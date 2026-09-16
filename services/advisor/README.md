@@ -4,7 +4,33 @@
 
 에이전트가 도메인 기반 코딩 미션을 출제하고, 학습자가 로컬 IDE에서 구현해 제출하면 리뷰·평판·시나리오로 피드백하는 학습 서비스. 알고리즘 문제가 아니라 **도메인 기반 설계 훈련** — 미션은 항상 비즈니스 시나리오(와인, 제빵, 건축, 금융, 철도…)에서 출발하고, 그 도메인을 공부해야만 짤 수 있는 규칙(과세, 이자, 베이커스 퍼센트, 건폐율)을 다룬다.
 
-추후 [workaround.co.kr-platform](https://github.com/lim-it-err/workaround.co.kr-platform)에 서브서비스로 편입 예정.
+`workaround.co.kr-platform`의 `services/advisor/`에 편입된 서브서비스다.
+
+## 플랫폼 서비스 계약
+
+| 항목 | 값 |
+| --- | --- |
+| 서비스 ID | `advisor` |
+| 모선 Compose hostname | `advisor` |
+| 컨테이너 포트 | `8080` |
+| 헬스 | `GET /health` |
+| 공개 화면 진입 | `/advisor/` (정적 빌드, 같은 오리진) |
+| 게이트웨이 API prefix | `/api/services/advisor` |
+| 서비스 API base | `/api/advisor` |
+| 기본 프로필 | `mock` (외부 네트워크·키 불필요) |
+
+게이트웨이를 통한 실제 API 경로는 `/api/services/advisor/api/advisor/**`다. 공개 화면은 `/advisor/`에서 별도 정적 빌드로 제공되며, 운영 브라우저 요청은 같은 오리진 게이트웨이 경로를 사용한다. CORS 허용 목록은 `localhost:5173` 프런트 단독 개발에만 필요한 기본값이다.
+
+### 환경 변수
+
+| 변수 | 필수 여부 | 용도 |
+| --- | --- | --- |
+| `ADVISOR_PROFILE` | 선택 | `mock`(기본), `claude`, `ollama` 중 실행 프로필 선택 |
+| `ANTHROPIC_API_KEY` | `claude`에서 필수 | Anthropic API 키. 저장소·이미지·로그에 넣지 않는다. |
+| `ADVISOR_AUTH_TOKEN` | 선택 | 변경 API의 `X-Advisor-Token` 검증 활성화 |
+| `ADVISOR_CORS_ALLOWED_ORIGINS` | 선택 | 프런트 단독 개발 origin 목록. 쉼표로 여러 개 지정 가능 |
+
+Advisor의 `claude` 프로필은 서비스 내부에서 Anthropic API를 직접 호출하는 편입 당시 구조(D-008)를 유지한다. 이는 공개 Ollama 직접 노출을 허용하는 예외가 아니며, 기본 Compose는 네트워크 없는 `mock` 프로필로 기동한다. `claude`는 명시적으로 선택하고 키는 환경 변수로만 주입하며, 호출 장애는 서비스 안에서 mock provider로 격리한다.
 
 ## 구조
 
@@ -25,6 +51,10 @@ cd service && ./run.sh test    # 전체 테스트
 cd service && ./run.sh start   # 서버 기동
 cd service && ./run.sh demo    # 트랙→미션→제출→리뷰 full cycle 시연
 ```
+
+모선 전체 스택에서는 저장소 루트의 `infra/docker-compose.yml`이 Advisor를 함께 기동한다. 독립 개발용 `services/advisor/docker-compose.yml`은 그대로 유지한다.
+
+프런트 빌드의 지원 기준은 Node.js `>=20.12.0`이다. `frontend/package.json`의 `engines.node`가 같은 기준을 선언한다.
 
 ### 기내 오프라인 실행
 

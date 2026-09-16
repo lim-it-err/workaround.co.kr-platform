@@ -6,13 +6,16 @@ import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import VoyageView from './components/VoyageView.vue'
 import WritingStudio from './components/WritingStudio.vue'
+import { SiteLoopSymbol } from './components/tone/index.js'
 import { LINES } from './data/lines.js'
 import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
 import { VOYAGE } from './data/voyage.js'
+import { migrateLegacyVoyageStorage, voyageStorageKey } from './data/voyageStorage.js'
 import {
   buildLivePath,
   normalizeBasePath,
   readLiveRoute,
+  STATIC_UNAVAILABLE_LIVE_PAGES,
   stripBasePath,
   withBasePath
 } from './staticRouting.js'
@@ -23,11 +26,17 @@ import {
 } from './staticWritingState.js'
 
 const SPLASH_DURATION_MS = 10000
+const SPLASH_RETURN_DURATION_MS = 3800
+const SPLASH_RETURN_SETTLE_LIMIT_MS = 2800
+const SPLASH_RETURN_READING_MS = 1000
+const SPLASH_RETURN_MAX_DURATION_MS = 4000
+const SPLASH_SEEN_STORAGE_KEY = 'splash:seen'
+const SPLASH_SEEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 const APP_BASE_PATH = normalizeBasePath(import.meta.env.BASE_URL)
 const TEST_ROUTE_PATH = withBasePath('/test', APP_BASE_PATH)
 const VERSIONED_TEST_ROUTE_PATH = withBasePath('/test/v0-5-0', APP_BASE_PATH)
 const isStaticMode = import.meta.env.VITE_STATIC_MODE === 'true' || APP_BASE_PATH !== '/'
-const STATIC_UNAVAILABLE_PAGES = new Set(['simhub', 'elevator', 'taxi', 'work', 'runtime', 'ops', 'signals'])
+const STATIC_UNAVAILABLE_PAGES = new Set(STATIC_UNAVAILABLE_LIVE_PAGES)
 const LIVE_PAGES = [
   'junction',
   'simhub',
@@ -50,7 +59,7 @@ const TOKEN_EXPIRY_STORAGE_KEY = 'workaround-work-manager-token-expires-at'
 const BLOG_ACTIVE_SLUG_STORAGE_KEY = 'workaround-blog-active-slug'
 const BLOG_STUDIO_VIEW_STORAGE_KEY = 'workaround-blog-studio-view'
 const BLOG_STUDIO_POST_STORAGE_KEY = 'workaround-blog-studio-post'
-const VOYAGE_ARCHIVE_STORAGE_KEY = `workaround-voyage-archive:${VOYAGE.id}`
+const VOYAGE_ARCHIVE_STORAGE_KEY = voyageStorageKey(VOYAGE.id, 'archive')
 let fallbackEntityIdCounter = 0
 const TARGET_VERSION_OPTIONS = ['v0.4.0', 'v0.5.0', 'v0.5.1', 'v0.6.0', 'infra', 'chore']
 const WORK_ROADMAP_ITEMS = [
@@ -65,53 +74,21 @@ const WORK_ROADMAP_ITEMS = [
     summary: '택시 시뮬레이터 진입, worker 가시화, DB 준비'
   },
   {
-    version: 'infra / chore',
+    version: '인프라 / 잡무',
     title: '기반 정렬',
     summary: '툴체인, 호스팅, 문서/브랜치 정리'
   }
 ]
 
-const tickerPool = [
+const splashTickerMessages = [
   '에스컬레이터 방향 다수결로 정하는 중…',
   '지연 시간을 정성껏 반올림하는 중…',
-  '출구 번호에 서열 매기는 중…',
-  '계단과 에스컬레이터 화해시키는 중…',
-  '손잡이 높이 만장일치로 조정하는 중…',
-  '환승 저항을 0에 수렴시키는 중…',
-  '첫차의 각오를 백업하는 중…',
-  '노란 안전선 자존감 챙기는 중…',
-  '막차 놓친 사람 위로 캐시 불러오는 중…',
-  '냉방 온도 만장일치로 정하는 중…',
-  '갈아타기 최단경로가 삐지지 않게 계산하는 중…',
-  '승객들의 한숨을 열차 추진력으로 재활용하는 중…',
-  '오늘 치 무표정을 표준 규격에 맞추는 중…',
-  '지하철 손잡이 악력 등급 매기는 중…',
-  '안내방송 성우에게 따뜻한 차 대접하는 중…',
-  '노선 색깔끼리 안 싸우게 중재하는 중…',
-  '엘리베이터에게 오늘 기분 물어보는 중…',
-  '교통카드 잔액에 위로 건네는 중…',
-  '개찰구에 오늘의 운세 심는 중…',
-  '관리자 몰래 내맘대로 홈페이지 로딩하는 중.',
-  '월요일의 사기를 롤백하는 중…',
-  '오늘의 의욕을 절전 모드에서 깨우는 중…',
-  '잔소리를 캐시에서 비우는 중…',
-  '참을성 잔액을 조회하는 중…',
-  '어제의 후회를 아카이브로 옮기는 중…',
-  '점심 메뉴 결정권을 위임하는 중…',
-  '침묵의 어색함을 반올림하는 중…',
-  '오후 3시의 나른함을 격리하는 중…',
-  '미룬 일들의 대기표를 재정렬하는 중…',
-  '양심의 알림을 스누즈하는 중…',
-  '표정 관리 모듈을 재기동하는 중…',
-  '금요일의 설렘을 미리 당겨 쓰는 중…',
-  '게으름에게 정당한 사유를 부여하는 중…',
-  '눈꺼풀의 중력을 재협상하는 중…',
-  '딴생각의 트래픽을 분산하는 중…',
-  '하품의 도미노를 진압하는 중…',
-  '실없는 농담의 품질을 검수하는 중…',
-  '결심의 롤백 지점을 저장하는 중…',
-  '직장인들 화가 취미로 오르는 중…'
+  '출구 번호에 서열 매기는 중…'
 ]
+
+const splashPhrases = ['WORKING AROUND', 'MIND THE GAP', 'DOORS OPENING']
+const splashCellCount = Math.max(...splashPhrases.map((phrase) => phrase.length))
+const splashLatinCharset = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 const fallbackHealth = {
   status: 'degraded',
@@ -267,8 +244,6 @@ const isLegacyTestRoute = computed(() => testRouteMode.value === 'v040')
 const isVersionedTestRoute = computed(() => testRouteMode.value === 'v050')
 const page = ref(readInitialPage())
 const theme = ref(readInitialTheme())
-const clockText = ref(formatClock())
-const currentTicker = ref(tickerPool[0])
 const selectedWorkTicketId = ref('')
 const selectedCommand = ref('')
 const commandNote = ref('')
@@ -316,20 +291,18 @@ const studioLastSavedAt = ref('')
 const studioSavePhase = ref('saved')
 const writingBackupMessage = ref('')
 const staticModeMessage = ref('')
+const staticSimNotice = ref(null)
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
-const splashBoardRows = ref([])
-
-const splashRows = [
-  { label: 'route', value: 'WORKAROUND CENTRAL', accent: 'line-w' },
-  { label: 'next', value: 'BLOG DISTRICT LINE', accent: 'line-e' },
-  { label: 'platform', value: 'MAIN JUNCTION', accent: 'line-r' },
-  { label: 'status', value: 'TRANSFER IN 10S', accent: 'line-p' }
-]
-const splashCellCount = Math.max(...splashRows.map((row) => row.value.length))
-const splashLatinCharset = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-const splashDigitCharset = ' 0123456789'
-splashBoardRows.value = createInitialSplashBoardRows()
+const currentTickerIndex = ref(0)
+const currentSplashPhrase = ref(splashPhrases[0])
+const isReturnVisitSplash = ref(false)
+const splashDurationMs = ref(SPLASH_DURATION_MS)
+const splashBoardCells = ref(
+  Array.from({ length: splashCellCount }, (_, index) => createSplashCellState(`splash-${index}`))
+)
+const currentTicker = computed(() => splashTickerMessages[currentTickerIndex.value])
+const splashAutoTransitionLabel = computed(() => `${splashDurationMs.value / 1000}초 후 자동 전환`)
 
 const orchestratorSlices = [
   {
@@ -635,35 +608,6 @@ const lineCards = computed(() => {
   ]
 })
 
-const junctionRoundels = LINES
-const junctionGateLabel = computed(() => {
-  if (isStaticMode) {
-    return '정적 공개본'
-  }
-  return healthState.value.status === 'ok' ? '게이트 정상' : `gateway ${healthState.value.status || 'unknown'}`
-})
-const junctionLineStates = computed(() => {
-  if (isStaticMode) {
-    return {
-      B: { status: '정적 이용 가능', summary: `${publishedBlogPosts.value.length}편 공개 · ${draftBlogPosts.value.length}편 초안` },
-      V: { status: '정적 이용 가능', summary: '체크리스트 · 일정 · 도시 기록' },
-      S: { status: '정적 공개본에서는 사용할 수 없음', summary: simHubLine.subtitle },
-      W: { status: '정적 공개본에서는 사용할 수 없음', summary: '' },
-      R: { status: '정적 공개본에서는 사용할 수 없음', summary: '' }
-    }
-  }
-  return {
-    B: { status: '운행 중', summary: `${publishedBlogPosts.value.length}편 공개 · ${draftBlogPosts.value.length}편 초안` },
-    S: { status: simHubLine.subtitle, summary: simHubLine.rowStops },
-    W: {
-      status: workBoardState.value.actions?.commandBridgeReady ? '명령 브리지 준비' : '조회 전용',
-      summary: `Backlog ${countWorkTicketsByStatus('backlog')} · Ready ${readyColumnTickets.value.length} · Started ${countWorkTicketsByStatus('started')}`
-    },
-    R: { status: runtimeState.value.ollama?.status === 'ok' ? '정상' : '부분 저하', summary: 'ion2 · rtx5070 · gateway' },
-    V: { status: '여행 준비', summary: '체크리스트 · 일정 · 예산' }
-  }
-})
-
 const heroMetrics = computed(() => [
   { label: 'services', value: String(servicesState.value.length || 0) },
   { label: 'queued tickets', value: String(healthState.value.tickets?.queued ?? 0) },
@@ -721,7 +665,7 @@ const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'junction') {
     return {
       line: 'UI-v0.5.0 Prototype Junction',
-      title: 'seoul simulation transfer hall',
+      title: '시뮬레이션 환승 홀',
       description: '실사용 포털을 건드리지 않고, 다음 시뮬레이터 승강장과 운영 확장 레일을 분리해 검토하는 가상 허브입니다.'
     }
   }
@@ -729,7 +673,7 @@ const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'taxi') {
     return {
       line: 'Line T / Taxi District Lab',
-      title: 'district demand and fleet board',
+      title: '지역 수요·차량 현황',
       description: '서울 지하철식 환승 UX 위에서 택시 수요, 차량, 리워드 루프를 새로 설계하는 시뮬레이터 승강장입니다.'
     }
   }
@@ -737,7 +681,7 @@ const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'ops') {
     return {
       line: 'Line O / Crew Board',
-      title: 'worker visibility and review rail',
+      title: '작업자·검수 현황',
       description: '누가 어떤 티켓을 잡았는지, 우선순위가 어떻게 반응해야 하는지 운영 확장 레일로 정리합니다.'
     }
   }
@@ -745,7 +689,7 @@ const currentRoute = computed(() => {
   if (isVersionedTestRoute.value && page.value === 'signals') {
     return {
       line: 'Line S / Signal Room',
-      title: 'live vs prototype separation',
+      title: '실사용·목업 경계',
       description: '실사용 경로와 가상 디자인 레일의 경계, handoff, 검수 위치를 신호실처럼 고정합니다.'
     }
   }
@@ -753,7 +697,7 @@ const currentRoute = computed(() => {
   if (page.value === 'junction') {
     return {
       line: 'Main Junction',
-      title: 'workaround central',
+      title: '환승 홀',
       description: '기능을 직접 실행하지 않고, 실제 페이지로 환승시키는 메인 허브입니다.'
     }
   }
@@ -761,8 +705,8 @@ const currentRoute = computed(() => {
   if (page.value === 'elevator') {
     return {
       line: 'Line E / Elevator Station',
-      title: 'vertical dispatch platform',
-      description: '23층 건물의 층별 대기 인원, car 적재량, 목적층 흐름을 실제 상태로 읽습니다.'
+      title: '멈춘 엘리베이터',
+      description: '23층 건물의 층별 대기 인원, 승강기 적재량, 목적층 흐름을 실제 상태로 읽습니다.'
     }
   }
 
@@ -777,15 +721,15 @@ const currentRoute = computed(() => {
   if (page.value === 'taxi') {
     return {
       line: 'Line T / Taxi District Lab',
-      title: 'district dispatch simulator',
-      description: '9구역 수요, 차량 배치, 리워드/패널티 루프를 프런트 단독 코어로 돌립니다.'
+      title: '심야 택시',
+      description: '9구역 수요, 차량 배치, 보상/패널티 루프를 화면 안에서 관찰합니다.'
     }
   }
 
   if (page.value === 'bloghub') {
     return {
       line: 'Line B / Blog District',
-      title: 'archive and writing district',
+      title: '글 보관소와 스튜디오',
       description: '긴 글 읽기와 글쓰기 스튜디오를 시뮬레이터와 다른 리듬으로 분리한 글 공간입니다.'
     }
   }
@@ -793,7 +737,7 @@ const currentRoute = computed(() => {
   if (page.value === 'blogArchive') {
     return {
       line: 'Line B / Public Archive',
-      title: 'published post archive',
+      title: '공개 글 보관소',
       description: '공개된 글만 모아 차분한 목록 리듬으로 읽는 아카이브 레일입니다.'
     }
   }
@@ -801,7 +745,7 @@ const currentRoute = computed(() => {
   if (page.value === 'blogPost') {
     return {
       line: 'Line B / Post Detail',
-      title: activeBlogPost.value?.title || 'reading platform',
+      title: activeBlogPost.value?.title || '글 읽기',
       description: '긴 글은 패널보다 문서처럼 읽혀야 하므로, 폭과 줄 간격을 차분하게 제한합니다.'
     }
   }
@@ -809,7 +753,7 @@ const currentRoute = computed(() => {
   if (page.value === 'writingStudio') {
     return {
       line: 'Line B / Writing Studio',
-      title: 'draft, preview, publish',
+      title: '초안·미리보기·발행',
       description: '작성 집중 레이어와 상태 레이어를 나눈 단일 작성자용 글쓰기 스튜디오입니다.'
     }
   }
@@ -817,22 +761,22 @@ const currentRoute = computed(() => {
   if (page.value === 'voyage') {
     return {
       line: 'Line V / Voyage',
-      title: 'east europe voyage line',
-      description: '출발 전 체크리스트와 일정, 예산을 한 흐름에서 확인합니다.'
+      title: '여행 노선',
+      description: '진행 중인 여행과 지난 여행의 기록을 한 흐름에서 확인합니다.'
     }
   }
 
   if (page.value === 'work') {
     return {
       line: 'Line W / Work Manager',
-      title: 'operations control deck',
+      title: '운영 관제실',
       description: '티켓 상태, Ready 표시, 상세 패널, preset command 를 운영실처럼 분리합니다.'
     }
   }
 
   return {
     line: 'Line R / Runtime Board',
-    title: 'policy and runtime route',
+    title: '정책과 실행환경',
     description: 'ion2, rtx5070, gateway 의 역할과 degraded 정책을 릴리스 레일 관점에서 정리합니다.'
   }
 })
@@ -908,22 +852,85 @@ const simHubCards = computed(() => [
     page: 'elevator',
     lineNo: 'E',
     name: 'Elevator Station',
-    summary: '23층 승객 운송',
+    displayName: '멈춘 엘리베이터',
+    kicker: '추천 시나리오 · 시스템 설계',
+    summary: '재시도와 상태 복구를 설계합니다.',
     status: elevatorState.value.mode === 'live-traffic-loop' ? '실시간 루프' : '저하 운행',
     accent: 'line-e',
-    cta: '엘리베이터 열기'
+    cta: '시작'
   },
   {
     key: 'taxi',
     page: 'taxi',
     lineNo: 'T',
     name: 'Taxi District Lab',
-    summary: '9구역 택시 배차',
-    status: '운행 중',
+    displayName: '심야 택시',
+    summary: '제한된 정보로 안전한 선택을 만듭니다.',
+    status: '제품 판단',
     accent: 'line-t',
-    cta: '택시 승강장 열기'
+    cta: '시작'
   }
 ])
+const featuredSimCard = computed(() => simHubCards.value[0])
+const secondarySimCards = computed(() => simHubCards.value.slice(1))
+
+function runtimeStatusMeta(value) {
+  const status = String(value || '').trim().toLowerCase()
+  if (['online', 'available', 'ok', 'healthy'].includes(status)) {
+    return { label: '정상', warning: false }
+  }
+  if (status === 'degraded') {
+    return { label: '지연', warning: true }
+  }
+  if (['unavailable', 'offline'].includes(status)) {
+    return { label: '중단', warning: true }
+  }
+  return { label: '확인 중', warning: true }
+}
+
+function runtimeMetric(source) {
+  const responseTime = [source?.responseTimeMs, source?.latencyMs, source?.durationMs]
+    .map(Number)
+    .find(value => Number.isFinite(value) && value >= 0)
+  return responseTime === undefined ? '' : `${Math.round(responseTime)} ms`
+}
+
+function runtimeToneRow({ key, label, detail, source, status }) {
+  const meta = runtimeStatusMeta(status)
+  const metric = runtimeMetric(source)
+  return {
+    key,
+    label,
+    detail,
+    status: metric ? `${meta.label} · ${metric}` : meta.label,
+    warning: meta.warning
+  }
+}
+
+const runtimeToneRows = computed(() => [
+  runtimeToneRow({
+    key: 'gateway',
+    label: '웹 화면',
+    detail: 'gateway',
+    source: healthState.value,
+    status: healthState.value.status
+  }),
+  runtimeToneRow({
+    key: 'ollama',
+    label: '인공지능 응답',
+    detail: 'Ollama',
+    source: runtimeState.value.ollama,
+    status: runtimeState.value.ollama?.status
+  }),
+  ...(runtimeState.value.nodes || []).map((node) => runtimeToneRow({
+    key: node.nodeId,
+    label: node.nodeId,
+    detail: node.role,
+    source: node,
+    status: node.availability
+  }))
+])
+const runtimeNeedsAttention = computed(() => runtimeToneRows.value.some((row) => row.warning))
 
 const taxiZones = computed(() => taxiState.value.zones)
 const taxiFleet = computed(() => taxiState.value.taxis)
@@ -943,10 +950,10 @@ const taxiDashboardMetrics = computed(() => {
       ? completed.reduce((sum, item) => sum + (item.waitSeconds || 0), 0) / completed.length
       : 0
   return [
-    { label: 'active requests', value: String(taxiState.value.activeRequests.length) },
-    { label: 'completed rides', value: String(completed.length) },
-    { label: 'avg wait', value: `${averageWait.toFixed(1)}s` },
-    { label: 'fleet', value: String(taxiFleet.value.length) }
+    { label: '진행 중 호출', value: String(taxiState.value.activeRequests.length) },
+    { label: '완료 운행', value: String(completed.length) },
+    { label: '평균 대기', value: `${averageWait.toFixed(1)}초` },
+    { label: '운행 차량', value: String(taxiFleet.value.length) }
   ]
 })
 const taxiZoneCards = computed(() =>
@@ -996,44 +1003,21 @@ const activeBlogPost = computed(() => {
   }
   return publishedBlogPosts.value.find((post) => post.slug === activeBlogSlug.value) || null
 })
-const activeBlogPostIndex = computed(() =>
-  publishedBlogPosts.value.findIndex((post) => post.slug === activeBlogPost.value?.slug)
-)
-const adjacentBlogPosts = computed(() => ({
-  previous:
-    activeBlogPostIndex.value >= 0 ? publishedBlogPosts.value[activeBlogPostIndex.value + 1] || null : null,
-  next:
-    activeBlogPostIndex.value > 0 ? publishedBlogPosts.value[activeBlogPostIndex.value - 1] || null : null
-}))
-const blogHeroStats = computed(() => {
-  const latestPublished = publishedBlogPosts.value[0]
-  return [
-    { label: '공개', value: `${publishedBlogPosts.value.length}편` },
-    { label: '초안', value: `${draftBlogPosts.value.length}편` },
-    { label: '최근 발행', value: latestPublished ? formatDate(latestPublished.publishedAt) : '없음' }
-  ]
-})
-const blogSeriesGroups = computed(() => {
+const latestPublishedBlogPost = computed(() => publishedBlogPosts.value[0] || null)
+const blogArchiveYears = computed(() => {
   const groups = new Map()
   publishedBlogPosts.value.forEach((post) => {
-    const seriesTag = post.tags.find(isBlogSeriesTag)
-    if (!seriesTag) {
-      return
-    }
-    const label = seriesTag.slice(seriesTag.indexOf(':') + 1).trim()
+    const year = new Date(post.publishedAt).getFullYear()
+    const label = Number.isFinite(year) ? year : '날짜 미정'
     if (!groups.has(label)) {
       groups.set(label, [])
     }
     groups.get(label).push(post)
   })
-  return Array.from(groups, ([label, posts]) => ({ label, posts }))
+  return Array.from(groups, ([year, posts]) => ({ year, posts }))
 })
-const standalonePublishedBlogPosts = computed(() =>
-  publishedBlogPosts.value.filter((post) => !post.tags.some(isBlogSeriesTag))
-)
-const studioPreviewHtml = computed(() => renderMarkdownToHtml(studioState.value.bodyMarkdown))
-const activeBlogReadingMinutes = computed(() =>
-  activeBlogPost.value ? Math.max(1, Math.ceil(countWords(activeBlogPost.value.bodyMarkdown) / 230)) : 0
+const studioPreviewHtml = computed(() =>
+  renderMarkdownToHtml(studioState.value.bodyMarkdown, studioState.value.tables)
 )
 
 const workWorkerSummary = computed(() => {
@@ -1107,19 +1091,19 @@ const workBoardColumns = computed(() => {
     {
       status: 'ready',
       label: 'Ready',
-      helper: 'worker agent 다른 작업 중...',
+      helper: '다른 작업이 끝나기를 기다림',
       tickets: readyTickets
     },
     {
       status: 'started',
       label: 'Started',
-      helper: '실제 worker 수행 구간',
+      helper: '담당자가 수행 중',
       tickets: normalized.get('started')?.tickets || []
     },
     {
       status: 'need_review',
       label: 'Need Review',
-      helper: 'PM agent 확인중...',
+      helper: 'PM 확인 대기',
       tickets: normalized.get('need_review')?.tickets || []
     },
     {
@@ -1134,6 +1118,19 @@ const workBoardColumns = computed(() => {
 const readyColumnTickets = computed(() =>
   workBoardColumns.value.find((column) => column.status === 'ready')?.tickets || []
 )
+
+const workToneRows = computed(() => [
+  { status: 'need_review', label: '검토 대기', shortStatus: '검토' },
+  { status: 'started', label: '진행 중', shortStatus: '진행' },
+  { status: 'ready', label: '다음 작업', shortStatus: '대기' }
+].map((item) => {
+  const column = workBoardColumns.value.find((candidate) => candidate.status === item.status)
+  return {
+    ...item,
+    count: column?.tickets.length || 0,
+    helper: column?.helper || ''
+  }
+}))
 
 const allWorkTickets = computed(() => workBoardColumns.value.flatMap((column) => column.tickets))
 
@@ -1185,11 +1182,10 @@ const activityFeed = computed(() => workBoardState.value.activityFeed || [])
 const commandHistory = computed(() => workBoardState.value.commandHistory || [])
 
 let splashTimer
-let clockTimer
-let tickerTimer
 let portalRefreshTimer
 let elevatorRefreshTimer
 let taxiSimulationTimer
+let staticSimNoticeTimer
 let workManagerExpiryTimer
 let studioAutosaveTimer
 let studioSavedSnapshot = ''
@@ -1197,6 +1193,8 @@ let reducedMotionMediaQuery
 let reducedMotionMediaListener
 let splashAnimationRunId = 0
 let splashAnimationTimers = []
+let splashRunStartedAtMs = 0
+let settledSplashRunId = 0
 
 watch(theme, (nextTheme) => {
   if (typeof window !== 'undefined') {
@@ -1329,16 +1327,6 @@ watch(
   { flush: 'post' }
 )
 
-function createInitialSplashBoardRows() {
-  return splashRows.map((row, rowIndex) => ({
-    ...row,
-    cells: row.value
-      .padEnd(splashCellCount, ' ')
-      .split('')
-      .map((_, charIndex) => createSplashCellState(`${row.label}-${rowIndex}-${charIndex}`))
-  }))
-}
-
 function createSplashCellState(key) {
   return {
     key,
@@ -1353,8 +1341,51 @@ function createSplashCellState(key) {
   }
 }
 
+function readRecentSplashVisit() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  try {
+    const seenAt = window.localStorage.getItem(SPLASH_SEEN_STORAGE_KEY)
+    if (!seenAt) {
+      return false
+    }
+    const seenAtMs = Date.parse(seenAt)
+    if (!Number.isFinite(seenAtMs) || Date.now() - seenAtMs >= SPLASH_SEEN_MAX_AGE_MS) {
+      window.localStorage.removeItem(SPLASH_SEEN_STORAGE_KEY)
+      return false
+    }
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+function markSplashVisitComplete() {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  try {
+    window.localStorage.setItem(SPLASH_SEEN_STORAGE_KEY, new Date().toISOString())
+  } catch (error) {
+    // 저장할 수 없는 환경은 다음 방문도 첫 방문 흐름으로 시작한다.
+  }
+}
+
+function setSplashVisitMode(returnVisit) {
+  isReturnVisitSplash.value = returnVisit
+  splashDurationMs.value = returnVisit ? SPLASH_RETURN_DURATION_MS : SPLASH_DURATION_MS
+}
+
 function displaySplashCharacter(character) {
   return character === ' ' ? '\u00A0' : character
+}
+
+function centerSplashPhrase(phrase) {
+  const leftPadding = Math.floor((splashCellCount - phrase.length) / 2)
+  return `${' '.repeat(leftPadding)}${phrase}`.padEnd(splashCellCount, ' ')
 }
 
 function updateSplashCellDisplay(cell, character) {
@@ -1369,39 +1400,31 @@ function updateSplashCellDisplay(cell, character) {
 }
 
 function resetSplashBoard() {
-  for (const row of splashBoardRows.value) {
-    for (const cell of row.cells) {
-      updateSplashCellDisplay(cell, ' ')
-    }
-  }
+  splashBoardCells.value.forEach((cell) => updateSplashCellDisplay(cell, ' '))
 }
 
-function setSplashBoardToTargets() {
-  splashBoardRows.value.forEach((row) => {
-    row.cells.forEach((cell, index) => {
-      updateSplashCellDisplay(cell, row.value.charAt(index) || ' ')
-    })
+function setSplashBoardToPhrase(phrase) {
+  const target = centerSplashPhrase(phrase)
+  splashBoardCells.value.forEach((cell, index) => {
+    updateSplashCellDisplay(cell, target.charAt(index) || ' ')
   })
-}
-
-function charsetForSplashCharacter(character) {
-  if (/[0-9]/.test(character)) {
-    return splashDigitCharset
-  }
-  return splashLatinCharset
+  currentSplashPhrase.value = phrase
 }
 
 function randomSplashRange(min, max) {
   return min + Math.random() * (max - min)
 }
 
-function buildSplashFlipSequence(targetCharacter, charIndex) {
-  const charset = charsetForSplashCharacter(targetCharacter)
+function buildSplashFlipSequence(targetCharacter, charIndex, compact = false) {
   const spins =
-    targetCharacter === ' ' ? (Math.random() < 0.3 ? 1 : 0) : 3 + (charIndex % 3) + Math.floor(Math.random() * 4)
+    targetCharacter === ' '
+      ? (Math.random() < 0.3 ? 1 : 0)
+      : compact
+        ? 3 + (charIndex % 2) + Math.floor(Math.random() * 3)
+        : 3 + (charIndex % 3) + Math.floor(Math.random() * 4)
   const sequence = []
   for (let spinIndex = 0; spinIndex < spins; spinIndex += 1) {
-    sequence.push(charset.charAt(1 + Math.floor(Math.random() * (charset.length - 1))))
+    sequence.push(splashLatinCharset.charAt(1 + Math.floor(Math.random() * (splashLatinCharset.length - 1))))
   }
   sequence.push(targetCharacter)
   return sequence
@@ -1413,7 +1436,6 @@ function queueSplashAnimation(callback, delayMs) {
     callback()
   }, delayMs)
   splashAnimationTimers.push(timer)
-  return timer
 }
 
 function clearSplashAnimationTimers() {
@@ -1455,7 +1477,7 @@ function animateSplashCellFlip(cell, nextCharacter, durationMs, settle, runId, o
   }, 0)
 }
 
-function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0) {
+function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0, onComplete = () => {}) {
   if (runId !== splashAnimationRunId) {
     return
   }
@@ -1465,41 +1487,101 @@ function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0
 
   animateSplashCellFlip(cell, nextCharacter, durationMs, isLast, runId, () => {
     if (!isLast) {
-      playSplashCellSequence(cell, sequence, stepDurationMs, runId, index + 1)
+      playSplashCellSequence(cell, sequence, stepDurationMs, runId, index + 1, onComplete)
+    } else {
+      onComplete()
     }
+  })
+}
+
+function markReturnSplashSettled(runId) {
+  if (
+    runId !== splashAnimationRunId
+    || settledSplashRunId === runId
+    || !isReturnVisitSplash.value
+    || currentSplashPhrase.value !== splashPhrases.at(-1)
+  ) {
+    return
+  }
+  settledSplashRunId = runId
+  const settledAtMs = Math.max(0, Date.now() - splashRunStartedAtMs)
+  const transitionAtMs = Math.min(
+    SPLASH_RETURN_MAX_DURATION_MS,
+    Math.max(SPLASH_RETURN_DURATION_MS, settledAtMs + SPLASH_RETURN_READING_MS)
+  )
+  splashDurationMs.value = transitionAtMs
+  scheduleSplashTransition()
+}
+
+function animateSplashPhrase(phrase, runId) {
+  if (runId !== splashAnimationRunId) {
+    return
+  }
+  const target = centerSplashPhrase(phrase)
+  const compact = isReturnVisitSplash.value
+  let pendingCells = splashBoardCells.value.length
+  currentSplashPhrase.value = phrase
+  splashBoardCells.value.forEach((cell, charIndex) => {
+    const targetCharacter = target.charAt(charIndex) || ' '
+    const delayMs = compact
+      ? 120 + charIndex * 30 + randomSplashRange(0, 24)
+      : 180 + charIndex * 45 + randomSplashRange(0, 36)
+    const stepDurationMs = compact
+      ? 64 + randomSplashRange(-6, 8)
+      : 82 + randomSplashRange(-8, 12)
+    const sequence = buildSplashFlipSequence(targetCharacter, charIndex, compact)
+    queueSplashAnimation(() => {
+      playSplashCellSequence(cell, sequence, stepDurationMs, runId, 0, () => {
+        pendingCells -= 1
+        if (pendingCells === 0) markReturnSplashSettled(runId)
+      })
+    }, delayMs)
   })
 }
 
 function playSplashFlap() {
   splashAnimationRunId += 1
   const runId = splashAnimationRunId
+  splashRunStartedAtMs = Date.now()
+  settledSplashRunId = 0
   clearSplashAnimationTimers()
+  const phraseEntries = isReturnVisitSplash.value
+    ? [{ phrase: splashPhrases.at(-1), tickerIndex: splashTickerMessages.length - 1, delayMs: 0 }]
+    : splashPhrases.map((phrase, phraseIndex) => ({
+        phrase,
+        tickerIndex: phraseIndex,
+        delayMs: phraseIndex * 3300
+      }))
+  currentTickerIndex.value = phraseEntries[0].tickerIndex
 
   if (prefersReducedMotion.value) {
-    setSplashBoardToTargets()
+    setSplashBoardToPhrase(phraseEntries[0].phrase)
     return
   }
 
   resetSplashBoard()
-
-  splashBoardRows.value.forEach((row, rowIndex) => {
-    row.cells.forEach((cell, charIndex) => {
-      const targetCharacter = row.value.charAt(charIndex) || ' '
-      const delayMs = 320 + rowIndex * 170 + charIndex * 55 + randomSplashRange(0, 40)
-      const stepDurationMs = 82 + randomSplashRange(-8, 12)
-      const sequence = buildSplashFlipSequence(targetCharacter, charIndex)
-
-      queueSplashAnimation(() => {
-        playSplashCellSequence(cell, sequence, stepDurationMs, runId)
-      }, delayMs)
-    })
+  if (isReturnVisitSplash.value) {
+    queueSplashAnimation(() => {
+      if (runId === splashAnimationRunId && settledSplashRunId !== runId) {
+        clearSplashAnimationTimers()
+        setSplashBoardToPhrase(splashPhrases.at(-1))
+        markReturnSplashSettled(runId)
+      }
+    }, SPLASH_RETURN_SETTLE_LIMIT_MS)
+  }
+  phraseEntries.forEach(({ phrase, tickerIndex, delayMs }) => {
+    queueSplashAnimation(() => {
+      currentTickerIndex.value = tickerIndex
+      animateSplashPhrase(phrase, runId)
+    }, delayMs)
   })
 }
 
 onMounted(async () => {
+  migrateLegacyVoyageStorage(window.localStorage)
   window.addEventListener('beforeunload', handleStudioBeforeUnload)
   window.addEventListener('popstate', handleLocationPopState)
-  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+  if (typeof window.matchMedia === 'function') {
     reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     prefersReducedMotion.value = reducedMotionMediaQuery.matches
     reducedMotionMediaListener = (event) => {
@@ -1516,6 +1598,7 @@ onMounted(async () => {
   }
 
   if (!isTestRoute.value && page.value === 'splash') {
+    setSplashVisitMode(readRecentSplashVisit())
     playSplashFlap()
     scheduleSplashTransition()
   } else if (!isTestRoute.value) {
@@ -1523,15 +1606,6 @@ onMounted(async () => {
   } else {
     syncTestLocation()
   }
-
-  currentTicker.value = pickNextTicker([])
-  tickerTimer = window.setInterval(() => {
-    currentTicker.value = pickNextTicker([currentTicker.value])
-  }, 2600)
-
-  clockTimer = window.setInterval(() => {
-    clockText.value = formatClock()
-  }, 1000)
 
   initializeBlogWorkspace()
   if (!isStaticMode) {
@@ -1545,20 +1619,19 @@ onMounted(async () => {
     elevatorRefreshTimer = window.setInterval(() => {
       loadElevatorState()
     }, 900)
-    taxiSimulationTimer = window.setInterval(() => {
-      advanceTaxiSimulation()
-    }, 1200)
   }
+  taxiSimulationTimer = window.setInterval(() => {
+    advanceTaxiSimulation()
+  }, 1200)
 })
 
 onBeforeUnmount(() => {
   window.clearTimeout(splashTimer)
   clearSplashAnimationTimers()
-  window.clearInterval(clockTimer)
-  window.clearInterval(tickerTimer)
   window.clearInterval(portalRefreshTimer)
   window.clearInterval(elevatorRefreshTimer)
   window.clearInterval(taxiSimulationTimer)
+  window.clearTimeout(staticSimNoticeTimer)
   window.clearTimeout(workManagerExpiryTimer)
   window.clearTimeout(studioAutosaveTimer)
   window.removeEventListener('beforeunload', handleStudioBeforeUnload)
@@ -1789,7 +1862,8 @@ function populateStudio(post) {
     slugLocked,
     createdAt: post.createdAt,
     updatedAt: post.updatedAt,
-    publishedAt: post.publishedAt || ''
+    publishedAt: post.publishedAt || '',
+    tables: normalizeStudioTables(post.tables)
   }
   studioPostId.value = post.id
   markStudioSaved(post.updatedAt || '', studioState.value)
@@ -1806,6 +1880,8 @@ function updateStudioField(field, value) {
     setStudioSlug(value)
   } else if (['title', 'bodyMarkdown', 'summary', 'tags'].includes(field)) {
     studioState.value[field] = value
+  } else if (field === 'tables' && Array.isArray(value)) {
+    studioState.value.tables = normalizeStudioTables(value)
   }
 }
 
@@ -1924,6 +2000,7 @@ function persistStudioPost(nextStatus, options = {}) {
       .split(',')
       .map((tag) => tag.trim())
       .filter(Boolean),
+    tables: normalizeStudioTables(studioState.value.tables),
     createdAt,
     updatedAt: nowIso,
     publishedAt
@@ -1960,6 +2037,7 @@ function createStudioEditableSnapshot(state) {
     summary: state.summary,
     tags: state.tags,
     bodyMarkdown: state.bodyMarkdown,
+    tables: normalizeStudioTables(state.tables),
     status: state.status,
     publishedAt: state.publishedAt
   })
@@ -2237,10 +2315,37 @@ function toggleTheme() {
 }
 
 function replaySplashFlap() {
+  setSplashVisitMode(false)
   playSplashFlap()
   if (!isTestRoute.value && page.value === 'splash') {
     scheduleSplashTransition()
   }
+}
+
+function showStaticSimNotice(event) {
+  const rect = event?.currentTarget?.getBoundingClientRect()
+  const isMobile = window.innerWidth < 900
+  staticSimNotice.value = {
+    message: '서버 시뮬 · 정적 공개본에서는 준비 중',
+    x: !isMobile && rect
+      ? `${Math.min(window.innerWidth - 150, Math.max(150, rect.left + rect.width / 2))}px`
+      : undefined,
+    y: !isMobile && rect
+      ? `${Math.min(window.innerHeight - 70, Math.max(18, rect.bottom + 10))}px`
+      : undefined
+  }
+  window.clearTimeout(staticSimNoticeTimer)
+  staticSimNoticeTimer = window.setTimeout(() => {
+    staticSimNotice.value = null
+  }, 2500)
+}
+
+function openSimCard(card, event) {
+  if (isStaticMode && card.page === 'elevator') {
+    showStaticSimNotice(event)
+    return
+  }
+  openPage(card.page)
 }
 
 function openPage(nextPage) {
@@ -2252,6 +2357,8 @@ function openPage(nextPage) {
     }
     return
   }
+  window.clearTimeout(staticSimNoticeTimer)
+  staticSimNotice.value = null
   staticModeMessage.value = ''
   if (page.value === 'writingStudio' && nextPage !== 'writingStudio' && !prepareStudioTransition()) {
     return
@@ -2270,7 +2377,7 @@ function openPage(nextPage) {
     page.value = normalizeLivePage(nextPage)
   }
   syncBrowserLocation()
-  if (page.value === 'elevator') {
+  if (page.value === 'elevator' && !isStaticMode) {
     void activateElevatorPage()
   }
   window.requestAnimationFrame(() => {
@@ -2288,19 +2395,16 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
   })
 }
 
-function skipSplash() {
-  window.clearTimeout(splashTimer)
-  clearSplashAnimationTimers()
-  openPage('junction')
-}
-
 function scheduleSplashTransition() {
   window.clearTimeout(splashTimer)
+  const elapsedMs = Math.max(0, Date.now() - splashRunStartedAtMs)
+  const remainingMs = Math.max(0, splashDurationMs.value - elapsedMs)
   splashTimer = window.setTimeout(() => {
     clearSplashAnimationTimers()
+    markSplashVisitComplete()
     page.value = 'junction'
     syncLiveLocation({ replace: true })
-  }, SPLASH_DURATION_MS)
+  }, remainingMs)
 }
 
 function directionGlyph(direction) {
@@ -2526,6 +2630,7 @@ function createEmptyStudioState() {
     status: 'draft',
     slugLocked: false,
     tags: '',
+    tables: [],
     createdAt: nowIso,
     updatedAt: nowIso,
     publishedAt: ''
@@ -2573,9 +2678,10 @@ function ensureUniqueSlug(candidate, currentId) {
   return next
 }
 
-function renderMarkdownToHtml(markdown) {
+function renderMarkdownToHtml(markdown, tables = []) {
   const lines = escapeHtml(String(markdown || '')).replace(/\r\n/g, '\n').split('\n')
   const html = []
+  const studioTables = new Map(normalizeStudioTables(tables).map((table) => [table.id, table]))
   let inCode = false
 
   for (let index = 0; index < lines.length; index += 1) {
@@ -2592,6 +2698,12 @@ function renderMarkdownToHtml(markdown) {
     }
 
     if (!line.trim()) {
+      continue
+    }
+
+    const studioTable = studioTables.get(parseStudioTableMarker(line))
+    if (studioTable) {
+      html.push(renderStudioTable(studioTable))
       continue
     }
 
@@ -2689,8 +2801,46 @@ function isMarkdownBlockStart(line) {
     line.startsWith('```') ||
     /^(#{1,3})\s/.test(line) ||
     line.startsWith('> ') ||
-    Boolean(parseMarkdownListItem(line))
+    Boolean(parseMarkdownListItem(line)) ||
+    Boolean(parseStudioTableMarker(line))
   )
+}
+
+function normalizeStudioTables(tables) {
+  if (!Array.isArray(tables)) {
+    return []
+  }
+  return tables
+    .filter((table) => table && /^[a-z0-9-]+$/i.test(String(table.id || '')))
+    .map((table, tableIndex) => {
+      const headers = Array.isArray(table.headers) && table.headers.length > 0
+        ? table.headers.map((value, columnIndex) => String(value || `열 ${columnIndex + 1}`))
+        : ['열 1']
+      const rows = Array.isArray(table.rows) && table.rows.length > 0
+        ? table.rows.map((row) => headers.map((_, columnIndex) => String(row?.[columnIndex] || '')))
+        : [headers.map(() => '')]
+      return {
+        id: String(table.id),
+        caption: String(table.caption || `표 ${tableIndex + 1}`),
+        headers,
+        rows
+      }
+    })
+}
+
+function parseStudioTableMarker(line) {
+  return String(line || '').trim().match(/^\[\[studio-table:([a-z0-9-]+)\]\]$/i)?.[1] || ''
+}
+
+function renderStudioTable(table) {
+  const caption = inlineMarkdown(escapeHtml(table.caption))
+  const head = table.headers
+    .map((cell) => `<th scope="col">${inlineMarkdown(escapeHtml(cell))}</th>`)
+    .join('')
+  const body = table.rows
+    .map((row) => `<tr>${row.map((cell) => `<td>${inlineMarkdown(escapeHtml(cell))}</td>`).join('')}</tr>`)
+    .join('')
+  return `<figure class="studio-table"><figcaption>${caption}</figcaption><div class="studio-table-scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></figure>`
 }
 
 function inlineMarkdown(text) {
@@ -2704,7 +2854,7 @@ function inlineMarkdown(text) {
   let rendered = String(text || '').replace(/`([^`\n]+)`/g, (_, code) => protect(`<code>${code}</code>`))
 
   rendered = rendered.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, url) => {
-    const safeUrl = allowedMarkdownUrl(url, ['http:', 'https:'])
+    const safeUrl = allowedMarkdownImageUrl(url)
     if (!safeUrl) {
       return alt
     }
@@ -2740,6 +2890,17 @@ function allowedMarkdownUrl(value, allowedProtocols) {
   }
 }
 
+function allowedMarkdownImageUrl(value) {
+  const candidate = String(value || '').trim()
+  if (
+    candidate.length <= 2_100_000 &&
+    /^data:image\/(?:png|jpeg|gif|webp|avif);base64,[a-z0-9+/]+={0,2}$/i.test(candidate)
+  ) {
+    return candidate
+  }
+  return allowedMarkdownUrl(candidate, ['http:', 'https:'])
+}
+
 function escapeHtml(value) {
   return value
     .replace(/&/g, '&amp;')
@@ -2761,6 +2922,23 @@ function formatSignedValue(value) {
   return `${numeric >= 0 ? '+' : ''}${numeric}`
 }
 
+function formatTaxiEvent(entry) {
+  return String(entry || '')
+    .replaceAll('reward', '보상')
+    .replaceAll('penalty', '패널티')
+    .replaceAll(' -> ', ' → ')
+}
+
+function taxiStatusLabel(status) {
+  return {
+    idle: '대기',
+    pending: '배차 대기',
+    assigned: '배차됨',
+    pickup: '승객에게 이동',
+    dropoff: '목적지로 이동'
+  }[status] || status
+}
+
 function formatDate(value) {
   if (!value) {
     return '없음'
@@ -2776,11 +2954,37 @@ function formatDate(value) {
   }
 }
 
-function formatClock() {
-  return new Date().toLocaleTimeString('ko-KR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+function formatBlogDate(value) {
+  if (!value) {
+    return '날짜 미정'
+  }
+  try {
+    return new Date(value).toLocaleDateString('ko-KR', {
+      month: 'long',
+      day: 'numeric'
+    })
+  } catch (error) {
+    return value
+  }
+}
+
+function formatBlogLongDate(value) {
+  if (!value) {
+    return '날짜 미정'
+  }
+  try {
+    return new Date(value).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+  } catch (error) {
+    return value
+  }
+}
+
+function blogCategory(post) {
+  return visibleBlogTags(post?.tags)[0] || '기록'
 }
 
 function readElevatorTickerDefault() {
@@ -2987,19 +3191,12 @@ function handleLocationPopState(event) {
     }
   }
 
-  if (page.value === 'elevator') {
+  if (page.value === 'elevator' && !isStaticMode) {
     void activateElevatorPage()
   }
   window.requestAnimationFrame(() => {
     document.querySelector('.page-scroller')?.scrollTo({ top: 0 })
   })
-}
-
-function pickNextTicker(excluded = []) {
-  const blocked = new Set(excluded)
-  const candidates = tickerPool.filter((line) => !blocked.has(line))
-  const nextPool = candidates.length > 0 ? candidates : tickerPool
-  return nextPool[Math.floor(Math.random() * nextPool.length)]
 }
 
 function readReadyTicketIds() {
@@ -3195,32 +3392,23 @@ function persistStudioPostId(postId) {
       <section v-if="page === 'splash'" class="splash-stage">
         <div class="splash-panel">
           <div class="splash-top">
-            <div class="line-badge line-w">2</div>
+            <SiteLoopSymbol size="large" />
             <div>
-              <p class="eyebrow">Seoul Subway Portal</p>
-              <h1>workaround central</h1>
-            </div>
-            <div class="clock-box">
-              <span>transfer</span>
-              <strong>{{ clockText }}</strong>
+              <h1>workaround.co.kr</h1>
+              <p class="splash-copy">곧 문이 열립니다</p>
             </div>
           </div>
 
-          <div class="flap-board" :class="{ 'reduced-motion': prefersReducedMotion }">
-            <div
-              v-for="row in splashBoardRows"
-              :key="row.label"
-              class="flap-row"
-              :class="row.accent"
-            >
-              <span class="flap-label">{{ row.label }}</span>
-              <div class="flap-values">
+          <div class="flap-board splash-flap-board" :class="{ 'reduced-motion': prefersReducedMotion }">
+            <div class="flap-row splash-flap-row">
+              <div class="flap-values" role="img" :aria-label="currentSplashPhrase">
                 <span
-                  v-for="cell in row.cells"
+                  v-for="cell in splashBoardCells"
                   :key="cell.key"
-                  class="flap-cell"
-                  :class="[row.accent, { run: cell.isRunning && !prefersReducedMotion, settle: cell.isSettling }]"
+                  class="flap-cell line-w"
+                  :class="{ run: cell.isRunning && !prefersReducedMotion, settle: cell.isSettling }"
                   :style="{ '--flap-duration': cell.durationMs }"
+                  aria-hidden="true"
                 >
                   <span class="flap-half flap-static flap-top"><b>{{ cell.topStatic }}</b></span>
                   <span class="flap-half flap-static flap-bottom"><b>{{ cell.bottomStatic }}</b></span>
@@ -3231,37 +3419,22 @@ function persistStudioPostId(postId) {
             </div>
           </div>
 
-          <div class="ticker-strip">
-            <span class="ticker-label">notice</span>
+          <div class="ticker-strip splash-ticker-strip" aria-live="polite">
+            <span class="ticker-label">알림</span>
             <span class="ticker-copy">{{ currentTicker }}</span>
-          </div>
-
-          <div class="arrival-grid">
-            <article>
-              <span>main page</span>
-              <strong>10초 후 자동 전환</strong>
-            </article>
-            <article>
-              <span>runtime</span>
-              <strong>{{ runtimeState.ollama?.status || 'unknown' }}</strong>
-            </article>
-            <article>
-              <span>mobile</span>
-              <strong>세로 카드 스택 우선</strong>
-            </article>
           </div>
         </div>
 
         <div class="splash-actions">
-          <p>메인 페이지는 대시보드가 아니라 환승 허브로 동작하고, 실제 기능은 각 플랫폼에서 이어집니다.</p>
+          <p>{{ splashAutoTransitionLabel }}</p>
           <button type="button" class="ghost-button" @click="replaySplashFlap">다시 재생</button>
-          <button type="button" class="ghost-button" @click="skipSplash">바로 환승 홀로 이동</button>
         </div>
       </section>
 
       <main v-else class="portal-stage" :class="{ 'writing-stage': page === 'writingStudio' }">
         <header class="station-topbar" :class="topbarLineClass">
-          <span class="roundel" :class="topbarLineClass">{{ topbarLetter }}</span>
+          <SiteLoopSymbol v-if="page === 'junction'" />
+          <span v-else class="roundel" :class="topbarLineClass">{{ topbarLetter }}</span>
           <h2>{{ page === 'writingStudio' ? '글쓰기' : currentRoute.title }}</h2>
           <div class="topbar-actions">
             <button
@@ -3283,7 +3456,6 @@ function persistStudioPostId(postId) {
           <section v-if="isTestRoute" class="test-route-banner">
             <div class="section-head">
               <div>
-                <p class="eyebrow">QA Route</p>
                 <h3>{{ isVersionedTestRoute ? 'v0.5.0 프로토타입 레일' : '테스트 전용 진입점' }}</h3>
               </div>
               <span>
@@ -3338,7 +3510,6 @@ function persistStudioPostId(postId) {
             <section v-if="page === 'junction'" class="junction-shell prototype-shell">
               <section class="hero-panel prototype-hero">
                 <div>
-                  <p class="eyebrow">UI-v0.5.0 Junction</p>
                   <h3>메인 허브는 계속 라우터로 남기고, 새 시뮬레이터는 별도 승강장으로 확장합니다.</h3>
                   <p>
                     이 레일은 `v0.4.0` 실사용 포털을 덮지 않는 가상 화면입니다. 서울 지하철 환승 감각을 유지한 채
@@ -3358,7 +3529,6 @@ function persistStudioPostId(postId) {
               <section class="section-block">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Prototype Lines</p>
                     <h3>v0.5.0 승강장 분기</h3>
                   </div>
                   <span>기존 `/test?view=...` 와 섞지 않고 `/test/v0-5-0/...` 아래에서만 검토합니다.</span>
@@ -3402,7 +3572,6 @@ function persistStudioPostId(postId) {
                 <article class="surface-panel">
                   <div class="section-head">
                     <div>
-                      <p class="eyebrow">UX Pivot</p>
                       <h3>이번 버전에서 바꾸는 점</h3>
                     </div>
                   </div>
@@ -3418,7 +3587,6 @@ function persistStudioPostId(postId) {
                 <article class="surface-panel">
                   <div class="section-head">
                     <div>
-                      <p class="eyebrow">Mobile Route</p>
                       <h3>모바일 재배치 순서</h3>
                     </div>
                   </div>
@@ -3441,7 +3609,6 @@ function persistStudioPostId(postId) {
                 line-class="line-t"
                 station-code="T01"
                 title="가상 도시 수요 보드"
-                title-en="TAXI DISTRICT LAB"
                 prev-label="← 가상 레일"
                 status="가상 레일 프로토"
                 status-tone="warn"
@@ -3554,7 +3721,6 @@ function persistStudioPostId(postId) {
                 line-class="line-w"
                 station-code="W02"
                 title="worker 가시화 확장"
-                title-en="CREW BOARD"
                 prev-label="← 가상 레일"
                 status="가상 레일 프로토"
                 status-tone="warn"
@@ -3623,7 +3789,6 @@ function persistStudioPostId(postId) {
                 line-class="line-r"
                 station-code="R02"
                 title="실사용 레일과 가상 레일의 분리"
-                title-en="SIGNAL ROOM"
                 prev-label="← 가상 레일"
                 status="가상 레일 프로토"
                 status-tone="warn"
@@ -3686,79 +3851,87 @@ function persistStudioPostId(postId) {
           </template>
 
           <section v-else-if="page === 'junction'" class="junction-shell">
-            <div class="wayfinding">
-              <span class="here">현재 위치 · 환승 홀</span>
-              <span class="sep">|</span>
-              <span class="transfer">
-                환승 가능
-                <span v-for="line in junctionRoundels" :key="line.code" class="roundel sm" :class="[line.lineClass, { upcoming: line.upcoming }]">{{ line.code }}</span>
-              </span>
-              <span class="sep">|</span>
-              <span class="chip"><span class="dot" aria-hidden="true"></span>{{ junctionGateLabel }}</span>
-            </div>
-
             <JunctionMap
-              :line-states="junctionLineStates"
               :disabled-pages="isStaticMode ? Array.from(STATIC_UNAVAILABLE_PAGES) : []"
+              :static-mode="isStaticMode"
               @open="openPage"
             />
 
             <p v-if="staticModeMessage" class="junction-note static-mode-note" role="status">{{ staticModeMessage }}</p>
-            <p v-else class="junction-note">홀에서는 이동만 — 조작은 각 승강장에서 합니다.</p>
           </section>
 
-          <section v-else-if="page === 'simhub'" class="feature-shell sim-annex">
-            <StationHeader
-              :line-class="simHubLine.lineClass"
-              station-code="S00"
-              :title="simHubLine.nameKo"
-              :title-en="simHubLine.nameEn"
-              :status="simHubLine.subtitle"
-              next-label=""
-              @exit="openPage('junction')"
-            />
+          <section v-else-if="page === 'simhub'" class="feature-shell tone-page tone-sim-page line-s">
+            <section
+              v-if="featuredSimCard"
+              class="tone-page-hero"
+              :class="[featuredSimCard.accent, { 'static-sim-locked': isStaticMode }]"
+            >
+              <small>{{ featuredSimCard.kicker }}</small>
+              <h1>{{ featuredSimCard.displayName }}</h1>
+              <p>{{ featuredSimCard.summary }}</p>
+              <button
+                type="button"
+                class="primary-button"
+                :aria-label="isStaticMode ? `${featuredSimCard.displayName} · 서버 시뮬 · 정적 공개본에서는 준비 중` : undefined"
+                @click="openSimCard(featuredSimCard, $event)"
+              >
+                {{ isStaticMode ? '준비 중' : featuredSimCard.cta }}
+              </button>
+            </section>
 
-            <div class="line-grid sim-annex-grid" aria-label="격납고">
+            <div class="tone-service-list" aria-label="격납고">
               <article
-                v-for="card in simHubCards"
+                v-for="card in secondarySimCards"
                 :key="card.key"
-                class="line-card"
+                class="tone-service-row"
                 :class="card.accent"
               >
-                <div class="line-card-top">
-                  <div class="line-mark">
-                    <span class="line-round" :class="card.accent">{{ card.lineNo }}</span>
-                    <h4>{{ card.name }}</h4>
-                  </div>
-                  <span class="status-chip">{{ card.status }}</span>
+                <span class="line-round" :class="card.accent" aria-hidden="true">{{ card.lineNo }}</span>
+                <div>
+                  <small>{{ card.status }}</small>
+                  <h2>{{ card.displayName }}</h2>
+                  <p>{{ card.summary }}</p>
                 </div>
-
-                <p>{{ card.summary }}</p>
-
-                <button type="button" class="line-cta" @click="openPage(card.page)">
+                <button type="button" class="ghost-button" @click="openSimCard(card, $event)">
                   {{ card.cta }}
                 </button>
               </article>
             </div>
+
+            <p
+              v-if="staticSimNotice"
+              class="junction-access-toast"
+              :style="{ '--toast-x': staticSimNotice.x, '--toast-y': staticSimNotice.y }"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >{{ staticSimNotice.message }}</p>
           </section>
 
           <VoyageView v-else-if="page === 'voyage'" @exit="openPage('junction')" />
 
-          <section v-else-if="page === 'elevator'" class="feature-shell">
+          <section v-else-if="page === 'elevator'" class="feature-shell sim-tone-page elevator-tone-page">
+            <p v-if="isStaticMode" class="static-preview-hairline" role="status">
+              정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다
+            </p>
             <StationHeader
               line-class="line-e"
               station-code="E01"
-              title="23층 수직 승강장"
-              title-en="ELEVATOR STATION"
-              status="실시간 운행"
-              status-tone="live"
-              :summary="`23층 · car ${elevatorCars.length}대 · 정원 20명`"
+              title="멈춘 엘리베이터"
+              :status="isStaticMode ? '화면 미리보기' : '실시간 운행'"
+              :status-tone="isStaticMode ? 'warn' : 'live'"
+              :summary="isStaticMode ? `23층 · 승강기 ${elevatorCars.length}대 · 정지 상태 미리보기` : `23층 · 승강기 ${elevatorCars.length}대 · 정원 20명`"
               :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
               :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
               @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
             />
 
-            <section class="section-block elevator-live-layout line-e">
+            <section
+              class="section-block elevator-live-layout line-e"
+              :class="{ 'static-sim-preview': isStaticMode }"
+              :inert="isStaticMode ? '' : null"
+              :aria-disabled="isStaticMode ? 'true' : undefined"
+            >
               <ElevatorCrossSection
                 :cars="elevatorCars"
                 :floors="elevatorFloorRows"
@@ -3825,7 +3998,7 @@ function persistStudioPostId(postId) {
                       />
                     </label>
                     <label class="input-block">
-                      <span>car 수 {{ elevatorCarCount }}</span>
+                      <span>승강기 수 {{ elevatorCarCount }}</span>
                       <input
                         class="range-input"
                         type="range"
@@ -3856,39 +4029,37 @@ function persistStudioPostId(postId) {
             </section>
           </section>
 
-          <section v-else-if="page === 'taxi'" class="feature-shell">
+          <section v-else-if="page === 'taxi'" class="feature-shell sim-tone-page taxi-tone-page">
             <StationHeader
               line-class="line-t"
               station-code="T01"
-              title="9구역 택시 시뮬레이터 코어"
-              title-en="TAXI DISTRICT LAB"
-              status="프런트 코어 운행"
+              title="심야 택시"
+              status="실시간 운행"
               status-tone="live"
-              summary="9구역 · reward/penalty 누적"
+              summary="9구역 · 보상/패널티 누적"
               :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
               :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
               @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
             />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article v-for="metric in taxiDashboardMetrics" :key="metric.label">
-              <span>{{ metric.label }}</span>
-              <strong>{{ metric.value }}</strong>
-              </article>
+            <section class="station-lead taxi-timetable" aria-label="택시 실시간 지표">
+              <div class="banner-stats">
+                <article v-for="metric in taxiDashboardMetrics" :key="metric.label">
+                  <span>{{ metric.label }}</span>
+                  <strong class="num">{{ metric.value }}</strong>
+                </article>
               </div>
             </section>
 
             <section class="section-block split-layout">
-              <article class="surface-panel">
+              <article class="surface-panel taxi-map-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">District Mesh</p>
                     <h3>구역별 수요 지도</h3>
                   </div>
-                  <span>실지도 대신 9구역 추상 메쉬를 사용해 이동 이유를 읽을 수 있게 합니다.</span>
+                  <span>9구역 흐름을 한눈에 관찰합니다.</span>
                 </div>
 
-                <div class="district-grid">
+                <div class="district-grid" aria-label="9구역 수요 시뮬레이션 캔버스">
                   <article
                     v-for="zone in taxiZoneCards"
                     :key="zone.id"
@@ -3897,10 +4068,10 @@ function persistStudioPostId(postId) {
                   >
                     <div class="district-top">
                       <strong>{{ zone.name }}</strong>
-                      <span>{{ zone.pending }} req</span>
+                      <span>호출 {{ zone.pending }}</span>
                     </div>
                     <p>{{ zone.demandLabel }}</p>
-                    <small>nearby fleet {{ zone.nearbyFleet }} · neighbors {{ zone.neighbors.length }}</small>
+                    <small>인근 차량 {{ zone.nearbyFleet }} · 연결 구역 {{ zone.neighbors.length }}</small>
                   </article>
                 </div>
               </article>
@@ -3908,7 +4079,6 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Request Console</p>
                     <h3>수동 호출 입력</h3>
                   </div>
                 </div>
@@ -3951,17 +4121,17 @@ function persistStudioPostId(postId) {
 
                 <div class="reward-grid">
                   <article class="reward-card">
-                    <span>reward</span>
+                    <span>보상</span>
                     <strong>{{ formatSignedValue(taxiRewardSummary.reward) }}</strong>
                     <p>빠른 배차 = 보상</p>
                   </article>
                   <article class="reward-card">
-                    <span>penalty</span>
+                    <span>패널티</span>
                     <strong>{{ formatSignedValue(-taxiRewardSummary.penalty) }}</strong>
                     <p>차량 추가 = 패널티</p>
                   </article>
                   <article class="reward-card">
-                    <span>net</span>
+                    <span>순점수</span>
                     <strong>{{ formatSignedValue(taxiRewardSummary.net) }}</strong>
                     <p>보상 − 패널티 = 순점수</p>
                   </article>
@@ -3975,7 +4145,6 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Fleet Strip</p>
                     <h3>차량 상태</h3>
                   </div>
                 </div>
@@ -3984,11 +4153,11 @@ function persistStudioPostId(postId) {
                   <article v-for="cab in taxiFleet" :key="cab.id" class="fleet-card">
                     <div class="fleet-top">
                       <strong>{{ cab.id }}</strong>
-                      <span>{{ cab.status }}</span>
+                      <span class="taxi-state-token" :data-label="taxiStatusLabel(cab.status)">{{ cab.status }}</span>
                     </div>
-                    <p>{{ findTaxiZone(cab.zoneId)?.name }} -> {{ findTaxiZone(cab.targetZoneId)?.name }}</p>
-                    <small>{{ cab.passengerCount }} / {{ cab.seats }} passengers · route {{ cab.route.length }} hops</small>
-                    <strong class="fleet-reward">{{ cab.assignedRequestId || 'idle' }}</strong>
+                    <p>{{ findTaxiZone(cab.zoneId)?.name }} → {{ findTaxiZone(cab.targetZoneId)?.name }}</p>
+                    <small>승객 {{ cab.passengerCount }} / {{ cab.seats }}명 · 남은 구간 {{ cab.route.length }}</small>
+                    <strong class="fleet-reward">{{ cab.assignedRequestId || '배차 대기' }}</strong>
                   </article>
                 </div>
               </article>
@@ -3996,16 +4165,18 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Request Queue</p>
                     <h3>진행 중 호출</h3>
                   </div>
                 </div>
 
                 <div class="prototype-rule-list">
                   <article v-for="request in taxiRequestQueue" :key="request.id" class="prototype-rule-card">
-                    <strong>{{ request.id }} · {{ request.status }}</strong>
+                    <strong>
+                      {{ request.id }} ·
+                      <span class="taxi-state-token" :data-label="taxiStatusLabel(request.status)">{{ request.status }}</span>
+                    </strong>
                     <p>
-                      {{ findTaxiZone(request.originId)?.name }} -> {{ findTaxiZone(request.destinationId)?.name }}
+                      {{ findTaxiZone(request.originId)?.name }} → {{ findTaxiZone(request.destinationId)?.name }}
                       · {{ request.passengers }}명 · {{ request.assignedTaxiId || '배차 대기' }}
                     </p>
                   </article>
@@ -4017,17 +4188,16 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Recent Trips</p>
                     <h3>최근 완료 호출</h3>
                   </div>
                 </div>
 
                 <div class="prototype-rule-list">
                   <article v-for="request in taxiCompletedRequests" :key="request.id" class="prototype-rule-card">
-                    <strong>{{ request.id }} · reward {{ formatSignedValue(request.reward) }}</strong>
+                    <strong>{{ request.id }} · 보상 {{ formatSignedValue(request.reward) }}</strong>
                     <p>
-                      wait {{ request.waitSeconds }}s · trip {{ request.tripSeconds }}s ·
-                      {{ findTaxiZone(request.originId)?.name }} -> {{ findTaxiZone(request.destinationId)?.name }}
+                      대기 {{ request.waitSeconds }}초 · 운행 {{ request.tripSeconds }}초 ·
+                      {{ findTaxiZone(request.originId)?.name }} → {{ findTaxiZone(request.destinationId)?.name }}
                     </p>
                   </article>
                 </div>
@@ -4036,151 +4206,98 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Ops Log</p>
                     <h3>이벤트 로그</h3>
                   </div>
                 </div>
 
                 <div class="arrival-log">
-                  <article v-for="entry in taxiState.eventLog" :key="entry">{{ entry }}</article>
+                  <article v-for="entry in taxiState.eventLog" :key="entry">{{ formatTaxiEvent(entry) }}</article>
                 </div>
               </article>
             </section>
           </section>
 
           <section v-else-if="page === 'bloghub'" class="feature-shell blog-shell">
-            <StationHeader
-              line-class="line-b"
-              station-code="B01"
-              title="읽기와 쓰기를 위한 조용한 승강장"
-              title-en="BLOG DISTRICT"
-              status="공개 운행"
-              status-tone="live"
-              summary="published 만 공개 · draft 는 Studio 안에서만"
-              @exit="openPage('junction')"
-            />
-            <section class="section-block blog-primary">
-              <article class="blog-primary-main">
-                <div>
-                  <p class="eyebrow">Line B · Blog District</p>
-                  <h3>읽고 쓰는 승강장</h3>
-                  <p class="blog-primary-copy">공개 글과 초안을 한곳에서</p>
-                </div>
+            <section class="blog-tone-page blog-hub-page">
+              <section v-if="latestPublishedBlogPost" class="blog-tone-hero">
+                <small>최근 글</small>
+                <h1>
+                  <button type="button" class="blog-text-link" @click="openBlogPost(latestPublishedBlogPost.slug)">
+                    {{ latestPublishedBlogPost.title }}
+                  </button>
+                </h1>
+                <p>{{ latestPublishedBlogPost.summary }}</p>
+              </section>
+              <section v-else class="blog-tone-hero">
+                <small>최근 글</small>
+                <h1>아직 공개된 글이 없습니다</h1>
+                <p>첫 기록은 글쓰기에서 시작할 수 있습니다.</p>
+              </section>
 
-                <div class="blog-primary-stats">
-                  <article v-for="item in blogHeroStats" :key="item.label">
-                    <span>{{ item.label }}</span>
-                    <strong class="num">{{ item.value }}</strong>
-                  </article>
-                </div>
+              <nav class="blog-tone-actions" aria-label="블로그 바로가기">
+                <button type="button" class="ghost-button" @click="openPage('writingStudio')">새 글 쓰기</button>
+                <button type="button" class="ghost-button" @click="openBlogArchive">보관함</button>
+              </nav>
 
-                <div class="blog-primary-actions">
-                  <button type="button" class="btn btn-exit" @click="openBlogArchive">아카이브 들어가기</button>
-                  <button type="button" class="btn btn-ghost" @click="openPage('writingStudio')">Writing Studio</button>
-                </div>
-              </article>
-
-              <aside class="blog-primary-list">
-                <div class="section-head compact">
-                  <h3>최근 발행</h3>
-                  <button type="button" class="text-button" @click="openBlogArchive">전체 보기</button>
-                </div>
-                <article v-for="post in publishedBlogPosts.slice(0, 3)" :key="post.id" class="blog-recent-item">
-                  <div>
-                    <time class="num">{{ formatDate(post.publishedAt) }}</time>
-                    <StatusBadge :status="post.status" />
-                  </div>
-                  <button type="button" @click="openBlogPost(post.slug)">{{ post.title }}</button>
+              <div class="blog-timetable" aria-label="최근 발행 글">
+                <article v-for="post in publishedBlogPosts.slice(1, 4)" :key="post.id" class="blog-timetable-row">
+                  <p class="blog-timetable-meta">
+                    <time>{{ formatBlogDate(post.publishedAt) }}</time> · {{ blogCategory(post) }}
+                  </p>
+                  <h2>
+                    <button type="button" class="blog-text-link" @click="openBlogPost(post.slug)">{{ post.title }}</button>
+                  </h2>
                 </article>
-              </aside>
+              </div>
             </section>
           </section>
 
           <section v-else-if="page === 'blogArchive'" class="feature-shell blog-shell">
-            <section class="section-block reading-shell archive-document">
-              <div class="section-head archive-head">
-                <div>
-                  <p class="eyebrow">Public Archive</p>
-                  <h3>공개 글 목록</h3>
-                </div>
-                <span>{{ publishedBlogPosts.length }}편</span>
-              </div>
+            <section class="blog-tone-page blog-archive-page">
+              <header class="blog-tone-hero">
+                <small>글 보관함</small>
+                <h1>생각이 지나간 자리</h1>
+              </header>
 
-              <section v-for="series in blogSeriesGroups" :key="series.label" class="archive-series">
-                <div class="archive-series-head">
-                  <p class="eyebrow">Series</p>
-                  <h4>{{ series.label }}</h4>
-                  <span>{{ series.posts.length }}편</span>
-                </div>
-                <div class="archive-list">
-                  <article v-for="post in series.posts" :key="post.id" class="archive-item">
-                    <time class="when num">{{ formatDate(post.publishedAt) }}</time>
-                    <div class="archive-item-main">
-                      <button type="button" class="archive-title" @click="openBlogPost(post.slug)">{{ post.title }}</button>
-                      <p class="summary">{{ post.summary }}</p>
-                      <div class="archive-meta">
-                        <span v-for="(tag, tagIndex) in visibleBlogTags(post.tags)" :key="`${post.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
-                        <StatusBadge :status="post.status" />
-                      </div>
-                    </div>
-                  </article>
+              <section v-for="group in blogArchiveYears" :key="group.year" class="blog-year-group">
+                <h2 class="blog-year-label">{{ group.year }}<template v-if="group.year !== '날짜 미정'">년</template></h2>
+                <div class="blog-archive-timetable">
+                  <button
+                    v-for="post in group.posts"
+                    :key="post.id"
+                    type="button"
+                    class="blog-archive-row"
+                    @click="openBlogPost(post.slug)"
+                  >
+                    <time>{{ formatBlogDate(post.publishedAt) }}</time>
+                    <strong>{{ post.title }}</strong>
+                  </button>
                 </div>
               </section>
 
-              <div class="archive-list">
-                <article v-for="post in standalonePublishedBlogPosts" :key="post.id" class="archive-item">
-                  <time class="when num">{{ formatDate(post.publishedAt) }}</time>
-                  <div class="archive-item-main">
-                    <button type="button" class="archive-title" @click="openBlogPost(post.slug)">{{ post.title }}</button>
-                    <p class="summary">{{ post.summary }}</p>
-                    <div class="archive-meta">
-                      <span v-for="(tag, tagIndex) in visibleBlogTags(post.tags)" :key="`${post.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
-                      <StatusBadge :status="post.status" />
-                    </div>
-                  </div>
-                </article>
-              </div>
-
-              <div class="badge-legend">
-                <StatusBadge status="published" />
-                <span>공개 글만 노출 · 초안과 보관은 Studio에서 관리</span>
-              </div>
+              <p v-if="blogArchiveYears.length === 0" class="blog-empty-copy">아직 공개된 글이 없습니다.</p>
             </section>
           </section>
 
           <section v-else-if="page === 'blogPost'" class="feature-shell blog-shell">
             <article v-if="activeBlogPost" class="post-detail">
-              <div class="post-meta-line">
-                <span>{{ formatDate(activeBlogPost.publishedAt) }} 발행</span>
-                <span>{{ formatDate(activeBlogPost.updatedAt) }} 수정</span>
-                <span class="num">읽기 {{ activeBlogReadingMinutes }}분</span>
-              </div>
+              <header class="post-tone-hero">
+                <h1>{{ activeBlogPost.title }}</h1>
+                <p>{{ formatBlogLongDate(activeBlogPost.publishedAt) }} · {{ blogCategory(activeBlogPost) }}</p>
+              </header>
 
-              <h1>{{ activeBlogPost.title }}</h1>
-              <p class="post-lead">{{ activeBlogPost.summary }}</p>
-              <div class="post-tags">
-                <span v-for="(tag, tagIndex) in visibleBlogTags(activeBlogPost.tags)" :key="`${activeBlogPost.id}-${tag}-${tagIndex}`" class="tag">{{ tag }}</span>
-                <StatusBadge :status="activeBlogPost.status" />
-              </div>
-
-              <div class="markdown-body post-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown)"></div>
+              <div class="markdown-body post-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown, activeBlogPost.tables)"></div>
 
               <footer class="post-foot-nav">
-                <button v-if="adjacentBlogPosts.previous" type="button" class="ghost-button" @click="openBlogPost(adjacentBlogPosts.previous.slug)">
-                  이전 글
-                </button>
-                <button type="button" class="ghost-button" @click="openStudioForPost(activeBlogPost.id)">Studio에서 편집</button>
-                <button type="button" class="primary-button" @click="openBlogArchive">아카이브로</button>
-                <button v-if="adjacentBlogPosts.next" type="button" class="ghost-button" @click="openBlogPost(adjacentBlogPosts.next.slug)">
-                  다음 글
-                </button>
+                <button type="button" class="post-nav-link" @click="openBlogArchive">← 보관함</button>
+                <button type="button" class="post-nav-link" @click="openStudioForPost(activeBlogPost.id)">이어서 쓰기 →</button>
               </footer>
             </article>
-            <article v-else class="reading-shell blog-not-found" role="status">
-              <p class="eyebrow">404 / Blog District</p>
+            <article v-else class="blog-tone-page blog-not-found" role="status">
+              <p class="eyebrow">찾을 수 없음</p>
               <h3>공개 글을 찾을 수 없습니다</h3>
               <p>주소가 바뀌었거나 보관된 글입니다.</p>
-              <button type="button" class="primary-button" @click="openBlogArchive">공개 글 목록</button>
+              <button type="button" class="ghost-button" @click="openBlogArchive">공개 글 목록</button>
             </article>
           </section>
 
@@ -4207,38 +4324,36 @@ function persistStudioPostId(postId) {
             @clear-message="blogMessage = ''"
           />
 
-          <section v-else-if="page === 'work'" class="feature-shell">
-            <StationHeader
-              line-class="line-w"
-              station-code="W01"
-              title="운영 보드 승강장"
-              title-en="WORK MANAGER"
-              :status="workManagerToken ? 'command gate unlocked' : '조회 공개 · gate locked'"
-              :status-tone="workManagerToken ? 'live' : 'ok'"
-              summary="5레인 · preset command + memo"
-              @exit="openPage('junction')"
-            />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article>
-              <span>lanes</span>
-              <strong>5</strong>
-              </article>
-              <article>
-              <span>selected</span>
-              <strong>{{ selectedWorkTicket?.id || 'none' }}</strong>
-              </article>
-              <article>
-              <span>command gate</span>
-              <strong>{{ workManagerToken ? 'unlocked' : 'locked' }}</strong>
-              </article>
-              </div>
-            </section>
+          <section v-else-if="page === 'work'" class="feature-shell tone-page tone-work-page line-w">
+            <div class="tone-page-intro">
+              <section class="tone-page-hero line-w">
+                <div class="tone-hero-topline">
+                  <small>지금 볼 것</small>
+                  <span>보호 구역</span>
+                </div>
+                <h1>검토 대기 {{ workToneRows[0].count }}건</h1>
+                <p>결정이 필요한 작업만 앞에 둡니다.</p>
+              </section>
 
+              <div class="tone-status-list" aria-label="작업 상태 요약">
+                <div v-for="item in workToneRows" :key="item.status" class="tone-status-row">
+                  <span class="tone-status-dot" :class="{ wait: item.status !== 'started' }" aria-hidden="true"></span>
+                  <div>
+                    <strong>{{ item.label }} {{ item.count }}건</strong>
+                    <small>{{ item.helper }}</small>
+                  </div>
+                  <span>{{ item.shortStatus }}</span>
+                </div>
+              </div>
+            </div>
+
+            <details class="tone-support-details">
+              <summary>버전·작업자·저장 기준</summary>
+              <div class="tone-support-details__body">
             <section class="section-block">
               <div class="section-head">
                 <div>
-                  <p class="eyebrow">Version Header</p>
+                  <p class="eyebrow">목표 버전</p>
                   <h3>목표 버전과 로드맵 요약</h3>
                 </div>
                 <span>`v0.4.0` 레일 안의 작업과 이후 후보 버전을 한 화면에서 읽습니다.</span>
@@ -4247,26 +4362,26 @@ function persistStudioPostId(postId) {
               <div class="version-strip">
                 <article v-for="[version, count] in workVersionSummary" :key="version" class="version-chip-card">
                   <strong>{{ version }}</strong>
-                  <small>{{ count }} tickets</small>
+                  <small>티켓 {{ count }}건</small>
                 </article>
               </div>
 
               <div class="version-strip version-focus-strip">
                 <article class="version-chip-card version-focus-card">
                   <strong>{{ workVersionHeader.focusVersion }}</strong>
-                  <small>current focus</small>
+                  <small>현재 집중</small>
                 </article>
                 <article class="version-chip-card">
                   <strong>{{ workVersionHeader.developmentCeiling }}</strong>
-                  <small>development ceiling</small>
+                  <small>개발 상한</small>
                 </article>
                 <article class="version-chip-card">
                   <strong>{{ workVersionHeader.activeRange }}</strong>
-                  <small>active range</small>
+                  <small>활성 범위</small>
                 </article>
                 <article class="version-chip-card">
                   <strong>{{ workVersionHeader.selectedPriority }}</strong>
-                  <small>selected ticket priority</small>
+                  <small>선택 티켓 우선순위</small>
                 </article>
               </div>
 
@@ -4283,8 +4398,8 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Worker Visibility</p>
-                    <h3>Started ownership</h3>
+                    <p class="eyebrow">담당 현황</p>
+                    <h3>진행 중 담당</h3>
                   </div>
                   <span>Ready 이후 실제 worker 소유 구간을 카드로 분리해 보여줍니다.</span>
                 </div>
@@ -4304,22 +4419,22 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Priority Policy</p>
+                    <p class="eyebrow">우선순위 정책</p>
                     <h3>자동/수동 경계</h3>
                   </div>
                 </div>
 
                 <div class="prototype-rule-list">
                   <article class="prototype-rule-card">
-                    <strong>queue source</strong>
+                    <strong>큐 출처</strong>
                     <p>{{ workPriorityPolicy.queueSource }}</p>
                   </article>
                   <article class="prototype-rule-card">
-                    <strong>automatic</strong>
+                    <strong>자동</strong>
                     <p>{{ (workPriorityPolicy.automaticRange || []).join(', ') }}</p>
                   </article>
                   <article class="prototype-rule-card">
-                    <strong>manual</strong>
+                    <strong>수동</strong>
                     <p>{{ (workPriorityPolicy.manualRange || []).join(', ') }}</p>
                   </article>
                 </div>
@@ -4330,26 +4445,26 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Persistence</p>
+                    <p class="eyebrow">저장 방식</p>
                     <h3>파일 저장과 DB 전환 기준</h3>
                   </div>
                 </div>
 
                 <div class="info-stack">
                   <article>
-                    <span>mode</span>
+                    <span>방식</span>
                     <strong>{{ workPersistence.mode }}</strong>
                   </article>
                   <article>
-                    <span>audit file</span>
+                    <span>감사 파일</span>
                     <strong>{{ workPersistence.filePath }}</strong>
                   </article>
                   <article>
-                    <span>target db</span>
+                    <span>대상 DB</span>
                     <strong>{{ workPersistence.targetDatabase }}</strong>
                   </article>
                   <article>
-                    <span>audit events</span>
+                    <span>감사 기록</span>
                     <strong>{{ workPersistence.auditEventCount }}</strong>
                   </article>
                 </div>
@@ -4362,7 +4477,7 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Next Pick Hint</p>
+                    <p class="eyebrow">다음 작업 예상</p>
                     <h3>우선순위 반응 예상</h3>
                   </div>
                 </div>
@@ -4373,7 +4488,12 @@ function persistStudioPostId(postId) {
               </article>
             </section>
 
-            <section class="section-block work-layout">
+              </div>
+            </details>
+
+            <details class="tone-work-manager-details">
+              <summary>전체 작업 보드·지시</summary>
+              <section class="section-block work-layout tone-work-layout">
               <div class="work-board">
                 <article
                   v-for="column in workBoardColumns"
@@ -4385,7 +4505,7 @@ function persistStudioPostId(postId) {
                   <div class="lane-head">
                     <div>
                       <strong>{{ column.label }}</strong>
-                      <small>{{ column.tickets.length }} tickets</small>
+                      <small>티켓 {{ column.tickets.length }}건</small>
                     </div>
                     <span class="lane-status">{{ column.helper }}</span>
                   </div>
@@ -4415,35 +4535,34 @@ function persistStudioPostId(postId) {
               <aside class="detail-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Ticket Detail</p>
                     <h3>{{ selectedWorkTicket?.id || '선택 없음' }}</h3>
                   </div>
                 </div>
 
                 <div v-if="selectedWorkTicket" class="detail-stack">
                   <article>
-                    <span>lane</span>
+                    <span>레인</span>
                     <strong>{{ selectedWorkTicket.lane }}</strong>
                   </article>
                   <article>
-                    <span>target version</span>
+                    <span>목표 버전</span>
                     <strong>{{ selectedWorkTicket.targetVersion }}</strong>
                   </article>
                   <article class="detail-editor">
-                    <span>edit target version</span>
-                    <select v-model="metadataTargetVersion" class="select-input">
+                    <span>목표 버전 수정</span>
+                    <select v-model="metadataTargetVersion" class="select-input" aria-label="목표 버전 수정">
                       <option v-for="version in workTargetVersionOptions" :key="version" :value="version">
                         {{ version }}
                       </option>
                     </select>
                   </article>
                   <article>
-                    <span>priority</span>
+                    <span>우선순위</span>
                     <strong>{{ selectedWorkTicket.priority || '없음' }}</strong>
                   </article>
                   <article class="detail-editor">
-                    <span>edit priority</span>
-                    <select v-model="metadataPriority" class="select-input">
+                    <span>우선순위 수정</span>
+                    <select v-model="metadataPriority" class="select-input" aria-label="우선순위 수정">
                       <option value="P1">P1</option>
                       <option value="P2">P2</option>
                       <option value="P3">P3</option>
@@ -4452,52 +4571,53 @@ function persistStudioPostId(postId) {
                     </select>
                   </article>
                   <article>
-                    <span>progress decision</span>
+                    <span>진행 판정</span>
                     <strong>{{ selectedWorkTicket.progressDecision || '없음' }}</strong>
                   </article>
                   <article>
-                    <span>goal</span>
+                    <span>목표</span>
                     <p>{{ selectedWorkTicket.goal || '없음' }}</p>
                   </article>
                   <article>
-                    <span>work items</span>
+                    <span>작업 항목</span>
                     <p>{{ selectedWorkTicket.workItems || '없음' }}</p>
                   </article>
                   <article>
-                    <span>deliverables</span>
+                    <span>산출물</span>
                     <p>{{ selectedWorkTicket.deliverables || '없음' }}</p>
                   </article>
                   <article>
-                    <span>prerequisites</span>
+                    <span>선행 조건</span>
                     <p>{{ selectedWorkTicket.prerequisites || '없음' }}</p>
                   </article>
                   <article>
-                    <span>dependencies</span>
+                    <span>의존성</span>
                     <p>{{ selectedWorkTicket.dependencies || selectedWorkTicket.prerequisites || '없음' }}</p>
                   </article>
                   <article class="detail-editor detail-editor-wide">
-                    <span>edit dependencies</span>
+                    <span>의존성 수정</span>
                     <textarea
                       v-model="metadataDependencies"
                       class="textarea-input"
                       rows="4"
+                      aria-label="의존성 수정"
                       placeholder="TKT-039 또는 선행 티켓/의존성 메모를 적습니다."
                     ></textarea>
                   </article>
                   <article>
-                    <span>questions</span>
+                    <span>질문</span>
                     <p>{{ selectedWorkTicket.questions || '없음' }}</p>
                   </article>
                   <article>
-                    <span>review memo</span>
+                    <span>검토 메모</span>
                     <p>{{ selectedWorkTicket.reviewMemo || '없음' }}</p>
                   </article>
                   <article>
-                    <span>PR prep memo</span>
+                    <span>PR 준비 메모</span>
                     <p>{{ selectedWorkTicket.prPreparationMemo || '없음' }}</p>
                   </article>
                   <article>
-                    <span>notes</span>
+                    <span>메모</span>
                     <p>{{ selectedWorkTicket.notes || '없음' }}</p>
                   </article>
                 </div>
@@ -4519,8 +4639,7 @@ function persistStudioPostId(postId) {
               <aside class="command-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Command Zone</p>
-                    <h3>preset bridge</h3>
+                    <h3>작업 지시</h3>
                   </div>
                 </div>
 
@@ -4577,12 +4696,12 @@ function persistStudioPostId(postId) {
                     :disabled="isRunningCommand || !selectedCommand || !workManagerToken"
                     @click="submitPresetCommand"
                   >
-                    {{ isRunningCommand ? '큐 등록 중...' : 'preset command 전송' }}
+                    {{ isRunningCommand ? '큐 등록 중...' : '미리 정한 명령 전송' }}
                   </button>
                 </div>
 
                 <div class="feed-block">
-                  <strong>activity feed</strong>
+                  <strong>활동 기록</strong>
                   <article v-for="entry in activityFeed.slice(0, 6)" :key="entry.id" class="activity-entry">
                     <div class="feed-meta">
                       <span>{{ entry.type }}</span>
@@ -4593,7 +4712,7 @@ function persistStudioPostId(postId) {
                   </article>
                   <article v-for="entry in commandHistory.slice(0, 3)" :key="entry.id" class="activity-entry">
                     <div class="feed-meta">
-                      <span>command</span>
+                      <span>명령</span>
                       <small>{{ formatTimestamp(entry.createdAt) }}</small>
                     </div>
                     <p>{{ entry.label }}</p>
@@ -4601,62 +4720,41 @@ function persistStudioPostId(postId) {
                   </article>
                 </div>
               </aside>
-            </section>
+              </section>
+            </details>
           </section>
 
-          <section v-else class="feature-shell">
-            <StationHeader
-              line-class="line-r"
-              station-code="R01"
-              title="노드 정책 보드"
-              title-en="RUNTIME BOARD"
-              status="정책 조회"
-              status-tone="ok"
-              summary="ion2 · rtx5070 · gateway"
-              @exit="openPage('junction')"
-            />
-            <section class="station-lead">
-                          <div class="banner-stats">
-              <article>
-              <span>gateway</span>
-              <strong>{{ healthState.status }}</strong>
-              </article>
-              <article>
-              <span>rtx5070</span>
-              <strong>{{ runtimeState.ollama?.status || 'unknown' }}</strong>
-              </article>
-              <article>
-              <span>queued</span>
-              <strong>{{ healthState.tickets?.queued ?? 0 }}</strong>
-              </article>
+          <section v-else class="feature-shell tone-page tone-runtime-page line-r">
+            <section class="tone-page-hero line-r">
+              <div class="tone-hero-topline">
+                <small>주의가 필요한 신호</small>
+                <span>보호 구역</span>
               </div>
+              <h1>{{ runtimeNeedsAttention ? '응답 지연이 평소보다 깁니다' : '모든 실행 환경이 응답 중입니다' }}</h1>
+              <p>{{ runtimeNeedsAttention ? '서비스는 동작 중이며 최근 10분의 변화입니다.' : '최근 확인한 실행 환경이 정상입니다.' }}</p>
             </section>
 
-            <section class="section-block">
-              <div class="section-head">
+            <div class="tone-runtime-list" aria-label="실행 환경 상태">
+              <div v-for="row in runtimeToneRows" :key="row.key" class="tone-runtime-row">
+                <span class="tone-status-dot" :class="{ wait: row.warning }" aria-hidden="true"></span>
                 <div>
-                  <p class="eyebrow">Runtime Nodes</p>
-                  <h3>운영 노드</h3>
+                  <strong>{{ row.label }}</strong>
+                  <small>{{ row.detail }}</small>
                 </div>
+                <span class="tone-runtime-metric">{{ row.status }}</span>
               </div>
+            </div>
 
-              <div class="runtime-grid">
-                <article v-for="node in runtimeState.nodes" :key="node.nodeId" class="runtime-card">
-                  <div class="runtime-top">
-                    <strong>{{ node.nodeId }}</strong>
-                    <span class="status-chip">{{ node.availability }}</span>
-                  </div>
-                  <p>{{ node.role }}</p>
-                  <small>{{ (node.handles || []).join(', ') }}</small>
-                </article>
-              </div>
-            </section>
+            <button type="button" class="ghost-button tone-refresh" @click="loadPortalData">상태 새로고침</button>
 
+            <details class="tone-support-details tone-runtime-details">
+              <summary>오프로드·배포 기준</summary>
+              <div class="tone-support-details__body">
             <section class="section-block split-layout">
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Routing Rules</p>
+                    <p class="eyebrow">라우팅 규칙</p>
                     <h3>오프로드 정책</h3>
                   </div>
                 </div>
@@ -4671,23 +4769,25 @@ function persistStudioPostId(postId) {
               <article class="surface-panel">
                 <div class="section-head">
                   <div>
-                    <p class="eyebrow">Release Path</p>
+                    <p class="eyebrow">배포 경로</p>
                     <h3>배포 레일</h3>
                   </div>
                 </div>
 
-                <div class="path-steps">
-                  <div>UI / docs 정리</div>
-                  <div>티켓 acceptance 확인</div>
-                  <div>tests / CI 확인</div>
-                  <div>PR 정리</div>
-                  <div>tag / release</div>
-                </div>
+                <ol class="path-steps" aria-label="배포 레일 단계">
+                  <li><span>01</span><strong>UI / docs 정리</strong></li>
+                  <li><span>02</span><strong>티켓 acceptance 확인</strong></li>
+                  <li><span>03</span><strong>tests / CI 확인</strong></li>
+                  <li><span>04</span><strong>PR 정리</strong></li>
+                  <li><span>05</span><strong>tag / release</strong></li>
+                </ol>
               </article>
             </section>
+              </div>
+            </details>
           </section>
 
-          <nav v-if="!isTestRoute" class="mobile-quick-nav" :class="{ static: isStaticMode }" aria-label="빠른 환승">
+          <nav v-if="!isTestRoute" class="mobile-quick-nav" aria-label="빠른 환승">
             <button type="button" :class="{ active: page === 'junction' }" @click="openPage('junction')">노선도</button>
             <button
               type="button"
@@ -4697,7 +4797,6 @@ function persistStudioPostId(postId) {
               아카이브
             </button>
             <button
-              v-if="!isStaticMode"
               type="button"
               :class="{ active: ['simhub', 'elevator', 'taxi'].includes(page) }"
               @click="openPage('simhub')"

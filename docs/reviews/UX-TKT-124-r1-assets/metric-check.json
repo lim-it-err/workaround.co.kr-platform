@@ -1,0 +1,24 @@
+[
+  {
+    "hour": "09",
+    "arrivals": 72,
+    "completed": 16,
+    "waiting": 0,
+    "counters": 3,
+    "prebookedRatio": 0.35,
+    "averageWaitSeconds": 45,
+    "maxWaitSeconds": 45,
+    "serviceSeconds": 35
+  },
+  {
+    "hour": "10",
+    "arrivals": 168,
+    "completed": 16,
+    "waiting": 0,
+    "counters": 3,
+    "prebookedRatio": 0.35,
+    "averageWaitSeconds": 2156,
+    "maxWaitSeconds": 2250,
+    "serviceSeconds": 35
+  }
+]

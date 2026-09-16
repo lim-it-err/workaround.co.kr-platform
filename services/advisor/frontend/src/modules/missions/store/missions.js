@@ -1,34 +1,31 @@
 // missions 모듈 상태. 프로토타입: 콘텐츠는 정적 샘플, 제출물은 localStorage.
 // 실제 서비스에서는 이 파일만 API 클라이언트 호출로 교체된다 (모듈 밖 인터페이스는 동일).
 import { reactive } from 'vue'
-import sample from '../data/sampleContent.js'
+import sampleCatalog from '../data/missionCatalog.js'
 import projectSample from '../data/sampleProjects.js'
-import cards from '../data/sampleCards.js'
-import boundaryData from '../data/sampleBoundaryRounds.js'
-import caseFileData from '../data/sampleCaseFiles.js'
-import probeData from '../data/sampleProbeRounds.js'
+import { routineCards, routineCases } from '../data/routineCatalog.js'
 import seasons from '../data/sampleSeasons.js'
 import { extraMissions } from '../data/inflightContent.js'
 import {
-  beginBoundarySession,
-  pickBoundaryRound,
-} from '../games/boundaryEngine.js'
-import {
-  beginProbeSession,
-  pickProbeRound,
-  settleProbeSession,
-} from '../games/probeEngine.js'
-import {
+  activeSeason,
   buildSeasonOverview,
+  lifetimeTotals,
   localDateKey,
-  normalizeSeasonStats,
+  lockSeasonEnding,
+  normalizeSeasons,
   recordSeasonGain,
+  startNewSeason as createNewSeason,
 } from './seasonStats.js'
+import { createCourseCatalog, findCourse } from './courseCatalog.js'
+import { syncLearnerNickname } from './learnerIdentity.js'
 
-const dailyProbeRounds = probeData.dailyProbeRounds ?? probeData.probeRounds
-const dailyBoundaryRounds = boundaryData.dailyBoundaryRounds ?? boundaryData.boundaryRounds
+let fullSample = { sampleReviews: {}, sampleExplainFeedback: {}, sampleReputation: {} }
+let courseCodingMissions = []
+let probeAssets = null
+let boundaryAssets = null
 
 const STORAGE_KEY = 'advisor.learner.v1'
+const baseMissions = [...sampleCatalog.missions, ...extraMissions]
 
 // 백엔드 채팅 프리뷰 API. 백엔드가 죽어 있으면 아래 mock 응답으로 조용히 폴백한다.
 const API_BASE = import.meta.env.VITE_ADVISOR_API ?? 'http://localhost:8080/api/advisor'
@@ -273,21 +270,20 @@ function noCodeReadLabel(mission) {
 }
 
 function pickForkCard(seed) {
-  const forkCards = cards.readingCards.filter((card) => cards.cardForks[card.id])
-  return pickBySeed(forkCards, seed)
+  return pickBySeed(routineCards.readingCards, seed)
 }
 
 function pickCaseFile(state, seed, dateStr) {
-  const viewedToday = caseFileData.caseFiles.find(
+  const viewedToday = routineCases.find(
     (caseFile) => state.caseProgress[caseFile.id]?.lastViewedDate === dateStr,
   )
   if (viewedToday) return viewedToday
 
-  const ongoing = caseFileData.caseFiles.filter((caseFile) => {
+  const ongoing = routineCases.filter((caseFile) => {
     const progress = state.caseProgress[caseFile.id]
     return progress && !progress.verdict && (progress.openedDays ?? 0) < caseFile.days.length
   })
-  return pickBySeed(ongoing, seed) ?? caseFileData.caseFiles[0] ?? null
+  return pickBySeed(ongoing, seed) ?? routineCases[0] ?? null
 }
 
 function caseClueTitle(state, caseFile, dateStr) {
@@ -296,7 +292,7 @@ function caseClueTitle(state, caseFile, dateStr) {
   const opened = Math.min(caseFile.days.length, Math.max(0, Number(progress?.openedDays) || 0))
   const canAdvance = progress?.lastOpenedDate && progress.lastOpenedDate < dateStr
   const day = Math.min(caseFile.days.length, opened + (canAdvance || opened === 0 ? 1 : 0))
-  return `${caseFile.title} · Day ${Math.max(1, day)}`
+  return `${caseFile.title} · ${Math.max(1, day)}일차`
 }
 
 function caseClueDone(state, caseFile, dateStr) {
@@ -306,7 +302,7 @@ function caseClueDone(state, caseFile, dateStr) {
 }
 
 function ongoingCaseBanner(state, dateStr) {
-  const caseFile = caseFileData.caseFiles.find((entry) => {
+  const caseFile = routineCases.find((entry) => {
     const progress = state.caseProgress[entry.id]
     return progress && !progress.verdict
   })
@@ -340,7 +336,7 @@ function makeCardForkRoutineSlot(state, {
   return makeRoutineSlot(state, {
     kind: 'cardFork',
     title: card?.bookTitle ?? null,
-    linkTo: card ? `/games?card=${card.id}` : '/games',
+    linkTo: card ? `/games/practice/reading/${card.id}` : '/games',
     emoji: card?.emoji ?? emoji,
     time,
     label,
@@ -501,7 +497,7 @@ function buildFriday(state, seed, dateStr) {
 }
 
 function buildWeekend(state, seed, dateStr) {
-  const card = pickBySeed(cards.cinemaCards, seed)
+  const card = pickBySeed(routineCards.cinemaCards, seed)
   const cardDone = !!state.routineChecks[dateStr]?.[0]
 
   const projectPick = nextProjectSubMission(state, seed)
@@ -514,7 +510,7 @@ function buildWeekend(state, seed, dateStr) {
       makeRoutineSlot(state, {
         kind: 'cinemaCard',
         title: card?.filmTitle ?? null,
-        linkTo: card ? `/games?card=${card.id}` : '/games',
+        linkTo: card ? `/games/practice/cinema/${card.id}` : '/games',
         emoji: card?.emoji ?? '🎬',
         time: '오전 세션',
         label: '시사회 카드 보기',
@@ -613,10 +609,12 @@ function load() {
 
 const persisted = load()
 const submissionMigrationNeeded = hasLegacySubmission(persisted.submissions)
+const seasonMigrationNeeded = !persisted.seasons && !!persisted.seasonStats
 let journalUpdatedAt = persisted._sync?.journalUpdatedAt ?? null
 
 const state = reactive({
-  missions: [...sample.missions, ...extraMissions],
+  missions: baseMissions,
+  courses: createCourseCatalog(baseMissions),
   submissions: migrateSubmissions(persisted.submissions), // missionId -> [{ files, submittedAt, by }] (버전별, 재제출 시 append)
   explanations: persisted.explanations ?? {}, // missionId -> { text, submittedAt, by }
   chats: persisted.chats ?? {},               // missionId -> [{ role: 'me'|'agent', text, at }]
@@ -661,8 +659,8 @@ const state = reactive({
   cardForkChoices: persisted.cardForkChoices ?? {},
   // 카드 갈래를 최초 선택한 로컬 날짜. 당일 루틴 완료 판정에 사용한다.
   cardForkChoiceDates: persisted.cardForkChoiceDates ?? {},
-  // 4주 시즌 스탯. 구버전 저장 데이터에는 키가 없으므로 오늘을 시즌 시작일로 삼는다.
-  seasonStats: normalizeSeasonStats(persisted.seasonStats),
+  // 4주 시즌은 반복 인스턴스다. 구 seasonStats가 있으면 한 시즌으로 보존하고, 첫 방문은 명시적 시작을 기다린다.
+  seasons: normalizeSeasons(persisted.seasons, persisted.seasonStats),
 })
 
 const JOURNAL_KEYS = [
@@ -681,7 +679,7 @@ const JOURNAL_KEYS = [
   'caseProgress',
   'cardForkChoices',
   'cardForkChoiceDates',
-  'seasonStats',
+  'seasons',
 ]
 
 let syncBarrierNickname = ''
@@ -714,7 +712,7 @@ function persist({ syncJournal = true } = {}) {
       caseProgress: state.caseProgress,
       cardForkChoices: state.cardForkChoices,
       cardForkChoiceDates: state.cardForkChoiceDates,
-      seasonStats: state.seasonStats,
+      seasons: state.seasons,
       _sync: { journalUpdatedAt },
     }),
   )
@@ -723,7 +721,7 @@ function persist({ syncJournal = true } = {}) {
 
 // 단일 객체였던 구버전 제출은 메모리에서만 감싸 두지 않고, 로드 직후 배열 형태로 한 번 확정한다.
 // 서버 동기화는 앱 시작 루틴이 담당하므로 이 마이그레이션 쓰기에서는 journal 전송을 만들지 않는다.
-if (submissionMigrationNeeded) persist({ syncJournal: false })
+if (submissionMigrationNeeded || seasonMigrationNeeded) persist({ syncJournal: false })
 
 function afterInitialSync(nickname, operation) {
   const barrier = syncBarrierNickname === nickname ? syncBarrier : Promise.resolve(false)
@@ -822,7 +820,10 @@ function hasLocalRecords() {
     .some((records) => Object.values(records).some((versions) => versions?.length))
   if (versioned || objectHasValues(state.explanations) || objectHasValues(state.plannerSubmissions)) return true
   return JOURNAL_KEYS.some((key) => {
-    if (key === 'seasonStats') return (state.seasonStats?.gains?.length ?? 0) > 0
+    if (key === 'seasons') {
+      return Object.keys(state.seasons?.byId ?? {}).length > 0
+        || (state.seasons?.pendingGains?.length ?? 0) > 0
+    }
     return objectHasValues(state[key])
   })
 }
@@ -862,13 +863,17 @@ function applyRemoteJournal(remote) {
   const { updatedAt, data } = remoteJournalParts(remote)
   const localTime = new Date(journalUpdatedAt ?? 0).getTime()
   const remoteTime = new Date(updatedAt ?? 0).getTime()
-  const localHasJournal = JOURNAL_KEYS.some((key) => key === 'seasonStats'
-    ? (state.seasonStats?.gains?.length ?? 0) > 0
+  const localHasJournal = JOURNAL_KEYS.some((key) => key === 'seasons'
+    ? Object.keys(state.seasons?.byId ?? {}).length > 0
+      || (state.seasons?.pendingGains?.length ?? 0) > 0
     : objectHasValues(state[key]))
   if (remoteTime < localTime || (remoteTime === localTime && localHasJournal)) return
+  if (!('seasons' in data) && data.seasonStats) {
+    state.seasons = normalizeSeasons(undefined, data.seasonStats)
+  }
   for (const key of JOURNAL_KEYS) {
     if (!(key in data)) continue
-    state[key] = key === 'seasonStats' ? normalizeSeasonStats(data[key]) : data[key]
+    state[key] = key === 'seasons' ? normalizeSeasons(data[key]) : data[key]
   }
   journalUpdatedAt = updatedAt ?? journalUpdatedAt
 }
@@ -1002,7 +1007,18 @@ function startRecordSync(nickname = state.learner.nickname) {
 }
 
 function gainSeasonStat(stat, amount, source) {
-  return recordSeasonGain(state.seasonStats, { stat, amount, source })
+  const gain = { date: localDateKey(), stat, amount, source }
+  const current = activeSeason(state.seasons)
+  const result = recordSeasonGain(current, gain)
+  if (result.reason === 'ended') {
+    lockSeasonEnding(current, state.routineHistory, seasons.seasonEndings)
+  }
+  if (['ended', 'no-season'].includes(result.reason)) {
+    const duplicate = state.seasons.pendingGains.some((pending) =>
+      pending.stat === stat && pending.source === source)
+    if (!duplicate) state.seasons.pendingGains.push(gain)
+  }
+  return result
 }
 
 // 리뷰 조회 공통 헬퍼: 실제 저장된 리뷰가 있으면 그걸, 없으면(그리고 제출 이력이 있으면) 샘플로 폴백.
@@ -1010,11 +1026,11 @@ function gainSeasonStat(stat, amount, source) {
 function reviewVersions(missionId) {
   const stored = state.reviews[missionId]
   if (stored?.length) return stored
-  if (state.submissions[missionId]?.length && sample.sampleReviews[missionId]) {
-    const sampleReview = sample.sampleReviews[missionId]
+  if (state.submissions[missionId]?.length && fullSample.sampleReviews[missionId]) {
+    const sampleReview = fullSample.sampleReviews[missionId]
     return [
       {
-        content: { ...sampleReview, reputation: sample.sampleReputation?.[missionId] ?? null },
+        content: { ...sampleReview, reputation: fullSample.sampleReputation?.[missionId] ?? null },
         overall: sampleReview.overall,
         reviewedAt: null, // null = 샘플(프로토타입) 리뷰라는 표식
       },
@@ -1030,6 +1046,28 @@ export function useMissions() {
 
     getMission(id) {
       return state.missions.find((m) => m.id === id)
+        ?? courseCodingMissions.find((mission) => mission.id === id)
+    },
+
+    hydrateMissionContent(sample, codingMissions = []) {
+      if (sample?.missions?.length) {
+        fullSample = sample
+        const detailed = new Map(sample.missions.map((mission) => [mission.id, mission]))
+        state.missions = state.missions.map((mission) => detailed.get(mission.id) ?? mission)
+      }
+      courseCodingMissions = codingMissions
+    },
+
+    hydrateProbeGame(rounds, engine) {
+      probeAssets = { rounds: rounds ?? [], ...engine }
+    },
+
+    hydrateBoundaryGame(rounds, engine) {
+      boundaryAssets = { rounds: rounds ?? [], ...engine }
+    },
+
+    getCourse(id) {
+      return findCourse(state.courses, id)
     },
 
     missionStatus(id) {
@@ -1088,18 +1126,20 @@ export function useMissions() {
     },
 
     probeRoundForDate(dateStr = localDateStr()) {
+      const dailyProbeRounds = probeAssets?.rounds ?? []
       const savedRoundId = state.probeSessions[dateStr]?.roundId
       return dailyProbeRounds.find((round) => round.id === savedRoundId)
-        ?? pickProbeRound(dailyProbeRounds, dateStr)
+        ?? probeAssets?.pickProbeRound(dailyProbeRounds, dateStr)
     },
 
     chooseProbe(probeKey) {
       const dateStr = localDateStr()
       if (state.probeSessions[dateStr]) return false
+      const dailyProbeRounds = probeAssets?.rounds ?? []
       const round = dailyProbeRounds.find(
-        (candidate) => candidate.id === pickProbeRound(dailyProbeRounds, dateStr)?.id,
+        (candidate) => candidate.id === probeAssets?.pickProbeRound(dailyProbeRounds, dateStr)?.id,
       )
-      const session = beginProbeSession(round, probeKey)
+      const session = probeAssets?.beginProbeSession(round, probeKey)
       if (!session) return false
 
       state.probeSessions[dateStr] = session
@@ -1110,8 +1150,9 @@ export function useMissions() {
     chooseProbeVerdict(verdictKey) {
       const dateStr = localDateStr()
       const session = state.probeSessions[dateStr]
+      const dailyProbeRounds = probeAssets?.rounds ?? []
       const round = dailyProbeRounds.find((candidate) => candidate.id === session?.roundId)
-      const settled = settleProbeSession(round, session, verdictKey)
+      const settled = probeAssets?.settleProbeSession(round, session, verdictKey)
       if (!session || settled === session) return false
 
       state.probeSessions[dateStr] = settled
@@ -1124,16 +1165,18 @@ export function useMissions() {
     },
 
     boundaryRoundForDate(dateStr = localDateStr()) {
+      const dailyBoundaryRounds = boundaryAssets?.rounds ?? []
       const savedRoundId = state.boundarySessions[dateStr]?.roundId
       return dailyBoundaryRounds.find((round) => round.id === savedRoundId)
-        ?? pickBoundaryRound(dailyBoundaryRounds, dateStr)
+        ?? boundaryAssets?.pickBoundaryRound(dailyBoundaryRounds, dateStr)
     },
 
     chooseBoundary(boundaryKey) {
       const dateStr = localDateStr()
       if (state.boundarySessions[dateStr]) return false
-      const round = pickBoundaryRound(dailyBoundaryRounds, dateStr)
-      const session = beginBoundarySession(round, boundaryKey)
+      const dailyBoundaryRounds = boundaryAssets?.rounds ?? []
+      const round = boundaryAssets?.pickBoundaryRound(dailyBoundaryRounds, dateStr)
+      const session = boundaryAssets?.beginBoundarySession(round, boundaryKey)
       if (!session) return false
 
       state.boundarySessions[dateStr] = session
@@ -1145,8 +1188,39 @@ export function useMissions() {
       return true
     },
 
-    seasonOverview() {
-      return buildSeasonOverview(state.seasonStats, state.routineHistory, seasons.seasonEndings)
+    seasonOverview(seasonId = state.seasons.activeId) {
+      const season = seasonId ? state.seasons.byId[seasonId] ?? null : null
+      if (lockSeasonEnding(season, state.routineHistory, seasons.seasonEndings)) persist()
+      return buildSeasonOverview(season, state.routineHistory, seasons.seasonEndings)
+    },
+
+    pastSeasonOverviews() {
+      return Object.values(state.seasons.byId)
+        .filter((season) => season.id !== state.seasons.activeId && season.closedAt)
+        .sort((a, b) => b.start.localeCompare(a.start))
+        .map((season) => buildSeasonOverview(
+          season,
+          state.routineHistory,
+          seasons.seasonEndings,
+        ))
+    },
+
+    lifetimeSeasonTotals() {
+      return lifetimeTotals(state.seasons)
+    },
+
+    seasonGain(source) {
+      return [...(activeSeason(state.seasons)?.gains ?? [])]
+        .reverse()
+        .find((gain) => gain.source === source) ?? null
+    },
+
+    startNewSeason() {
+      const current = activeSeason(state.seasons)
+      if (lockSeasonEnding(current, state.routineHistory, seasons.seasonEndings)) persist()
+      const result = createNewSeason(state.seasons)
+      if (result.ok) persist()
+      return result
     },
 
     chooseCardFork(cardId, choiceKey) {
@@ -1242,8 +1316,8 @@ export function useMissions() {
     settleEndingPrediction(missionId, actualGrade) {
       if (!actualGrade || state.endingPredictions[missionId] !== actualGrade) return false
       const gained = gainSeasonStat('judgment', 2, `ending-prediction:${missionId}`)
-      if (gained) persist()
-      return gained
+      if (gained.ok || ['ended', 'no-season'].includes(gained.reason)) persist()
+      return gained.ok
     },
 
     // ---- 프로젝트 모드(맨땅에서): 여정 지도 캠페인 ----
@@ -1293,6 +1367,7 @@ export function useMissions() {
     setNickname(name) {
       const nickname = String(name ?? '').trim().slice(0, 12)
       state.learner.nickname = nickname
+      syncLearnerNickname(nickname)
       persist({ syncJournal: false })
       return startRecordSync(nickname)
     },
@@ -1393,7 +1468,7 @@ export function useMissions() {
 
     getExplainFeedback(missionId) {
       if (!state.explanations[missionId]) return null
-      return sample.sampleExplainFeedback[missionId] ?? null
+      return fullSample.sampleExplainFeedback[missionId] ?? null
     },
 
     // 평판은 리뷰 응답에 포함되어 함께 저장된다. index 미지정 시 최신 리뷰의 평판.

@@ -1,5 +1,8 @@
+import { ref } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { missionRoutes } from '../modules/missions/routes.js'
+
+export const routeLoading = ref(false)
 
 export const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +11,17 @@ export const router = createRouter({
     return { top: 0 }
   },
   routes: [
-    { path: '/', redirect: '/missions' },
+    { path: '/', redirect: '/today' },
     ...missionRoutes,
   ],
+})
+
+router.beforeEach(() => {
+  routeLoading.value = true
+})
+router.afterEach(() => {
+  routeLoading.value = false
+})
+router.onError(() => {
+  routeLoading.value = false
 })

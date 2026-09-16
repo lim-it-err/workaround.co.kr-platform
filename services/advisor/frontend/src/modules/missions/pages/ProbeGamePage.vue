@@ -1,12 +1,26 @@
 <script setup>
-import { computed, ref } from 'vue'
-import { inspectProbeRound } from '../games/probeEngine.js'
+import { computed, nextTick, ref } from 'vue'
+import probeData from '../data/sampleProbeRounds.js'
+import {
+  beginProbeSession,
+  inspectProbeRound,
+  pickProbeRound,
+  settleProbeSession,
+} from '../games/probeEngine.js'
 import { localDateKey } from '../store/seasonStats.js'
 import { useMissions } from '../store/missions.js'
 
 const store = useMissions()
+store.hydrateProbeGame(probeData.dailyProbeRounds ?? probeData.probeRounds, {
+  beginProbeSession,
+  pickProbeRound,
+  settleProbeSession,
+})
+const returnSurface = window.history.state?.from === '/today' ? '/today' : '/learn'
+const returnLabel = returnSurface === '/today' ? '오늘' : '배우기'
 const today = localDateKey()
 const viewingDate = ref(today)
+const postObservation = ref(null)
 
 const round = computed(() => store.probeRoundForDate(viewingDate.value))
 const session = computed(() => store.state.probeSessions[viewingDate.value] ?? null)
@@ -22,8 +36,13 @@ const correctHypothesis = computed(() => round.value?.hypotheses.find(
   (hypothesis) => hypothesis.key === round.value?.answerKey,
 ) ?? null)
 
-function observe(probeKey) {
-  if (isToday.value) store.chooseProbe(probeKey)
+async function observe(probeKey) {
+  if (!isToday.value || !store.chooseProbe(probeKey)) return
+  await nextTick()
+  postObservation.value?.scrollIntoView({
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+    block: 'nearest',
+  })
 }
 
 function chooseVerdict(verdictKey) {
@@ -41,7 +60,7 @@ function displayDate(date) {
 
 <template>
   <div class="probe-page">
-    <router-link to="/games" class="back-link">← 미니게임</router-link>
+    <router-link :to="returnSurface" class="back-link">← {{ returnLabel }}</router-link>
 
     <template v-if="round">
       <header class="hero">
@@ -54,30 +73,6 @@ function displayDate(date) {
         <span class="round-label">상황</span>
         <h2 id="round-title">{{ round.title }}</h2>
         <p>{{ round.situation }}</p>
-      </section>
-
-      <section class="step" aria-labelledby="hypothesis-title">
-        <div class="step-head">
-          <span>가설</span>
-          <strong v-if="view.probe">관측 결과로 가능성을 좁혔습니다</strong>
-        </div>
-        <h2 id="hypothesis-title">무엇이 원인일까요?</h2>
-        <div class="hypothesis-list">
-          <button
-            v-for="hypothesis in round.hypotheses"
-            :key="hypothesis.key"
-            class="hypothesis"
-            :class="{
-              eliminated: view.eliminatedKeys.includes(hypothesis.key),
-              selected: session?.verdictKey === hypothesis.key,
-            }"
-            :disabled="!isToday || !view.probe || Boolean(view.verdict)"
-            @click="chooseVerdict(hypothesis.key)"
-          >
-            <span>{{ hypothesis.label }}</span>
-            <small v-if="view.eliminatedKeys.includes(hypothesis.key)">관측으로 가능성 낮아짐</small>
-          </button>
-        </div>
       </section>
 
       <section class="step" aria-labelledby="probe-title">
@@ -96,12 +91,38 @@ function displayDate(date) {
         <p v-if="view.probe" class="locked-note">🔒 관측은 한 번뿐 — 선택을 바꿀 수 없습니다.</p>
       </section>
 
-      <section v-if="view.probe" class="observation card" aria-live="polite">
-        <span class="round-label">관측 결과</span>
-        <h2>{{ view.probe.label }}</h2>
-        <p>{{ view.probe.result }}</p>
-        <p v-if="!view.verdict && isToday" class="next-hint">이제 위의 가설 하나를 지목하세요.</p>
-      </section>
+      <div v-if="view.probe" ref="postObservation" class="post-observation">
+        <section class="observation card" aria-live="polite">
+          <span class="round-label">2 · 관측 결과</span>
+          <h2>{{ view.probe.label }}</h2>
+          <p>{{ view.probe.result }}</p>
+          <p v-if="!view.verdict && isToday" class="next-hint">결과와 맞닿은 가설 하나를 지목하세요.</p>
+        </section>
+
+        <section class="hypothesis-step" aria-labelledby="hypothesis-title">
+          <div class="step-head">
+            <span>3 · 가설</span>
+            <strong>관측 결과로 가능성을 좁혔습니다</strong>
+          </div>
+          <h2 id="hypothesis-title">무엇이 원인일까요?</h2>
+          <div class="hypothesis-list">
+            <button
+              v-for="hypothesis in round.hypotheses"
+              :key="hypothesis.key"
+              class="hypothesis"
+              :class="{
+                eliminated: view.eliminatedKeys.includes(hypothesis.key),
+                selected: session?.verdictKey === hypothesis.key,
+              }"
+              :disabled="!isToday || Boolean(view.verdict)"
+              @click="chooseVerdict(hypothesis.key)"
+            >
+              <span>{{ hypothesis.label }}</span>
+              <small v-if="view.eliminatedKeys.includes(hypothesis.key)">관측으로 가능성 낮아짐</small>
+            </button>
+          </div>
+        </section>
+      </div>
 
       <section v-if="view.verdict" class="resolution card" aria-live="polite">
         <div class="result" :class="view.correct ? 'correct' : 'missed'">
@@ -163,7 +184,7 @@ function displayDate(date) {
 .step { margin-top: 24px; }
 .step-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .step-head strong { color: var(--fg-dim); font-size: 11.5px; }
-.step > h2 { margin: 4px 0 11px; font-size: 17px; }
+.step > h2, .hypothesis-step > h2 { margin: 4px 0 11px; font-size: 17px; }
 .hypothesis-list, .probe-list { display: grid; gap: 9px; }
 .hypothesis, .probe-button {
   width: 100%; min-width: 0; min-height: 50px; padding: 12px 14px;
@@ -180,7 +201,9 @@ function displayDate(date) {
 .hypothesis:not(.eliminated):disabled, .probe-button:disabled:not(.selected) { opacity: 0.68; }
 .hypothesis.selected:disabled, .probe-button.selected:disabled { opacity: 1; color: var(--accent); }
 .locked-note, .next-hint, .past-note { margin: 9px 0 0; color: var(--fg-dim); font-size: 12px; }
-.observation { margin-top: 18px; padding: 18px; border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.post-observation { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 16px; align-items: start; margin-top: 18px; scroll-margin-top: 16px; }
+.observation { padding: 18px; border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+.hypothesis-step { min-width: 0; }
 .observation h2 { margin: 5px 0 9px; font-size: 15px; }
 .next-hint { color: var(--accent); font-weight: 700; }
 .resolution { margin-top: 20px; padding: 20px; }
@@ -210,6 +233,7 @@ function displayDate(date) {
 @media (max-width: 420px) {
   .hero h1 { font-size: 23px; }
   .situation, .resolution { padding: 16px 14px; }
+  .post-observation { grid-template-columns: 1fr; gap: 14px; }
   .hypothesis { align-items: flex-start; flex-direction: column; gap: 4px; }
   .hypothesis small { flex-basis: auto; text-align: left; }
 }

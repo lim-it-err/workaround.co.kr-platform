@@ -5,6 +5,7 @@ import { after, before, test } from 'node:test'
 import { createRequire } from 'node:module'
 import { readFile } from 'node:fs/promises'
 import { VOYAGE } from '../data/voyage.js'
+import { voyageStorageKey } from '../data/voyageStorage.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const base = process.env.STUDIO_TEST_URL || 'http://127.0.0.1:4174/workaround.co.kr-platform/'
@@ -65,6 +66,30 @@ async function overflow(page) {
     return [selector, element ? Math.max(0, element.scrollWidth - element.clientWidth) : 0]
   }))
 }
+async function assertWriterBarContract(page) {
+  const contract = await page.locator('.writer-bar').evaluate((bar) => {
+    const bounds = bar.getBoundingClientRect()
+    const buttons = [...bar.querySelectorAll('button')]
+      .filter(button => getComputedStyle(button).display !== 'none')
+      .map(button => {
+        const box = button.getBoundingClientRect()
+        return { label: button.getAttribute('aria-label') || button.textContent.trim(), left: box.left, right: box.right, height: box.height }
+      })
+    const saveStyle = getComputedStyle(bar.querySelector('.writer-save'))
+    return {
+      left: bounds.left,
+      right: bounds.right,
+      buttons,
+      saveStyle: { minWidth: saveStyle.minWidth, overflowX: saveStyle.overflowX, textOverflow: saveStyle.textOverflow }
+    }
+  })
+  for (const button of contract.buttons) {
+    assert.ok(button.left >= contract.left - 0.5, `${button.label} 왼쪽이 상단바 안이어야 한다`)
+    assert.ok(button.right <= contract.right + 0.5, `${button.label} 오른쪽이 상단바 안이어야 한다`)
+    assert.ok(button.height >= 40, `${button.label} 높이는 40px 이상이어야 한다`)
+  }
+  assert.deepEqual(contract.saveStyle, { minWidth: '0px', overflowX: 'hidden', textOverflow: 'ellipsis' })
+}
 
 for (const theme of ['dark', 'light']) {
   test(`375px ${theme}: immediate typing, one status/primary, overlays and no overflow`, async t => {
@@ -77,11 +102,31 @@ for (const theme of ['dark', 'light']) {
     assert.equal(await page.getByRole('button', { name: '지금 저장', exact: true }).count(), 0)
     assert.equal(await page.getByRole('textbox', { name: '요약', exact: true }).count(), 0)
     assert.equal(await page.locator('.writing-room .station-header, .studio-state-flow, .studio-sidebar').count(), 0)
+    for (const name of ['발행', '글 도구', '저장 안내와 백업']) {
+      const box = await page.getByRole('button', { name, exact: true }).boundingBox()
+      assert.ok(box.width >= 40 && box.height >= 40, `${name} 클릭 영역은 40px 이상이어야 한다`)
+    }
+    await assertWriterBarContract(page)
     await body(page).fill('첫 화면에서 바로 씁니다.')
+    await page.waitForFunction(() => document.querySelector('.writer-save')?.textContent === '저장 중…')
+    await assertWriterBarContract(page)
     await saved(page)
     assert.match(await page.locator('.writer-save').textContent(), /저장됨 \d{2}:\d{2}/)
+    await assertWriterBarContract(page)
     for (const [, value] of await overflow(page)) assert.equal(value, 0)
     if (process.env.STUDIO_SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.STUDIO_SCREENSHOT_DIR}/studio-${theme}.png` })
+    await page.getByRole('button', { name: '글 도구', exact: true }).click()
+    assert.match(await sheet(page).getByRole('heading').textContent(), /글 도구/)
+    for (const [, value] of await overflow(page)) assert.equal(value, 0)
+    if (process.env.STUDIO_SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.STUDIO_SCREENSHOT_DIR}/tools-${theme}.png` })
+    await sheet(page).getByRole('button', { name: '표 삽입', exact: true }).click()
+    await page.locator('.writer-inline-table').waitFor()
+    for (const [, value] of await overflow(page)) assert.equal(value, 0)
+    if (process.env.STUDIO_SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.STUDIO_SCREENSHOT_DIR}/inline-mobile-${theme}.png`, fullPage: true })
+    assert.equal(await page.getByRole('button', { name: '블로그', exact: true }).textContent(), '← 블로그')
+    await title(page).fill('모바일에서도 여러 줄로 온전히 보이는 아주 긴 글 제목입니다')
+    assert.equal(await title(page).evaluate(element => element.scrollHeight <= element.clientHeight + 1), true)
+    await page.getByRole('button', { name: '표 삭제', exact: true }).click()
     await openPublish(page)
     assert.equal(await page.locator('.writing-room .primary-button:visible').count(), 1)
     for (const [, value] of await overflow(page)) assert.equal(value, 0)
@@ -99,6 +144,33 @@ for (const theme of ['dark', 'light']) {
     for (const [, value] of await overflow(page)) assert.equal(value, 0)
     if (process.env.STUDIO_SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.STUDIO_SCREENSHOT_DIR}/drawer-${theme}.png` })
   })
+}
+
+for (const width of [375, 1440]) {
+  for (const theme of ['dark', 'light']) {
+    test(`${width}px ${theme}: storage help keeps a 28px visual circle inside a 40px target`, async t => {
+      const page = await setup(t, { theme, width, height: width === 375 ? 812 : 900 })
+      const storageHelp = page.getByRole('button', { name: '저장 안내와 백업', exact: true })
+      const hitArea = await storageHelp.boundingBox()
+      assert.ok(hitArea.width >= 40 && hitArea.height >= 40, '저장 안내 클릭 영역은 40px 이상이어야 한다')
+      const visualCircle = await storageHelp.evaluate(element => {
+        const style = getComputedStyle(element, '::before')
+        return {
+          width: Number.parseFloat(style.width),
+          height: Number.parseFloat(style.height),
+          borderStyle: style.borderStyle
+        }
+      })
+      assert.deepEqual(visualCircle, { width: 28, height: 28, borderStyle: 'solid' })
+      for (const [, value] of await overflow(page)) assert.equal(value, 0)
+      if (process.env.STUDIO_SCREENSHOT_DIR) {
+        await page.screenshot({
+          path: `${process.env.STUDIO_SCREENSHOT_DIR}/storage-help-${width}-${theme}.png`,
+          fullPage: true
+        })
+      }
+    })
+  }
 }
 
 test('054/097: autosave, title-only draft, stable custom slug and editing-target reload', async t => {
@@ -147,7 +219,7 @@ test('054: publish sheet validation, published autosave and first publication da
   await sheet(page).getByRole('button', { name: '발행 확정' }).click()
   await page.waitForURL(`${base}blog/**`)
   assert.equal((await posts(page))[0].publishedAt, initialPublishedAt)
-  await page.getByRole('button', { name: 'Studio에서 편집' }).click()
+  await page.getByRole('button', { name: '이어서 쓰기 →' }).click()
   assert.equal(await body(page).inputValue(), '공개 상태를 유지하는 편집')
 })
 
@@ -163,8 +235,9 @@ test('054: blocked save and cancelled exit/new-draft guard preserve input', asyn
   })
   await body(page).fill('저장 실패해도 입력은 유지')
   await page.waitForFunction(() => document.querySelector('.writer-save')?.textContent === '저장 실패')
+  await assertWriterBarContract(page)
   page.on('dialog', dialog => dialog.dismiss())
-  await page.getByRole('button', { name: '나가기', exact: true }).click()
+  await page.getByRole('button', { name: '블로그', exact: true }).click()
   assert.equal(await body(page).inputValue(), '저장 실패해도 입력은 유지')
   await menu(page, '새 초안')
   assert.equal(await body(page).inputValue(), '저장 실패해도 입력은 유지')
@@ -200,7 +273,7 @@ test('056/055: archive drawer restores draft/public, preserves dates and exclude
   await page.locator('.post-body').waitFor()
   await page.reload()
   assert.match(await page.locator('.post-body').textContent(), /복원 본문/)
-  await page.getByRole('button', { name: '아카이브로', exact: true }).click()
+  await page.getByRole('button', { name: '← 보관함', exact: true }).click()
   await page.goBack()
   await page.locator('.post-body').waitFor()
   await page.goForward()
@@ -213,7 +286,7 @@ test('056/055: archive drawer restores draft/public, preserves dates and exclude
 
 test('057: same-place preview preserves Markdown fidelity, escaping and cursor', async t => {
   const page = await setup(t, { width: 1280, height: 900 })
-  const markdown = '1. 첫 항목\n   - 중첩\n     1. 세 번째\n2. 두 번째\n\n`a**b**` **강조** *기울임*\n\n문단 첫 줄\n둘째 줄\n\n*\n\n[안전](https://example.com) [메일](mailto:test@example.com)\n\n[위험](javascript:alert(1))\n\n<img src=x onerror="window.studioXss=1">\n\n<script>window.studioXss=1</script>\n\n[속성](https://example.com/"onmouseover="alert(1))'
+  const markdown = '1. 첫 항목\n   - 중첩\n     1. 세 번째\n2. 두 번째\n\n`a**b**` **강조** *기울임*\n\n문단 첫 줄\n둘째 줄\n\n*\n\n[안전](https://example.com) [메일](mailto:test@example.com)\n\n[위험](javascript:alert(1))\n\n![위험한 사진](data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9ImFsZXJ0KDEpIj48L3N2Zz4=)\n\n<img src=x onerror="window.studioXss=1">\n\n<script>window.studioXss=1</script>\n\n[속성](https://example.com/"onmouseover="alert(1))'
   await body(page).fill(markdown)
   await body(page).evaluate(element => element.setSelectionRange(5, 9))
   await page.getByRole('button', { name: '미리보기', exact: true }).click()
@@ -225,6 +298,7 @@ test('057: same-place preview preserves Markdown fidelity, escaping and cursor',
   assert.equal(await preview.locator('code strong').count(), 0)
   assert.match(await preview.textContent(), /문단 첫 줄\s+둘째 줄/)
   assert.equal(await preview.locator('a[href^="javascript:"], script, [onerror], [onmouseover]').count(), 0)
+  assert.equal(await preview.locator('img[src^="data:image/svg"]').count(), 0)
   assert.equal(await page.evaluate(() => window.studioXss), undefined)
   assert.equal(await preview.locator('a[href="https://example.com"]').count(), 1)
   assert.equal(await preview.locator('a[href="mailto:test@example.com"]').count(), 1)
@@ -235,14 +309,107 @@ test('057: same-place preview preserves Markdown fidelity, escaping and cursor',
   assert.equal(await body(page).inputValue(), markdown)
 })
 
+test('105: heading tools, functional table and local photo survive preview, publish and reload', async t => {
+  const page = await setup(t, { width: 1280, height: 900 })
+  assert.ok(await page.locator('.writer-page').evaluate(element => element.getBoundingClientRect().width <= 720))
+  await title(page).fill('도구 메뉴 검증')
+  await body(page).fill('제목 줄\n\n본문')
+  await body(page).evaluate(element => element.setSelectionRange(0, 4))
+  const tools = page.getByRole('complementary', { name: '글 도구' })
+  if (process.env.STUDIO_SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.STUDIO_SCREENSHOT_DIR}/tools-desktop.png` })
+  await tools.getByRole('button', { name: 'H1', exact: true }).click()
+  assert.match(await body(page).inputValue(), /^# 제목 줄/)
+  await tools.getByRole('button', { name: 'H2', exact: true }).click()
+  assert.match(await body(page).inputValue(), /^## 제목 줄/)
+  await tools.getByRole('button', { name: 'H3', exact: true }).click()
+  assert.match(await body(page).inputValue(), /^### 제목 줄/)
+  await tools.getByRole('button', { name: 'H3', exact: true }).click()
+  assert.match(await body(page).inputValue(), /^제목 줄/)
+
+  await body(page).evaluate(element => element.setSelectionRange(element.value.length, element.value.length))
+  const toolSizes = await tools.getByRole('button').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
+  assert.equal(toolSizes.every(height => height >= 40), true, 'desktop tool targets are at least 40px')
+  await tools.getByRole('button', { name: '표 삽입', exact: true }).click()
+  const inlineTable = page.locator('.writer-inline-table')
+  await inlineTable.waitFor()
+  assert.equal(await sheet(page).count(), 0, 'table is edited inline, not in a dialog')
+  await inlineTable.getByRole('button', { name: '＋ 행', exact: true }).click()
+  await inlineTable.getByRole('button', { name: '＋ 열', exact: true }).click()
+  assert.equal(await inlineTable.locator('thead input').count(), 3)
+  assert.equal(await inlineTable.locator('tbody tr').count(), 3)
+  await inlineTable.locator('summary[aria-label="3행 3열 메뉴"]').click()
+  await inlineTable.getByRole('button', { name: '행 삭제', exact: true }).click()
+  await inlineTable.locator('summary[aria-label="3열 메뉴"]').click()
+  await inlineTable.getByRole('button', { name: '열 삭제', exact: true }).click()
+  assert.equal(await inlineTable.locator('thead input').count(), 2)
+  assert.equal(await inlineTable.locator('tbody tr').count(), 2)
+  await inlineTable.getByRole('textbox', { name: '표 이름', exact: true }).fill('여행 일정')
+  await inlineTable.getByRole('textbox', { name: '열 1 제목', exact: true }).fill('도시')
+  await inlineTable.getByRole('textbox', { name: '열 2 제목', exact: true }).fill('날짜')
+  await inlineTable.getByRole('textbox', { name: '1행 1열', exact: true }).fill('프라하')
+  await inlineTable.getByRole('textbox', { name: '1행 2열', exact: true }).fill('9월 8일')
+  await inlineTable.getByRole('textbox', { name: '2행 1열', exact: true }).fill('빈')
+  await inlineTable.getByRole('textbox', { name: '2행 2열', exact: true }).fill('9월 13일')
+  await inlineTable.getByRole('textbox', { name: '열 1 제목', exact: true }).focus()
+  await page.keyboard.press('Tab')
+  assert.equal(await inlineTable.getByRole('textbox', { name: '열 2 제목', exact: true }).evaluate(element => document.activeElement === element), true)
+  assert.equal((await body(page).inputValue()).includes('|'), false, 'table pipe syntax stays hidden')
+  assert.equal((await body(page).inputValue()).includes('[[studio-table:'), false, 'table reference stays hidden')
+
+  const fileChooserPromise = page.waitForEvent('filechooser')
+  await tools.getByRole('button', { name: '사진', exact: true }).click()
+  const fileChooser = await fileChooserPromise
+  await fileChooser.setFiles({
+    name: '창가.png',
+    mimeType: 'image/png',
+    buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
+  })
+  await page.getByText('사진을 본문에 첨부했습니다.', { exact: true }).waitFor()
+  const inlineImage = page.locator('.writer-image-block')
+  await inlineImage.waitFor()
+  assert.equal(await inlineImage.locator('img[alt="창가"]').count(), 1)
+  const visibleEditorValues = await page.locator('.writer-editor textarea:visible, .writer-editor input:visible').evaluateAll(elements => elements.map(element => element.value).join('\n'))
+  assert.doesNotMatch(visibleEditorValues, /\[\[studio-table:|data:image\//, 'internal references are not user-visible')
+  if (process.env.STUDIO_SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.STUDIO_SCREENSHOT_DIR}/tools-inline-desktop.png`, fullPage: true })
+  await saved(page)
+  const stored = (await posts(page))[0]
+  assert.equal(stored.tables.length, 1)
+  assert.equal(stored.tables[0].rows[0][0], '프라하')
+  assert.match(stored.bodyMarkdown, /data:image\/png;base64,/)
+
+  await page.getByRole('button', { name: '미리보기', exact: true }).click()
+  assert.equal(await page.locator('.writer-preview table').count(), 1)
+  assert.equal(await page.locator('.writer-preview th').allTextContents().then(values => values.join(',')), '도시,날짜')
+  assert.match(await page.locator('.writer-preview tbody').textContent(), /프라하.*9월 8일/s)
+  assert.equal(await page.locator('.writer-preview img[alt="창가"]').count(), 1)
+  if (process.env.STUDIO_SCREENSHOT_DIR) await page.screenshot({ path: `${process.env.STUDIO_SCREENSHOT_DIR}/tools-preview-desktop.png` })
+  await page.reload()
+  assert.equal(await page.locator('.writer-preview table').count(), 1)
+  assert.equal(await page.locator('.writer-preview img[alt="창가"]').count(), 1)
+  assert.equal(await page.locator('.writer-inline-table').count(), 1)
+  assert.equal(await page.locator('.writer-image-block img[alt="창가"]').count(), 1)
+  const restoredEditorValues = await page.locator('.writer-editor textarea:visible, .writer-editor input:visible').evaluateAll(elements => elements.map(element => element.value).join('\n'))
+  assert.doesNotMatch(restoredEditorValues, /\[\[studio-table:|data:image\//)
+
+  await page.getByRole('button', { name: '발행', exact: true }).click()
+  await sheet(page).getByRole('textbox', { name: '요약', exact: true }).fill('도구 메뉴로 만든 글')
+  await sheet(page).getByRole('button', { name: '발행 확정', exact: true }).click()
+  await page.waitForURL(`${base}blog/**`)
+  assert.equal(await page.locator('.post-body table').count(), 1)
+  assert.equal(await page.locator('.post-body img[alt="창가"]').count(), 1)
+})
+
 test('097: local storage disclosure, loss conditions and combined JSON download remain accessible', async t => {
   const page = await setup(t)
   assert.match(await page.locator('.writer-storage').textContent(), /이 브라우저에만 저장됩니다. 다른 기기와 동기화되지 않습니다/)
   await body(page).fill('백업할 초안')
   await saved(page)
-  await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ notes: { prague: '여행 기록' }, stamps: ['prague'] })), `workaround-voyage-archive:${VOYAGE.id}`)
+  await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ notes: { prague: '여행 기록' }, stamps: ['prague'] })), voyageStorageKey(VOYAGE.id, 'archive'))
   await page.getByRole('button', { name: '저장 안내와 백업' }).click()
   assert.match(await sheet(page).textContent(), /브라우저 데이터를 지우거나 시크릿 모드/)
+  await assertWriterBarContract(page)
+  const backupBox = await sheet(page).getByRole('button', { name: '내 기록 백업' }).boundingBox()
+  assert.ok(backupBox.width >= 40 && backupBox.height >= 40, '백업 클릭 영역은 40px 이상이어야 한다')
   const downloading = page.waitForEvent('download')
   await sheet(page).getByRole('button', { name: '내 기록 백업' }).click()
   const download = await downloading

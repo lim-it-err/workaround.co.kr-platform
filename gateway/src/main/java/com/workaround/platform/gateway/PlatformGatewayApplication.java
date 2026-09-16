@@ -3,6 +3,7 @@ package com.workaround.platform.gateway;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -58,11 +59,13 @@ class PlatformApiController {
   private final String ollamaBaseUrl;
   private final Set<String> trustedWorkManagerProxies;
 
+  @Autowired
   PlatformApiController(
       @Value("${app.platform.api-key:dev-key}") String platformApiKey,
       @Value("${app.ollama.base-url:}") String ollamaBaseUrl,
       @Value("${app.platform.elevator-service-url:http://localhost:8003}") String elevatorServiceUrl,
       @Value("${app.platform.sample-spring-service-url:http://localhost:8002}") String sampleSpringServiceUrl,
+      @Value("${app.platform.advisor-service-url:http://localhost:8081}") String advisorServiceUrl,
       @Value("${app.work-manager.password-sha256:" + DEFAULT_WORK_MANAGER_PASSWORD_SHA256 + "}") String workManagerPasswordHash,
       @Value("${app.work-manager.session-ttl-minutes:30}") int workManagerSessionTtlMinutes,
       @Value("${app.work-manager.max-failed-attempts:5}") int workManagerMaxFailedAttempts,
@@ -74,6 +77,7 @@ class PlatformApiController {
         new PlatformStore(
             elevatorServiceUrl,
             sampleSpringServiceUrl,
+            advisorServiceUrl,
             workManagerPasswordHash,
             workManagerSessionTtlMinutes,
             workManagerMaxFailedAttempts,
@@ -295,6 +299,7 @@ final class PlatformStore {
     this(
         elevatorServiceUrl,
         sampleSpringServiceUrl,
+        "http://localhost:8081",
         workManagerPasswordHash,
         workManagerSessionTtlMinutes,
         workManagerMaxFailedAttempts,
@@ -305,6 +310,45 @@ final class PlatformStore {
   PlatformStore(
       String elevatorServiceUrl,
       String sampleSpringServiceUrl,
+      String workManagerPasswordHash,
+      int workManagerSessionTtlMinutes,
+      int workManagerMaxFailedAttempts,
+      int workManagerLockMinutes,
+      Path repoRootOverride) {
+    this(
+        elevatorServiceUrl,
+        sampleSpringServiceUrl,
+        "http://localhost:8081",
+        workManagerPasswordHash,
+        workManagerSessionTtlMinutes,
+        workManagerMaxFailedAttempts,
+        workManagerLockMinutes,
+        repoRootOverride);
+  }
+
+  PlatformStore(
+      String elevatorServiceUrl,
+      String sampleSpringServiceUrl,
+      String advisorServiceUrl,
+      String workManagerPasswordHash,
+      int workManagerSessionTtlMinutes,
+      int workManagerMaxFailedAttempts,
+      int workManagerLockMinutes) {
+    this(
+        elevatorServiceUrl,
+        sampleSpringServiceUrl,
+        advisorServiceUrl,
+        workManagerPasswordHash,
+        workManagerSessionTtlMinutes,
+        workManagerMaxFailedAttempts,
+        workManagerLockMinutes,
+        null);
+  }
+
+  PlatformStore(
+      String elevatorServiceUrl,
+      String sampleSpringServiceUrl,
+      String advisorServiceUrl,
       String workManagerPasswordHash,
       int workManagerSessionTtlMinutes,
       int workManagerMaxFailedAttempts,
@@ -333,6 +377,15 @@ final class PlatformStore {
         sampleSpringServiceUrl,
         sampleSpringServiceUrl + "/health",
         "Independently dockerized Spring service used to prove the gateway can coordinate another Java service without owning its business logic.",
+        "ion2",
+        "light"));
+    services.add(new ServiceDescriptor(
+        "advisor",
+        "Developer Advisor",
+        "/api/services/advisor",
+        advisorServiceUrl,
+        advisorServiceUrl + "/health",
+        "Developer learning service with an isolated external-provider profile and a no-network mock default.",
         "ion2",
         "light"));
     services.add(new ServiceDescriptor(
