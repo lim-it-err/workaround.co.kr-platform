@@ -208,19 +208,25 @@ export const EAST_EUROPE_2026 = defineVoyage({
         {
           label: '세체니 온천 운영·예약',
           url: 'https://www.szechenyibath.hu/opening-hours',
-          note: '방문일 운영시간과 예약 가능 여부를 확인합니다.',
+          note: '07:00~20:00 운영(매표 19:00·퇴장 19:40), 일일권 13,200 Ft·09:00 전 조조권 10,500 Ft·온라인 Fast Track 15,200 Ft입니다. 슬리퍼는 필수이고 수영모는 랩 풀에서만 필요합니다.',
           checkedAt: '2026-09-15'
         },
         {
           label: '마차시 성당 입장 안내',
           url: 'https://matyas-templom.hu/en/',
-          note: '관람시간은 미사·행사에 따라 바뀔 수 있어 당일 확인합니다.',
+          note: '관광 입장은 09:00~17:00, 미사는 07:00·18:00입니다. 전례·행사가 우선하므로 현장 공지를 함께 확인합니다.',
           checkedAt: '2026-09-15'
         },
         {
           label: '부다 성 푸니쿨라',
           url: 'https://bkk.hu/en/travel-information/special-and-heritage-transport-services/funicular/',
-          note: '운행·정비 여부와 티켓 안내를 확인합니다.',
+          note: '08:00~22:00 운행하며 9월 정비일은 9/7·9/21입니다. 9/15은 정비일이 아니지만 당일 일시 중단 여부는 현장에서 확인합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: '어부의 요새 상부 전망대',
+          url: 'https://doc.budavar.hu/view.php?id=2434253',
+          note: '상부 전망대는 09:00~21:00 유료이며 성인 요금은 1,500 Ft입니다. 하부 테라스와 통로는 무료입니다.',
           checkedAt: '2026-09-15'
         }
       ]
@@ -241,7 +247,31 @@ export const EAST_EUROPE_2026 = defineVoyage({
         {
           label: '비셰흐라드 방문 안내',
           url: 'https://prague.eu/en/objevujte/vysehrad/',
-          note: '야외 구역과 유료 시설의 당일 운영을 확인합니다.',
+          note: '야외 구역은 연중 열리고 묘지는 19:00에 닫습니다. 일몰은 약 19:13이므로 묘지를 먼저 보고 18:30까지 성벽 전망 구역으로 이동합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: 'Sixt 프라하 중앙역 반납',
+          url: 'https://www.sixt.cz/autopujcovna-praha-hlavni-nadrazi',
+          note: '08:00~20:00 운영합니다. 내비에 Opletalova 53을 찍고 Bolzanova의 Sixt 표지 게이트에서 연락한 뒤, 전원과 짐을 내리고 차량을 인계합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: 'Budget 프라하 중앙역 반납',
+          url: 'https://www.budget.cz/en/contacts/',
+          note: '08:00~20:00 운영하며 열쇠 인계 전에 모든 개인 소지품을 차량에서 꺼냅니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: 'Enterprise 프라하 중앙역 반납',
+          url: 'https://www.enterprise.com/en/car-rental-locations/cz/prague-main-train-station-len5.html',
+          note: '08:00~18:00 운영하며 영업시간 외 반납은 지원하지 않습니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: 'National 프라하 중앙역 반납',
+          url: 'https://www.nationalcar.com/pt/locais-de-aluguel-de-carros/cz/prague-main-train-station-len4.html',
+          note: 'Enterprise와 주소·대표 전화가 같은 공동 카운터입니다. National 자체 운영시간은 공식 페이지에서 확인되지 않아 예약서나 전화 확인이 남았습니다.',
           checkedAt: '2026-09-15'
         }
       ]
@@ -262,13 +292,19 @@ export const EAST_EUROPE_2026 = defineVoyage({
         {
           label: '프라하 공항 택스 리펀',
           url: 'https://www.prg.aero/en/vat?terminal=reset&terminal_part=part',
-          note: '세관 확인 순서와 창구 위치를 출발 전에 확인합니다.',
+          note: 'T1 공개 구역 출발층 키오스크에서 인증한 뒤 Interchange에서 환급합니다. 물품은 세관에 보여줄 수 있게 두고 전체 절차는 최대 약 3시간을 잡습니다.',
           checkedAt: '2026-09-15'
         },
         {
           label: '프라하 공항 교통 안내',
           url: 'https://www.prg.aero/en/transport-and-parking',
-          note: '택시 승하차와 당일 교통 공지를 확인합니다.',
+          note: '9/9~9/25 공항 도로 교통 제한 기간이므로 앱의 도착 예정 시각에 여유를 더하고 공식 당일 공지를 확인합니다.',
+          checkedAt: '2026-09-15'
+        },
+        {
+          label: '아시아나 프라하 체크인',
+          url: 'https://flyasiana.com/C/US/KO/travel/airport?airportCd=PRG',
+          note: 'T1 1층 카운터는 출발 3시간 전부터 50분 전까지 운영하며 셀프 체크인 키오스크는 지원하지 않습니다. OZ546 출발은 e-ticket 확인 전까지 데이터의 18:50을 유지합니다.',
           checkedAt: '2026-09-15'
         }
       ]
