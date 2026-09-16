@@ -115,8 +115,19 @@ function itemColor(item) {
   return scoreColor((item.score / itemWeight(item.rubricName)) * 100)
 }
 
+const isPerfectReview = computed(() => {
+  const rubric = mission.value?.rubric ?? []
+  const items = review.value?.items ?? []
+  if (!rubric.length || items.length !== rubric.length) return false
+  return rubric.every((criterion) => {
+    const item = items.find((candidate) => candidate.rubricName === criterion.name)
+    return item && Number(item.score) === Number(criterion.weight)
+  })
+})
+
 const firstFix = computed(() => (review.value?.items ?? []).reduce((largest, item) => {
   const deficit = Math.max(0, itemWeight(item.rubricName) - Number(item.score ?? 0))
+  if (deficit === 0) return largest
   if (!largest || deficit > largest.deficit) return { ...item, deficit }
   return largest
 }, null))
@@ -136,13 +147,23 @@ const firstFixSummary = computed(() => {
         <strong :style="{ color: scoreColor(review.overall) }">{{ review.overall }}점</strong>
         <span>종합 점수</span>
       </div>
-      <div v-if="firstFix" class="first-fix">
-        <span>먼저 고칠 것 1개</span>
-        <strong>{{ firstFix.rubricName }}</strong>
-        <small>{{ firstFix.score }} / {{ itemWeight(firstFix.rubricName) }}점 · {{ firstFix.deficit }}점 회복 여지</small>
-        <p>{{ firstFixSummary }}</p>
-      </div>
-      <router-link :to="missionEditTarget" class="btn primary retry-action">코드 고쳐서 재제출</router-link>
+      <template v-if="firstFix">
+        <div class="first-fix">
+          <span>먼저 고칠 것 1개</span>
+          <strong>{{ firstFix.rubricName }}</strong>
+          <small>{{ firstFix.score }} / {{ itemWeight(firstFix.rubricName) }}점 · {{ firstFix.deficit }}점 회복 여지</small>
+          <p>{{ firstFixSummary }}</p>
+        </div>
+        <router-link :to="missionEditTarget" class="btn primary retry-action">코드 고쳐서 재제출</router-link>
+      </template>
+      <template v-else-if="isPerfectReview">
+        <p class="perfect-review">기준을 모두 충족했습니다</p>
+        <div class="perfect-actions">
+          <router-link :to="nextActionTarget" class="btn primary perfect-next-action">{{ nextActionLabel }}</router-link>
+          <router-link :to="missionEditTarget" class="perfect-retry-action">다시 제출</router-link>
+        </div>
+      </template>
+      <router-link v-else :to="missionEditTarget" class="btn primary retry-action">코드 고쳐서 재제출</router-link>
     </section>
 
     <section v-else-if="hasSubmission" class="review-state">
@@ -311,7 +332,7 @@ const firstFixSummary = computed(() => {
       <router-link to="/history" class="btn primary">내 기록 보기</router-link>
     </section>
 
-    <nav v-if="hasSubmission" class="actions" aria-label="리뷰 다음 이동">
+    <nav v-if="hasSubmission && !isPerfectReview" class="actions" aria-label="리뷰 다음 이동">
       <router-link :to="nextActionTarget" class="btn">{{ nextActionLabel }}</router-link>
     </nav>
   </div>
@@ -500,6 +521,10 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
 .first-fix > small { color: var(--fg-dim); font-size: 12px; }
 .first-fix > p { max-width: 720px; margin: 4px 0 0; font-size: 14px; line-height: 1.55; }
 .retry-action { justify-self: start; }
+.perfect-review { margin: 0; padding-left: 13px; border-left: 3px solid var(--good); color: var(--good); font-size: 15px; font-weight: 750; line-height: 1.6; }
+.perfect-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.perfect-retry-action { display: inline-flex; min-height: 40px; align-items: center; border-bottom: 1px solid var(--line); color: var(--fg-dim); font-size: 13px; text-decoration: none; }
+.perfect-retry-action:hover, .perfect-retry-action:focus-visible { border-bottom-color: var(--accent-text); color: var(--fg); }
 .review-state { margin: 16px 0; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
 .review-state h2 { margin: 0 0 6px; font-size: 18px; }
 .review-state p { max-width: 620px; margin: 0 0 14px; color: var(--fg-dim); line-height: 1.65; }
@@ -552,6 +577,7 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
   .score-line strong { font-size: 30px; }
   .first-fix > p { font-size: 13.5px; }
   .retry-action { width: 100%; text-align: center; }
+  .perfect-actions .perfect-next-action { flex: 1 1 100%; justify-content: center; }
   .review-disclosure > summary small { max-width: 120px; text-align: right; }
   .rep-level { display: grid; gap: 5px; }
   .rep-col:first-child, .rep-col:last-child { padding: 14px 0; }

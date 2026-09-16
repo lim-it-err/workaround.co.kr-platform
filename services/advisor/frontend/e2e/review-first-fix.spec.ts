@@ -18,6 +18,42 @@ async function seedSubmission(page) {
   }, MISSION_ID)
 }
 
+async function seedPerfectReview(page) {
+  await page.addInitScript((missionId) => {
+    localStorage.setItem('advisor.learner.v1', JSON.stringify({
+      learner: { nickname: '만점 검증' },
+      submissions: {
+        [missionId]: [{
+          files: [{ path: 'src/Main.java', content: 'class Main {}' }],
+          submittedAt: '2026-09-16T10:00:00.000Z',
+          by: '만점 검증',
+        }],
+      },
+      reviews: {
+        [missionId]: [{
+          overall: 100,
+          reviewedAt: '2026-09-16T10:00:01.000Z',
+          content: {
+            summary: '모든 평가 기준을 충족했습니다.',
+            items: [
+              ['책임 분리', 30],
+              ['도메인 개념의 타입화', 20],
+              ['동작 보존', 20],
+              ['가독성과 네이밍', 15],
+              ['모호한 요구사항 확인', 15],
+            ].map(([rubricName, score]) => ({
+              rubricName,
+              score,
+              feedback: '요구한 기준을 충족했습니다.',
+              evidence: '검증용 만점 결과',
+            })),
+          },
+        }],
+      },
+    }))
+  }, MISSION_ID)
+}
+
 test.beforeEach(async ({ page }) => {
   await page.route('http://localhost:8080/**', route => route.abort())
 })
@@ -113,4 +149,61 @@ test('실제 다음 코스 항목만 다음 미션이라 부르고 목록 복귀
   await expect(page.getByRole('link', { name: '다음 미션', exact: true })).toHaveCount(0)
   await learn.click()
   await expect(page).toHaveURL(/\/learn$/)
+})
+
+test('만점 리뷰는 수정 요구 대신 충족 안내와 다음 행동을 먼저 보여 준다', async ({ page }, testInfo) => {
+  await seedPerfectReview(page)
+  await page.setViewportSize({ width: 375, height: 812 })
+  await page.emulateMedia({ colorScheme: 'dark' })
+  await page.goto(`/missions/${MISSION_ID}/review`)
+  await page.evaluate(() => {
+    window.history.replaceState({
+      ...window.history.state,
+      from: '/courses/foundations',
+      fromLabel: '기본 코스',
+    }, '')
+  })
+  await page.reload()
+
+  const lead = page.getByRole('region', { name: '리뷰 핵심' })
+  await expect(lead.getByText('100점', { exact: true })).toBeVisible()
+  await expect(lead.getByText('기준을 모두 충족했습니다', { exact: true })).toBeVisible()
+  await expect(lead.getByText('먼저 고칠 것 1개', { exact: true })).toHaveCount(0)
+  await expect(lead.getByRole('link', { name: '코드 고쳐서 재제출', exact: true })).toHaveCount(0)
+  await expect(lead.getByRole('link', { name: '다음 미션', exact: true })).toBeVisible()
+  const retry = lead.getByRole('link', { name: '다시 제출', exact: true })
+  await expect(retry).toBeVisible()
+  await expect(page.getByRole('navigation', { name: '리뷰 다음 이동' })).toHaveCount(0)
+
+  const firstScroll = await lead.evaluate((node) => {
+    const action = node.querySelector('.perfect-next-action')?.getBoundingClientRect()
+    const retryAction = node.querySelector('.perfect-retry-action')
+    const retryBox = retryAction?.getBoundingClientRect()
+    const retryStyle = retryAction ? getComputedStyle(retryAction) : null
+    return {
+      actionBottom: action?.bottom ?? Number.POSITIVE_INFINITY,
+      retryBottom: retryBox?.bottom ?? Number.POSITIVE_INFINITY,
+      retryBackground: retryStyle?.backgroundColor,
+      retryBorderBottomWidth: retryStyle?.borderBottomWidth,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    }
+  })
+  expect(firstScroll.actionBottom).toBeLessThanOrEqual(812)
+  expect(firstScroll.retryBottom).toBeLessThanOrEqual(812)
+  expect(firstScroll.retryBackground).toBe('rgba(0, 0, 0, 0)')
+  expect(firstScroll.retryBorderBottomWidth).toBe('1px')
+  expect(firstScroll.overflow).toBe(0)
+  await page.screenshot({ path: testInfo.outputPath('review-perfect-375-dark-first-scroll.png') })
+
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.emulateMedia({ colorScheme: 'light' })
+  await page.evaluate(() => localStorage.setItem('workaround-theme', 'light'))
+  await page.reload()
+  await expect(lead.getByText('기준을 모두 충족했습니다', { exact: true })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0)
+  await page.screenshot({ path: testInfo.outputPath('review-perfect-1440-light.png'), fullPage: true })
+
+  await lead.getByRole('link', { name: '다음 미션', exact: true }).click()
+  await expect(page).toHaveURL(new RegExp(`/missions/${NEXT_MISSION_ID}$`))
+  expect(await page.evaluate(() => window.history.state?.from)).toBe('/courses/foundations')
 })
