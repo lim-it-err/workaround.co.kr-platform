@@ -32,19 +32,6 @@
 - `TKT-074` `P1` `chore` `blocked/진행 불가` `[SIM]` S4 택시 지도 — 보드 SIM 배정과 PM 직접 수행 기록 충돌, 택시 단독 범위·5개 페이지 완료 기준 정렬 PM 대기 (스펙: `design/sim-taxi-spec.md`)
 - `TKT-075` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S5 - App.vue 컴포넌트 분해 [시안 적용]
 
-## Need Review
-
-
-
-
-
-
-
-
-
-
-
-
 ## Ready
 
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
@@ -72,25 +59,6 @@
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ## Finished
