@@ -36,11 +36,9 @@
 
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
-- `TKT-164` `P1` `tone` `ready` `[FE]` 글쓰기 375 상단바 간헐 1px 넘침(`.writer-save` min-width) — **병합 전, 릴리스 게이트 red**
+- `TKT-165` `P2` `tone` `ready` `[FE]` 글쓰기 E2E 견고화 — 순간 상태 대기 제거·자체 preview 포트 격리
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
-- `TKT-162` `P2` `advisor` `ready` `[FE]` 리뷰 만점이면 고칠 것·재제출 숨김 (UX-154 I1)
-- `TKT-163` `P2` `voyage` `ready` `[콘텐츠]` 9/15~9/17 링크 note 에 149 확인값 반영 (tip 무변경)
 - `TKT-159` `P1` `infra` `ready` `[INFRA]` 메인 E2E 통합 러너 `npm run e2e:all` (AS-R009 권고)
 - `TKT-078` `P1` `v0.7.0` `ready` `[INFRA]` 화이트채플 Pages 편입 — prepare-github-pages 병합 (09-15 승격, Pages 우선)
 - `TKT-160` `P2` `infra` `ready` `[INFRA]` Pages 배포 후 스모크 job
@@ -63,6 +61,9 @@
 
 ## Finished
 
+- `TKT-163` `[콘텐츠]` 9/15~9/17 링크 note 149 확인값(렌터카 4사·VAT 3시간·아시아나 카운터) — r1 통과 (2026-09-16)
+- `TKT-164` `[FE]` 글쓰기 375 상단바 `.writer-save` 축소 계약 — 간헐 1px 넘침 해소, r1 통과 (2026-09-16, 릴리스 게이트 red 해소)
+- `TKT-162` `[FE]` Advisor 리뷰 만점 예외(고칠 것 숨김·다음 항목 주 CTA) — r1 통과 (2026-09-16)
 - `TKT-149` `[조사]` 남은 일정 현장 정보 — codex-4 보고서 완료 (2026-09-15, OZ546 시각 PO 확인 대기)
 - `TKT-147` `[FE]` 재방문 플랩 정착+1초 보장(4.0초 상한)·저장 안내 원 28px — r2 통과 (2026-09-16)
 - `TKT-157` `[콘텐츠]` Advisor 사건 파일 2편(중복 결제·환율 캐시) — r1 통과 (2026-09-16)
