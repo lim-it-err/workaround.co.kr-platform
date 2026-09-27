@@ -73,6 +73,36 @@ Spring은 무거운 비즈니스 로직을 쌓는 곳이 아니라, 게이트웨
 - 여행 메모와 블로그 초안은 현재 같은 브라우저의 `localStorage`에만 남는다. 다른 기기와 동기화되지 않고 브라우저 데이터 삭제 시 복구되지 않는다.
 - Pages 배포 SHA와 빌드 시각은 배포 산출물의 `deployment.json`과 Actions 실행 요약에서 확인한다.
 
+## 비행기에서(오프라인) 홈페이지 켜기
+
+GitHub Pages 공개본은 네트워크가 있어야 열리고 오프라인 캐시(서비스 워커)가 없다. 기내에서는 **맥북에서 로컬로 빌드해 연다.** 폰 단독으로는 기내 Wi-Fi 없이 열 수 없다. 아래 절차는 2026-09-17 에 macOS · Node 20 에서 직접 돌려 확인했다.
+
+### 탑승 전 — 네트워크가 있을 때 한 번
+
+1. 최신 받기: `git pull`
+2. 의존성 확인(`node_modules` 가 이미 있으면 생략): `npm --prefix frontend ci` 와 `npm --prefix services/advisor/frontend ci`
+3. 아래 "기내에서" 명령을 미리 한 번 돌려 화면이 뜨는지 본다. 빌드까지 해 두면 기내에서는 마지막 `preview` 한 줄이면 된다.
+4. 폰에 적어 둔 여행 기록을 맥북에서도 보려면: 폰의 여행 화면에서 `내 기록 백업` → 내려받은 JSON 을 AirDrop 으로 맥북에 → 로컬 화면에서 `백업 복원`. 브라우저 저장소는 주소(origin)별이라 공개본에서 쓴 기록이 `localhost` 에 자동으로 보이지 않는다.
+
+### 기내에서 — 네트워크 불필요
+
+저장소 루트(`workaround.co.kr-platform/`)에서:
+
+```bash
+npm --prefix frontend run build -- --base=/workaround.co.kr-platform/
+npm --prefix services/advisor/frontend run build -- --base=/workaround.co.kr-platform/advisor/
+node infra/public-site/prepare-github-pages.mjs --dist frontend/dist --advisor-dist services/advisor/frontend/dist --base /workaround.co.kr-platform/ --sha local-offline
+npm --prefix frontend run preview -- --base=/workaround.co.kr-platform/ --port 4180
+```
+
+브라우저에서 <http://localhost:4180/workaround.co.kr-platform/> 을 연다. 끌 때는 터미널에서 `Ctrl+C`.
+
+- 환승 홀·여행(`/voyage`)·블로그·글쓰기(`/studio`)·미스터리 트레인(`/sim`, 심야 택시)은 직접 주소와 새로고침 모두 동작한다.
+- Developer Advisor 는 <http://localhost:4180/workaround.co.kr-platform/advisor/> 로 들어간다. 이 방식에서는 Advisor 안쪽 주소(`/advisor/today` 등)에서 **새로고침하면 메인 홈이 뜬다** — 다시 `/advisor/` 로 들어가면 된다(공개본은 `404.html` 이 처리하지만 `vite preview` 는 그렇지 않다). 새로고침이 자유로워야 하면 Advisor 만 따로 띄운다: `npm --prefix services/advisor/frontend run dev` → <http://localhost:5173>.
+- 이 빌드는 공개본과 같은 **정적 모드**다(base 경로가 `/` 가 아니면 정적 모드). Work·Runtime·엘리베이터는 흐림 + `준비 중` 으로 보이는 것이 정상이다.
+- 가장 빠른 대안(여행·블로그·글쓰기만, Advisor 제외): `VITE_STATIC_MODE=true npm --prefix frontend run dev` → <http://localhost:7000>. 빌드 없이 바로 뜬다.
+- 기내에서 적은 여행 메모·블로그 초안은 **그 브라우저의 `localStorage` 에만** 남는다. 착륙 후 `내 기록 백업`(여행)·`저장 안내와 백업`(글쓰기)으로 JSON 을 내려받아 둔다. 데이터 파일 반영 절차는 [`docs/voyage-record-import.md`](docs/voyage-record-import.md).
+
 ## 테스트 / 커버리지
 
 - Node/npm 기준선 점검: `powershell -ExecutionPolicy Bypass -File .\tools\check-node-toolchain.ps1`

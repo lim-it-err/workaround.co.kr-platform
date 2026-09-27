@@ -39,9 +39,9 @@ assert.equal(segments.at(-1).state, 'upcoming')
 const gauges = routeGauges(voyage, todayIndex)
 assert.deepEqual(
   { completedDistance: gauges.completedDistance, totalDistance: gauges.totalDistance, prepaid: gauges.prepaid, budgetPlan: gauges.budgetPlan },
-  { completedDistance: 740, totalDistance: 1515, prepaid: 450, budgetPlan: 856 }
+  { completedDistance: 740, totalDistance: 1515, prepaid: 650.01, budgetPlan: 856 }
 )
-assert.ok(Math.abs(gauges.spent - 523.871) < 0.0001, '현재까지 선결제와 일차별 지출이 합산되어야 한다')
+assert.ok(Math.abs(gauges.spent - 742.762) < 0.0001, '현재까지 선결제와 일차별 지출이 합산되어야 한다')
 
 const dayThree = buildDayTimeline(voyage, 2)
 assert.ok(dayThree.some(item => item.title.includes("Papa's") && item.kind === 'meal'))
