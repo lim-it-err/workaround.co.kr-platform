@@ -37,6 +37,7 @@
 
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
+- `TKT-173` `P1` `release` `ready` `[PM]` `main` 승격 — v0.7.0 태그 뒤·v0.8.0 전 (D-027, push 는 PO)
 - `TKT-170` `P1` `pantry` `ready` `[FE]` 자취 밥상 `/pantry` — 오늘의 한 상·대안·장보기·스탬프, P선 개통 (PO 09-27)
 - `TKT-168` `P1` `ets2` `ready` `[FE]` 유로트럭 관제 `/ets2` — 프레임 폴링·신선도·정지 상태 (PO 09-27)
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 캡처 에이전트 `.100` → R2 푸시 (codex-2)

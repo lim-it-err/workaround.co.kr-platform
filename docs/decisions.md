@@ -195,3 +195,8 @@
 ## D-026 취향선 P 개통 = 자취 밥상 · **제안됨** (PO 2026-09-27 "자취생 음식 추천 페이지·세트·술 페어링")
 
 - 홈 노선도의 `연장 예정` P 역을 `/pantry`(자취 밥상)로 개통한다. TKT-067(취향 노선 와인/커피 추천)의 첫 구현으로 본다. 콘텐츠는 PM 전담(`frontend/src/data/pantry/`), 페이지는 TKT-170. 술 페어링은 정보로만(권장 문구 없음, 무알코올 대안 항상). 상세 `design/pantry-spec.md`.
+
+## D-027 다음 버전 전 `main` 승격 — 트렁크를 `main` 으로 되돌린다 · **확정** (PO 2026-09-27 "일단 이번 버전 끝내고 … 그다음 버전 전에 master 합치고 가야지")
+
+- 종전: D-002 트렁크 = `codex/v0.6.0-line`, `main` 은 v0.2.0 화석(Q-011). 브랜치 이름이 버전과 어긋나 감사·문서마다 설명이 필요했다.
+- 결정: v0.7.0 태그 뒤, v0.8.0 작업 시작 전에 `main` 을 트렁크 트리로 맞춘다(TKT-173, PM 실행). 방식은 **역사 보존 병합**: `main` 에서 `git merge -s ours --no-commit codex/v0.6.0-line` → `git read-tree -u --reset codex/v0.6.0-line` → 커밋(트리 = 트렁크, 부모 = main+트렁크). force push 없음. 이후 GitHub 기본 브랜치·Pages 트리거·문서(D-002·CLAUDE.md·README)를 `main` 으로, 작업 브랜치는 `codex/v0.8.0-*` 를 `main` 에서 딴다. `codex/v0.6.0-line` 은 태그 뒤 동결.
