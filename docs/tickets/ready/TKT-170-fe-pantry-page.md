@@ -2,7 +2,7 @@
 
 # TKT-170 `[FE]` 자취 밥상 페이지 `/pantry` — 오늘의 한 상·대안 2·장보기·스탬프, 취향선 P 개통
 
-- 상태: ready · **P1** · 담당: codex-1 · 의존: TKT-169 finished(콘텐츠 있음). 브랜치 `codex/v0.7.0-tone`. **UX 1순위·[반박] 의무.** 스펙 `design/pantry-spec.md` §3·§5. 콘텐츠 3파일(`frontend/src/data/pantry/*`) 불가침 — 구조 문제는 [구체화 질문]으로.
+- 상태: ready · **P1** · 담당: codex-1 · 의존: TKT-169 finished(콘텐츠 있음). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.** 스펙 `design/pantry-spec.md` §3·§5. 콘텐츠 3파일(`frontend/src/data/pantry/*`) 불가침 — 구조 문제는 [구체화 질문]으로.
 - scope: `frontend/src/components/Pantry.vue`(신규), `frontend/src/App.vue`, `frontend/src/data/lines.js`(P 역 개통: `page: 'pantry'`, `access`·`upcoming` 제거, 홈 목록 행 `자취 밥상 · 오늘의 한 상: <제목>`), `frontend/src/staticRouting.js`(`/pantry`), `frontend/src/styles.css`, `frontend/src/components/Pantry.e2e.mjs`, `JunctionMap.e2e.mjs`·`junction.test.mjs`(P 개통).
 
 ## 완료 조건

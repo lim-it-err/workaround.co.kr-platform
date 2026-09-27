@@ -2,7 +2,7 @@
 
 # TKT-167 `[INFRA]` 유로트럭 PoC 편입 마감 + R2 퍼블리셔 (개정 v2 — 캡처 에이전트 신규 개발 폐기)
 
-- 상태: ready · **P1** · 담당: codex-2 · 의존: 없음(R2 자격은 PO Q-018 — 없으면 로컬 파일·`/health` 까지 구현하고 업로드는 `.env` 대기). 브랜치 `codex/v0.7.0-tone`. **[반박]·[구체화 질문] 의무.** 스펙 `design/ets2-live-spec.md` §3·§4·§6.
+- 상태: ready · **P1** · 담당: codex-2 · 의존: 없음(R2 자격은 PO Q-018 — 없으면 로컬 파일·`/health` 까지 구현하고 업로드는 `.env` 대기). 브랜치 `codex/v0.8.0-live`. **[반박]·[구체화 질문] 의무.** 스펙 `design/ets2-live-spec.md` §3·§4·§6.
 - scope(v2): `services/ets2-adas/publisher/**`(신규), `services/ets2-adas/README.md`·`.env.example`, `services/ets2-adas/server.js`(`POC_ALLOWED_ORIGINS` 1개만), `.gitignore`. 프런트 무변경. PoC 제어·네이티브 코드 불가침.
 
 ## 개정 (2026-09-27 밤, PM) — 스펙 v2 §C

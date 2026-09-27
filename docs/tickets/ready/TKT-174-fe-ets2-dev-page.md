@@ -2,7 +2,7 @@
 
 # TKT-174 `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — 주행 정보·실시간 화면·감시/복구·게임 제어·차선 변경·시뮬레이터 (보호 구역)
 
-- 상태: ready · **P1** · 담당: codex-1 · 의존: TKT-168 need_review(뷰어 뼈대 공유). 브랜치 `codex/v0.7.0-tone`. **UX 1순위·[반박] 의무.** 스펙 `design/ets2-live-spec.md` v2 §B·§D. PoC 계약 `services/ets2-adas/API.md`.
+- 상태: ready · **P1** · 담당: codex-1 · 의존: TKT-168 need_review(뷰어 뼈대 공유). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.** 스펙 `design/ets2-live-spec.md` v2 §B·§D. PoC 계약 `services/ets2-adas/API.md`.
 - scope: `frontend/src/components/Ets2Dev.vue`(신규), `frontend/src/App.vue`(라우팅), `frontend/src/data/lines.js`(실험선 S 소역 `유로트럭 개발자`, `staticAccess: 'server'` — D-022 문법), `frontend/src/staticRouting.js`(`/ets2/dev` 를 `STATIC_UNAVAILABLE_LIVE_PAGES` 에), `frontend/src/styles.css`, `frontend/public/ets2-sim/`(PoC `index.html`·`styles.css`·`controller.js`·`app.js` 의 시뮬레이터 부분을 정적 복사 — 원본은 `services/ets2-adas/`, 복사 스크립트 `frontend/scripts/sync-ets2-sim.mjs`), `Ets2Dev.e2e.mjs`(PoC API 를 흉내내는 로컬 스텁 서버 포함).
 
 ## 화면 (톤 원칙: 읽기 행은 면 없음, 조작부만 면·40px)

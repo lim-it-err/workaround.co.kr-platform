@@ -2,7 +2,7 @@
 
 # TKT-172 `[FE]` 여행 결산 화면 — `settlement` 데이터(사전확정·현지·카테고리·지역·제외) 표시
 
-- 상태: ready · P2 · 담당: codex-1 · 의존: 없음(데이터는 `east-europe-2026.js` `settlement` 에 있음, 2026-09-25 PM 반영). 브랜치 `codex/v0.7.0-tone`. **UX 1순위·[반박] 의무.** 콘텐츠 파일 불가침.
+- 상태: ready · P2 · 담당: codex-1 · 의존: 없음(데이터는 `east-europe-2026.js` `settlement` 에 있음, 2026-09-25 PM 반영). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.** 콘텐츠 파일 불가침.
 - scope: `frontend/src/components/voyage/VoyageRouteMap.vue`(arrived 상태의 `결산` 절) 또는 신규 `VoyageSettlement.vue`, `voyageRoute.js`(`routeGauges` 에 settlement 우선), E2E.
 
 ## 완료 조건

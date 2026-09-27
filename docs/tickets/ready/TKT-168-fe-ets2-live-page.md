@@ -2,7 +2,7 @@
 
 # TKT-168 `[FE]` 유로트럭 관제 페이지 `/ets2` — 프레임 폴링·신선도·정지 상태
 
-- 상태: ready · **P1** · 담당: codex-1 · 의존: TKT-166 finished(스펙). 167 과 병행(샘플 프레임으로 개발). 브랜치 `codex/v0.7.0-tone`. **UX 1순위·[반박] 의무.** 스펙 `design/ets2-live-spec.md` §4·§5.
+- 상태: ready · **P1** · 담당: codex-1 · 의존: TKT-166 finished(스펙). 167 과 병행(샘플 프레임으로 개발). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.** 스펙 `design/ets2-live-spec.md` §4·§5.
 - scope: `frontend/src/components/Ets2Live.vue`(신규), `frontend/src/App.vue`(라우팅·격납고 목록 행), `frontend/src/data/lines.js`(실험선 S 소역 `유로트럭` page `ets2`), `frontend/src/staticRouting.js`(`/ets2`), `frontend/src/styles.css`, `frontend/public/mockups/ets2-sample/`(샘플 프레임 3장 — 저작권 없는 합성 이미지), `frontend/src/components/Ets2Live.e2e.mjs`, `JunctionMap.e2e.mjs`(역 9개).
 
 ## 개정 (2026-09-27 밤, PM) — 스펙 v2 §A

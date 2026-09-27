@@ -2,7 +2,7 @@
 
 # TKT-175 `[INFRA]` 개발자 페이지 LAN 접근 — 게이트웨이/Caddy 프록시 `/api/ets2/*` → `.100:8765` (보호 구역 인증)
 
-- 상태: backlog · P2 · 담당: codex-2 · 의존: TKT-167·174 finished, 자가 호스팅 스택 기동(085 또는 로컬 compose). 브랜치 `codex/v0.7.0-tone`.
+- 상태: backlog · P2 · 담당: codex-2 · 의존: TKT-167·174 finished, 자가 호스팅 스택 기동(085 또는 로컬 compose). 브랜치 `codex/v0.8.0-live`.
 - 대안(선행, 코드 0): SSH 포워드 `ssh -p 6445 -L 8765:127.0.0.1:8765 <user>@192.168.123.100` + `POC_ALLOWED_ORIGINS`. 이 티켓은 그 다음.
 
 ## 완료 조건

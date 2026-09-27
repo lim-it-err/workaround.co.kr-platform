@@ -2,7 +2,7 @@
 
 # TKT-173 `[PM]` `main` 승격 — v0.7.0 태그 뒤, v0.8.0 전 (D-027)
 
-- 상태: ready · P1 · 담당: PM(git 작업) · 의존: v0.7.0 태그(배치 2 병합·AS-R010 통과). push 는 PO 실행.
+- 상태: finished (2026-09-28, PM 실행 — main push 만 PO) · P1 · 담당: PM(git 작업) · 의존: v0.7.0 태그(배치 2 병합·AS-R010 통과). push 는 PO 실행.
 - scope: git 브랜치·태그, `.github/workflows/deploy-github-pages.yml`(트리거 `main` 유지·`codex/v0.6.0-line` 제거), `CLAUDE.md`·`README.md`·`docs/decisions.md` D-002 개정, GitHub 기본 브랜치·Pages 환경 정책(AS-R006 ②).
 
 ## 절차
@@ -21,3 +21,4 @@
 
 ## 리뷰 기록
 - 없음.
+- 2026-09-28 PM: 절차 1~2·4(문서·트리거) 완료 — `main` = `e9bb529`(동기화 `3618f45` + 문서), `git diff main codex/v0.6.0-line` 0. 작업 브랜치 `codex/v0.8.0-live`(=`1fda3ee`) push·공유 워킹트리 전환. 남은 것: PO `git push origin main`, GitHub 기본 브랜치 `main`, Pages 환경 정책에서 `codex/v0.6.0-line` 제거.
