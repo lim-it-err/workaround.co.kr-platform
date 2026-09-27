@@ -6,6 +6,7 @@
 
 ## Backlog
 
+- `TKT-171` `P2` `ets2` `backlog` `[INFRA]` 유로트럭 실시간 스트리밍 MediaMTX WebRTC — 085 Tunnel 뒤
 
 
 - `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
@@ -36,6 +37,10 @@
 
 > **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
 
+- `TKT-170` `P1` `pantry` `ready` `[FE]` 자취 밥상 `/pantry` — 오늘의 한 상·대안·장보기·스탬프, P선 개통 (PO 09-27)
+- `TKT-168` `P1` `ets2` `ready` `[FE]` 유로트럭 관제 `/ets2` — 프레임 폴링·신선도·정지 상태 (PO 09-27)
+- `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 캡처 에이전트 `.100` → R2 푸시 (codex-2)
+- `TKT-172` `P2` `voyage` `ready` `[FE]` 여행 결산 화면 (settlement 데이터 표시)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 - `TKT-159` `P1` `infra` `ready` `[INFRA]` 메인 E2E 통합 러너 `npm run e2e:all` (AS-R009 권고)
@@ -60,6 +65,8 @@
 
 ## Finished
 
+- `TKT-166` `[PM]` 유로트럭 관제 구조 결정·스펙 `design/ets2-live-spec.md` (2026-09-27)
+- `TKT-169` `[PM]` 자취 밥상 스펙·콘텐츠(요리 25·세트 13·페어링) `design/pantry-spec.md` (2026-09-27)
 - `TKT-165` `[FE]` 글쓰기 E2E 견고화 — 순간 상태 대기 제거·임의 포트 self-host, 동시 3라운드 78/78 — r1 통과 (2026-09-17, 다음 배치)
 - `TKT-163` `[콘텐츠]` 9/15~9/17 링크 note 149 확인값(렌터카 4사·VAT 3시간·아시아나 카운터) — r1 통과 (2026-09-16)
 - `TKT-164` `[FE]` 글쓰기 375 상단바 `.writer-save` 축소 계약 — 간헐 1px 넘침 해소, r1 통과 (2026-09-16, 릴리스 게이트 red 해소)
