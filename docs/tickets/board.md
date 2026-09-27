@@ -44,6 +44,7 @@
 - `TKT-174` `P1` `ets2` `ready` `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — 감시/복구·게임 제어·차선 변경·시뮬레이터 (보호 구역)
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + R2 퍼블리셔 (v2, codex-2)
 - `TKT-172` `P2` `voyage` `ready` `[FE]` 여행 결산 화면 (settlement 데이터 표시)
+- `TKT-176` `P2` `tone` `ready` `[FE]` E2E 시간대 고정 timezoneId (PO 09-28 승인)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 - `TKT-159` `P1` `infra` `ready` `[INFRA]` 메인 E2E 통합 러너 `npm run e2e:all` (AS-R009 권고)
