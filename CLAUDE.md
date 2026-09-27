@@ -4,7 +4,7 @@
 
 ## 기준선 (먼저 읽을 것)
 
-- **트렁크는 `codex/v0.6.0-line` 이다 (D-002).** **2026-09-14~: 톤 전환 작업 브랜치 = `codex/v0.7.0-tone` (D-016) — 트렁크는 동결, 여행 콘텐츠·핫픽스만 cherry-pick.** `main`은 v0.2.0에서 정지한 화석 — main 기준으로 작업하지 않는다. `claude/ux-overhaul-stale-base-2026-08-16` 브랜치는 낡은 main 기준 작업의 보존본으로 **병합 금지.**
+- **트렁크는 `main` 이다 (D-002 개정·D-027, 2026-09-28 승격 — v0.7.0 = `b1f4959` 트리).** v0.8.0 작업 브랜치 = **`codex/v0.8.0-live`**(main 에서 분기, 배치 병합 U-38: PM 게이트 후 `main` 에 `--no-ff`, push 는 PO). `codex/v0.6.0-line`·`codex/v0.7.0-tone` 은 동결(참조용, push 금지). `claude/ux-overhaul-stale-base-2026-08-16` 브랜치는 낡은 main 기준 작업의 보존본으로 **병합 금지.**
 - 이 저장소는 **통합 모선**이다 (D-003·D-004): 확장은 repo 신설이 아니라 모노레포 폴더로 받는다. 편입 대상 — developer advisor, 화이트채플, +1(Q-013).
 - 제품 방향: **블로그 중심 첫 공개 사이트 + 실험 놀이터** (`docs/roadmap.md`, 2026-07-05 PO 확정). 운영 도구(Work Manager)는 보호 경로 뒤.
 
@@ -19,12 +19,12 @@
 - `need_review` 티켓을 **직접 검증**으로 리뷰한다: frontend `npm --prefix frontend run build`, gateway `mvn -q package`(+ 기동·`/api/health` 응답), 컨테이너 변경 시 compose 기동.
 - UI/UX 작업 전 `design/` 기준선 문서를 읽는다. 디자이너 트랙 산출물(`design/orchestrator_review/`, `design/review_done/`)은 보존한다.
 - 프로덕션 코드는 직접 수정하지 않는다 — 예외: PO 직접 지시.
-- 커밋 주체는 Claude. push는 PO 지시 시에만 (Q-004 확정 전까지 로컬 커밋 기본). **트렁크 `codex/v0.6.0-line` push 는 PO 승인(2026-09-09) — Pages 자동 배포.** 여러 티켓을 한 커밋에 묶을 때는 본문에 티켓별 파일 목록을 적는다 (AS-R007).
+- 커밋 주체는 Claude. push는 PO 지시 시에만 (Q-004 확정 전까지 로컬 커밋 기본). **트렁크 `main` push 는 PO 실행(자동 모드 차단) — Pages 자동 배포.** 여러 티켓을 한 커밋에 묶을 때는 본문에 티켓별 파일 목록을 적는다 (AS-R007).
 - 의사결정은 `docs/decisions.md`에 PO 발언 인용과 함께 기록하고, 작업은 `docs/history/YYYY-MM-DD.md`에 남긴다.
 
 ## 세션 시작 시퀀스
 
-1. 브랜치 확인 — `codex/v0.6.0-line` 인지부터 본다.
+1. 브랜치 확인 — 작업 브랜치 `codex/v0.8.0-live` 인지, 트렁크는 `main` 인지부터 본다.
 2. `docs/tickets/board.md` — need_review 우선.
 3. `docs/history/` 최신 파일로 맥락 복원.
 4. `../ASK.md` 에 PO 답변이 있으면 반영이 최우선.

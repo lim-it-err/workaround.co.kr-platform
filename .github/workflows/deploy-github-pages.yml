@@ -3,8 +3,7 @@ name: Deploy GitHub Pages
 on:
   push:
     branches:
-      - main
-      - codex/v0.6.0-line   # 현 트렁크 (D-002) — main 승격 전까지 실제 배포 트리거
+      - main   # 트렁크 (D-002 개정 2026-09-28, main 승격)
   workflow_dispatch: {}
 
 permissions:
