@@ -200,3 +200,7 @@
 
 - 종전: D-002 트렁크 = `codex/v0.6.0-line`, `main` 은 v0.2.0 화석(Q-011). 브랜치 이름이 버전과 어긋나 감사·문서마다 설명이 필요했다.
 - 결정: v0.7.0 태그 뒤, v0.8.0 작업 시작 전에 `main` 을 트렁크 트리로 맞춘다(TKT-173, PM 실행). 방식은 **역사 보존 병합**: `main` 에서 `git merge -s ours --no-commit codex/v0.6.0-line` → `git read-tree -u --reset codex/v0.6.0-line` → 커밋(트리 = 트렁크, 부모 = main+트렁크). force push 없음. 이후 GitHub 기본 브랜치·Pages 트리거·문서(D-002·CLAUDE.md·README)를 `main` 으로, 작업 브랜치는 `codex/v0.8.0-*` 를 `main` 에서 딴다. `codex/v0.6.0-line` 은 태그 뒤 동결.
+
+## D-025 보완 (2026-09-27 밤) — PoC 편입: 캡처는 PoC 의 Windows Graphics Capture, 사이트는 뷰어(공개)+개발자(보호 구역) 2면
+
+- PO 가 PoC(`ets2-adas-poc`: SDK 플러그인·루프백 서버·창 캡처·감시/복구·시뮬레이터)와 110km/h 리미터 모드를 제공 → `services/ets2-adas/` 편입(개인정보 치환·바이너리 제외, `IMPORT-NOTE.md`). 캡처 에이전트 신규 개발 폐기, R2 **퍼블리셔** 만 추가(167 개정). 뷰어 `/ets2` 는 공개·읽기 전용(168 개정), 개발자 `/ets2/dev` 는 보호 구역(정적 공개본 흐림+토스트, 174) — 게임 제어 명령은 PoC 의 arm 토큰·300ms 만료·F8 계약을 그대로 쓰고 새 안전장치를 페이지에서 만들지 않는다. 맥 접근은 SSH 포워드(코드 0) → 게이트웨이 프록시(175 backlog).

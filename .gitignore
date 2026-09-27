@@ -37,3 +37,11 @@ infra/public-site/secrets/
 
 # Codex worker worktrees
 .worktrees/
+
+# ETS2 ADAS PoC — 로컬 산출물·개인 설정 (services/ets2-adas)
+services/ets2-adas/bin/
+services/ets2-adas/vendor/
+services/ets2-adas/backups/
+services/ets2-adas/runtime/
+services/ets2-adas/.build/
+services/ets2-adas/.env

@@ -61,3 +61,25 @@ frontend/src/staticRouting.js          `/ets2`
 ## 7. PO 확인 (ASK Q-018)
 
 R2 버킷·토큰 생성(PO 계정), `.100` Python 3 설치 여부, ETS2 창모드 실행 가능 여부, 방송 시간대(항상 vs 게임 중만).
+
+---
+
+# v2 (2026-09-27 밤) — PoC 편입: 뷰어 페이지 + 개발자 페이지
+
+PO 제공 PoC(`services/ets2-adas/`, README·API.md·VALIDATION.md)가 이미 갖춘 것: SCS SDK 네이티브 플러그인(텔레메트리 25Hz·입력), `bridge.py`(공유 메모리↔NDJSON), `server.js`(루프백 `127.0.0.1:8765` — `GET /api/state`·`GET /api/frame.jpg`·`POST /api/action`, Origin+토큰 검사), `capture.py`(Windows Graphics Capture 로 ETS2 창만 ~1초 캡처), 정체 감시·복구 프로세스, 브라우저 시뮬레이터, 테스트 16개. **따라서 캡처 에이전트를 새로 만들지 않는다.** v1 §3 의 `services/ets2-capture/` 는 폐기하고 아래로 대체한다.
+
+## A. 뷰어 페이지 `/ets2` (공개, 읽기 전용) — TKT-168 개정
+- 데이터: R2 `latest.jpg` + `meta.json`. `meta.json` 은 퍼블리셔가 PoC `GET /api/state` 에서 뽑은 **읽기 값만**: `speedKmh, cruiseKmh, speedLimitKmh, routeDistanceKm, paused, connected, monitor{ active, stillSeconds, recoveryState }, capturedAt, seq, blank`.
+- 화면: 프레임 + 신선도(v1 §5 그대로) + **주행 정보 한 행**(속도 · 크루즈 · 제한 · 목적지까지 km · 감시 상태). 값이 없으면(`connected:false`) 대시만. 조작부 없음.
+
+## B. 개발자 페이지 `/ets2/dev` (보호 구역) — TKT-174
+- PoC 대시보드(`index.html` 의 01 실제 ETS2 탭)를 사이트 톤으로 옮긴다: 주행 정보(25Hz 수신, 화면 갱신 4Hz) · 실시간 화면(`/api/frame.jpg`, 1초) · 정체 감시(시작/중단, 정지 경과, 복구 상태·마지막 요청) · 실제 게임 제어(`명령 준비` → `ACC 설정/해제`·`±5`·`차선유지 토글`, `커스텀 제어 중단`) · 차선 변경(확인란 2개 `빈 도로`·`내장 보조 끔` + 방향, 30~110km/h 조건 표시) · 이벤트 로그 tail · 시뮬레이터(02 탭)는 기존 `index.html` 을 `iframe` 으로 임베드(정적 파일이라 API 불필요).
+- 접근: 정적 공개본에서는 D-022 문법(흐림 + `개발자 페이지 · 로컬 전용` 토스트). 개발 모드·자가 호스팅에서는 `VITE_ETS2_DEV_API`(기본 `http://127.0.0.1:8765`) 로 직접 호출. PoC 서버는 루프백만 듣고 `Origin` 을 검사하므로 **맥에서 쓰려면 SSH 포워드**: `ssh -p 6445 -L 8765:127.0.0.1:8765 <user>@192.168.123.100` 뒤 사이트를 `localhost` 로 연다(Origin 은 `http://localhost:8765` 가 아니라 사이트 origin 이라 PoC 의 Origin 검사에 걸린다 → PoC `server.js` 에 `POC_ALLOWED_ORIGINS` 환경변수 1개 추가가 필요, 167 범위). 게이트웨이 프록시는 TKT-175(backlog).
+- 안전: 명령은 PoC 의 arm 토큰·300ms 만료·F8 중단 계약을 그대로 쓴다. 페이지가 새 안전장치를 만들지 않고 PoC 계약을 표시만 한다(예: `명령 준비` 없이는 버튼 비활성).
+
+## C. 퍼블리셔 (TKT-167 개정) — `services/ets2-adas/publisher/`
+- 2초마다 `GET /api/frame.jpg`(id 비교로 새 프레임만) + `GET /api/state` → R2 `latest.jpg`·`meta.json`. 게임 미연결·`blank` 면 meta 만 갱신. 읽기 전용, `POST` 없음. `.env`: `R2_*`, `PUBLISH_INTERVAL=2`, `POC_BASE=http://127.0.0.1:8765`.
+- 편입 마감(D-003 계약): `services/ets2-adas/README.md` 에 사이트 연동 절(퍼블리셔·환경변수·`/health` = `GET /api/state` 가 대신), Dockerfile 예외 명시, `.gitignore` 제외 목록(IMPORT-NOTE.md).
+
+## D. 속도 제한 모드
+- `mods/ets2_speed_limit_110.scs`(PO 제작, 110km/h 리미터). 개발자 페이지 `설정` 행에 "리미터 110km/h 모드 적용 여부" 를 `speedLimitKmh` 와 함께 표시(값 확인용, 조작 없음).

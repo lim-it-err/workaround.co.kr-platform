@@ -6,6 +6,7 @@
 
 ## Backlog
 
+- `TKT-175` `P2` `ets2` `backlog` `[INFRA]` 개발자 페이지 LAN 프록시 `/api/ets2/*` (SSH 포워드 대안 뒤)
 - `TKT-171` `P2` `ets2` `backlog` `[INFRA]` 유로트럭 실시간 스트리밍 MediaMTX WebRTC — 085 Tunnel 뒤
 
 
@@ -39,8 +40,9 @@
 
 - `TKT-173` `P1` `release` `ready` `[PM]` `main` 승격 — v0.7.0 태그 뒤·v0.8.0 전 (D-027, push 는 PO)
 - `TKT-170` `P1` `pantry` `ready` `[FE]` 자취 밥상 `/pantry` — 오늘의 한 상·대안·장보기·스탬프, P선 개통 (PO 09-27)
-- `TKT-168` `P1` `ets2` `ready` `[FE]` 유로트럭 관제 `/ets2` — 프레임 폴링·신선도·정지 상태 (PO 09-27)
-- `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 캡처 에이전트 `.100` → R2 푸시 (codex-2)
+- `TKT-168` `P1` `ets2` `ready` `[FE]` 유로트럭 뷰어 `/ets2` — 프레임 폴링·주행 정보 행·정지 상태 (v2)
+- `TKT-174` `P1` `ets2` `ready` `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — 감시/복구·게임 제어·차선 변경·시뮬레이터 (보호 구역)
+- `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + R2 퍼블리셔 (v2, codex-2)
 - `TKT-172` `P2` `voyage` `ready` `[FE]` 여행 결산 화면 (settlement 데이터 표시)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
