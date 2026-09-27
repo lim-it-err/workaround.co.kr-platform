@@ -33,8 +33,9 @@ export const EAST_EUROPE_2026 = defineVoyage({
     { dayIndex: 8, from: 'brno', to: 'prague-return', driveMin: 135, km: 204 }
   ],
   prepaid: [
-    { label: '항공', amount: 340 },
-    { label: '렌터카', amount: 110 }
+    { label: '항공 (OZ545/OZ546 직항 왕복 · 2인)', amount: 338.94 },
+    { label: '숙소 6곳 · 9박 (시티택스 포함)', amount: 192.87 },
+    { label: '렌터카 7일 (보험·도로세·재급유·부가세 포함)', amount: 118.2 }
   ],
 
   flights: {
@@ -67,6 +68,12 @@ export const EAST_EUROPE_2026 = defineVoyage({
       pm: '16:45 프라하 도착 → 숙소 체크인',
       eve: '가벼운 저녁, 일찍 휴식 — 시차 적응이 이날의 유일한 임무',
       tip: '야경 욕심은 내지 않는다. 첫날 일찍 자는 것이 나머지 8일을 산다.',
+      record: [
+        '16:45 프라하 공항 도착 → 우버로 시내 숙소 이동',
+        '저녁: 바츨라프 광장·신시가지 가볍게 한 바퀴 → 마트에서 필스너 우르켈 사서 숙소 휴식',
+        '도착 후 현금 환전 €50 → 약 1,205 Kč',
+        '첫날의 임무는 관광이 아니라 시차 적응. 일찍 잠든 게 이후 9일 체력의 기반이 됐다.'
+      ].join('\n'),
       meals: [],
       spend: {
         items: [{ label: 'eSIM', amount: 4.5 }],
@@ -80,6 +87,14 @@ export const EAST_EUROPE_2026 = defineVoyage({
       pm: '말라스트라나 점심 → 카페 휴식 90분 → 카를교·구시가 (낮엔 통과하는 느낌으로)',
       eve: '16:30 렌터카 인수 → 숙소 주차 → 휴식·저녁 → 19:15 야경: 강변 매직아워 → 20:00 카를교',
       tip: '일몰 19:20. 매직아워(19:20~19:50)가 완전 야경보다 예쁘다 — 하늘의 푸른빛 + 조명.',
+      record: [
+        '이른 아침: 카를교 산책 — 8시 전이라 다리가 거의 텅 빔. 인파 회피가 가장 잘 먹힌 순간',
+        '오전: 구시가 광장·천문시계 → 말레 나메스티 → 클레멘티눔 외관 → Karlova 골목 → 카를교 성상 30개(성 치릴로스와 메토디우스 상의 이중십자가)',
+        '점심: Dvorek pod Hradem — 콜레뇨',
+        '오후: 프라하성·성 비투스 대성당 내부. 마지막 입장이 16:30이라 15시 전에 들어가야 여유가 있다',
+        '15:57 렌터카 인수(Toyota Corolla 1.8 Hybrid). 인수 직후 오스트리아 10일 비네트 온라인 구매',
+        '저녁: 호텔 주차 후 야경. 구형 트램 Tatra T3 목격'
+      ].join('\n'),
       meals: [
         { slot: '아침', place: 'Bageterie Boulevard', dish: '샌드위치 ×2', amount: 507, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Bageterie%20Boulevard%20Prague', photo: null },
         { slot: '점심', place: 'Dvorek pod Hradem', dish: '콜레뇨', amount: 1204, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Dvorek%20pod%20Hradem', photo: null }
@@ -100,6 +115,12 @@ export const EAST_EUROPE_2026 = defineVoyage({
       pm: '체크인 → 체스키크룸로프 성·망토 다리 전망',
       eve: '구시가 골목·블타바 강변 — 당일치기 단체가 빠지는 18시 이후가 마법의 시간',
       tip: '숙박자의 특권은 저녁이다.',
+      record: [
+        '오전: 프라하 마무리 후 남쪽으로 출발 (약 180km · 2시간 40분)',
+        '오후: 짐 맡기고 점심 → 14:00 체크인 → 망토다리 → 성 정원 → 라트란 거리 → 이발사의 다리 → 스보르노스티 광장 → 성 외관·시청사',
+        '18시 이후: 단체가 빠진 구시가 산책 — 숙박하는 사람만 누리는 시간대',
+        '망토다리와 성 정원 사이에 노점형 카페가 있는 숨은 뷰포인트. 숙소는 계단이 있어 짐은 나눠 드는 게 편했다.'
+      ].join('\n'),
       meals: [
         { slot: '점심', place: "Papa's", dish: '스비치코바 + 립 + 코젤', amount: 1031, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Papa%27s%20Living%20Restaurant%20Cesky%20Krumlov', photo: null },
         { slot: '카페', place: 'Starbucks 라트란점', dish: '아이스 아메리카노', amount: 119, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Starbucks%20Latran%20Cesky%20Krumlov', photo: null },
@@ -121,6 +142,14 @@ export const EAST_EUROPE_2026 = defineVoyage({
       pm: '점심 후 잘츠부르크 이동 (1시간 20분) → 체크인 → 미라벨 정원',
       eve: '구시가·게트라이데 거리, 잘자흐 강변 저녁',
       tip: '할슈타트는 경유가 정답 — 왕복 별도 방문 대비 운전 1시간 45분 절약. 주차 중 짐은 트렁크에, 겉에서 안 보이게.',
+      record: [
+        '07:30 출발 → 국경 전 비네트 확인 → 09:40 할슈타트 도착. 관광버스가 몰리는 10:30 전에 호숫가·전망대를 한산하게',
+        '점심: Zum Bader — 호수 생선구이 + 슈니첼. 대기 중 직원의 "It\'s worth the wait"',
+        '16:00 할슈타트 출발 → 17:15~17:30 잘츠부르크 도착 (이날 약 285km · 4시간 30분)',
+        '오후: 미라벨 정원 → 호엔잘츠부르크 성(마지막 입장 19:30, 여유 있게 통과)',
+        '저녁: 마카르트 다리·모차르트 생가 외관·게트라이데 거리',
+        '하루 전체가 소금 테마 — 7,000년 소금광산 마을에서 "소금의 성"으로. 광산 내부 투어는 동선상 생략.'
+      ].join('\n'),
       meals: [
         { slot: '아침', place: 'Eni 주유소', dish: '크루아상 + 캔커피 ×2', amount: 11.67, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Eni%20Austria', photo: null },
         { slot: '점심', place: 'Zum Bader', dish: '호수생선 + 슈니첼', amount: 50.6, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Zum%20Bader%20Hallstatt', photo: null }
@@ -143,6 +172,14 @@ export const EAST_EUROPE_2026 = defineVoyage({
       pm: '멜크(바하우 밸리) 점심·강변 산책 (2시간 15분 + 1시간) → 비엔나 도착·체크인, 차량은 호텔 주차 후 이틀간 봉인',
       eve: '케른트너 거리·링 야경 산책',
       tip: '바하우 점심은 멜크 수도원 부지 내면 차와 가깝고 체류가 짧다.',
+      record: [
+        '오전: 체크아웃 후 Billa에서 아침거리·초콜릿 → 동쪽으로 출발',
+        '낮: 바하우밸리 경유 — 뒤른슈타인 점심은 시간상 생략',
+        '15:16 비엔나 숙소 도착, 2박 주차 등록(€20/박)',
+        '17:00 Figlmüller(Wollzeile) 예약 — 슈니첼 + 감자샐러드 + 필스너 2',
+        '저녁: 슈테판 대성당 외관 → 콜마르크트 → 헬덴플라츠 Ernte.Dank.Festival',
+        '클래식 음악회는 결국 예약하지 않기로 결정.'
+      ].join('\n'),
       meals: [
         { slot: '아침', place: 'Billa', dish: 'Kartoffelburek · 피자 · 초콜릿', amount: 32.8, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Billa%20Salzburg', photo: null },
         { slot: '저녁', place: 'Figlmüller (Wollzeile)', dish: '돼지고기 슈니첼 + 감자샐러드 + 필스너 2', amount: 44.06, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Figlmuller%20Wollzeile%20Vienna', photo: null },
@@ -170,6 +207,12 @@ export const EAST_EUROPE_2026 = defineVoyage({
         missions: [{ courseId: 'vienna-1900', missionId: 'v1900-4-succession', label: '합스부르크 계승 규칙' }]
       }],
       tip: '쇤브룬 내부는 개장 직후 첫 타임이 답. 정원은 무료·넓어서 사람이 흩어진다.',
+      record: [
+        '11:45 벨베데레 궁전 예약 관람 (계획은 9/14 오전이었으나 이날로 당김)',
+        '점심: Pan Kee — 치킨 볶음면 + 사시미롤 스페셜',
+        '16:00 쇤부른 궁전 예약 관람 → Café Gloriette에서 빈 시내 전망',
+        '벨베데레·쇤부른 입장권은 영수증이 없어 지출 합계에서 빠져 있다(2인 €50~70 추정).'
+      ].join('\n'),
       meals: [
         { slot: '아침', place: 'Anker Hauptbahnhof', dish: '베이커리', amount: null, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Anker%20Hauptbahnhof%20Vienna', photo: null },
         { slot: '점심', place: 'Pan Kee', dish: '치킨볶음면 + 사시미롤 스페셜', amount: 32.4, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Pan%20Kee%20Vienna', photo: null },
@@ -196,7 +239,32 @@ export const EAST_EUROPE_2026 = defineVoyage({
         id: 'day-6-belvedere',
         missions: [{ courseId: 'vienna-1900', missionId: 'v1900-f-belvedere-route', label: '벨베데레를 연대순으로 걷기' }]
       }],
-      tip: '크루즈는 인파에서 격리되는 방식의 야경이다. 대형 말고 소형.'
+      tip: '크루즈는 인파에서 격리되는 방식의 야경이다. 대형 말고 소형.',
+      record: [
+        '09:55 출발 전 빈 중앙역 Billa에서 랩 샌드위치 + 아이스커피',
+        '오전: 헝가리 e-비네트를 공식 사이트에서 직접 구매 — 10일권 6,900 Ft. 재판매 사이트는 같은 상품이 약 35% 비쌌다',
+        '오후: 부다페스트 도착 → 부다 왕궁언덕 숙소 체크인',
+        '18:05 Lánchíd Söröző — 생맥주 + 굴라시 수프 2 + 리조또',
+        '20:00 Danube Legend 야경 크루즈(성인 2매)',
+        '밤: 강변 산책 중 "다뉴브 강둑의 신발" 추모비',
+        '세체니 다리 사자상 전설, 1944–45년 공방전 — 저녁 동선 전체가 도시의 역사 레이어와 맞물렸다.'
+      ].join('\n'),
+      meals: [
+        { slot: '아침', place: 'Billa Wien Hauptbahnhof', dish: '랩 샌드위치 + 아이스커피', amount: 11.27, currency: 'EUR', mapUrl: 'https://maps.google.com/?q=Billa%20Wien%20Hauptbahnhof', photo: null },
+        { slot: '저녁', place: 'Lánchíd Söröző', dish: '생맥주 + 굴라시 수프 2 + 리조또', amount: 16840, currency: 'HUF', mapUrl: 'https://maps.google.com/?q=Lanchid%20Sorozo%20Budapest', photo: null },
+        { slot: '카페', place: 'Starbucks Budapest Promenade', dish: '커피', amount: 1610, currency: 'HUF', mapUrl: 'https://maps.google.com/?q=Starbucks%20Promenade%20Budapest', photo: null }
+      ],
+      spend: {
+        items: [
+          { label: 'Billa (빈 중앙역)', amount: 1.701 },
+          { label: '헝가리 e-비네트 10일권', amount: 2.62 },
+          { label: 'Lánchíd Söröző', amount: 6.4 },
+          { label: 'Starbucks Promenade', amount: 0.61 },
+          { label: 'Danube Legend 크루즈 ×2', amount: 7.55 }
+        ],
+        total: 18.881
+      },
+      photos: []
     },
     {
       date: '2026-09-15', dow: '화', city: '부다페스트', stay: '부다페스트', driveMin: 0,
@@ -204,6 +272,34 @@ export const EAST_EUROPE_2026 = defineVoyage({
       pm: '어부의 요새·마차시 성당·부다 왕궁 언덕 (푸니쿨라 이용)',
       eve: '여유 저녁 — 다음 날 장거리 전 짐 정리',
       tip: '온천으로 하루를 열고 오후에 언덕. 여행 후반 회복 반나절.',
+      record: [
+        '오전: 부다 왕궁 안뜰 — Bécsi kapu tér에서 16번 버스',
+        '12:45 Comme Chez Soi 예약 점심 — 그릴 푸아그라 + 마늘 오징어 스파게티 + 토카이 아수 2잔. 서비스료 15%가 청구서에 자동 포함이라 추가 팁 불필요',
+        '14:45 ALDI(중앙시장 옆) — 생수·간식, 기념품용 파프리카 가루 2통',
+        '15:35 Pichler(Váci utca) — 쿠르토쉬칼라치 콘에 젤라또 2스쿱',
+        '저녁: 마트에서 토카이 와인 4병(사르가무슈코타이·푸르민트 드라이·4푸토뇨시 아수·5푸토뇨시 아수)과 Erős Pista·파프리카 가루',
+        '21:47 McDonald\'s Unió — 친구와 라지 감자튀김',
+        '토카이 아수는 귀부 포도 디저트 와인, 소테른보다 100년 앞선 방식. 면세는 1인 2L·400달러 한도라 둘이 나누면 4병은 여유.',
+        '계획했던 세체니 온천·어부의 요새 대신 왕궁 안뜰과 시내 미식으로 하루를 썼다.'
+      ].join('\n'),
+      meals: [
+        { slot: '카페', place: 'Starbucks (이슈트반 대성당 근처)', dish: '커피', amount: 1590, currency: 'HUF', mapUrl: 'https://maps.google.com/?q=Starbucks%20Szent%20Istvan%20Bazilika%20Budapest', photo: null },
+        { slot: '점심', place: 'Comme Chez Soi', dish: '그릴 푸아그라 + 오징어 스파게티 + 토카이 아수 2잔', amount: 31740, currency: 'HUF', mapUrl: 'https://maps.google.com/?q=Comme%20Chez%20Soi%20Budapest', photo: null },
+        { slot: '디저트', place: 'Pichler', dish: '쿠르토쉬 콘 젤라또', amount: 6500, currency: 'HUF', mapUrl: 'https://maps.google.com/?q=Pichler%20Vaci%20utca%20Budapest', photo: null },
+        { slot: '야식', place: "McDonald's Unió", dish: '라지 감자튀김', amount: 1270, currency: 'HUF', mapUrl: 'https://maps.google.com/?q=McDonalds%20Jozsef%20korut%208%20Budapest', photo: null }
+      ],
+      spend: {
+        items: [
+          { label: 'Starbucks', amount: 0.6 },
+          { label: 'Comme Chez Soi', amount: 12.06 },
+          { label: 'ALDI', amount: 0.715 },
+          { label: 'Pichler', amount: 2.47 },
+          { label: "McDonald's Unió", amount: 0.48 }
+        ],
+        total: 16.325,
+        pendingCount: 1
+      },
+      photos: [],
       links: [
         {
           label: '세체니 온천 운영·예약',
@@ -237,6 +333,31 @@ export const EAST_EUROPE_2026 = defineVoyage({
       pm: '브르노 점심 (관광 없이 식사만, 노출 1시간 이내) → 13:30 출발 → 15:45 프라하 도착 → 렌터카 반납(짐 실은 채) → 체크인',
       eve: '마지막 밤 — 비셰흐라드 노을 (현지인 산책 코스, 성벽 위 전경) 또는 못 가본 곳',
       tip: '유일한 5시간대 운전일. 출국 전날이라 지연돼도 치명적이지 않다 — 이날 쓰라고 아껴둔 카드.',
+      record: [
+        '08:00 출발(계획 09:00에서 앞당김). 브르노 점심 없이 빈 외곽을 타고 직행 — 약 530km',
+        '10:57 헝가리 OMV(Tata) 주유 25.17L + 아이스카푸치노',
+        '13:53 체코 OMV(D1 브르노)에서 과자',
+        '15:19 Melikana motorest — 체코식 셀프서비스 휴게소. 드르슈트코바(소 내장 수프) + 젤나 폴레브카(사워크라우트·훈제소시지 수프)',
+        '17:00 렌터카 반납 — 7일간 총 1,600km 주행',
+        '20:03 Mostecká Pork\'s(말라스트라나) — 돼지족 + 코젤 흑맥주 + 젤냐치카 2. 서비스료 미포함이라 팁 10% 별도',
+        '21:41 호텔 근처 BILLA 장보기',
+        '체코는 팁이 청구서에 없고 헝가리는 자동 포함인 경우가 많다. 프라하 시내에도 jídelna(셀프서비스 식당)가 있다.'
+      ].join('\n'),
+      meals: [
+        { slot: '점심', place: 'Melikana motorest', dish: '드르슈트코바 + 젤나 폴레브카 + 음료', amount: 227, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Melikana%20motorest', photo: null },
+        { slot: '저녁', place: "Mostecká Pork's", dish: '돼지족 + 코젤 흑맥주 + 젤냐치카 2', amount: 1023, currency: 'CZK', mapUrl: 'https://maps.google.com/?q=Pork%27s%20Mosteck%C3%A1%20Prague', photo: null }
+      ],
+      spend: {
+        items: [
+          { label: 'OMV Tata (주유 25.17L + 음료)', amount: 6.23 },
+          { label: 'OMV 브르노', amount: 0.364 },
+          { label: 'Melikana motorest', amount: 1.66 },
+          { label: "Mostecká Pork's", amount: 7.47 },
+          { label: 'BILLA 장보기', amount: 2.29 }
+        ],
+        total: 18.014
+      },
+      photos: [],
       links: [
         {
           label: '브르노 공식 여행 안내',
@@ -344,6 +465,58 @@ export const EAST_EUROPE_2026 = defineVoyage({
     ],
     plan: 850, ceiling: 950,
     note: '아끼는 순서: 숙소 등급 → 식비 → 입장료. 야경 크루즈와 비엔나 카페는 안 건드린다.'
+  },
+
+  // 결산 — 영수증·인보이스 기준 실제 지출 (2026-09-17 정리, 단위 만원). 화면 표시는 후속 티켓.
+  settlement: {
+    unit: '만원', asOf: '2026-09-17',
+    prebooked: {
+      total: 650.01,
+      items: [
+        { label: '항공 — 아시아나 직항 왕복 2인', amount: 338.94 },
+        { label: '숙소 6곳 · 9박', amount: 192.87, detail: [
+          { label: 'Grandium Hotel Prague ×2박', amount: 47.6352 },
+          { label: 'Pension Pod Skalkou ×1박 (체스키크룸로프)', amount: 12.7085 },
+          { label: 'Motel One Salzburg-Süd ×1박', amount: 30.5174 },
+          { label: 'Motel One Wien-Hbf ×2박', amount: 44.5078 },
+          { label: 'Hotel Castle Garden ×2박 (부다페스트)', amount: 25.6978 },
+          { label: 'Diplomat Hotel Prague ×1박', amount: 25.1567 },
+          { label: '호텔 시티택스 (현지 정산)', amount: 6.6, approximate: true }
+        ] },
+        { label: '렌터카 7일 · 1,600km', amount: 118.2, localAmount: '18,326.94 Kč', detail: [
+          { label: '대여료 7일 (10% 할인)', amount: 19.75 },
+          { label: 'CDW + TP + Super Cover', amount: 53.21 },
+          { label: '도로세(비네트) + 개인상해보험', amount: 15.12 },
+          { label: '재급유 수수료', amount: 9.61 },
+          { label: '부가세 21%', amount: 20.52 }
+        ] }
+      ],
+      note: '예약 당시 카드에 잡힌 약 290만원 중 실제 청구는 약 118만원이고 나머지는 보증금 홀드 해제분. 재급유 수수료는 시중 주유가 대비 약 200 Kč 비싼 수준.'
+    },
+    onTrip: {
+      total: 127.091, days: 9, dailyAverage: 14.1212,
+      byCategory: [
+        { label: '식비 — 외식·장보기·팁', amount: 85.66 },
+        { label: '교통 — 주차·시내교통·비네트', amount: 11.906 },
+        { label: '입장료·액티비티 (확인분)', amount: 11.42 },
+        { label: '주유', amount: 6.23 },
+        { label: '통신 — 이심 + 유심', amount: 6.67 },
+        { label: '카페', amount: 2.735 },
+        { label: '디저트', amount: 2.47 }
+      ],
+      byRegion: [
+        { label: '체코 — Day 1·2·3·9', amount: 41.004 },
+        { label: '오스트리아 — Day 4·5·6', amount: 44.651 },
+        { label: '헝가리 — Day 7·8·9(일부)', amount: 41.436 }
+      ]
+    },
+    grandTotal: 777.101, perPerson: 388.5505,
+    fx: '1€ ≈ 1,510원 · 1 Kč ≈ 73원 · 1 Ft ≈ 3.8원. 카드 실결제 원화가 확인된 항목은 그 값을 사용.',
+    excluded: [
+      '벨베데레·쇤부른 궁전 입장권 (영수증 미확보, 2인 €50~70 추정)',
+      '토카이 와인 4병·기념품 약 18,895 Ft (장바구니 기준 추정 약 7.2만원)',
+      'Day 10–11 프라하 잔여 지출'
+    ]
   },
 
   sourceNote: {

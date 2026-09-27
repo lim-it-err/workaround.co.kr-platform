@@ -62,7 +62,7 @@ for (const scenario of scenarios) {
 }
 
 test('오늘의 독서 CTA는 추천 제목과 출발 문맥을 그대로 연습 판에 전달한다', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-08-05T08:00:00+02:00'))
+  await page.clock.setFixedTime(new Date('2026-08-05T08:00:00'))
   await page.goto('/today')
 
   const recommendedTitle = (await page.locator('.surface-hero h1').textContent())?.trim() ?? ''
