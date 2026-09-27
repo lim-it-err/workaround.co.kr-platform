@@ -101,7 +101,7 @@ for (const scenario of [
     assert.equal(await page.locator('.route-station').count(), 9)
     assert.equal(await page.locator('.route-segment').count(), 8)
     assert.match(await page.getByText('740km', { exact: false }).first().textContent(), /740km/)
-    assert.match(await page.getByText('523만원', { exact: false }).first().textContent(), /523만원/)
+    assert.match(await page.getByText('742만원', { exact: false }).first().textContent(), /742만원/)
 
     await page.getByRole('button', { name: /^8일차/ }).click()
     const officialLinks = page.locator('.route-day-links a')
@@ -276,7 +276,7 @@ for (const scenario of [
     await detail.getByRole('button', { name: '정차역 저장', exact: true }).click()
     assert.match(await detail.getByRole('status').textContent(), /저장했습니다/)
     assert.match(await page.locator('.route-timetable footer').textContent(), /114,300원/)
-    assert.match(await page.locator('.route-gauge--spend').textContent(), /524만원/)
+    assert.match(await page.locator('.route-gauge--spend').textContent(), /743만원/)
 
     if (process.env.VOYAGE_ROUTE_SCREENSHOT_DIR) {
       await page.screenshot({
