@@ -1,0 +1,14 @@
+# claude profile — real Anthropic Messages API calls. Requires env ANTHROPIC_API_KEY.
+advisor:
+  llm:
+    roles:
+      generate: { provider: claude, model: claude-haiku-4-5-20251001, fallback-provider: mock, fallback-model: default }
+      review: { provider: claude, model: claude-haiku-4-5-20251001, fallback-provider: mock, fallback-model: default }
+      chat: { provider: claude, model: claude-haiku-4-5-20251001, fallback-provider: mock, fallback-model: default }
+    claude:
+      base-url: https://api.anthropic.com
+      api-key: ${ANTHROPIC_API_KEY:}
+      version: "2023-06-01"
+      max-tokens: 4096
+      connect-timeout: 5s
+      read-timeout: 120s

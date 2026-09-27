@@ -1,0 +1,150 @@
+[
+  {
+    "id": "375-dark",
+    "timing": {
+      "settledMs": 2921.7999999523163,
+      "lastSample": {
+        "elapsed": 4241.5,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4266.099999904633
+    },
+    "readingMs": 1344.2999999523163,
+    "geometry": {
+      "hit": {
+        "x": 306,
+        "y": 177.265625,
+        "width": 40,
+        "height": 40
+      },
+      "pseudo": {
+        "width": "28px",
+        "height": "28px",
+        "boxSizing": "content-box",
+        "borderLeft": "1px",
+        "borderRight": "1px",
+        "borderTop": "1px",
+        "borderBottom": "1px",
+        "pointerEvents": "none",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "overflow": 0
+    },
+    "outerTargetClickOpened": "저장 안내",
+    "escapeFocusReturned": true,
+    "errors": []
+  },
+  {
+    "id": "375-light",
+    "timing": {
+      "settledMs": 2574.2999999523163,
+      "lastSample": {
+        "elapsed": 4234.400000095367,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4255.200000047684
+    },
+    "readingMs": 1680.9000000953674,
+    "geometry": {
+      "hit": {
+        "x": 306,
+        "y": 177.265625,
+        "width": 40,
+        "height": 40
+      },
+      "pseudo": {
+        "width": "28px",
+        "height": "28px",
+        "boxSizing": "content-box",
+        "borderLeft": "1px",
+        "borderRight": "1px",
+        "borderTop": "1px",
+        "borderBottom": "1px",
+        "pointerEvents": "none",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "overflow": 0
+    },
+    "outerTargetClickOpened": "저장 안내",
+    "escapeFocusReturned": true,
+    "errors": []
+  },
+  {
+    "id": "1440-dark",
+    "timing": {
+      "settledMs": 2877.5,
+      "lastSample": {
+        "elapsed": 4237.199999809265,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4256.5
+    },
+    "readingMs": 1379,
+    "geometry": {
+      "hit": {
+        "x": 660.25,
+        "y": 193.265625,
+        "width": 40,
+        "height": 40
+      },
+      "pseudo": {
+        "width": "28px",
+        "height": "28px",
+        "boxSizing": "content-box",
+        "borderLeft": "1px",
+        "borderRight": "1px",
+        "borderTop": "1px",
+        "borderBottom": "1px",
+        "pointerEvents": "none",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "overflow": 0
+    },
+    "outerTargetClickOpened": "저장 안내",
+    "escapeFocusReturned": true,
+    "errors": []
+  },
+  {
+    "id": "1440-light",
+    "timing": {
+      "settledMs": 2739.9000000953674,
+      "lastSample": {
+        "elapsed": 4260.099999904633,
+        "top": "DOORS OPENING",
+        "bottom": "DOORS OPENING",
+        "running": 0
+      },
+      "detachedMs": 4279.700000047684
+    },
+    "readingMs": 1539.7999999523163,
+    "geometry": {
+      "hit": {
+        "x": 660.25,
+        "y": 193.265625,
+        "width": 40,
+        "height": 40
+      },
+      "pseudo": {
+        "width": "28px",
+        "height": "28px",
+        "boxSizing": "content-box",
+        "borderLeft": "1px",
+        "borderRight": "1px",
+        "borderTop": "1px",
+        "borderBottom": "1px",
+        "pointerEvents": "none",
+        "background": "rgba(0, 0, 0, 0)"
+      },
+      "overflow": 0
+    },
+    "outerTargetClickOpened": "저장 안내",
+    "escapeFocusReturned": true,
+    "errors": []
+  }
+]

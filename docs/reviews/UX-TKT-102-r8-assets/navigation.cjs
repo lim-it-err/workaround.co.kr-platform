@@ -1,0 +1,7 @@
+const {chromium}=require('playwright');const fs=require('node:fs/promises');const path=require('node:path');
+(async()=>{const browser=await chromium.launch({headless:true});const page=await browser.newPage({viewport:{width:375,height:900}});const base='http://127.0.0.1:4189/workaround.co.kr-platform/mockups/';const results=[];try{
+ await page.goto(base+'home.html');const hrefs=await page.locator('a').evaluateAll(es=>[...new Set(es.map(e=>e.getAttribute('href')).filter(h=>h.endsWith('.html')))]);
+ for(const href of hrefs){await page.goto(base+'home.html');await page.locator(`a[href="${href}"]`).first().click();if(!page.url().endsWith('/'+href))throw Error('Unexpected destination '+href);results.push({href,clicked:true});}
+ await page.goto(base+'home.html');await page.keyboard.press('Tab');const focus=await page.evaluate(()=>document.activeElement?.textContent.trim());await page.keyboard.press('Enter');await page.waitForURL(base+'index.html');if(!page.url().endsWith('/index.html'))throw Error('Keyboard destination');
+ const output={links:results,keyboard:{firstFocus:focus,destination:'index.html'},excluded:'../advisor/ is an unchanged app entry, not a static mockup destination'};await fs.writeFile(path.join(__dirname,'evidence/navigation.json'),JSON.stringify(output,null,2)+'\n');console.log(JSON.stringify(output));
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});

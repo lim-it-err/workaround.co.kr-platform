@@ -1,0 +1,13 @@
+root = true
+
+[README.md]
+charset = utf-8-bom
+
+[AGENTS.md]
+charset = utf-8-bom
+
+[docs/**.md]
+charset = utf-8-bom
+
+[design/**.md]
+charset = utf-8-bom

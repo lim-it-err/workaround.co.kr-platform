@@ -1,0 +1,790 @@
+[
+  {
+    "label": "375-dark-empty",
+    "initial": {
+      "score": null,
+      "fix": null,
+      "retry": null,
+      "warning": null,
+      "lead": null,
+      "overflow": 0,
+      "primary": [
+        "제출하러 가기"
+      ],
+      "links": [
+        {
+          "text": "제출하러 가기",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        }
+      ],
+      "disclosures": []
+    },
+    "editDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+    "errors": []
+  },
+  {
+    "label": "375-dark-submitted",
+    "initial": {
+      "score": {
+        "text": "66점\n종합 점수",
+        "x": 16,
+        "y": 371.984375,
+        "width": 343,
+        "height": 48,
+        "bottom": 419.984375
+      },
+      "fix": {
+        "text": "먼저 고칠 것 1개\n도메인 개념의 타입화\n9 / 20점 · 11점 회복 여지\n\n병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다.",
+        "x": 16,
+        "y": 431.984375,
+        "width": 343,
+        "height": 123.40625,
+        "bottom": 555.390625
+      },
+      "retry": {
+        "text": "코드 고쳐서 재제출",
+        "x": 16,
+        "y": 567.390625,
+        "width": 343,
+        "height": 44,
+        "bottom": 611.390625
+      },
+      "warning": {
+        "text": "⚠️ 이 미션은 아직 실제 백엔드 리뷰 샘플이 없어 미리 생성된 샘플 리뷰를 보여줍니다. 백엔드가 연결되면 방금 제출한 코드를 리뷰 에이전트가 직접 분석합니다.",
+        "x": 16,
+        "y": 646.390625,
+        "width": 343,
+        "height": 78.421875,
+        "bottom": 724.8125
+      },
+      "lead": {
+        "text": "66점\n종합 점수\n먼저 고칠 것 1개\n도메인 개념의 타입화\n9 / 20점 · 11점 회복 여지\n\n병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다.\n\n코드 고쳐서 재제출",
+        "x": 16,
+        "y": 357.984375,
+        "width": 343,
+        "height": 272.40625,
+        "bottom": 630.390625
+      },
+      "overflow": 0,
+      "primary": [
+        "코드 고쳐서 재제출",
+        "내 기록 보기"
+      ],
+      "links": [
+        {
+          "text": "코드 고쳐서 재제출",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        },
+        {
+          "text": "내 기록 보기",
+          "href": "/workaround.co.kr-platform/advisor/history"
+        },
+        {
+          "text": "배우기로",
+          "href": "/workaround.co.kr-platform/advisor/learn"
+        }
+      ],
+      "disclosures": [
+        {
+          "text": "항목별 피드백\n5개 항목",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "히든 케이스와 퀘스트\n3개 케이스",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "평판\n질문 창 소통 평가",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "시나리오\n당신의 코드가 배포된 후",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        }
+      ]
+    },
+    "expandedOverflow": 0,
+    "retryDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+    "listDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/learn",
+    "nextDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s2-furniture-01",
+    "nextFrom": "/courses/foundations",
+    "errors": []
+  },
+  {
+    "label": "375-dark-perfect",
+    "initial": {
+      "score": {
+        "text": "100점\n종합 점수",
+        "x": 16,
+        "y": 371.984375,
+        "width": 343,
+        "height": 48,
+        "bottom": 419.984375
+      },
+      "fix": {
+        "text": "먼저 고칠 것 1개\n책임 분리\n30 / 30점 · 0점 회복 여지\n\n요구한 기준을 충족했습니다.",
+        "x": 16,
+        "y": 431.984375,
+        "width": 343,
+        "height": 102.484375,
+        "bottom": 534.46875
+      },
+      "retry": {
+        "text": "코드 고쳐서 재제출",
+        "x": 16,
+        "y": 546.46875,
+        "width": 343,
+        "height": 44,
+        "bottom": 590.46875
+      },
+      "warning": {
+        "text": "✅ 실시간 리뷰 — 2026. 9. 15. 오후 12:00:01에 리뷰 에이전트가 생성했습니다.",
+        "x": 16,
+        "y": 625.46875,
+        "width": 343,
+        "height": 58.28125,
+        "bottom": 683.75
+      },
+      "lead": {
+        "text": "100점\n종합 점수\n먼저 고칠 것 1개\n책임 분리\n30 / 30점 · 0점 회복 여지\n\n요구한 기준을 충족했습니다.\n\n코드 고쳐서 재제출",
+        "x": 16,
+        "y": 357.984375,
+        "width": 343,
+        "height": 251.484375,
+        "bottom": 609.46875
+      },
+      "overflow": 0,
+      "primary": [
+        "코드 고쳐서 재제출",
+        "내 기록 보기"
+      ],
+      "links": [
+        {
+          "text": "코드 고쳐서 재제출",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        },
+        {
+          "text": "내 기록 보기",
+          "href": "/workaround.co.kr-platform/advisor/history"
+        },
+        {
+          "text": "배우기로",
+          "href": "/workaround.co.kr-platform/advisor/learn"
+        }
+      ],
+      "disclosures": [
+        {
+          "text": "항목별 피드백\n5개 항목",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        }
+      ]
+    },
+    "errors": []
+  },
+  {
+    "label": "375-light-empty",
+    "initial": {
+      "score": null,
+      "fix": null,
+      "retry": null,
+      "warning": null,
+      "lead": null,
+      "overflow": 0,
+      "primary": [
+        "제출하러 가기"
+      ],
+      "links": [
+        {
+          "text": "제출하러 가기",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        }
+      ],
+      "disclosures": []
+    },
+    "editDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+    "errors": []
+  },
+  {
+    "label": "375-light-submitted",
+    "initial": {
+      "score": {
+        "text": "66점\n종합 점수",
+        "x": 16,
+        "y": 371.984375,
+        "width": 343,
+        "height": 48,
+        "bottom": 419.984375
+      },
+      "fix": {
+        "text": "먼저 고칠 것 1개\n도메인 개념의 타입화\n9 / 20점 · 11점 회복 여지\n\n병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다.",
+        "x": 16,
+        "y": 431.984375,
+        "width": 343,
+        "height": 123.40625,
+        "bottom": 555.390625
+      },
+      "retry": {
+        "text": "코드 고쳐서 재제출",
+        "x": 16,
+        "y": 567.390625,
+        "width": 343,
+        "height": 44,
+        "bottom": 611.390625
+      },
+      "warning": {
+        "text": "⚠️ 이 미션은 아직 실제 백엔드 리뷰 샘플이 없어 미리 생성된 샘플 리뷰를 보여줍니다. 백엔드가 연결되면 방금 제출한 코드를 리뷰 에이전트가 직접 분석합니다.",
+        "x": 16,
+        "y": 646.390625,
+        "width": 343,
+        "height": 78.421875,
+        "bottom": 724.8125
+      },
+      "lead": {
+        "text": "66점\n종합 점수\n먼저 고칠 것 1개\n도메인 개념의 타입화\n9 / 20점 · 11점 회복 여지\n\n병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다.\n\n코드 고쳐서 재제출",
+        "x": 16,
+        "y": 357.984375,
+        "width": 343,
+        "height": 272.40625,
+        "bottom": 630.390625
+      },
+      "overflow": 0,
+      "primary": [
+        "코드 고쳐서 재제출",
+        "내 기록 보기"
+      ],
+      "links": [
+        {
+          "text": "코드 고쳐서 재제출",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        },
+        {
+          "text": "내 기록 보기",
+          "href": "/workaround.co.kr-platform/advisor/history"
+        },
+        {
+          "text": "배우기로",
+          "href": "/workaround.co.kr-platform/advisor/learn"
+        }
+      ],
+      "disclosures": [
+        {
+          "text": "항목별 피드백\n5개 항목",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "히든 케이스와 퀘스트\n3개 케이스",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "평판\n질문 창 소통 평가",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "시나리오\n당신의 코드가 배포된 후",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        }
+      ]
+    },
+    "expandedOverflow": 0,
+    "retryDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+    "listDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/learn",
+    "nextDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s2-furniture-01",
+    "nextFrom": "/courses/foundations",
+    "errors": []
+  },
+  {
+    "label": "375-light-perfect",
+    "initial": {
+      "score": {
+        "text": "100점\n종합 점수",
+        "x": 16,
+        "y": 371.984375,
+        "width": 343,
+        "height": 48,
+        "bottom": 419.984375
+      },
+      "fix": {
+        "text": "먼저 고칠 것 1개\n책임 분리\n30 / 30점 · 0점 회복 여지\n\n요구한 기준을 충족했습니다.",
+        "x": 16,
+        "y": 431.984375,
+        "width": 343,
+        "height": 102.484375,
+        "bottom": 534.46875
+      },
+      "retry": {
+        "text": "코드 고쳐서 재제출",
+        "x": 16,
+        "y": 546.46875,
+        "width": 343,
+        "height": 44,
+        "bottom": 590.46875
+      },
+      "warning": {
+        "text": "✅ 실시간 리뷰 — 2026. 9. 15. 오후 12:00:01에 리뷰 에이전트가 생성했습니다.",
+        "x": 16,
+        "y": 625.46875,
+        "width": 343,
+        "height": 58.28125,
+        "bottom": 683.75
+      },
+      "lead": {
+        "text": "100점\n종합 점수\n먼저 고칠 것 1개\n책임 분리\n30 / 30점 · 0점 회복 여지\n\n요구한 기준을 충족했습니다.\n\n코드 고쳐서 재제출",
+        "x": 16,
+        "y": 357.984375,
+        "width": 343,
+        "height": 251.484375,
+        "bottom": 609.46875
+      },
+      "overflow": 0,
+      "primary": [
+        "코드 고쳐서 재제출",
+        "내 기록 보기"
+      ],
+      "links": [
+        {
+          "text": "코드 고쳐서 재제출",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        },
+        {
+          "text": "내 기록 보기",
+          "href": "/workaround.co.kr-platform/advisor/history"
+        },
+        {
+          "text": "배우기로",
+          "href": "/workaround.co.kr-platform/advisor/learn"
+        }
+      ],
+      "disclosures": [
+        {
+          "text": "항목별 피드백\n5개 항목",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        }
+      ]
+    },
+    "errors": []
+  },
+  {
+    "label": "1440-dark-empty",
+    "initial": {
+      "score": null,
+      "fix": null,
+      "retry": null,
+      "warning": null,
+      "lead": null,
+      "overflow": 0,
+      "primary": [
+        "제출하러 가기"
+      ],
+      "links": [
+        {
+          "text": "제출하러 가기",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        }
+      ],
+      "disclosures": []
+    },
+    "editDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+    "errors": []
+  },
+  {
+    "label": "1440-dark-submitted",
+    "initial": {
+      "score": {
+        "text": "66점\n종합 점수",
+        "x": 218,
+        "y": 349.296875,
+        "width": 1004,
+        "height": 54.390625,
+        "bottom": 403.6875
+      },
+      "fix": {
+        "text": "먼저 고칠 것 1개\n도메인 개념의 타입화\n9 / 20점 · 11점 회복 여지\n\n병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다.",
+        "x": 218,
+        "y": 417.6875,
+        "width": 1004,
+        "height": 103.25,
+        "bottom": 520.9375
+      },
+      "retry": {
+        "text": "코드 고쳐서 재제출",
+        "x": 218,
+        "y": 534.9375,
+        "width": 142.25,
+        "height": 44,
+        "bottom": 578.9375
+      },
+      "warning": {
+        "text": "⚠️ 이 미션은 아직 실제 백엔드 리뷰 샘플이 없어 미리 생성된 샘플 리뷰를 보여줍니다. 백엔드가 연결되면 방금 제출한 코드를 리뷰 에이전트가 직접 분석합니다.",
+        "x": 218,
+        "y": 613.9375,
+        "width": 1004,
+        "height": 38.140625,
+        "bottom": 652.078125
+      },
+      "lead": {
+        "text": "66점\n종합 점수\n먼저 고칠 것 1개\n도메인 개념의 타입화\n9 / 20점 · 11점 회복 여지\n\n병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다.\n\n코드 고쳐서 재제출",
+        "x": 218,
+        "y": 332.296875,
+        "width": 1004,
+        "height": 265.640625,
+        "bottom": 597.9375
+      },
+      "overflow": 0,
+      "primary": [
+        "코드 고쳐서 재제출",
+        "내 기록 보기"
+      ],
+      "links": [
+        {
+          "text": "코드 고쳐서 재제출",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        },
+        {
+          "text": "내 기록 보기",
+          "href": "/workaround.co.kr-platform/advisor/history"
+        },
+        {
+          "text": "배우기로",
+          "href": "/workaround.co.kr-platform/advisor/learn"
+        }
+      ],
+      "disclosures": [
+        {
+          "text": "항목별 피드백\n5개 항목",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "히든 케이스와 퀘스트\n3개 케이스",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "평판\n질문 창 소통 평가",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "시나리오\n당신의 코드가 배포된 후",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        }
+      ]
+    },
+    "expandedOverflow": 0,
+    "retryDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+    "listDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/learn",
+    "nextDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s2-furniture-01",
+    "nextFrom": "/courses/foundations",
+    "errors": []
+  },
+  {
+    "label": "1440-dark-perfect",
+    "initial": {
+      "score": {
+        "text": "100점\n종합 점수",
+        "x": 218,
+        "y": 349.296875,
+        "width": 1004,
+        "height": 54.390625,
+        "bottom": 403.6875
+      },
+      "fix": {
+        "text": "먼저 고칠 것 1개\n책임 분리\n30 / 30점 · 0점 회복 여지\n\n요구한 기준을 충족했습니다.",
+        "x": 218,
+        "y": 417.6875,
+        "width": 1004,
+        "height": 103.25,
+        "bottom": 520.9375
+      },
+      "retry": {
+        "text": "코드 고쳐서 재제출",
+        "x": 218,
+        "y": 534.9375,
+        "width": 142.25,
+        "height": 44,
+        "bottom": 578.9375
+      },
+      "warning": {
+        "text": "✅ 실시간 리뷰 — 2026. 9. 15. 오후 12:00:01에 리뷰 에이전트가 생성했습니다.",
+        "x": 218,
+        "y": 613.9375,
+        "width": 1004,
+        "height": 38.140625,
+        "bottom": 652.078125
+      },
+      "lead": {
+        "text": "100점\n종합 점수\n먼저 고칠 것 1개\n책임 분리\n30 / 30점 · 0점 회복 여지\n\n요구한 기준을 충족했습니다.\n\n코드 고쳐서 재제출",
+        "x": 218,
+        "y": 332.296875,
+        "width": 1004,
+        "height": 265.640625,
+        "bottom": 597.9375
+      },
+      "overflow": 0,
+      "primary": [
+        "코드 고쳐서 재제출",
+        "내 기록 보기"
+      ],
+      "links": [
+        {
+          "text": "코드 고쳐서 재제출",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        },
+        {
+          "text": "내 기록 보기",
+          "href": "/workaround.co.kr-platform/advisor/history"
+        },
+        {
+          "text": "배우기로",
+          "href": "/workaround.co.kr-platform/advisor/learn"
+        }
+      ],
+      "disclosures": [
+        {
+          "text": "항목별 피드백\n5개 항목",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        }
+      ]
+    },
+    "errors": []
+  },
+  {
+    "label": "1440-light-empty",
+    "initial": {
+      "score": null,
+      "fix": null,
+      "retry": null,
+      "warning": null,
+      "lead": null,
+      "overflow": 0,
+      "primary": [
+        "제출하러 가기"
+      ],
+      "links": [
+        {
+          "text": "제출하러 가기",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        }
+      ],
+      "disclosures": []
+    },
+    "editDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+    "errors": []
+  },
+  {
+    "label": "1440-light-submitted",
+    "initial": {
+      "score": {
+        "text": "66점\n종합 점수",
+        "x": 218,
+        "y": 349.296875,
+        "width": 1004,
+        "height": 54.390625,
+        "bottom": 403.6875
+      },
+      "fix": {
+        "text": "먼저 고칠 것 1개\n도메인 개념의 타입화\n9 / 20점 · 11점 회복 여지\n\n병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다.",
+        "x": 218,
+        "y": 417.6875,
+        "width": 1004,
+        "height": 103.25,
+        "bottom": 520.9375
+      },
+      "retry": {
+        "text": "코드 고쳐서 재제출",
+        "x": 218,
+        "y": 534.9375,
+        "width": 142.25,
+        "height": 44,
+        "bottom": 578.9375
+      },
+      "warning": {
+        "text": "⚠️ 이 미션은 아직 실제 백엔드 리뷰 샘플이 없어 미리 생성된 샘플 리뷰를 보여줍니다. 백엔드가 연결되면 방금 제출한 코드를 리뷰 에이전트가 직접 분석합니다.",
+        "x": 218,
+        "y": 613.9375,
+        "width": 1004,
+        "height": 38.140625,
+        "bottom": 652.078125
+      },
+      "lead": {
+        "text": "66점\n종합 점수\n먼저 고칠 것 1개\n도메인 개념의 타입화\n9 / 20점 · 11점 회복 여지\n\n병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다.\n\n코드 고쳐서 재제출",
+        "x": 218,
+        "y": 332.296875,
+        "width": 1004,
+        "height": 265.640625,
+        "bottom": 597.9375
+      },
+      "overflow": 0,
+      "primary": [
+        "코드 고쳐서 재제출",
+        "내 기록 보기"
+      ],
+      "links": [
+        {
+          "text": "코드 고쳐서 재제출",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        },
+        {
+          "text": "내 기록 보기",
+          "href": "/workaround.co.kr-platform/advisor/history"
+        },
+        {
+          "text": "배우기로",
+          "href": "/workaround.co.kr-platform/advisor/learn"
+        }
+      ],
+      "disclosures": [
+        {
+          "text": "항목별 피드백\n5개 항목",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "히든 케이스와 퀘스트\n3개 케이스",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "평판\n질문 창 소통 평가",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        },
+        {
+          "text": "시나리오\n당신의 코드가 배포된 후",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        }
+      ]
+    },
+    "expandedOverflow": 0,
+    "retryDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s1-wine-01",
+    "listDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/learn",
+    "nextDestination": "http://127.0.0.1:4211/workaround.co.kr-platform/advisor/missions/s2-furniture-01",
+    "nextFrom": "/courses/foundations",
+    "errors": []
+  },
+  {
+    "label": "1440-light-perfect",
+    "initial": {
+      "score": {
+        "text": "100점\n종합 점수",
+        "x": 218,
+        "y": 349.296875,
+        "width": 1004,
+        "height": 54.390625,
+        "bottom": 403.6875
+      },
+      "fix": {
+        "text": "먼저 고칠 것 1개\n책임 분리\n30 / 30점 · 0점 회복 여지\n\n요구한 기준을 충족했습니다.",
+        "x": 218,
+        "y": 417.6875,
+        "width": 1004,
+        "height": 103.25,
+        "bottom": 520.9375
+      },
+      "retry": {
+        "text": "코드 고쳐서 재제출",
+        "x": 218,
+        "y": 534.9375,
+        "width": 142.25,
+        "height": 44,
+        "bottom": 578.9375
+      },
+      "warning": {
+        "text": "✅ 실시간 리뷰 — 2026. 9. 15. 오후 12:00:01에 리뷰 에이전트가 생성했습니다.",
+        "x": 218,
+        "y": 613.9375,
+        "width": 1004,
+        "height": 38.140625,
+        "bottom": 652.078125
+      },
+      "lead": {
+        "text": "100점\n종합 점수\n먼저 고칠 것 1개\n책임 분리\n30 / 30점 · 0점 회복 여지\n\n요구한 기준을 충족했습니다.\n\n코드 고쳐서 재제출",
+        "x": 218,
+        "y": 332.296875,
+        "width": 1004,
+        "height": 265.640625,
+        "bottom": 597.9375
+      },
+      "overflow": 0,
+      "primary": [
+        "코드 고쳐서 재제출",
+        "내 기록 보기"
+      ],
+      "links": [
+        {
+          "text": "코드 고쳐서 재제출",
+          "href": "/workaround.co.kr-platform/advisor/missions/s1-wine-01"
+        },
+        {
+          "text": "내 기록 보기",
+          "href": "/workaround.co.kr-platform/advisor/history"
+        },
+        {
+          "text": "배우기로",
+          "href": "/workaround.co.kr-platform/advisor/learn"
+        }
+      ],
+      "disclosures": [
+        {
+          "text": "항목별 피드백\n5개 항목",
+          "open": false,
+          "bg": "rgba(0, 0, 0, 0)",
+          "radius": "0px",
+          "height": 56
+        }
+      ]
+    },
+    "errors": []
+  }
+]

@@ -1,0 +1,57 @@
+{
+  "links": [
+    {
+      "href": "index.html",
+      "clicked": true
+    },
+    {
+      "href": "blog-hub.html",
+      "clicked": true
+    },
+    {
+      "href": "blog-archive.html",
+      "clicked": true
+    },
+    {
+      "href": "blog-post.html",
+      "clicked": true
+    },
+    {
+      "href": "writing-studio.html",
+      "clicked": true
+    },
+    {
+      "href": "voyage-prep.html",
+      "clicked": true
+    },
+    {
+      "href": "voyage-daily.html",
+      "clicked": true
+    },
+    {
+      "href": "voyage-archive.html",
+      "clicked": true
+    },
+    {
+      "href": "voyage-route.html",
+      "clicked": true
+    },
+    {
+      "href": "simhub.html",
+      "clicked": true
+    },
+    {
+      "href": "work.html",
+      "clicked": true
+    },
+    {
+      "href": "runtime.html",
+      "clicked": true
+    }
+  ],
+  "keyboard": {
+    "firstFocus": "목업 목차",
+    "destination": "index.html"
+  },
+  "excluded": "../advisor/ is an unchanged app entry, not a static mockup destination"
+}

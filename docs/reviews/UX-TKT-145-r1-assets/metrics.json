@@ -1,0 +1,410 @@
+[
+  {
+    "id": "375-dark",
+    "stations": [
+      {
+        "code": "B",
+        "width": 40.53333282470703,
+        "height": 40.5333251953125,
+        "hitWidth": 40.53333282470703,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "V",
+        "width": 40.53334045410156,
+        "height": 40.5333251953125,
+        "hitWidth": 40.53334045410156,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "A",
+        "width": 61.387939453125,
+        "height": 40.5333251953125,
+        "hitWidth": 40.53334045410156,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "S",
+        "width": 91.29119873046875,
+        "height": 40.53334045410156,
+        "hitWidth": 40.533355712890625,
+        "hitHeight": 40.53334045410156,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "D",
+        "width": 44.63792419433594,
+        "height": 40.5333251953125,
+        "hitWidth": 40.5333251953125,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "P",
+        "width": 44.849037170410156,
+        "height": 40.5333251953125,
+        "hitWidth": 40.533348083496094,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "W",
+        "width": 48.43568420410156,
+        "height": 40.5333251953125,
+        "hitWidth": 40.53334045410156,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "R",
+        "width": 64.87229919433594,
+        "height": 40.5333251953125,
+        "hitWidth": 40.5333251953125,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      }
+    ],
+    "toast": "보호 구역 · 준비 중",
+    "preview": {
+      "text": "정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다",
+      "x": 25,
+      "y": 105,
+      "width": 321,
+      "height": 41,
+      "bottom": 146,
+      "font": "13.12px",
+      "color": "rgb(174, 184, 200)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "borderTop": "1px",
+      "borderBottom": "1px",
+      "radius": "0px"
+    },
+    "previewText": "정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다\n\nE01\n멈춘 엘리베이터\n화면 미리보기\n23층 · 승강기 4대 · 정지 상태 미리보기\n미스터리 트레인으로 돌아가기\n층\n대기\nE1\nE2\nE3\nE4\n23F\n22F\n21F\n20F\n19F\n18F\n17F\n16F\n15F\n14F\n13F\n12F\n11F\n10F\n9F\n8F\n7F\n6F\n5F\n4F\n3F\n2F\n1F\n0\nE1\n0\nE2\n0\nE3\n0\nE4\n대기\n0\n탑승\n0\n이동 중\n0\n평균 대기\n0초\n수요\n보통\n한산\n보통\n혼잡\n고급 설정\n최근 운행\n최대 8건",
+    "controls": {
+      "inert": true,
+      "ariaDisabled": "true",
+      "opacity": "0.72"
+    },
+    "overflow": 0,
+    "exitUrl": "http://127.0.0.1:4212/workaround.co.kr-platform/sim",
+    "errors": [],
+    "api": []
+  },
+  {
+    "id": "375-light",
+    "stations": [
+      {
+        "code": "B",
+        "width": 40.53333282470703,
+        "height": 40.5333251953125,
+        "hitWidth": 40.53333282470703,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "V",
+        "width": 40.53334045410156,
+        "height": 40.5333251953125,
+        "hitWidth": 40.53334045410156,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "A",
+        "width": 61.387939453125,
+        "height": 40.5333251953125,
+        "hitWidth": 40.53334045410156,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "S",
+        "width": 91.29119873046875,
+        "height": 40.53334045410156,
+        "hitWidth": 40.533355712890625,
+        "hitHeight": 40.53334045410156,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "D",
+        "width": 44.63792419433594,
+        "height": 40.5333251953125,
+        "hitWidth": 40.5333251953125,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "P",
+        "width": 44.849037170410156,
+        "height": 40.5333251953125,
+        "hitWidth": 40.533348083496094,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "W",
+        "width": 48.43568420410156,
+        "height": 40.5333251953125,
+        "hitWidth": 40.53334045410156,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "R",
+        "width": 64.87229919433594,
+        "height": 40.5333251953125,
+        "hitWidth": 40.5333251953125,
+        "hitHeight": 40.5333251953125,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      }
+    ],
+    "toast": "보호 구역 · 준비 중",
+    "preview": {
+      "text": "정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다",
+      "x": 25,
+      "y": 105,
+      "width": 321,
+      "height": 41,
+      "bottom": 146,
+      "font": "13.12px",
+      "color": "rgb(69, 83, 106)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "borderTop": "1px",
+      "borderBottom": "1px",
+      "radius": "0px"
+    },
+    "previewText": "정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다\n\nE01\n멈춘 엘리베이터\n화면 미리보기\n23층 · 승강기 4대 · 정지 상태 미리보기\n미스터리 트레인으로 돌아가기\n층\n대기\nE1\nE2\nE3\nE4\n23F\n22F\n21F\n20F\n19F\n18F\n17F\n16F\n15F\n14F\n13F\n12F\n11F\n10F\n9F\n8F\n7F\n6F\n5F\n4F\n3F\n2F\n1F\n0\nE1\n0\nE2\n0\nE3\n0\nE4\n대기\n0\n탑승\n0\n이동 중\n0\n평균 대기\n0초\n수요\n보통\n한산\n보통\n혼잡\n고급 설정\n최근 운행\n최대 8건",
+    "controls": {
+      "inert": true,
+      "ariaDisabled": "true",
+      "opacity": "0.72"
+    },
+    "overflow": 0,
+    "exitUrl": "http://127.0.0.1:4212/workaround.co.kr-platform/sim",
+    "errors": [],
+    "api": []
+  },
+  {
+    "id": "1440-dark",
+    "stations": [
+      {
+        "code": "B",
+        "width": 75.61041259765625,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61041259765625,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "V",
+        "width": 75.61041259765625,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61041259765625,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "A",
+        "width": 95.83004760742188,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61044311523438,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "S",
+        "width": 135.4263916015625,
+        "height": 75.61041259765625,
+        "hitWidth": 75.6104736328125,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "D",
+        "width": 75.61041259765625,
+        "height": 75.61044311523438,
+        "hitWidth": 75.61041259765625,
+        "hitHeight": 75.61044311523438,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "P",
+        "width": 75.61044311523438,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61044311523438,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "W",
+        "width": 77.2581787109375,
+        "height": 75.61044311523438,
+        "hitWidth": 75.61044311523438,
+        "hitHeight": 75.61044311523438,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "R",
+        "width": 100.455078125,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61041259765625,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      }
+    ],
+    "toast": "보호 구역 · 준비 중",
+    "preview": {
+      "text": "정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다",
+      "x": 41,
+      "y": 121,
+      "width": 1354,
+      "height": 41,
+      "bottom": 162,
+      "font": "13.12px",
+      "color": "rgb(174, 184, 200)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "borderTop": "1px",
+      "borderBottom": "1px",
+      "radius": "0px"
+    },
+    "previewText": "정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다\n\n← 미스터리 트레인\nE01\n멈춘 엘리베이터\n다음 승강장 →\n화면 미리보기\n23층 · 승강기 4대 · 정지 상태 미리보기\n미스터리 트레인으로 돌아가기\n층\n대기\nE1\nE2\nE3\nE4\n23F\n22F\n21F\n20F\n19F\n18F\n17F\n16F\n15F\n14F\n13F\n12F\n11F\n10F\n9F\n8F\n7F\n6F\n5F\n4F\n3F\n2F\n1F\n0\nE1\n0\nE2\n0\nE3\n0\nE4\n대기\n0\n탑승\n0\n이동 중\n0\n평균 대기\n0초\n수요\n보통\n한산\n보통\n혼잡\n고급 설정\n최근 운행\n최대 8건\nE1 2.0F ↑\nE2 8.0F ·\nE3 14.0F ·\nE4 20.0F ↓",
+    "controls": {
+      "inert": true,
+      "ariaDisabled": "true",
+      "opacity": "0.72"
+    },
+    "overflow": 0,
+    "exitUrl": "http://127.0.0.1:4212/workaround.co.kr-platform/sim",
+    "errors": [],
+    "api": []
+  },
+  {
+    "id": "1440-light",
+    "stations": [
+      {
+        "code": "B",
+        "width": 75.61041259765625,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61041259765625,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "V",
+        "width": 75.61041259765625,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61041259765625,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "A",
+        "width": 95.83004760742188,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61044311523438,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "S",
+        "width": 135.4263916015625,
+        "height": 75.61041259765625,
+        "hitWidth": 75.6104736328125,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "D",
+        "width": 75.61041259765625,
+        "height": 75.61044311523438,
+        "hitWidth": 75.61041259765625,
+        "hitHeight": 75.61044311523438,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "P",
+        "width": 75.61044311523438,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61044311523438,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "W",
+        "width": 77.2581787109375,
+        "height": 75.61044311523438,
+        "hitWidth": 75.61044311523438,
+        "hitHeight": 75.61044311523438,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      },
+      {
+        "code": "R",
+        "width": 100.455078125,
+        "height": 75.61041259765625,
+        "hitWidth": 75.61041259765625,
+        "hitHeight": 75.61041259765625,
+        "fill": "rgba(0, 0, 0, 0)",
+        "pointer": "all"
+      }
+    ],
+    "toast": "보호 구역 · 준비 중",
+    "preview": {
+      "text": "정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다",
+      "x": 41,
+      "y": 121,
+      "width": 1354,
+      "height": 41,
+      "bottom": 162,
+      "font": "13.12px",
+      "color": "rgb(69, 83, 106)",
+      "bg": "rgba(0, 0, 0, 0)",
+      "borderTop": "1px",
+      "borderBottom": "1px",
+      "radius": "0px"
+    },
+    "previewText": "정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다\n\n← 미스터리 트레인\nE01\n멈춘 엘리베이터\n다음 승강장 →\n화면 미리보기\n23층 · 승강기 4대 · 정지 상태 미리보기\n미스터리 트레인으로 돌아가기\n층\n대기\nE1\nE2\nE3\nE4\n23F\n22F\n21F\n20F\n19F\n18F\n17F\n16F\n15F\n14F\n13F\n12F\n11F\n10F\n9F\n8F\n7F\n6F\n5F\n4F\n3F\n2F\n1F\n0\nE1\n0\nE2\n0\nE3\n0\nE4\n대기\n0\n탑승\n0\n이동 중\n0\n평균 대기\n0초\n수요\n보통\n한산\n보통\n혼잡\n고급 설정\n최근 운행\n최대 8건\nE1 2.0F ↑\nE2 8.0F ·\nE3 14.0F ·\nE4 20.0F ↓",
+    "controls": {
+      "inert": true,
+      "ariaDisabled": "true",
+      "opacity": "0.72"
+    },
+    "overflow": 0,
+    "exitUrl": "http://127.0.0.1:4212/workaround.co.kr-platform/sim",
+    "errors": [],
+    "api": []
+  }
+]

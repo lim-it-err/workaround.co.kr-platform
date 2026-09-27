@@ -1,0 +1,1486 @@
+<!doctype html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 A · 서울 사인 정제 — workaround UX 목업</title>
+<style>
+/* ============================================================
+   시안 A · 서울 사인 정제 (Seoul Signage Refined)
+   - 현재 시스템의 정제판. Base Metal / Panel Surface 다크 톤 +
+     Safety Yellow / Exit Green 액센트, 강한 정보 위계, tabular figures.
+   - 기본 다크. 라이트는 "주간 역사" 톤으로 짝 설계.
+   ============================================================ */
+
+:root {
+  --font-sans: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic",
+               "Apple SD Gothic Neo", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "Cascadia Code", Consolas, "SF Mono", "Roboto Mono", monospace;
+  --page-w: 1120px;
+  --radius: 14px;
+  --radius-lg: 20px;
+}
+
+/* ---------- 테마 토큰 ---------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0D131C;
+  --bg-2: #111721;
+  --panel: #1A212D;
+  --panel-2: #212A38;
+  --panel-soft: rgba(255, 255, 255, 0.045);
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #F3F6FB;
+  --text-2: #AEB8C8;
+  --muted: #7C8AA0;
+  --safety: #F3C544;
+  --safety-ink: #201A05;
+  --exit: #17A757;
+  --exit-hover: #129149;
+  --danger: #E06A7A;
+  --shadow: 0 18px 44px rgba(2, 6, 12, 0.42);
+  --head-bg: rgba(13, 19, 28, 0.86);
+
+  --lb-c: #A63A62; --lb-t: #E58BAB;
+  --le-c: #0FA3E0; --le-t: #63C9F2;
+  --lt-c: #D99A2B; --lt-t: #EBC069;
+  --lw-c: #00A84D; --lw-t: #57C98A;
+  --lr-c: #3D6EDB; --lr-t: #8FAFF5;
+
+  --code-bg: #10161F;
+  --quote-bg: rgba(243, 197, 68, 0.06);
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #EDF1F6;
+  --bg-2: #E4EAF2;
+  --panel: #FFFFFF;
+  --panel-2: #F5F8FC;
+  --panel-soft: rgba(16, 24, 38, 0.045);
+  --line: rgba(16, 24, 38, 0.12);
+  --line-strong: rgba(16, 24, 38, 0.22);
+  --text: #16202E;
+  --text-2: #45536A;
+  --muted: #6B7A92;
+  --safety: #E9B92B;
+  --safety-ink: #201A05;
+  --exit: #0E8A46;
+  --exit-hover: #0B7038;
+  --danger: #C24557;
+  --shadow: 0 16px 40px rgba(53, 77, 114, 0.14);
+  --head-bg: rgba(237, 241, 246, 0.88);
+
+  --lb-c: #8E2C4F; --lb-t: #8E2C4F;
+  --le-c: #0090C8; --le-t: #00729E;
+  --lt-c: #C07F10; --lt-t: #96650E;
+  --lw-c: #009344; --lw-t: #007A39;
+  --lr-c: #0052A4; --lr-t: #0052A4;
+
+  --code-bg: #101724;
+  --quote-bg: rgba(233, 185, 43, 0.10);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font: inherit; cursor: pointer; }
+a { color: inherit; }
+.num { font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+
+/* ---------- 상단 고정 헤더 ---------- */
+.mock-head {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--head-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.mock-head-in {
+  max-width: var(--page-w);
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 18px;
+}
+.mock-id { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.mock-badge {
+  flex: 0 0 auto;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--safety); color: var(--safety-ink);
+  font-weight: 900; font-size: 1.05rem;
+}
+.mock-id strong { display: block; font-size: 0.95rem; letter-spacing: -0.01em; white-space: nowrap; }
+.mock-id small { display: block; color: var(--muted); font-size: 0.72rem; white-space: nowrap; }
+.mock-nav {
+  margin-left: auto;
+  display: flex; gap: 4px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.mock-nav::-webkit-scrollbar { display: none; }
+.mock-nav a {
+  padding: 7px 12px; border-radius: 999px;
+  font-size: 0.82rem; color: var(--text-2);
+  text-decoration: none; white-space: nowrap;
+  border: 1px solid transparent;
+}
+.mock-nav a:hover { color: var(--text); border-color: var(--line); background: var(--panel-soft); }
+.theme-toggle {
+  flex: 0 0 auto;
+  padding: 8px 14px; border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel); color: var(--text);
+  font-size: 0.82rem; font-weight: 600;
+}
+.theme-toggle:hover { border-color: var(--safety); }
+
+/* ---------- 공통 섹션 골격 ---------- */
+main { max-width: var(--page-w); margin: 0 auto; padding: 0 24px 80px; }
+.sec { padding: 72px 0 12px; scroll-margin-top: 84px; }
+.sec + .sec { border-top: 1px solid var(--line); margin-top: 56px; }
+.sec-head { margin-bottom: 30px; }
+.sec-rail {
+  display: block; width: 44px; height: 4px; border-radius: 2px;
+  background: var(--safety); margin-bottom: 14px;
+}
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--muted);
+}
+.sec-head h2 { margin: 0 0 8px; font-size: clamp(1.5rem, 3vw, 2.1rem); letter-spacing: -0.03em; }
+.sec-note { margin: 0; max-width: 62ch; color: var(--text-2); font-size: 0.94rem; }
+
+/* ---------- 버튼 ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 18px; border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 700; font-size: 0.9rem;
+  text-decoration: none;
+  transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-exit { background: var(--exit); color: #F2FFF7; }
+.btn-exit:hover { background: var(--exit-hover); }
+.btn-ghost { background: transparent; border-color: var(--line-strong); color: var(--text); }
+.btn-ghost:hover { border-color: var(--safety); }
+.btn .arw { font-weight: 400; }
+
+/* ---------- 배지 / 칩 ---------- */
+.roundel {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: inline-grid; place-items: center;
+  color: #fff; font-weight: 900; font-size: 0.95rem;
+  flex: 0 0 auto;
+}
+.roundel.sm { width: 24px; height: 24px; font-size: 0.72rem; }
+.lb { background: var(--lb-c); } .le { background: var(--le-c); }
+.lt { background: var(--lt-c); } .lw { background: var(--lw-c); }
+.lr { background: var(--lr-c); }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 999px;
+  border: 1px solid var(--line);
+  font-size: 0.74rem; font-weight: 600; color: var(--text-2);
+  white-space: nowrap;
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--exit); }
+.chip.warn .dot { background: var(--safety); }
+
+/* 상태 배지 (블로그) */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 6px;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: 0.04em;
+  border: 1px solid transparent;
+}
+.badge-pub { color: var(--lw-t); border-color: color-mix(in srgb, var(--lw-c) 45%, transparent); background: color-mix(in srgb, var(--lw-c) 12%, transparent); }
+.badge-draft { color: var(--text-2); border-color: var(--line-strong); background: var(--panel-soft); }
+.badge-arch { color: var(--lt-t); border-color: color-mix(in srgb, var(--lt-c) 40%, transparent); background: color-mix(in srgb, var(--lt-c) 10%, transparent); }
+
+/* ============================================================
+   1. 스플래시 — 개선된 스플릿 플랩
+   보드 자체는 라이트 모드에서도 어두운 실물 보드로 유지한다.
+   ============================================================ */
+.splash-stage {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, #0A0F16 0%, #0E141D 60%, #0A0F15 100%);
+  box-shadow: var(--shadow);
+  padding: clamp(22px, 4vw, 44px);
+  color: #F3F6FB;
+  overflow: hidden;
+}
+.splash-top {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.splash-roundel {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #F3C544; color: #201A05;
+  font-weight: 900; font-size: 1.5rem;
+}
+.splash-title h1 { margin: 0; font-size: clamp(1.7rem, 4vw, 2.6rem); letter-spacing: -0.04em; }
+.splash-title p { margin: 2px 0 0; color: #AEB8C8; font-size: 0.9rem; }
+.splash-clock {
+  margin-left: auto; text-align: right;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px; padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.splash-clock span { display: block; font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: #7C8AA0; }
+.splash-clock strong { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+
+/* --- 플랩 보드 --- */
+.flap-viewport { overflow-x: auto; padding-bottom: 4px; }
+.flap-board {
+  --fch: clamp(46px, 5.6vw, 66px);       /* 셀 높이 */
+  --fcw: clamp(32px, 4.1vw, 48px);       /* 셀 폭 */
+  --fgap: 5px;
+  --fr: 7px;
+  --flap-ink: #F6E9BE;
+  display: grid; gap: 12px;
+  width: max-content; min-width: 100%;
+  padding: clamp(14px, 2.4vw, 26px);
+  border-radius: 16px;
+  background: #06090D;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.7);
+}
+.flap-row { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; }
+.flap-label { display: grid; gap: 1px; }
+.flap-label b { font-size: 0.98rem; letter-spacing: 0.08em; color: #D7DEE9; }
+.flap-label i { font-style: normal; font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; color: #6B788D; }
+.flap-cells { display: flex; gap: var(--fgap); }
+
+.fc {
+  position: relative;
+  width: var(--fcw); height: var(--fch);
+  perspective: calc(var(--fch) * 4.4);
+  flex: 0 0 auto;
+}
+.fc::after {  /* 중앙 힌지 라인 */
+  content: ""; position: absolute; left: 1px; right: 1px;
+  top: calc(50% - 1px); height: 2px;
+  background: rgba(0, 0, 0, 0.66); z-index: 6;
+}
+.fh {
+  position: absolute; left: 0; right: 0; height: 50%;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.fh b {
+  position: absolute; left: 0; right: 0; height: var(--fch);
+  display: grid; place-items: center;
+  font-weight: 800; font-size: calc(var(--fch) * 0.58);
+  color: var(--flap-ink);
+  font-variant-numeric: tabular-nums;
+}
+.ft { top: 0; border-radius: var(--fr) var(--fr) 2px 2px; transform-origin: 50% 100%;
+  background: linear-gradient(180deg, #232B38 0%, #171E29 78%, #121822 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+.fb { bottom: 0; border-radius: 2px 2px var(--fr) var(--fr); transform-origin: 50% 0%;
+  background: linear-gradient(180deg, #1B2330 0%, #1E2734 30%, #151C27 100%);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+.ft b { top: 0; }
+.fb b { bottom: 0; }
+.tf, .bf { display: none; z-index: 4; will-change: transform; }
+.bf { z-index: 3; }
+
+.fc.run .tf {
+  display: block;
+  animation: waTop calc(var(--dur, 90ms) * 0.55) cubic-bezier(0.52, 0, 0.86, 0.4) forwards;
+}
+.fc.run .bf {
+  display: block;
+  transform: rotateX(89.8deg);
+  animation: waBottom calc(var(--dur, 90ms) * 0.6) cubic-bezier(0.15, 0.66, 0.24, 1) forwards;
+  animation-delay: calc(var(--dur, 90ms) * 0.38);
+}
+.fc.run.settle .bf {
+  animation-name: waBottomSettle;
+  animation-duration: calc(var(--dur, 90ms) * 0.78);
+  animation-timing-function: cubic-bezier(0.32, 0.4, 0.36, 1);
+}
+@keyframes waTop {
+  from { transform: rotateX(0deg); filter: brightness(1); }
+  to   { transform: rotateX(-89.8deg); filter: brightness(0.32); }
+}
+@keyframes waBottom {
+  from { transform: rotateX(89.8deg); filter: brightness(0.45); }
+  to   { transform: rotateX(0deg); filter: brightness(1); }
+}
+@keyframes waBottomSettle {
+  0%   { transform: rotateX(89.8deg); filter: brightness(0.45); }
+  55%  { transform: rotateX(0deg); filter: brightness(1.06); }
+  72%  { transform: rotateX(10.5deg); }
+  86%  { transform: rotateX(-2.5deg); }
+  100% { transform: rotateX(0deg); filter: brightness(1); }
+}
+
+.splash-ticker {
+  margin-top: 18px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.86rem; color: #C6CFDD;
+}
+.splash-ticker .tick-dot { width: 8px; height: 8px; border-radius: 50%; background: #F3C544; flex: 0 0 auto; }
+.splash-foot {
+  margin-top: 20px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.splash-foot .hint { color: #7C8AA0; font-size: 0.82rem; }
+.splash-foot .btn-ghost { border-color: rgba(255, 255, 255, 0.2); color: #F3F6FB; }
+.splash-foot .btn-ghost:hover { border-color: #F3C544; }
+
+/* ============================================================
+   2. 환승 홀
+   ============================================================ */
+.wayfinding {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 12px 18px; margin-bottom: 26px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--safety);
+  background: var(--panel);
+  font-size: 0.85rem; color: var(--text-2);
+}
+.wayfinding .here { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text); }
+.wayfinding .here::before {
+  content: ""; width: 9px; height: 9px; border-radius: 50%;
+  background: var(--safety);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--safety) 22%, transparent);
+}
+.wayfinding .sep { color: var(--line-strong); }
+.wayfinding .transfer { display: inline-flex; align-items: center; gap: 6px; }
+
+/* 블로그 주 노선 카드 */
+.blog-primary {
+  display: grid; grid-template-columns: 1.25fr 1fr; gap: 0;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 36px;
+}
+.blog-primary-main {
+  padding: clamp(24px, 3.4vw, 40px);
+  border-top: 5px solid var(--lb-c);
+}
+.bp-linecode {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.bp-linecode .code { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.14em; color: var(--lb-t); text-transform: uppercase; }
+.bp-linecode .kind { font-size: 0.74rem; color: var(--muted); }
+.blog-primary-main h3 { margin: 0 0 10px; font-size: clamp(1.4rem, 2.6vw, 1.9rem); letter-spacing: -0.03em; }
+.blog-primary-main > p { margin: 0 0 20px; color: var(--text-2); max-width: 46ch; }
+.bp-stats { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 24px; }
+.bp-stats article span { display: block; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.bp-stats article strong { font-size: 1.35rem; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.bp-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.blog-primary-list {
+  border-left: 1px solid var(--line);
+  background: var(--panel-2);
+  padding: clamp(20px, 2.8vw, 30px);
+  display: flex; flex-direction: column;
+}
+.blog-primary-list h4 {
+  margin: 0 0 6px; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+}
+.recent-post {
+  display: grid; gap: 2px;
+  padding: 12px 2px;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+}
+.recent-post:last-of-type { border-bottom: 0; }
+.recent-post strong { font-size: 0.92rem; letter-spacing: -0.01em; }
+.recent-post small { color: var(--muted); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+.recent-post:hover strong { color: var(--lb-t); }
+.blog-primary-list .more { margin-top: auto; padding-top: 12px; font-size: 0.8rem; color: var(--text-2); text-decoration: none; }
+.blog-primary-list .more:hover { color: var(--text); }
+
+/* 실험 놀이터 보조 노선 */
+.playground-head {
+  display: flex; align-items: baseline; gap: 12px; margin: 0 0 14px;
+}
+.playground-head h3 { margin: 0; font-size: 1.05rem; letter-spacing: -0.02em; }
+.playground-head span { font-size: 0.78rem; color: var(--muted); }
+.line-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+.line-card {
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 18px;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.line-card:hover { transform: translateY(-3px); border-color: var(--line-strong); box-shadow: var(--shadow); }
+.line-card-top { display: flex; align-items: center; gap: 10px; }
+.line-card-top .names strong { display: block; font-size: 0.95rem; letter-spacing: -0.01em; }
+.line-card-top .names small { display: block; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.line-card p { margin: 0; font-size: 0.82rem; color: var(--text-2); flex: 1; }
+.line-card .foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.line-card .enter {
+  font-size: 0.82rem; font-weight: 700; text-decoration: none; color: var(--text);
+}
+.line-card .enter:hover { color: var(--safety); }
+.junction-note {
+  margin: 26px 0 0; padding: 14px 18px;
+  border-radius: 10px; border: 1px dashed var(--line-strong);
+  color: var(--muted); font-size: 0.82rem;
+}
+
+/* ============================================================
+   3. 블로그
+   ============================================================ */
+.archive-wrap { display: grid; gap: 14px; margin-bottom: 60px; }
+.archive-toolbar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  color: var(--muted); font-size: 0.8rem;
+}
+.archive-toolbar .spacer { flex: 1; }
+.archive-item {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 22px 24px;
+  display: grid; gap: 8px;
+  transition: border-color 0.16s ease, transform 0.16s ease;
+}
+.archive-item:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+.archive-item h4 { margin: 0; font-size: 1.12rem; letter-spacing: -0.02em; }
+.archive-item h4 a { text-decoration: none; }
+.archive-item h4 a:hover { color: var(--lb-t); }
+.archive-item .summary { margin: 0; color: var(--text-2); font-size: 0.9rem; max-width: 74ch; }
+.archive-meta {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-size: 0.78rem; color: var(--muted);
+}
+.archive-meta time { font-variant-numeric: tabular-nums; }
+.tag {
+  padding: 2px 9px; border-radius: 999px;
+  background: var(--panel-soft); border: 1px solid var(--line);
+  font-size: 0.72rem; color: var(--text-2);
+}
+.badge-legend {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 12px 16px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--panel-2);
+  font-size: 0.78rem; color: var(--muted);
+}
+
+/* 글 상세 */
+.post-detail {
+  max-width: 720px; margin: 0 auto;
+  border-top: 5px solid var(--lb-c);
+  border-radius: var(--radius-lg);
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  padding: clamp(26px, 4vw, 48px);
+}
+.post-meta-line {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 0.78rem; color: var(--muted);
+  margin-bottom: 14px; font-variant-numeric: tabular-nums;
+}
+.post-detail h1 { margin: 0 0 12px; font-size: clamp(1.6rem, 3.4vw, 2.15rem); line-height: 1.3; letter-spacing: -0.035em; }
+.post-lead { margin: 0 0 18px; font-size: 1.05rem; color: var(--text-2); line-height: 1.7; }
+.post-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 28px; }
+.post-body { font-size: 1rem; line-height: 1.85; color: var(--text); }
+.post-body h2 {
+  margin: 2.2em 0 0.7em; font-size: 1.32rem; letter-spacing: -0.02em;
+  padding-top: 0.8em; border-top: 1px solid var(--line);
+}
+.post-body h3 { margin: 1.8em 0 0.6em; font-size: 1.08rem; letter-spacing: -0.01em; }
+.post-body p { margin: 0 0 1.15em; }
+.post-body ul { margin: 0 0 1.15em; padding-left: 1.3em; }
+.post-body li { margin-bottom: 0.4em; }
+.post-body li::marker { color: var(--safety); }
+.post-body code {
+  font-family: var(--font-mono); font-size: 0.86em;
+  background: var(--panel-soft); border: 1px solid var(--line);
+  padding: 1px 6px; border-radius: 6px;
+}
+.post-body pre {
+  background: var(--code-bg); color: #DCE6F5;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--safety);
+  border-radius: 10px;
+  padding: 18px 20px; overflow-x: auto;
+  margin: 0 0 1.3em;
+}
+.post-body pre code { background: none; border: 0; padding: 0; font-size: 0.83rem; line-height: 1.7; color: inherit; }
+.post-body blockquote {
+  margin: 0 0 1.3em; padding: 14px 20px;
+  border-left: 4px solid var(--lb-c);
+  background: var(--quote-bg);
+  border-radius: 0 10px 10px 0;
+  color: var(--text-2); font-style: normal;
+}
+.post-body blockquote p { margin: 0; }
+.post-foot-nav {
+  display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  margin-top: 36px; padding-top: 22px; border-top: 1px solid var(--line);
+}
+
+/* ============================================================
+   4. 엘리베이터 승강장 샘플
+   ============================================================ */
+.station-sign {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  margin-bottom: 22px;
+}
+.station-sign .band { height: 8px; background: var(--le-c); }
+.station-sign-in {
+  display: flex; align-items: center; gap: 18px;
+  padding: 20px 26px; flex-wrap: wrap;
+}
+.station-prev, .station-next { font-size: 0.82rem; color: var(--muted); white-space: nowrap; }
+.station-center {
+  flex: 1; text-align: center; min-width: 200px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+}
+.station-code {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid var(--le-c);
+  display: grid; place-items: center;
+  font-weight: 900; font-size: 0.8rem; color: var(--le-t);
+}
+.station-center h3 { margin: 0; font-size: clamp(1.3rem, 2.6vw, 1.7rem); letter-spacing: -0.02em; }
+.station-center small { display: block; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.station-sub {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px 26px;
+  border-top: 1px solid var(--line);
+  background: var(--panel-2);
+  font-size: 0.8rem; color: var(--text-2);
+}
+.station-sub .spacer { flex: 1; }
+
+.platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.panel {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  padding: 20px 22px;
+}
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.panel-head h4 { margin: 0; font-size: 0.95rem; letter-spacing: -0.01em; }
+.panel-head span { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 22px; }
+.stat-tile {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--panel); padding: 14px 16px;
+}
+.stat-tile span { display: block; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.stat-tile strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.stat-tile small { color: var(--muted); font-size: 0.72rem; }
+.car-row {
+  display: grid; grid-template-columns: 44px 1fr 92px; gap: 12px; align-items: center;
+  padding: 11px 0; border-bottom: 1px solid var(--line);
+}
+.car-row:last-child { border-bottom: 0; }
+.car-id {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: grid; place-items: center;
+  background: color-mix(in srgb, var(--le-c) 14%, transparent);
+  color: var(--le-t); font-weight: 800; font-size: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--le-c) 36%, transparent);
+}
+.car-mid strong { font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.car-mid small { display: block; color: var(--muted); font-size: 0.74rem; }
+.load-track {
+  height: 8px; border-radius: 4px; overflow: hidden;
+  background: var(--panel-soft); border: 1px solid var(--line);
+  margin-top: 6px;
+}
+.load-track i { display: block; height: 100%; background: var(--le-c); border-radius: 4px; }
+.car-pax { text-align: right; font-variant-numeric: tabular-nums; font-size: 0.86rem; color: var(--text-2); }
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.chip-btn {
+  padding: 8px 16px; border-radius: 999px;
+  border: 1px solid var(--line-strong); background: transparent; color: var(--text-2);
+  font-size: 0.84rem; font-weight: 600;
+}
+.chip-btn.active { background: var(--safety); border-color: var(--safety); color: var(--safety-ink); }
+.slider-block { margin-bottom: 18px; }
+.slider-block label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-2); margin-bottom: 8px; }
+input[type="range"] {
+  width: 100%; appearance: none; -webkit-appearance: none;
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--safety) 0 62%, var(--panel-soft) 62%);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--safety); border: 3px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--safety); border: 3px solid var(--bg);
+}
+.queue-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.skeleton-note { margin-top: 14px; font-size: 0.76rem; color: var(--muted); }
+
+/* ============================================================
+   5. 모바일 미리보기
+   ============================================================ */
+.mobile-wrap { display: flex; gap: 34px; align-items: flex-start; flex-wrap: wrap; }
+.phone {
+  width: 390px; max-width: 100%;
+  border-radius: 38px;
+  border: 1px solid var(--line-strong);
+  background: var(--bg-2);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  flex: 0 0 auto;
+}
+.phone-notch { width: 110px; height: 8px; border-radius: 4px; background: var(--line-strong); margin: 2px auto 10px; }
+.phone-screen {
+  border-radius: 26px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  height: 700px; overflow-y: auto;
+  display: flex; flex-direction: column;
+  scrollbar-width: thin;
+}
+.m-status {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px;
+  background: var(--head-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  font-size: 0.76rem; color: var(--text-2);
+}
+.m-status .here { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--text); }
+.m-status .here::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--safety); }
+.m-body { padding: 16px; display: grid; gap: 14px; }
+.m-blog {
+  border: 1px solid var(--line); border-radius: 16px;
+  border-top: 4px solid var(--lb-c);
+  background: var(--panel);
+  padding: 18px;
+  display: grid; gap: 10px;
+}
+.m-blog .m-line { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lb-t); font-weight: 800; }
+.m-blog h4 { margin: 0; font-size: 1.15rem; letter-spacing: -0.02em; }
+.m-blog p { margin: 0; font-size: 0.82rem; color: var(--text-2); }
+.m-recent { border-top: 1px solid var(--line); padding-top: 10px; display: grid; gap: 8px; }
+.m-recent a { display: flex; justify-content: space-between; gap: 10px; font-size: 0.8rem; text-decoration: none; }
+.m-recent a small { color: var(--muted); font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.m-playground { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); overflow: hidden; }
+.m-playground header { padding: 12px 16px 8px; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.m-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  border-top: 1px solid var(--line);
+  text-decoration: none;
+}
+.m-row .names { flex: 1; min-width: 0; }
+.m-row .names strong { display: block; font-size: 0.9rem; }
+.m-row .names small { color: var(--muted); font-size: 0.72rem; }
+.m-row .chev { color: var(--muted); }
+.m-row:active { background: var(--panel-soft); }
+.m-quick {
+  position: sticky; bottom: 0; margin-top: auto;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--head-bg);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--line);
+}
+.m-quick a {
+  padding: 13px 6px; text-align: center;
+  font-size: 0.74rem; font-weight: 700; color: var(--text-2);
+  text-decoration: none;
+}
+.m-quick a.on { color: var(--safety); }
+.mobile-notes { flex: 1; min-width: 260px; display: grid; gap: 12px; align-content: start; }
+.mobile-notes article {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--panel); padding: 16px 18px;
+}
+.mobile-notes strong { display: block; margin-bottom: 4px; font-size: 0.9rem; }
+.mobile-notes p { margin: 0; font-size: 0.82rem; color: var(--text-2); }
+.mobile-notes .idx { color: var(--safety); font-variant-numeric: tabular-nums; margin-right: 6px; }
+
+/* ---------- 푸터 ---------- */
+.mock-foot {
+  max-width: var(--page-w); margin: 0 auto;
+  padding: 26px 24px 60px;
+  border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 0.78rem;
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+
+/* ---------- 반응형 ---------- */
+@media (max-width: 960px) {
+  .line-grid { grid-template-columns: repeat(2, 1fr); }
+  .blog-primary { grid-template-columns: 1fr; }
+  .blog-primary-list { border-left: 0; border-top: 1px solid var(--line); }
+  .platform-grid { grid-template-columns: 1fr; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 620px) {
+  .mock-head-in { padding: 10px 14px; gap: 10px; }
+  .mock-nav { display: none; }
+  main { padding: 0 14px 60px; }
+  .line-grid { grid-template-columns: 1fr; }
+  .flap-row { grid-template-columns: 64px 1fr; gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .line-card, .archive-item, .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="mock-head">
+  <div class="mock-head-in">
+    <div class="mock-id">
+      <span class="mock-badge">A</span>
+      <div>
+        <strong>시안 A · 서울 사인 정제</strong>
+        <small>UX 전면 재작업 목업 · 2026-07-05</small>
+      </div>
+    </div>
+    <nav class="mock-nav">
+      <a href="#splash">스플래시</a>
+      <a href="#junction">환승 홀</a>
+      <a href="#blog">블로그</a>
+      <a href="#platform">승강장</a>
+      <a href="#mobile">모바일</a>
+    </nav>
+    <button type="button" class="theme-toggle" id="themeToggle">라이트 모드로 보기</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ 1. 스플래시 ============ -->
+  <section id="splash" class="sec">
+    <div class="sec-head">
+      <span class="sec-rail"></span>
+      <p class="eyebrow">01 · Splash</p>
+      <h2>행선판 스플래시</h2>
+      <p class="sec-note">
+        기계식 스플릿 플랩을 반쪽 플랩(rotateX) 구조로 재현했습니다. 각 셀이 중간 글자를 몇 장씩 넘기며
+        열 단위 시차로 도착하고, 마지막 플랩은 반동과 함께 정착합니다. 보드는 라이트 모드에서도 실물처럼 어둡게 유지합니다.
+      </p>
+    </div>
+
+    <div class="splash-stage">
+      <div class="splash-top">
+        <span class="splash-roundel">W</span>
+        <div class="splash-title">
+          <h1>workaround central</h1>
+          <p>개인 블로그와 실험 놀이터를 잇는 환승 포털</p>
+        </div>
+        <div class="splash-clock">
+          <span>Departure</span>
+          <strong class="num" id="clock">00:00:00</strong>
+        </div>
+      </div>
+
+      <div class="flap-viewport">
+        <div class="flap-board" id="flapBoard" data-cells="12">
+          <div class="flap-row" data-value="WORKAROUND">
+            <div class="flap-label"><b>행선</b><i>Destination</i></div>
+            <div class="flap-cells"></div>
+          </div>
+          <div class="flap-row" data-value="블로그 아카이브">
+            <div class="flap-label"><b>다음</b><i>Next</i></div>
+            <div class="flap-cells"></div>
+          </div>
+          <div class="flap-row" data-value="10초 후 환승">
+            <div class="flap-label"><b>안내</b><i>Notice</i></div>
+            <div class="flap-cells"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="splash-ticker">
+        <span class="tick-dot"></span>
+        <span>오늘의 노선 상태 양호 · 블로그 라인이 본선입니다 · 실험 노선은 언제든 지연될 수 있습니다</span>
+      </div>
+
+      <div class="splash-foot">
+        <button type="button" class="btn btn-exit" data-replay>다시 재생</button>
+        <button type="button" class="btn btn-ghost">바로 환승 홀로 <span class="arw">→</span></button>
+        <span class="hint">실제 포털에서는 10초 후 자동으로 환승 홀에 도착합니다.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. 환승 홀 ============ -->
+  <section id="junction" class="sec">
+    <div class="sec-head">
+      <span class="sec-rail"></span>
+      <p class="eyebrow">02 · Main Junction</p>
+      <h2>환승 홀</h2>
+      <p class="sec-note">
+        블로그가 본선(Line B)입니다. 홀에서 가장 큰 면적과 첫 시선을 가져가고,
+        시뮬레이터들은 실험 놀이터 노선으로 한 단계 아래 위계에 정렬합니다.
+      </p>
+    </div>
+
+    <div class="wayfinding">
+      <span class="here">현재 위치 · 환승 홀</span>
+      <span class="sep">|</span>
+      <span class="transfer">환승 가능
+        <span class="roundel sm lb">B</span>
+        <span class="roundel sm le">E</span>
+        <span class="roundel sm lt">T</span>
+        <span class="roundel sm lw">W</span>
+        <span class="roundel sm lr">R</span>
+      </span>
+      <span class="sep">|</span>
+      <span class="chip"><span class="dot"></span>게이트 정상</span>
+    </div>
+
+    <article class="blog-primary">
+      <div class="blog-primary-main">
+        <div class="bp-linecode">
+          <span class="roundel lb">B</span>
+          <span class="code">Line B · Blog District</span>
+          <span class="kind">본선 · 읽고 쓰는 승강장</span>
+        </div>
+        <h3>기록이 이 역의 본선입니다</h3>
+        <p>
+          개발하며 남긴 글, 시뮬레이터 실험 일지, 회고를 공개 아카이브로 정리합니다.
+          이 포털의 첫 목적지는 언제나 글입니다.
+        </p>
+        <div class="bp-stats">
+          <article><span>공개</span><strong>5편</strong></article>
+          <article><span>초안</span><strong>2편</strong></article>
+          <article><span>최근 발행</span><strong>7월 4일</strong></article>
+        </div>
+        <div class="bp-ctas">
+          <a href="#blog" class="btn btn-exit">아카이브 들어가기 <span class="arw">→</span></a>
+          <a href="#blog" class="btn btn-ghost">Writing Studio</a>
+        </div>
+      </div>
+      <aside class="blog-primary-list">
+        <h4>최근 발행</h4>
+        <a class="recent-post" href="#blog">
+          <strong>택시 배차 시뮬레이터, 보상 함수 첫 설계</strong>
+          <small>2026-07-04 · 시뮬레이터</small>
+        </a>
+        <a class="recent-post" href="#blog">
+          <strong>스플릿 플랩 보드를 CSS 트랜스폼으로 다시 만들기</strong>
+          <small>2026-07-02 · 프런트엔드</small>
+        </a>
+        <a class="recent-post" href="#blog">
+          <strong>엘리베이터 시뮬레이터, 워프 버그를 잡기까지</strong>
+          <small>2026-06-27 · 디버깅</small>
+        </a>
+        <a class="more" href="#blog">공개 아카이브 전체 보기 →</a>
+      </aside>
+    </article>
+
+    <div class="playground-head">
+      <h3>실험 놀이터</h3>
+      <span>Playground Lines · 시뮬레이터와 운영 도구는 보조 노선으로 정렬</span>
+    </div>
+    <div class="line-grid">
+      <article class="line-card">
+        <div class="line-card-top">
+          <span class="roundel le">E</span>
+          <div class="names"><strong>엘리베이터 승강장</strong><small>Line E · Elevator</small></div>
+        </div>
+        <p>23층 수직 시뮬레이터. 승객 단위 수요와 연속 위치 운행을 봅니다.</p>
+        <div class="foot">
+          <span class="chip"><span class="dot"></span>실시간 운행</span>
+          <a class="enter" href="#platform">승강장 입장 →</a>
+        </div>
+      </article>
+      <article class="line-card">
+        <div class="line-card-top">
+          <span class="roundel lt">T</span>
+          <div class="names"><strong>택시 구역</strong><small>Line T · Taxi Lab</small></div>
+        </div>
+        <p>9구역 도시의 호출과 배차, 보상 루프를 실험하는 구역입니다.</p>
+        <div class="foot">
+          <span class="chip"><span class="dot"></span>코어 가동</span>
+          <a class="enter" href="#platform">구역 입장 →</a>
+        </div>
+      </article>
+      <article class="line-card">
+        <div class="line-card-top">
+          <span class="roundel lw">W</span>
+          <div class="names"><strong>운영 보드</strong><small>Line W · Work Manager</small></div>
+        </div>
+        <p>티켓 흐름과 명령 게이트. 조회는 공개, 실행은 게이트 뒤에 둡니다.</p>
+        <div class="foot">
+          <span class="chip warn"><span class="dot"></span>조회 공개</span>
+          <a class="enter" href="#platform">보드 열기 →</a>
+        </div>
+      </article>
+      <article class="line-card">
+        <div class="line-card-top">
+          <span class="roundel lr">R</span>
+          <div class="names"><strong>런타임 보드</strong><small>Line R · Runtime</small></div>
+        </div>
+        <p>노드 가용성, 오프로드 규칙, 저하 정책을 요약해 읽습니다.</p>
+        <div class="foot">
+          <span class="chip"><span class="dot"></span>정상</span>
+          <a class="enter" href="#platform">런타임 보기 →</a>
+        </div>
+      </article>
+    </div>
+
+    <p class="junction-note">
+      환승 홀은 요약과 이동만 담당합니다. 실제 조작(시뮬레이터, 명령 게이트)은 각 승강장 페이지에서만 열립니다.
+    </p>
+  </section>
+
+  <!-- ============ 3. 블로그 ============ -->
+  <section id="blog" class="sec">
+    <div class="sec-head">
+      <span class="sec-rail"></span>
+      <p class="eyebrow">03 · Line B / Blog District</p>
+      <h2>공개 아카이브</h2>
+      <p class="sec-note">
+        읽기 리듬은 뉴스 피드보다 기록 보관함에 가깝게. 정보 순서는 제목 → 요약 → 발행일 → 태그 → 상태 배지로 고정합니다.
+      </p>
+    </div>
+
+    <div class="archive-wrap">
+      <div class="archive-toolbar">
+        <span class="num">공개 5편</span>
+        <span>·</span>
+        <span>최신순</span>
+        <span class="spacer"></span>
+        <span class="tag">#시뮬레이터</span>
+        <span class="tag">#프런트엔드</span>
+        <span class="tag">#회고</span>
+      </div>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">택시 배차 시뮬레이터, 보상 함수 첫 설계</a></h4>
+        <p class="summary">9구역 도시에서 가까운 유휴 차량을 먼저 보내는 규칙과, 차량 추가 페널티의 균형을 잡는 실험 기록. 점수가 아니라 대기 시간을 먼저 봤다.</p>
+        <div class="archive-meta">
+          <time class="num">2026-07-04</time>
+          <span class="tag">#시뮬레이터</span><span class="tag">#강화학습</span>
+          <span class="badge badge-pub">공개</span>
+        </div>
+      </article>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">스플릿 플랩 보드를 CSS 트랜스폼으로 다시 만들기</a></h4>
+        <p class="summary">rotateX 반쪽 플랩과 열 단위 시차만으로 기계식 행선판의 손맛을 재현한 과정. 이징 곡선을 고르며 배운 것들.</p>
+        <div class="archive-meta">
+          <time class="num">2026-07-02</time>
+          <span class="tag">#css</span><span class="tag">#애니메이션</span><span class="tag">#프런트엔드</span>
+          <span class="badge badge-pub">공개</span>
+        </div>
+      </article>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">엘리베이터 시뮬레이터, 워프 버그를 잡기까지</a></h4>
+        <p class="summary">같은 틱 안에서 car 가 세 층을 건너뛰던 문제를 보간 렌더링으로 풀었다. 시뮬레이션 틱과 화면 프레임은 서로 다른 시간이다.</p>
+        <div class="archive-meta">
+          <time class="num">2026-06-27</time>
+          <span class="tag">#시뮬레이터</span><span class="tag">#디버깅</span>
+          <span class="badge badge-pub">공개</span>
+        </div>
+      </article>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">Work Manager, 티켓 보드를 직접 만들며 배운 것</a></h4>
+        <p class="summary">Backlog 에서 Ready 로 넘기는 손맛, worker 가 가져가는 순간의 규칙. 작은 운영 도구에도 계약이 필요하다.</p>
+        <div class="archive-meta">
+          <time class="num">2026-06-22</time>
+          <span class="tag">#운영</span><span class="tag">#도구</span>
+          <span class="badge badge-pub">공개</span>
+        </div>
+      </article>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">개인 포털을 지하철 노선도로 설계한 이유</a></h4>
+        <p class="summary">기능이 늘어날 때마다 화면이 무거워졌다. 환승 홀과 승강장으로 책임을 나누자 비로소 길이 보이기 시작했다.</p>
+        <div class="archive-meta">
+          <time class="num">2026-06-15</time>
+          <span class="tag">#설계</span><span class="tag">#회고</span>
+          <span class="badge badge-pub">공개</span>
+        </div>
+      </article>
+
+      <div class="badge-legend">
+        <span>상태 배지 체계</span>
+        <span class="badge badge-pub">공개</span>
+        <span class="badge badge-draft">초안</span>
+        <span class="badge badge-arch">보관</span>
+        <span>— 공개 아카이브에는 「공개」 상태만 노출되고, 초안·보관은 Writing Studio 안에서만 관리합니다.</span>
+      </div>
+    </div>
+
+    <article class="post-detail" id="post-detail">
+      <div class="post-meta-line">
+        <span>2026-07-02 발행</span>
+        <span>2026-07-03 수정</span>
+        <span>읽기 6분</span>
+      </div>
+      <h1>스플릿 플랩 보드를 CSS 트랜스폼으로 다시 만들기</h1>
+      <p class="post-lead">
+        페이드 인은 플랩이 아니다. 위 반쪽이 떨어지고 아래 반쪽이 받아내는 두 장의 판,
+        그 사이의 시차가 기계식 행선판의 전부라는 걸 다시 만들면서 알았다.
+      </p>
+      <div class="post-tags">
+        <span class="tag">#css</span><span class="tag">#애니메이션</span><span class="tag">#프런트엔드</span>
+        <span class="badge badge-pub">공개</span>
+      </div>
+
+      <div class="post-body">
+        <p>
+          처음 구현한 스플래시 보드는 타일이 한 번에 회전하며 나타나는 등장 연출이었다.
+          멀리서 보면 그럴듯했지만, 어느 순간부터 눈에 걸리기 시작했다. 실제 행선판은 글자가
+          「나타나는」 것이 아니라 「넘어가는」 것이기 때문이다.
+        </p>
+
+        <h2>반쪽 플랩의 구조</h2>
+        <p>
+          한 글자 셀은 네 장의 반쪽 판으로 구성된다. 고정된 위·아래 판 두 장, 그리고 회전하는
+          플랩 두 장. 위 플랩은 현재 글자를 안고 아래로 떨어지고, 아래 플랩은 다음 글자를 안고
+          올라와 정착한다.
+        </p>
+        <ul>
+          <li>위 고정판 — 다음 글자의 윗부분을 미리 보여준다</li>
+          <li>아래 고정판 — 현재 글자의 아랫부분을 유지한다</li>
+          <li>위 플랩 — 현재 글자를 안고 <code>rotateX(0 → -90deg)</code> 로 낙하</li>
+          <li>아래 플랩 — 다음 글자를 안고 <code>rotateX(90deg → 0)</code> 으로 착지</li>
+        </ul>
+
+        <pre><code>.flap.run .top    { animation: drop 90ms cubic-bezier(.52,0,.86,.4) forwards; }
+.flap.run .bottom { animation: land 120ms cubic-bezier(.15,.66,.24,1) forwards;
+                    animation-delay: 38ms; }
+
+@keyframes land {
+  0%   { transform: rotateX(90deg); }
+  55%  { transform: rotateX(0); }
+  72%  { transform: rotateX(10.5deg); }  /* 기계식 반동 */
+  100% { transform: rotateX(0); }
+}</code></pre>
+
+        <blockquote>
+          <p>애니메이션의 품질은 곡선이 아니라 멈추는 순간에서 결정된다. 판이 「탁」 하고 정착하는 반동 한 번이 전체 인상을 바꾼다.</p>
+        </blockquote>
+
+        <h3>시차와 리듬</h3>
+        <p>
+          모든 셀이 같은 박자로 넘어가면 오히려 디지털처럼 보인다. 열마다 <code>col * 55ms</code> 의
+          출발 시차를 주고, 셀마다 넘기는 중간 글자 수를 3~9장 사이에서 다르게 잡았다.
+          목적 글자에 먼저 도착한 셀이 멈춰 있는 동안 옆 셀이 계속 넘어가는 풍경이 만들어진다.
+        </p>
+
+        <h2>남은 일</h2>
+        <p>
+          모션 감소 설정을 켠 사용자에게는 회전 없이 결과만 보여주고, 저사양 기기에서 플랩 수를
+          줄이는 옵션을 검토 중이다. 다음 글에서는 이 보드를 실제 스플래시 전환과 연결한 기록을 남긴다.
+        </p>
+      </div>
+
+      <footer class="post-foot-nav">
+        <a class="btn btn-ghost" href="#blog">← 이전 글</a>
+        <a class="btn btn-exit" href="#blog">아카이브로</a>
+        <a class="btn btn-ghost" href="#blog">다음 글 →</a>
+      </footer>
+    </article>
+  </section>
+
+  <!-- ============ 4. 엘리베이터 승강장 ============ -->
+  <section id="platform" class="sec">
+    <div class="sec-head">
+      <span class="sec-rail"></span>
+      <p class="eyebrow">04 · Line E / Elevator Station</p>
+      <h2>승강장 페이지 상속 샘플</h2>
+      <p class="sec-note">
+        기능 페이지가 시스템을 어떻게 물려받는지 보여주는 스켈레톤입니다.
+        역명판 헤더, 상태 우선의 현황 패널, 조작 구역의 순서로 정렬합니다.
+      </p>
+    </div>
+
+    <div class="station-sign">
+      <div class="band"></div>
+      <div class="station-sign-in">
+        <span class="station-prev">← 환승 홀</span>
+        <div class="station-center">
+          <span class="station-code">E01</span>
+          <div>
+            <h3>엘리베이터 승강장</h3>
+            <small>Elevator Station</small>
+          </div>
+        </div>
+        <span class="station-next">택시 구역 →</span>
+      </div>
+      <div class="station-sub">
+        <span class="chip"><span class="dot"></span>실시간 운행</span>
+        <span>23층 · car 4대 · 정원 20명</span>
+        <span class="spacer"></span>
+        <a class="btn btn-ghost" href="#junction" style="padding:7px 12px; font-size:0.78rem;">환승 홀로 나가기</a>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-tile"><span>대기 승객</span><strong class="num">14</strong> <small>명</small></div>
+      <div class="stat-tile"><span>탑승 중</span><strong class="num">23</strong> <small>명</small></div>
+      <div class="stat-tile"><span>운행 car</span><strong class="num">4</strong> <small>대</small></div>
+      <div class="stat-tile"><span>평균 대기</span><strong class="num">18</strong> <small>초</small></div>
+    </div>
+
+    <div class="platform-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <h4>운행 현황</h4>
+          <span>Shaft Status</span>
+        </div>
+        <div class="car-row">
+          <span class="car-id">E1</span>
+          <div class="car-mid">
+            <strong>▲ 12.42F</strong>
+            <small>상행 · 다음 정차 15F</small>
+            <div class="load-track"><i style="width:45%"></i></div>
+          </div>
+          <span class="car-pax num">9 / 20</span>
+        </div>
+        <div class="car-row">
+          <span class="car-id">E2</span>
+          <div class="car-mid">
+            <strong>▼ 7.08F</strong>
+            <small>하행 · 다음 정차 3F</small>
+            <div class="load-track"><i style="width:70%"></i></div>
+          </div>
+          <span class="car-pax num">14 / 20</span>
+        </div>
+        <div class="car-row">
+          <span class="car-id">E3</span>
+          <div class="car-mid">
+            <strong>▲ 20.85F</strong>
+            <small>상행 · 다음 정차 23F</small>
+            <div class="load-track"><i style="width:15%"></i></div>
+          </div>
+          <span class="car-pax num">3 / 20</span>
+        </div>
+        <div class="car-row">
+          <span class="car-id">E4</span>
+          <div class="car-mid">
+            <strong>■ 1.00F</strong>
+            <small>대기 · 로비 정차</small>
+            <div class="load-track"><i style="width:0%"></i></div>
+          </div>
+          <span class="car-pax num">0 / 20</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h4>수요 조작</h4>
+          <span>Demand Control</span>
+        </div>
+        <div class="preset-row">
+          <button type="button" class="chip-btn">한산</button>
+          <button type="button" class="chip-btn active">보통</button>
+          <button type="button" class="chip-btn">혼잡</button>
+        </div>
+        <div class="slider-block">
+          <label><span>수요 강도</span><span class="num">62</span></label>
+          <input type="range" min="0" max="100" value="62" aria-label="수요 강도">
+        </div>
+        <div class="slider-block">
+          <label><span>car 수</span><span class="num">4대</span></label>
+          <input type="range" min="2" max="6" value="4" aria-label="car 수" style="background: linear-gradient(90deg, var(--safety) 0 50%, var(--panel-soft) 50%);">
+        </div>
+        <div class="queue-btns">
+          <button type="button" class="btn btn-exit">상행 1명 추가</button>
+          <button type="button" class="btn btn-ghost">하행 1명 추가</button>
+          <button type="button" class="btn btn-ghost">리셋</button>
+        </div>
+        <p class="skeleton-note">이 패널은 레이아웃 상속 확인용 스켈레톤입니다. 실제 수치·조작은 구현 단계에서 연결합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. 모바일 미리보기 ============ -->
+  <section id="mobile" class="sec">
+    <div class="sec-head">
+      <span class="sec-rail"></span>
+      <p class="eyebrow">05 · Mobile Restack</p>
+      <h2>모바일 재배치</h2>
+      <p class="sec-note">
+        데스크톱을 줄인 축소판이 아니라 순서를 다시 짠 재배치입니다.
+        상태 → 블로그 본선 → 실험 놀이터 목록 → 하단 빠른 환승 순서로 쌓입니다.
+      </p>
+    </div>
+
+    <div class="mobile-wrap">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="m-status">
+            <span class="here">환승 홀</span>
+            <span>·</span>
+            <span>게이트 정상</span>
+            <span style="margin-left:auto" class="num">21:04</span>
+          </div>
+          <div class="m-body">
+            <article class="m-blog">
+              <span class="m-line"><span class="roundel sm lb">B</span> Line B · Blog District</span>
+              <h4>기록이 이 역의 본선입니다</h4>
+              <p>공개 5편 · 초안 2편 · 최근 발행 7월 4일</p>
+              <div class="m-recent">
+                <a href="#blog"><span>택시 배차 시뮬레이터, 보상 함수 첫 설계</span><small>07-04</small></a>
+                <a href="#blog"><span>스플릿 플랩 보드 다시 만들기</span><small>07-02</small></a>
+              </div>
+              <a class="btn btn-exit" href="#blog" style="justify-content:center">아카이브 들어가기 →</a>
+            </article>
+
+            <div class="m-playground">
+              <header>실험 놀이터</header>
+              <a class="m-row" href="#platform">
+                <span class="roundel sm le">E</span>
+                <span class="names"><strong>엘리베이터 승강장</strong><small>실시간 운행 · 대기 14명</small></span>
+                <span class="chev">›</span>
+              </a>
+              <a class="m-row" href="#platform">
+                <span class="roundel sm lt">T</span>
+                <span class="names"><strong>택시 구역</strong><small>코어 가동 · 요청 3건</small></span>
+                <span class="chev">›</span>
+              </a>
+              <a class="m-row" href="#platform">
+                <span class="roundel sm lw">W</span>
+                <span class="names"><strong>운영 보드</strong><small>조회 공개 · Ready 2건</small></span>
+                <span class="chev">›</span>
+              </a>
+              <a class="m-row" href="#platform">
+                <span class="roundel sm lr">R</span>
+                <span class="names"><strong>런타임 보드</strong><small>정상 · 노드 2개</small></span>
+                <span class="chev">›</span>
+              </a>
+            </div>
+          </div>
+          <nav class="m-quick">
+            <a class="on" href="#junction">환승 홀</a>
+            <a href="#blog">아카이브</a>
+            <a href="#platform">승강장</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="mobile-notes">
+        <article>
+          <strong><span class="idx">1</span>상태가 먼저</strong>
+          <p>현재 위치와 게이트 상태를 상단 고정 스트립 한 줄로 요약합니다. 화면 어디에 있어도 길을 잃지 않습니다.</p>
+        </article>
+        <article>
+          <strong><span class="idx">2</span>블로그 본선 카드</strong>
+          <p>데스크톱의 대형 본선 카드가 요약 카드로 재배치됩니다. 최근 글 2건과 CTA 만 남기고 줄입니다.</p>
+        </article>
+        <article>
+          <strong><span class="idx">3</span>놀이터는 목록으로</strong>
+          <p>4장의 노선 카드는 모바일에서 카드가 아니라 행 목록으로 바뀝니다. 축소가 아니라 형태 전환입니다.</p>
+        </article>
+        <article>
+          <strong><span class="idx">4</span>엄지 범위 빠른 환승</strong>
+          <p>하단 고정 바에 환승 홀 · 아카이브 · 승강장 세 목적지만 둡니다. 뒤로 가기 대신 명시적 복귀 동선입니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mock-foot">
+  <span>design/mockups/2026-07-05/variant-a-seoul-signage.html</span>
+  <span>검토 방법 — 상단 토글로 라이트/다크 확인 · 스플래시 「다시 재생」으로 플랩 반복 확인 · 창 폭을 줄여 재배치 확인</span>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- 테마 토글 ---------- */
+  var root = document.documentElement;
+  var toggle = document.getElementById("themeToggle");
+  function syncToggleLabel() {
+    toggle.textContent = root.dataset.theme === "dark" ? "라이트 모드로 보기" : "다크 모드로 보기";
+  }
+  toggle.addEventListener("click", function () {
+    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    syncToggleLabel();
+  });
+  syncToggleLabel();
+
+  /* ---------- 시계 ---------- */
+  var clockEl = document.getElementById("clock");
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function tick() {
+    var d = new Date();
+    clockEl.textContent = pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* ---------- 스플릿 플랩 엔진 ----------
+     각 셀 = 고정 위/아래 판 + 회전 플랩 2장.
+     위 플랩: 현재 글자를 안고 낙하(ease-in),
+     아래 플랩: 다음 글자를 안고 착지(ease-out), 마지막 장은 반동 정착.
+     셀마다 중간 글자 3~9장을 넘기고, 열 단위 시차로 출발한다. */
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var LATIN = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var DIGIT = " 0123456789";
+  var HANGUL = " 가나다라마바사아자차카타파하개내대래배새애재체초코토포호구두루무부수우주추후기니디리미비시이지치키티피히블로그카브환승역";
+
+  function charsetFor(ch) {
+    if (/[0-9]/.test(ch)) return DIGIT;
+    if (/[가-힣]/.test(ch)) return HANGUL;
+    return LATIN;
+  }
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function Cell(col) {
+    var el = document.createElement("span");
+    el.className = "fc";
+    el.innerHTML =
+      '<span class="fh ft st"><b></b></span>' +
+      '<span class="fh fb sb"><b></b></span>' +
+      '<span class="fh ft tf"><b></b></span>' +
+      '<span class="fh fb bf"><b></b></span>';
+    this.el = el;
+    this.col = col;
+    this.curr = " ";
+    var bs = el.querySelectorAll("b");
+    this.gTopStatic = bs[0];
+    this.gBottomStatic = bs[1];
+    this.gTopFlap = bs[2];
+    this.gBottomFlap = bs[3];
+    this.bf = el.querySelector(".bf");
+    this.gen = 0;
+  }
+  Cell.prototype.show = function (ch) {
+    this.curr = ch;
+    var d = ch === " " ? "" : ch;
+    this.gTopStatic.textContent = d;
+    this.gBottomStatic.textContent = d;
+  };
+  Cell.prototype.flip = function (next, dur, settle) {
+    var self = this;
+    return new Promise(function (resolve) {
+      if (next === self.curr) { resolve(); return; }
+      var cd = self.curr === " " ? "" : self.curr;
+      var nd = next === " " ? "" : next;
+      self.gTopStatic.textContent = nd;   /* 뒤에서 미리 보이는 다음 글자 */
+      self.gBottomStatic.textContent = cd;
+      self.gTopFlap.textContent = cd;     /* 떨어지는 판 */
+      self.gBottomFlap.textContent = nd;  /* 착지하는 판 */
+      self.el.style.setProperty("--dur", dur.toFixed(0) + "ms");
+      self.el.classList.remove("run", "settle");
+      void self.el.offsetWidth;           /* 애니메이션 재시작 */
+      if (settle) self.el.classList.add("settle");
+      self.el.classList.add("run");
+      var done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        self.bf.removeEventListener("animationend", onEnd);
+        self.el.classList.remove("run", "settle");
+        self.show(next);
+        resolve();
+      }
+      function onEnd(e) { if (e.target === self.bf) finish(); }
+      self.bf.addEventListener("animationend", onEnd);
+      setTimeout(finish, dur * 2.6 + 140);  /* 안전망 */
+    });
+  };
+
+  function buildBoard(boardEl) {
+    var cellCount = parseInt(boardEl.getAttribute("data-cells"), 10) || 12;
+    var rows = [];
+    boardEl.querySelectorAll(".flap-row").forEach(function (rowEl) {
+      var value = rowEl.getAttribute("data-value") || "";
+      var holder = rowEl.querySelector(".flap-cells");
+      var cells = [];
+      for (var i = 0; i < cellCount; i++) {
+        var c = new Cell(i);
+        holder.appendChild(c.el);
+        cells.push(c);
+      }
+      rows.push({ value: value, cells: cells });
+    });
+    return { el: boardEl, rows: rows, gen: 0 };
+  }
+
+  function playBoard(board) {
+    board.gen += 1;
+    var gen = board.gen;
+    board.rows.forEach(function (row, r) {
+      row.cells.forEach(function (cell, i) {
+        cell.gen = gen;
+        var target = row.value.charAt(i) || " ";
+        if (REDUCED) { cell.show(target); return; }
+        var delay = 320 + r * 170 + i * 55 + rand(0, 40);
+        var step = 82 + rand(-8, 12);
+        setTimeout(function () {
+          if (cell.gen !== gen) return;
+          var set = charsetFor(target);
+          var spins = target === " "
+            ? (Math.random() < 0.3 ? 1 : 0)
+            : 3 + (i % 3) + Math.floor(Math.random() * 4);
+          var seq = [];
+          for (var k = 0; k < spins; k++) {
+            seq.push(set.charAt(1 + Math.floor(Math.random() * (set.length - 1))));
+          }
+          seq.push(target);
+          var p = Promise.resolve();
+          seq.forEach(function (ch, idx) {
+            p = p.then(function () {
+              if (cell.gen !== gen) return;
+              var last = idx === seq.length - 1;
+              return cell.flip(ch, last ? 330 : step, last);
+            });
+          });
+        }, delay);
+      });
+    });
+  }
+
+  var board = buildBoard(document.getElementById("flapBoard"));
+  document.querySelectorAll("[data-replay]").forEach(function (btn) {
+    btn.addEventListener("click", function () { playBoard(board); });
+  });
+  window.addEventListener("load", function () { playBoard(board); });
+})();
+</script>
+</body>
+</html>

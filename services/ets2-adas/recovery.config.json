@@ -1,0 +1,6 @@
+{
+  "name": "ETS2 견인 서비스 입력 검증",
+  "manualOnly": true,
+  "executable": "@python",
+  "args": ["recovery_adapter.py"]
+}

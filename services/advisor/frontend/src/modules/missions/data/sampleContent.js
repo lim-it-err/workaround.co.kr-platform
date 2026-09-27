@@ -1,0 +1,8095 @@
+/**
+ * Developer Advisor — 미션 샘플 콘텐츠
+ * 대상 학습자: 비 IT기업 3년차 자바 개발자
+ * 약점: 인터페이스 개념, 코드 분리/책임 나누기
+ * 부가 목표: 다양한 도메인 상식, 조리있게 설명하는 훈련
+ */
+
+const missions = [
+  // =========================================================================
+  // Mission 1 — Stage 1 "분리의 감각" / 와인 / 리팩토링
+  // =========================================================================
+  {
+    id: 's1-wine-01',
+    stage: 1,
+    stageTitle: '분리의 감각',
+    missionType: '리팩토링',
+    difficulty: 'Easy',
+    scope: '단일 파일',
+    modes: ['developer'],
+    providedFiles: [],
+    domain: '와인',
+    domainEmoji: '🍷',
+    title: '와인 추천기의 뒤엉킨 책임 풀어내기',
+    estimatedMinutes: 90,
+    briefing: {
+      title: '소믈리에는 사실 규칙 엔진이다 — 와인 추천의 세계',
+      content: `### 품종이 8할이다
+
+와인 맛의 큰 틀은 포도 **품종(varietal)** 이 결정합니다. 카베르네 소비뇽은 타닌이 강하고 묵직하며(풀바디), 피노 누아는 가볍고 산미가 살아 있고, 리슬링은 향이 화려하며 단맛부터 드라이까지 폭이 넓습니다. 샤르도네는 양조 방식에 따라 버터 같은 풍미부터 미네랄한 맛까지 변신하는 팔색조죠.
+
+### 빈티지와 테루아
+
+라벨의 연도인 **빈티지(vintage)** 는 포도를 수확한 해입니다. 그해 일조량과 강수량이 포도 품질을 좌우하기 때문에 같은 밭이라도 해마다 맛과 가격이 달라집니다. **테루아(terroir)** 는 토양·기후·경사 등 밭의 환경 전체를 가리키는 말로, "부르고뉴는 밭 이름으로 와인을 판다"는 말이 나올 만큼 유럽 와인 가격의 핵심 변수입니다.
+
+### 페어링은 감이 아니라 규칙
+
+음식 궁합(페어링)에는 검증된 규칙이 있습니다. 붉은 고기의 지방과 단백질은 타닌을 부드럽게 만들어 주기 때문에 스테이크·삼겹살에는 타닌 강한 레드가 어울리고, 매운 음식에는 알코올이 낮고 살짝 단 리슬링이 매운맛을 식혀 줍니다. 굴이나 회처럼 비린 해산물에 레드를 곁들이면 철분과 타닌이 만나 쇠맛이 나기 때문에 산미 좋은 화이트를 권하죠.
+
+### 그래서 추천 시스템은 규칙 덩어리
+
+소믈리에의 머릿속을 들여다보면 "바디 선호 ±1 이내인가", "예산 안인가", "음식과 품종 궁합 규칙에 걸리는가" 같은 **규칙의 조합과 가중치 계산**이 돌아갑니다. 와인 추천 소프트웨어가 if문 범벅이 되기 쉬운 이유가 바로 이것인데, 규칙이 많다는 것과 규칙이 한 덩어리여야 한다는 것은, 전혀 다른 이야기인데도요.`,
+    },
+    scenario: `사내 복지몰에 붙어 있는 **와인 추천 기능**을 물려받았습니다. 퇴사한 선임이 혼자 만든 코드인데, 명절 선물 시즌마다 규칙 수정 요청이 쏟아져서 매번 전체 코드를 다시 읽어야 하는 상황입니다. 운영팀은 "와인 목록도 곧 DB로 옮길 것"이라고 예고했습니다. 동작은 그대로 유지하면서, 다음 요청이 와도 겁나지 않는 구조로 정리해 주세요.`,
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/welfare/WineRecommender.java',
+        content: `package com.daehan.welfare;
+
+public class WineRecommender {
+
+    // req 예시: "바디=3;당도=2;예산=60000;음식=삼겹살;등급=GOLD"
+    public String recommend(String req) {
+        int body = 0;
+        int sweet = 0;
+        int budget = 0;
+        String food = "";
+        String grade = "NORMAL";
+
+        String[] parts = req.split(";");
+        for (int i = 0; i < parts.length; i++) {
+            String[] kv = parts[i].split("=");
+            if (kv[0].equals("바디")) {
+                body = Integer.parseInt(kv[1]);
+            } else if (kv[0].equals("당도")) {
+                sweet = Integer.parseInt(kv[1]);
+            } else if (kv[0].equals("예산")) {
+                budget = Integer.parseInt(kv[1]);
+            } else if (kv[0].equals("음식")) {
+                food = kv[1];
+            } else if (kv[0].equals("등급")) {
+                grade = kv[1];
+            }
+        }
+
+        // 와인 데이터 (순서 맞춰야 함!! 절대 한 배열만 수정하지 말 것)
+        String[] names = {"카시야스 리제르바", "몽테 발롱 피노", "루카스 리슬링 카비네트", "돌체 로쏘 프리잔테", "샤블리 프리미에 크뤼"};
+        String[] grapes = {"카베르네 소비뇽", "피노 누아", "리슬링", "람브루스코", "샤르도네"};
+        int[] bodies = {5, 3, 2, 2, 3};
+        int[] sweets = {1, 1, 3, 4, 1};
+        int[] prices = {88000, 62000, 45000, 32000, 71000};
+
+        int bestIdx = -1;
+        int bestScore = -999;
+        for (int i = 0; i < names.length; i++) {
+            int score = 0;
+
+            // 바디 매칭
+            if (bodies[i] == body) {
+                score = score + 30;
+            } else {
+                if (bodies[i] - body == 1 || body - bodies[i] == 1) {
+                    score = score + 15;
+                } else {
+                    score = score - 10;
+                }
+            }
+
+            // 당도 매칭
+            if (sweets[i] == sweet) {
+                score = score + 25;
+            } else {
+                if (sweets[i] - sweet == 1 || sweet - sweets[i] == 1) {
+                    score = score + 10;
+                }
+            }
+
+            // 예산 (조금 넘는 건 봐준다 - 영업팀 요청)
+            if (prices[i] <= budget) {
+                score = score + 20;
+            } else {
+                if (prices[i] <= budget + 10000) {
+                    score = score + 5;
+                } else {
+                    score = score - 50;
+                }
+            }
+
+            // 음식 페어링 가산점
+            switch (food) {
+                case "삼겹살":
+                case "스테이크":
+                    if (grapes[i].equals("카베르네 소비뇽")) score = score + 20;
+                    if (grapes[i].equals("피노 누아")) score = score + 10;
+                    break;
+                case "매운탕":
+                case "떡볶이":
+                    if (grapes[i].equals("리슬링")) score = score + 20;
+                    if (grapes[i].equals("람브루스코")) score = score + 15;
+                    break;
+                case "회":
+                case "굴":
+                    if (grapes[i].equals("샤르도네")) score = score + 20;
+                    if (grapes[i].equals("리슬링")) score = score + 10;
+                    break;
+                default:
+                    break;
+            }
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestIdx = i;
+            }
+        }
+
+        if (bestIdx == -1) {
+            return "추천 가능한 와인이 없습니다.";
+        }
+
+        // 회원 등급 할인
+        int price = prices[bestIdx];
+        int finalPrice = price;
+        if (grade.equals("GOLD")) {
+            finalPrice = (int) (price * 0.9);
+        } else if (grade.equals("VIP")) {
+            finalPrice = (int) (price * 0.85);
+        }
+        if (price >= 80000 && grade.equals("VIP")) {
+            finalPrice = finalPrice - 5000; // VIP 고가와인 쿠폰 (2023 프로모션, 아직 살아있음)
+        }
+
+        // 결과 문자열 조립
+        StringBuilder sb = new StringBuilder();
+        sb.append("[추천 와인] ").append(names[bestIdx]).append("\\n");
+        sb.append("품종: ").append(grapes[bestIdx]).append("\\n");
+        sb.append("적합도 점수: ").append(bestScore).append("점\\n");
+        sb.append("정가: ").append(price).append("원");
+        if (finalPrice != price) {
+            sb.append(" -> 할인가: ").append(finalPrice).append("원");
+        }
+        return sb.toString();
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '추천 결과(문구·점수·가격)는 리팩토링 전과 완전히 동일해야 합니다.',
+      '운영팀이 와인 목록을 곧 DB로 옮길 예정이므로, 와인 데이터가 어디서 오는지 바뀌어도 추천 로직은 손대지 않게 해 주세요.',
+      '명절마다 바뀌는 것은 주로 "음식 페어링 규칙"과 "할인 정책"입니다. 이 둘은 각각 한 곳만 고치면 되게 정리해 주세요.',
+      '예산을 조금 초과하는 와인도 후보에 남기는 지금의 배려는 유지해 주세요. (얼마까지가 "조금"인지는 영업팀과 협의된 문서가 없습니다)',
+      '새 입사자가 recommend 흐름을 5분 안에 파악할 수 있는 수준의 가독성을 목표로 합니다.',
+    ],
+    constraints: [
+      '외부 라이브러리 추가 금지 (사내 보안 심사 이슈), 순수 Java 17 표준 라이브러리만 사용.',
+      '도메인 규칙: 페어링 가산점은 품종 기준으로만 부여합니다. 와인 개별 상품 기준 규칙은 아직 없습니다.',
+      '공개 진입점 recommend(String req)의 시그니처는 복지몰 다른 모듈이 호출 중이므로 바꿀 수 없습니다.',
+      '시험 중 시음은 허용됩니다. 단, 커밋은 취하기 전에 하세요.',
+    ],
+    learningGoals: [
+      '한 메서드에 섞인 여러 책임(파싱·데이터·점수 계산·할인·포맷팅)을 식별하고 이름 붙이기',
+      'String/int 나열(원시 타입 집착)을 Wine, TastePreference 같은 의미 있는 타입으로 바꾸는 감각 익히기',
+      '"자주 바뀌는 것"과 "안 바뀌는 것"을 기준으로 분리 경계를 정하는 연습',
+      '동작을 보존하면서 구조만 바꾸는 리팩토링의 규율 체득',
+    ],
+    hints: [
+      'recommend()를 소리 내어 읽으며 "지금 이 줄은 무슨 일을 하지?"라고 물어보세요. 대답이 바뀌는 지점이 분리 후보입니다.',
+      '5개의 병렬 배열(names, grapes, bodies...)이 같은 인덱스로 묶여 다닙니다. 같이 다니는 데이터는 하나의 클래스가 되고 싶어 하는 신호입니다.',
+      '분리 순서 제안: (1) Wine 레코드 도입 → (2) 입력 파싱을 TastePreference로 추출 → (3) 점수 계산 / 페어링 규칙 / 할인 정책 / 포맷터를 각각 클래스로. 각 단계마다 결과가 같은지 확인하세요.',
+    ],
+    hiddenCases: [
+      {
+        title: '예산 0원 손님',
+        description:
+          '예산=0 또는 음수가 들어오면 모든 와인이 -50점을 받고도 "최고점" 와인이 버젓이 추천됩니다. 잘못된 입력이 그럴듯한 결과로 둔갑하는 것이 최악의 실패 모드입니다. 좋은 방어: 파싱 직후 입력 검증 계층에서 예산·바디·당도의 유효 범위를 확인하고, 벗어나면 조용히 계속하지 말고 명시적으로 실패(예외 또는 오류 응답)하세요.',
+      },
+      {
+        title: 'G0LD 회원의 침묵',
+        description:
+          '등급에 "G0LD"(알파벳 O가 아니라 숫자 0)가 들어오면 equals 비교가 조용히 실패해 할인 없이 정가가 안내됩니다. 에러도 로그도 없이 "정상처럼 보이는 오답"이 나가는 케이스입니다. 좋은 방어: 등급을 문자열 비교가 아니라 enum 변환으로 처리하고, 변환에 실패하면 알 수 없는 등급임을 명시적으로 드러내세요. 실제 커머스 서비스들이 쿠폰 코드·등급 오타를 조용히 무할인 처리했다가 CS 폭주로 배우는 단골 장애 유형입니다.',
+      },
+      {
+        title: '메뉴에 없는 음식',
+        description:
+          '"굴"은 페어링 규칙이 있지만 "굴전"은 switch의 default로 빠져 가산점 0점, 추천이 소리 없이 왜곡됩니다. 좋은 방어: 지원하는 음식 목록을 한 곳에서 관리하고, 목록 밖 입력은 로그를 남기거나 "페어링 미반영" 사실을 결과에 명시해 사용자와 운영자 모두 알게 하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '책임 분리',
+        description: '파싱·데이터 보관·점수 계산·페어링 규칙·할인·출력 포맷팅이 각각 응집된 단위로 분리되었는가. 한 클래스를 고칠 이유가 하나뿐인가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '도메인 개념의 타입화',
+        description: '병렬 배열과 원시 타입 나열이 Wine, TastePreference 등 도메인 언어를 담은 타입으로 대체되었는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '동작 보존',
+        description: '동일 입력에 대해 리팩토링 전후 출력이 완전히 일치하는가. 일치를 스스로 검증한 흔적(테스트 등)이 있는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '가독성과 네이밍',
+        description: '매직 넘버가 의미 있는 상수/정책으로 바뀌었고, 이름만 읽어도 도메인 규칙이 드러나는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"예산을 조금 초과" 등 정의되지 않은 규칙에 대해 임의로 확정하지 않고 질문했거나, 가정을 명시적으로 기록했는가.',
+        weight: 15,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '와인 수입사에서 일하다 복지몰 상품기획자로 이직한 소믈리에 출신 기획자 (비개발자)',
+      prompt:
+        '리팩토링한 추천 시스템의 구조를 이 기획자에게 설명해 주세요. 목표는 두 가지입니다. (1) "페어링 규칙을 바꾸고 싶으면 어디가 바뀌는지"를 기획자가 그림 그리듯 이해하게 할 것, (2) 소믈리에가 손님을 상대하는 사고 과정에 빗대어, 코드의 각 부분이 어떤 역할인지 비유로 연결할 것. 기술 용어(클래스, 인터페이스 등)는 써도 되지만, 쓸 때마다 일상어로 한 번 풀어 주세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '소믈리에의 무관심',
+        teaser: '아무도 시스템을 의심하지 않는다. 명절 규칙 변경은 커밋 하나로 끝나고, 당신의 이름은 장애 채널에 한 번도 등장하지 않는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '명절마다 열리는 파일',
+        teaser: '돌아는 간다. 다만 설과 추석마다 recommend()가 다시 열리고, 당신은 그 diff를 조용히 승인하는 사람이 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '정가 88,000원의 밤',
+        teaser: '단체 구매일에 무할인 정가가 일괄 안내되고, 그 사실을 개발팀보다 CS 큐가 먼저 안다. 당신의 커밋 해시는 장애 보고서 첫 줄에 박제된다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말을 본 수강생은 아직 없습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 2 — Stage 2 "인터페이스는 계약" / 가구 조립 파이프라인 / 기능 추가
+  // =========================================================================
+  {
+    id: 's2-furniture-01',
+    stage: 2,
+    stageTitle: '인터페이스는 계약',
+    missionType: '기능 추가',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    providedFiles: [],
+    domain: '가구 조립 파이프라인',
+    domainEmoji: '🪑',
+    title: '생산 라인에 공정 두 개를 끼워 넣어라',
+    estimatedMinutes: 120,
+    briefing: {
+      title: '테이블 다리를 잘라낸 날 — 플랫팩 가구와 생산 파이프라인',
+      content: `### 자동차 트렁크에서 시작된 산업
+
+1956년, 이케아 직원 길리스 룬드그렌은 배송할 테이블이 차에 들어가지 않자 **다리를 떼어내 상판 밑에 붙여** 실었습니다. 이 임기응변이 "완성품 대신 납작한 상자를 판다"는 **플랫팩(flat-pack)** 혁명이 됐죠. 운송 부피가 극적으로 줄어 물류비가 내려갔고, 조립이라는 마지막 공정을 고객에게 넘기면서 가격은 더 내려갔습니다. 오늘날 이케아가 세계 최대 가구 기업이 된 출발점입니다.
+
+### 공장 안에서는 무슨 일이 벌어지나
+
+플랫팩 가구 공장의 생산 흐름은 대체로 이렇게 이어집니다. **재단**(큰 판재를 부품 치수로 자르기) → **가공**(구멍 뚫기·홈 파기·모서리에 띠를 두르는 엣지밴딩) → 필요 시 **도장**(칠하고 건조) → **포장**(부품·나사·설명서를 한 상자에) → **출고**. 책장은 선반 구멍을 32mm 간격으로 뚫는 "시스템 32" 규격을 쓰고, 책상은 다리 결합용 금속 인서트를 박는 식으로 **제품마다 공정의 내용과 순서가 조금씩 다릅니다.**
+
+### 왜 라인은 "단계"로 사고할까
+
+생산관리에서는 라인을 하나의 긴 작업이 아니라 **독립된 공정(스테이션)의 나열**로 봅니다. 이유는 현실적입니다. 신제품이 나오면 공정을 끼워 넣거나 빼야 하고, 도장 설비가 고장 나면 그 공정만 외주로 돌려야 하고, 병목이 생기면 특정 공정만 증설해야 하니까요. 각 공정은 "규격에 맞는 반제품을 받아, 규격에 맞는 반제품을 넘긴다"는 **약속(계약)** 만 지키면 서로의 내부를 몰라도 됩니다. 컨베이어 벨트는 물리 세계의 인터페이스인 셈입니다.`,
+    },
+    scenario: `사무가구를 만드는 우리 회사가 **온라인 커스텀 주문**을 시작하면서 생산관리 시스템에 요구가 몰리고 있습니다. 지금까지는 책장(BOOKSHELF)과 책상(DESK)을 재단→가공→포장 순서로만 처리했는데, 다음 분기부터 **도장(painting) 공정**과 **검수(inspection) 공정**이 추가되고, 제품마다 공정 순서가 달라집니다. 생산관리 팀장님은 "앞으로도 공정은 계속 늘어날 것"이라고 못 박았습니다.`,
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/factory/AssemblyPipeline.java',
+        content: `package com.daehan.factory;
+
+public class AssemblyPipeline {
+
+    public void process(WorkOrder order) {
+        System.out.println("=== 작업지시 시작: " + order.getOrderId() + " ===");
+        cut(order);
+        drill(order);
+        pack(order);
+        System.out.println("=== 작업지시 완료: " + order.getOrderId() + " ===");
+    }
+
+    private void cut(WorkOrder order) {
+        if (order.getType().equals("BOOKSHELF")) {
+            System.out.println("[재단] 18T 파티클보드 재단 - " + order.getQuantity() + "세트");
+        } else if (order.getType().equals("DESK")) {
+            System.out.println("[재단] 상판용 MDF 재단 - " + order.getQuantity() + "세트");
+        } else {
+            System.out.println("[재단] 표준 재단 - " + order.getQuantity() + "세트");
+        }
+        order.setStatus("CUT_DONE");
+    }
+
+    private void drill(WorkOrder order) {
+        if (order.getType().equals("BOOKSHELF")) {
+            System.out.println("[가공] 선반 핀홀 32mm 간격 타공 + 엣지밴딩");
+        } else if (order.getType().equals("DESK")) {
+            System.out.println("[가공] 다리 결합용 인서트 너트 압입");
+        } else {
+            System.out.println("[가공] 표준 가공");
+        }
+        order.setStatus("DRILL_DONE");
+    }
+
+    private void pack(WorkOrder order) {
+        if (order.getQuantity() >= 10) {
+            System.out.println("[포장] 팔레트 단위 포장 (" + order.getQuantity() + "세트)");
+        } else {
+            System.out.println("[포장] 개별 박스 포장 (" + order.getQuantity() + "세트)");
+        }
+        order.setStatus("PACKED");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/factory/WorkOrder.java',
+        content: `package com.daehan.factory;
+
+public class WorkOrder {
+
+    private final String orderId;
+    private final String type;      // BOOKSHELF, DESK ...
+    private final int quantity;
+    private String status;
+
+    public WorkOrder(String orderId, String type, int quantity) {
+        this.orderId = orderId;
+        this.type = type;
+        this.quantity = quantity;
+        this.status = "CREATED";
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '커스텀 책상(DESK) 주문은 다음 분기부터 재단 → 가공 → 도장 → 검수 → 포장 순서로 처리되어야 합니다. 도장 공정은 주문서에 적힌 색상으로 칠합니다.',
+      '책장(BOOKSHELF)은 도장 없이 재단 → 가공 → 포장 그대로 가되, 10세트 이상 대량 주문일 때만 포장 전에 검수를 거칩니다.',
+      '팀장님 요청: "다음에 새 공정(예: 조립 시연 영상 촬영)이 생기면, 기존 공정 코드는 건드리지 않고 새 공정만 만들어 끼우고 싶다."',
+      '공정이 끝날 때마다 지금처럼 작업지시(WorkOrder)의 상태가 갱신되어야 하며, 어떤 공정을 거쳤는지 이력이 남아야 합니다.',
+      '검수는 필요한 제품에만 하면 됩니다. (어떤 제품이 "필요한" 쪽인지 기준 문서는 아직 없습니다)',
+      '기존 책장·책상 주문의 처리 결과(출력 내용과 순서)는 지금과 달라지면 안 됩니다.',
+    ],
+    constraints: [
+      '도메인 규칙: 도장은 반드시 가공 이후에만 가능합니다. (표면 타공 후 도장해야 칠이 갈라지지 않음)',
+      '도메인 규칙: 검수는 항상 포장보다 앞서야 합니다. 포장을 뜯고 검수할 수는 없습니다.',
+      '신규 제품 타입이 추가될 예정이므로, 제품 타입 문자열 비교가 코드 곳곳에 흩어지지 않게 해 주세요.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '"공정 하나"라는 공통 개념을 발견하고 계약(인터페이스)으로 승격시키는 경험',
+      '구현이 아니라 계약에 의존하면, 새 공정 추가가 "기존 코드 수정"이 아니라 "새 클래스 추가"가 됨을 체감 (개방-폐쇄 원칙)',
+      '제품별 공정 순서를 조건문 분기가 아니라 "구성(composition)"으로 표현하는 연습',
+      '계약에 무엇을 넣고 무엇을 뺄지(메서드 시그니처 설계) 고민하는 훈련',
+    ],
+    hints: [
+      '재단, 가공, 포장, 그리고 새로 올 도장, 검수. 이 다섯을 한 문장으로 공통되게 설명해 보세요. "___를 받아서 ___를 한다"가 똑같다면, 그 문장이 곧 계약입니다.',
+      'process()가 공정의 "내용"을 아는 것과 공정의 "순서"를 아는 것은 다른 책임입니다. 파이프라인은 순서만 알고, 각 공정의 내용은 몰라도 되게 만들 수 있을까요?',
+      'AssemblyStep 같은 인터페이스를 만들고, 제품 타입별로 List<AssemblyStep>을 조립해 주는 곳(팩토리)을 한 군데 두면, 팀장님의 "기존 코드 안 건드리고 끼우고 싶다"가 문자 그대로 이뤄집니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '정체불명의 제품',
+        description:
+          '주문 시스템 오류로 타입에 "BOOKSHLEF" 같은 오타나 아직 없는 "WARDROBE"가 들어오면, 지금 코드는 조용히 "표준 재단"으로 흘려보냅니다. 옷장이 책장 공정을 타고 출고되는 셈이죠. 좋은 방어: 공정 순서를 조립하는 곳(팩토리)에서 알 수 없는 타입을 만나면 기본값으로 대충 만들지 말고 즉시 명시적으로 실패시키세요.',
+      },
+      {
+        title: '공정 없는 작업지시',
+        description:
+          '공정 목록이 비어 있는 작업지시가 흘러들면, 파이프라인은 아무것도 하지 않고 "작업 완료"를 찍을 수 있습니다. 아무것도 만들지 않았는데 완료가 되는 것이 가장 위험한 침묵입니다. 좋은 방어: 실행 전에 최소 1개 공정을 검증하는 계층을 두고, 비어 있으면 명시적으로 실패하세요.',
+      },
+      {
+        title: '도장 두 번 칠하기',
+        description:
+          '같은 공정이 실수로 두 번 등록되면(도장→도장) 조립된 순서 그대로 두 번 실행됩니다. 페인트는 두 겹, 납기는 하루 추가. 좋은 방어: 순서 구성 시점에 중복과 순서 규칙(가공→도장, 검수→포장)을 검증해, 잘못된 라인 구성이 공장으로 내려가기 전에 걸러지게 하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '공정 계약의 발견과 정의',
+        description: '개별 공정들이 하나의 공통 계약(인터페이스)으로 추상화되었는가. 계약의 시그니처가 과하지도 부족하지도 않은가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '확장에 열린 구조',
+        description: '새 공정 추가 시 기존 공정·파이프라인 코드를 수정하지 않아도 되는가. 도장·검수가 실제로 그렇게 추가되었는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '제품별 순서 구성',
+        description: '제품 타입에 따른 공정 순서가 if 분기 산탄총이 아니라 한 곳에서 조립되는가. 도메인 순서 규칙(가공→도장, 검수→포장)이 지켜지는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '기존 동작 보존',
+        description: '기존 책장·책상 주문의 출력 내용과 순서, 상태 갱신이 변경 전과 동일한가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"검수는 필요한 제품에만" 같은 미정의 기준을 임의 확정하지 않고 질문하거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '현장 20년 경력의 생산관리 팀장님 (비개발자, 공정 지식은 최고 수준)',
+      prompt:
+        '개편한 시스템 구조를 팀장님에게 설명해 주세요. 핵심 미션: "왜 이제는 새 공정이 생겨도 프로그램 전체를 뜯지 않아도 되는지"를 실제 공장 라인 운영(스테이션 증설, 외주 전환, 라인 재배치)에 빗대어 납득시키는 것. 인터페이스라는 단어를 쓴다면, 팀장님이 매일 보는 것 중 무엇이 인터페이스에 해당하는지 반드시 짚어 주세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '컨베이어는 말이 없다',
+        teaser: '새 공정이 와도 라인은 멈추지 않는다. 팀장님은 다른 부서 회의에서 당신의 파이프라인을 예시로 들기 시작한다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '남는 나사의 계절',
+        teaser: '주문은 나간다. 다만 신제품이 올 때마다 if가 하나씩 늘고, 그 정확한 개수를 아는 사람은 조직에서 당신뿐이다.',
+      },
+      {
+        grade: 'dawn',
+        title: '옷장이 책장으로 출고된 날',
+        teaser: '미지의 제품 타입이 표준 재단을 타고 조용히 출고되고, 새벽의 공장 앞마당에 반품 트럭이 줄을 선다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 존재는 생산관리 팀장님만 알고 있습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 3 — Stage 4 "레거시 길들이기" / 대중교통 사내 시스템 / 기능 추가
+  // =========================================================================
+  {
+    id: 's4-transit-01',
+    stage: 4,
+    stageTitle: '레거시 길들이기',
+    missionType: '기능 추가',
+    difficulty: 'Hard',
+    scope: '단일 파일',
+    modes: ['developer'],
+    providedFiles: [],
+    domain: '대중교통 사내 시스템',
+    domainEmoji: '🚌',
+    title: '30년 묵은 요금 계산기에 조조할인 넣기',
+    estimatedMinutes: 180,
+    briefing: {
+      title: '카드 한 번 찍는 데 숨어 있는 정산의 세계',
+      content: `### 환승할인은 공짜가 아니다
+
+수도권에서 버스를 타고 지하철로 갈아탈 때 요금이 이어지는 **수도권 통합환승할인**은 2004년 서울 대중교통 개편에서 시작해 2007년 경기 버스, 2009년 인천으로 확대된 제도입니다. 요금 구조는 **통합 거리비례제**: 기본요금으로 10km까지 가고, 이후 5km마다 100원씩 추가됩니다. 환승은 하차 태그 후 30분 이내(밤 9시부터 다음 날 오전 7시까지는 60분)에 인정되며, 최대 4회까지 가능합니다. 하차 태그를 잊으면 다음 승차 때 페널티가 붙는 것도 이 구조 때문입니다.
+
+### 할인은 누가 메워 주나 — 기관 간 정산
+
+승객이 덜 낸 환승할인액은 누군가 부담해야 합니다. 그래서 서울교통공사, 코레일, 버스조합, 마을버스 사업자, 지자체가 **이용 실적 데이터를 기반으로 매달 수입금을 나누는 정산**을 합니다. 정산 배분 비율을 두고 기관 간 분쟁이 법정까지 간 사례도 있을 만큼 민감한 돈 문제라, 요금 계산 로직의 원 단위 오차도 그대로 정산 분쟁이 됩니다. 참고로 서울시는 2015년부터 첫차 출발부터 오전 6시 30분까지 교통카드로 승차하면 기본요금의 20%를 깎아 주는 **조조할인**을 시행 중입니다.
+
+### 왜 이런 시스템은 수십 년 묵은 레거시가 될까
+
+요금 제도는 폐기되지 않고 **누적**됩니다. 90년대 현금·토큰 시절 로직 위에 교통카드, 환승할인, 거리비례, 심야 할증, 조조할인이 겹겹이 쌓이죠. 게다가 "검증된 정산 결과"가 곧 시스템의 신뢰이기 때문에, 잘 도는 코드를 다시 짜자는 말은 "수백억 원 정산을 다시 검증하자"는 말과 같아 아무도 꺼내지 못합니다. 그렇게 아무도 전체를 이해하지 못하는 코드가, 오늘도 수천만 건의 태그를 처리하고 있습니다.`,
+    },
+    scenario: `우리 회사는 지방 중소도시의 **버스 요금 정산 시스템**을 20년째 유지보수하고 있습니다. 시청에서 내년 1월부터 **조조할인 제도**를 도입한다는 공문이 내려왔습니다. 문제는 요금 계산의 심장인 \`FareCalc.java\`를 만든 사람이 모두 퇴사했고, 이 코드의 계산 결과로 매달 버스 회사들끼리 수억 원을 정산한다는 점입니다. 부장님의 지시는 단 하나: **"기존 요금은 1원도 달라지면 안 된다."**`,
+    legacyFiles: [
+      {
+        path: 'src/main/java/fare/FareCalc.java',
+        content: `package fare;
+
+// ---------------------------------------------------------------
+//  요금계산 모듈 FareCalc  v0.7
+//  최초작성 19961112 전산실 이주임
+//  19990602 요금동결 반영 (김부장)
+//  20040701 환승할인 1차 적용 (외주 S정보기술)
+//  20111219 심야버스 추가. doIt 손대지 말것. 정산검증 끝난 코드임
+// ---------------------------------------------------------------
+public class FareCalc {
+
+    public static int FLAG9 = 0;        // 1 = 환승 진행중
+    public static int a1 = 0;           // 누적 이동거리(m)
+    public static int tmp2 = -1;        // 직전 하차시각 HHMM
+    public static int cnt = 0;          // 이번 통행 승차횟수
+    public static int m0 = -1;          // 직전 수단코드
+    public static int[] buf = new int[16];   // 예비. 어디서 쓰는지 모름. 지우지 말것
+
+    // mode 1=간선 2=지선 3=심야버스 4=마을버스
+    // t = 승차시각 HHMM (예 0732)   d = 이번구간 거리(m)
+    // cd 1=교통카드 0=현금
+    // 리턴 = 이번 태그 청구액(원)
+    public static int doIt(int mode, int t, int d, int cd) {
+        int f = 0;
+        int base = 0;
+
+        if (mode == 1) {
+            if (cd == 1) {
+                base = 1500;
+            } else {
+                base = 1600;
+            }
+        } else {
+            if (mode == 2) {
+                if (cd == 1) {
+                    base = 1450;
+                } else {
+                    base = 1550;
+                }
+            } else {
+                if (mode == 3) {
+                    if (cd == 1) {
+                        base = 2500;
+                    } else {
+                        base = 2600;
+                    }
+                } else {
+                    if (mode == 4) {
+                        if (cd == 1) {
+                            base = 1250;
+                        } else {
+                            base = 1300;
+                        }
+                    } else {
+                        base = 1500;   // ????? 모르는 코드는 일단 간선 (20011023)
+                    }
+                }
+            }
+        }
+
+        // 19970304 김부장 수정 - 학생토큰 폐지. 아래 절대 살리지 말것
+        // if (cd == 2) { f = f - 100; }
+        // if (cd == 3) { f = f / 2; }
+
+        if (cd == 1) {
+            if (FLAG9 == 1) {
+                if (cnt < 5) {
+                    if (tmp2 >= 0) {
+                        int gap = t - tmp2;   // HHMM 뺄셈. 20040701 외주가 이렇게 함. 웬만하면 맞음
+                        int lim = 30;
+                        if (t >= 2100 || t <= 700) {
+                            lim = 60;   // 20030811 밤에는 60분 (운영팀 요청)
+                        }
+                        if (gap >= 0 && gap <= lim) {
+                            a1 = a1 + d;
+                            if (a1 > 10000) {
+                                int over = a1 - 10000;
+                                int u = over / 5000;
+                                if (over % 5000 > 0) {
+                                    u = u + 1;
+                                }
+                                f = u * 100;
+                                // 이미 낸 추가요금 차감
+                                int over2 = (a1 - d) - 10000;
+                                if (over2 > 0) {
+                                    int u2 = over2 / 5000;
+                                    if (over2 % 5000 > 0) {
+                                        u2 = u2 + 1;
+                                    }
+                                    f = f - u2 * 100;
+                                }
+                            } else {
+                                f = 0;   // 환승 기본요금 면제
+                            }
+                            cnt = cnt + 1;
+                            m0 = mode;
+                            return f;
+                        } else {
+                            FLAG9 = 0;   // 시간초과. 새 통행
+                        }
+                    } else {
+                        FLAG9 = 0;
+                    }
+                } else {
+                    FLAG9 = 0;   // 환승 4회 초과
+                }
+            }
+        }
+
+        // ---- 신규 통행 시작 ----
+        FLAG9 = 0;
+        a1 = d;
+        cnt = 1;
+        m0 = mode;
+        f = base;
+        if (a1 > 10000) {
+            int over = a1 - 10000;
+            int u = over / 5000;
+            if (over % 5000 > 0) {
+                u = u + 1;
+            }
+            f = f + u * 100;
+        }
+        if (cd == 1) {
+            FLAG9 = 1;   // 카드면 환승 대기상태 진입
+        }
+
+        // 20111219 심야 할증 - 위에서 base에 이미 반영했는데 왜 여기 또 있는지 모름. 지우면 금액 틀어짐
+        if (mode == 3) {
+            if (t >= 0 && t < 400) {
+                f = f + 0;   // tmp. 나중에 심야심화할증 들어올 자리 (박과장)
+            }
+        }
+
+        return f;
+    }
+
+    // 하차 태그 처리
+    public static void getOff(int t, int d) {
+        a1 = a1 + d;
+        tmp2 = t;
+        // 19981120 하차태그 미실시 노선 예외처리
+        // if (route >= 900) { tmp2 = -1; }   컴파일 안됨. 20050214 주석처리 (최대리)
+    }
+
+    // 일마감 초기화. 새벽 배치가 호출함
+    public static void doIt2() {
+        FLAG9 = 0;
+        a1 = 0;
+        tmp2 = -1;
+        cnt = 0;
+        m0 = -1;
+        for (int i = 0; i < buf.length; i++) {
+            buf[i] = 0;
+        }
+    }
+
+    // 20060330 요금표 출력용. 영업소에서 아직 쓴다고 함
+    public static String dump(int mode, int cd) {
+        int keep1 = FLAG9;
+        int keep2 = a1;
+        int keep3 = tmp2;
+        int keep4 = cnt;
+        int keep5 = m0;
+        doIt2();
+        int v = doIt(mode, 1200, 5000, cd);
+        FLAG9 = keep1;
+        a1 = keep2;
+        tmp2 = keep3;
+        cnt = keep4;
+        m0 = keep5;
+        return "MODE" + mode + "/CD" + cd + "=" + v + "WON";
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '시청 공문: 내년 1월 1일부터 교통카드 승차에 한해 조조할인을 시행합니다. 이른 아침에 승차하는 승객에게 기본요금의 20%를 감면해 주세요. (공문에는 "첫차 이후 이른 아침 시간대"라고만 적혀 있고 정확한 종료 시각은 명시되어 있지 않습니다)',
+      '조조할인 시행 이후에도, 조조 시간대가 아닌 모든 승차의 요금은 현재 시스템과 1원도 다르지 않아야 합니다. 정산팀이 감사에 쓸 수 있는 근거(자동화된 검증)를 남겨 주세요.',
+      '환승 거리비례 추가요금은 할인 대상이 아닙니다. 감면은 기본요금에만 적용됩니다.',
+      '현금 승차는 조조할인 대상이 아닙니다.',
+      '이번 작업에서 전면 재작성은 금지입니다. 다만 다음 요금 개편(정기권 도입 예정)을 위해, 이번에 손댄 부분만큼은 테스트 가능한 구조로 남겨 주세요.',
+      '수정 범위와 이유를 정산팀 비개발자가 읽을 수 있는 변경 요약으로 정리해 주세요.',
+    ],
+    constraints: [
+      '도메인 규칙: 조조할인과 환승 할인은 중복 적용됩니다. 단, 환승으로 기본요금이 이미 면제된 태그(청구액 0원)에는 감면할 금액 자체가 없습니다.',
+      '도메인 규칙: 심야버스(mode 3)는 운행 특성상 조조할인 대상에서 제외됩니다.',
+      'doIt()의 공개 시그니처와 static 진입 방식은 단말기 연동 모듈이 호출 중이므로 바꿀 수 없습니다.',
+      '기존 코드의 주석(수정 이력)은 삭제하지 말고 보존하세요. 감사 대응 자료입니다.',
+    ],
+    learningGoals: [
+      '수정하기 전에 특성화 테스트(characterization test)로 현재 동작을 그물처럼 고정하는 기법 체득',
+      '전역 가변 상태(static 필드)가 테스트를 어떻게 방해하는지 겪고, 초기화 지점을 통제하는 방법 익히기',
+      '레거시를 전면 수술하지 않고 심(seam)을 찾아 최소 침습으로 기능을 끼워 넣는 판단력',
+      '이해 못 한 코드(죽은 주석, 수수께끼 필드)를 "일단 건드리지 않는" 절제와, 그것을 리스크로 문서화하는 습관',
+    ],
+    hints: [
+      '코드를 고치고 싶은 충동을 참고, 먼저 doIt()에 다양한 입력을 넣어 현재 출력을 표로 받아 적어 보세요. 그 표가 그대로 테스트가 됩니다. (doIt2()가 상태 초기화 지점이라는 것이 큰 선물입니다)',
+      '경계값을 특히 촘촘히: 거리 10000m 전후, 환승 30/60분 경계, 환승 5회째, 자정을 넘는 시각. HHMM 뺄셈(t - tmp2)이 수학적으로 이상해도, 그 이상함까지가 "보존해야 할 현재 동작"입니다. 김부장님은 떠난 지 오래지만, 그의 주석은 아직 현역입니다.',
+      '조조할인이 끼어들 심(seam)은 "base가 확정되는 순간"입니다. base 계산 직후 한 곳에서 감면하면 환승 로직을 통과하는 f 계산을 건드리지 않을 수 있습니다. 감면 규칙 자체는 새 클래스로 빼서 그 부분만이라도 단위 테스트를 붙여 보세요.',
+    ],
+    hiddenCases: [
+      {
+        title: '21억 번째 단말기',
+        description:
+          '신형 단말기 시리얼 체계가 팽창해 설비 ID가 int 최대값(약 21억)을 넘는 순간 32비트 정수는 음수로 뒤집힙니다. 2014년 유튜브는 강남스타일 조회수가 21억을 돌파하자 카운터를 64비트로 바꿨고, 2038년에는 32비트 유닉스 시간이 같은 벽에 부딪힙니다. 좋은 방어: 외부에서 오는 식별자는 수 연산이 필요 없으므로 애초에 문자열로 다루고, 입력 계층에서 범위·형식을 검증해 경계에서 명시적으로 거부하세요.',
+      },
+      {
+        title: '자정을 넘는 환승',
+        description:
+          '23:50 하차 후 00:20 환승이면 t - tmp2 = 20 - 2350 = 음수가 되어 환승이 조용히 끊깁니다. HHMM 뺄셈의 태생적 결함이지만, 이것이 "현재 동작"이라면 특성화 테스트로 먼저 고정하는 것이 순서입니다. 좋은 방어: 현재 동작을 테스트로 못박은 뒤, 시간 계산을 분 단위 경과시간 같은 명시적 도메인 개념으로 감싸는 개선을 다음 개편 안건으로 문서화하세요. 말없이 고치는 것은 정산 사고입니다.',
+      },
+      {
+        title: '마이너스 요금 버스',
+        description:
+          '조조할인 20%와 환승 거리비례 차감이 겹치는 경계에서 계산 순서를 잘못 끼우면 청구액이 음수가 될 수 있습니다. 음수 요금을 단말기가 어떻게 처리할지는 아무도 모릅니다(그게 제일 무섭습니다). 좋은 방어: 최종 반환 직전 "요금은 0원 이상" 불변식을 검증하고, 위반 시 조용히 0으로 보정하지 말고 기록을 남겨 정산팀이 볼 수 있게 하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '특성화 테스트',
+        description: '수정 전에 기존 동작을 고정하는 테스트를 작성했는가. 경계값(거리·시간·환승 횟수)과 전역 상태 초기화가 다뤄졌는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '기존 동작 보존',
+        description: '조조 시간대 외 모든 케이스에서 변경 전후 결과가 일치하는가. 일치를 테스트로 증명했는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '심(seam)을 통한 최소 침습 변경',
+        description: '변경 지점이 좁고 명확한가. 이해하지 못한 코드를 불필요하게 건드리지 않았는가. 새 로직이 테스트 가능한 단위로 분리되었는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '조조할인 규칙의 정확성',
+        description: '카드 전용, 기본요금만 감면, 심야버스 제외, 환승 면제 태그 처리 등 도메인 규칙이 정확히 구현되었는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '리스크 식별과 되묻기',
+        description: '"이른 아침"의 종료 시각처럼 미정의된 요구를 질문으로 되돌렸는가. 수수께끼 코드(buf, 심야 중복 주석 등)를 리스크로 문서화했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '버스운송사업조합 정산 담당 실무자 (20년차 비개발자, 요금 제도는 훤히 꿰고 있음)',
+      prompt:
+        '조조할인 반영 작업을 정산 담당자에게 보고하는 상황입니다. 설명할 것: (1) 왜 코드를 고치기 전에 "지금 요금표를 통째로 사진 찍는 작업"(특성화 테스트)부터 했는지, (2) 기존 요금이 1원도 안 변한다는 것을 어떻게 보장하는지, (3) 남아 있는 리스크(정확한 종료 시각 미확정 등)가 무엇이고 정산팀의 어떤 결정이 필요한지. 기술 용어 없이, 정산 감사에 대응하는 언어로 설명하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '정산서가 조용한 달',
+        teaser: '조조할인이 켜진 첫 달, 정산 금액은 예측과 원 단위까지 일치한다. 아무도 회의를 소집하지 않고, 그것이 이 업계 최고의 찬사다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '엑셀로 메우는 오차',
+        teaser: '대체로 맞는다. 다만 월말마다 정산팀이 몇 건을 수작업으로 보정하고, 그 목록이 매달 당신의 메일함에 도착한다.',
+      },
+      {
+        grade: 'dawn',
+        title: '김부장의 유산',
+        teaser: '건드리지 말라던 블럭이 무너진 새벽 3시, 버스 회사 세 곳의 정산 담당자가 동시에 전화를 건다. 회고 문서의 첫 줄은 1996년의 주석이 차지한다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '1996년 이 파일이 태어난 이래 아무도 도달하지 못한 결말입니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 4 — Stage 3 "의존성 역전" / 금융 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's3-interest-01',
+    stage: 3,
+    stageTitle: '의존성 역전',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '금융',
+    domainEmoji: '💱',
+    title: '적금 만기 해지 계산기 — 규칙을 코드로 번역하라',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '"연 3.6%"에 속지 않는 법 — 적금 이자의 진실',
+      content: `### 기대의 절반만 나오는 이유
+
+정기적금은 매달 일정액을 붓고 만기에 원금과 이자를 받는 상품입니다. 그런데 월 30만 원씩 연 3.6% 적금에 넣은 사람이 만기에 받는 세전이자는 원금 360만 원의 3.6%인 129,600원이 아니라 **70,200원**, 기대의 거의 절반입니다. 은행이 속인 게 아닙니다. 금리는 "돈이 은행에 머문 기간"에 붙는데, 첫 달 납입금은 12개월을 온전히 머물지만 마지막 달 납입금은 딱 1개월만 머뭅니다. 그래서 정기적금 단리 세전이자는 회차별로 **월납입액 × 연이율 × (남은 개월 수 ÷ 12)** 를 모두 더한 값이고, 12개월짜리면 (12+11+…+1)/12 = 6.5개월치 이자만 나옵니다.
+
+### 단리와 월복리 — 이자가 이자를 낳을 때
+
+단리는 원금에만 이자가 붙습니다. 월복리는 매달 붙은 이자가 다음 달 원금에 합쳐져 **이자에 다시 이자**가 붙습니다. 1년짜리 저금리 적금에서는 차이가 몇백 원 수준이지만, 기간이 길어지고 금리가 높아질수록 격차는 기하급수적으로 벌어집니다.
+
+### 통장에 찍히기 전에 떼어 가는 세금
+
+이자에는 **이자소득세 15.4%** 가 붙습니다. 구성은 소득세 14% + 지방소득세 1.4%(소득세의 10%)이고, 은행이 이자를 지급하는 순간 **원천징수**하므로 통장에는 처음부터 세후 금액이 찍힙니다.
+
+### 세금을 안 떼는 통장도 있다
+
+만 65세 이상 고령자, 장애인 등 요건을 충족하면 전 금융기관 합산 원금 5,000만 원 한도로 이자소득세가 면제되는 **비과세종합저축**에 가입할 수 있습니다. 같은 상품, 같은 금리라도 가입자에 따라 실수령액이 달라지는 이유입니다.
+
+### 이번 미션의 핵심
+
+이번에는 고칠 레거시가 없습니다. 위 규칙을 **정확하게 코드로 번역**하는 것이 절반, 그 규칙(도메인)과 저장 기술(인프라) 사이의 **의존 방향을 어디로 둘 것인가**가 나머지 절반입니다.`,
+    },
+    scenario: `사내 복지 포털에 **적금 만기 계산기**를 새로 넣기로 했습니다. 인사팀이 제휴 은행 상품을 등록하면 직원이 세후 만기 수령액을 미리 확인하는 기능입니다. 저장은 당분간 전산팀이 제공한 인메모리 엔진(MapDb)을 쓰지만, **내년에 사내 표준 DB로 교체가 확정**되어 있습니다. 계산이 틀리면 "은행 앱이랑 숫자가 달라요"라는 민원이 곧바로 인사팀에 꽂힙니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/daehan/fin/engine/MapDb.java',
+        content: `package com.daehan.fin.engine;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 초소형 인메모리 저장소.
+ * 이 파일은 엔진입니다. 그대로 사용하세요. 수정/재구현 대상이 아닙니다.
+ */
+public class MapDb {
+
+    private final Map<String, Map<String, Map<String, Object>>> tables = new HashMap<>();
+    private int seq = 0;
+
+    /** 행을 저장하고 생성된 id를 돌려준다. */
+    public String insert(String table, Map<String, Object> row) {
+        seq++;
+        String id = table + "-" + seq;
+        tables.computeIfAbsent(table, k -> new LinkedHashMap<>()).put(id, new HashMap<>(row));
+        return id;
+    }
+
+    public List<Map<String, Object>> findAll(String table) {
+        return new ArrayList<>(tables.getOrDefault(table, Map.of()).values());
+    }
+
+    public Map<String, Object> findById(String table, String id) {
+        return tables.getOrDefault(table, Map.of()).get(id);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/fin/App.java',
+        content: `package com.daehan.fin;
+
+import com.daehan.fin.engine.MapDb;
+
+import java.util.Map;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력과 숫자가 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        MapDb db = new MapDb();
+
+        String p1 = db.insert("savings", Map.of(
+                "name", "직장인 첫걸음 적금",
+                "monthlyDeposit", 300000,
+                "months", 12,
+                "annualRate", 0.036,
+                "taxExempt", false));
+
+        String p2 = db.insert("savings", Map.of(
+                "name", "부모님 비과세 적금",
+                "monthlyDeposit", 500000,
+                "months", 24,
+                "annualRate", 0.042,
+                "taxExempt", true));
+
+        // TODO(학습자): 여러분이 설계한 저장소 경계에 MapDb를 연결하고,
+        //               MaturityService로 두 상품을 정산해 출력하세요.
+        // MaturityService service = ...;
+        // System.out.println(service.settle(p1));
+        // System.out.println(service.settle(p2));
+
+        // ===== 기대 출력 1: p1 (일반과세) =====
+        // [직장인 첫걸음 적금] 만기 해지 정산
+        // 원금합계: 3,600,000원
+        // 세전이자(단리): 70,200원
+        // (참고) 월복리였다면: 70,978원
+        // 소득세(14%): 9,828원 / 지방소득세(1.4%): 982원 / 총세금: 10,810원
+        // 세후이자: 59,390원
+        // 만기수령액: 3,659,390원
+
+        // ===== 기대 출력 2: p2 (비과세종합저축) =====
+        // [부모님 비과세 적금] 만기 해지 정산
+        // 원금합계: 12,000,000원
+        // 세전이자(단리): 525,000원
+        // (참고) 월복리였다면: 539,362원
+        // 총세금: 0원 (비과세종합저축)
+        // 세후이자: 525,000원
+        // 만기수령액: 12,525,000원
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/fin/domain/SavingsProduct.java',
+        content: `package com.daehan.fin.domain;
+
+/** 적금 계약 정보 (완성된 코드 — 그대로 사용) */
+public record SavingsProduct(
+        String id,
+        String name,
+        int monthlyDeposit,    // 월 납입액(원)
+        int months,            // 계약 개월 수
+        double annualRate,     // 연이율 (0.036 = 연 3.6%)
+        boolean taxExempt      // true = 비과세종합저축
+) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/fin/domain/InterestCalculator.java',
+        content: `package com.daehan.fin.domain;
+
+/**
+ * 이자 계산기 (구현 대상).
+ * 브리핑의 금융 규칙을 그대로 번역하세요.
+ * 주의: 이 클래스는 저장 기술을 몰라야 합니다.
+ */
+public class InterestCalculator {
+
+    /** 단리 세전이자(원). 회차별 이자 합산 후 원단위 절사. */
+    public long simplePreTaxInterest(SavingsProduct product) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+
+    /** 월복리 세전이자(원). 회차별 원리금 계산, 합산 후 원단위 절사. */
+    public long compoundPreTaxInterest(SavingsProduct product) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/fin/domain/MaturityService.java',
+        content: `package com.daehan.fin.domain;
+
+/**
+ * 만기 해지 정산 서비스 (구현 대상).
+ *
+ * 상품 조회가 필요하지만, 이 클래스가 MapDb를 직접 알아서는 안 됩니다.
+ * 그 사이에 어떤 경계를 둘지는 여러분이 설계합니다.
+ * (경계용 인터페이스는 일부러 제공하지 않았습니다.)
+ */
+public class MaturityService {
+
+    // TODO 생성자에서 무엇을 주입받을지 설계하세요.
+
+    /** 만기 해지 정산 요약. App.java의 기대 출력 형식과 일치해야 합니다. */
+    public String settle(String productId) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '검증 시나리오 1(일반과세): 월 300,000원 × 12개월, 연 3.60% 단리. 세전이자 = 300,000 × 0.036 × (12+11+…+1)/12 = 300,000 × 0.036 × 78/12 = 70,200원. 소득세 = 70,200 × 14% = 9,828원, 지방소득세 = 70,200 × 1.4% = 982.8 → 982원(절사). 총세금 10,810원, 세후이자 59,390원, 만기수령액 3,659,390원. App.java의 기대 출력과 정확히 일치해야 합니다.',
+      '고객 안내용으로 월복리였다면 얼마였을지 참고치를 함께 보여 줍니다. 계산: 회차별 월납입액 × ((1 + 연이율/12)^남은개월 − 1)을 합산한 뒤 원단위 절사. 시나리오 1은 70,978원, 시나리오 2는 539,362원이 나와야 합니다.',
+      '비과세종합저축 가입 직원(taxExempt)은 세율 0%입니다. 검증 시나리오 2: 월 500,000원 × 24개월, 연 4.20% 단리 → 세전이자 = 500,000 × 0.042 × (24+23+…+1)/12 = 500,000 × 0.042 × 300/12 = 525,000원 = 세후이자, 만기수령액 12,525,000원.',
+      '원단위 처리 규칙: 세전이자는 합산 후 원단위 절사, 소득세와 지방소득세는 각각 원단위 절사 후 합산합니다. 임의 반올림은 은행 앱과 숫자가 달라지는 민원의 원인이 됩니다.',
+      '내년 사내 표준 DB 교체가 확정되어 있고, 인사팀 감사 대비로 이자 계산·만기 정산 로직의 단위 테스트는 DB 없이(순수 자바 객체만으로) 돌아야 합니다. 저장은 MapDb를 쓰되, 계산·정산 코드에 MapDb라는 이름이 등장해서는 안 됩니다.',
+      '콜센터에 중도해지 예상액 문의가 많아 다음 버전에 넣을 예정입니다. 다만 중도해지 적용 이율표는 상품팀에서 아직 전달받지 못했습니다.',
+    ],
+    constraints: [
+      'MapDb.java와 App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요.',
+      '금액은 정수(원)로 다루고, 명시된 절사 규칙 외의 임의 반올림을 금지합니다.',
+      '도메인 규칙: 이자소득세 15.4% = 소득세 14% + 지방소득세 1.4%(소득세의 10%). 두 세목은 각각 절사합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '의존성 역전: 인터페이스를 "사용하는 쪽(도메인)"이 정의하고 소유하며, 인프라 구현이 그 계약을 따라오게 만드는 경험',
+      '저장소 경계(repository 인터페이스)를 스스로 설계하고, 도메인 패키지에서 인프라 방향의 import를 0개로 유지하기',
+      '순수 계산 로직을 DB 없이 단위 테스트하는 구조 만들기',
+      '브리핑으로 학습한 도메인 지식(금융 규칙)을 오차 없이 코드로 번역하는 훈련',
+    ],
+    hints: [
+      '계산 규칙은 브리핑에 전부 있습니다. 코드를 열기 전에 "각 회차의 돈이 은행에 몇 개월 머무는가" 표를 손으로 먼저 만들어 보세요. 시나리오 1의 70,200원이 손으로 재현되면 절반은 끝났습니다.',
+      'InterestCalculator 파일 상단에 import com.daehan.fin.engine.MapDb가 나타나는 순간 "DB 없이 테스트" 요구는 실패합니다. 계산기는 SavingsProduct만 받으면 됩니다. 데이터를 꺼내 오는 일은 다른 누군가의 책임입니다.',
+      '도메인 패키지에 SavingsProductRepository 같은 인터페이스를 직접 정의하고(findById 하나면 충분할지도), MapDb를 감싸는 구현체는 바깥(infra) 패키지에 두세요. 의존 화살표가 인프라 → 도메인으로 향하게 되었다면, 그것이 의존성 역전입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '0개월짜리 적금',
+        description:
+          '개월 수 0 또는 월납입 0원인 계약이 들어오면 합산 루프가 그냥 0을 돌려주고, 화면에는 "만기수령액 0원"이 정상처럼 표시됩니다. 좋은 방어: 도메인 진입 시점에 계약 유효성(개월 ≥ 1, 납입액 > 0)을 검증하고 위반이면 명시적으로 실패하세요. 계산기가 침묵하면 민원이 대신 말합니다.',
+      },
+      {
+        title: 'taxExempt: "Y"',
+        description:
+          'MapDb는 아무 Object나 저장하므로 boolean 자리에 문자열 "Y"가 들어올 수 있습니다. (Boolean) 캐스팅은 터지고, Boolean.parseBoolean 방식은 조용히 false가 되어 비과세 고객에게 세금을 뗍니다. 둘 다 사고입니다. 좋은 방어: 인프라 어댑터(경계)에서 타입을 검증·변환해 도메인에는 깨끗한 SavingsProduct만 들여보내고, 변환할 수 없는 행은 명시적으로 거부하세요.',
+      },
+      {
+        title: '3.6인가 0.036인가',
+        description:
+          '연이율 자리에 퍼센트 값 3.6이 들어오면 이자가 100배로 계산됩니다. 1999년 화성 기후 궤도선(Mars Climate Orbiter)은 한 팀은 파운드힘, 한 팀은 뉴턴 단위로 계산한 탓에 3억 달러짜리 탐사선을 잃었습니다 — 단위 혼동은 우주급 사고입니다. 좋은 방어: 이름에 단위를 박고(예: annualRateFraction), 경계에서 범위를 검증해(0.5를 넘으면 퍼센트 입력 의심) 명시적으로 거부하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '두 검증 시나리오의 기대 출력과 숫자가 정확히 일치하는가. 절사 규칙(세전이자 합산 절사, 세목별 각각 절사)이 정확한가.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '인터페이스 경계 설계',
+        description: '저장소 인터페이스를 도메인 쪽에서 정의·소유했는가. 계약의 시그니처가 도메인의 필요만큼만 노출하는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '계층 분리',
+        description: '도메인(계산·정산) / 인프라(MapDb 어댑터) / 조립(App 연결)이 패키지 수준에서 구분되고, 의존 방향이 도메인을 향하는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '이자 계산과 정산 로직의 단위 테스트가 MapDb 없이 도는가. 경계 케이스(1개월 계약, 비과세, 절사 발생 금액)를 다루는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '엔진 코드 오용 여부',
+        description: '도메인 코드가 MapDb를 직접 참조하지 않는가. 엔진 코드를 수정하거나 재구현하지 않았는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '은퇴를 앞두고 적금 가입을 고민 중인 부모님 (금융 지식은 예금 통장 수준)',
+      prompt:
+        '부모님이 "연 3.6%라더니 왜 이것밖에 안 붙었냐"고 물으십니다. 설명할 것: (1) 왜 적금 이자가 기대의 절반쯤인지 — 매달 넣은 돈이 은행에 머문 기간이 다르다는 것을 숫자 예시로, (2) 통장에 찍히기 전에 떼는 세금 15.4%와, 부모님이 대상일 수 있는 비과세종합저축, (3) 마지막으로 이 계산기가 "계산하는 부분"과 "장부에서 꺼내 오는 부분"으로 나뉘어 있어 은행이 바뀌어도 계산은 그대로라는 것을 생활 비유 하나로. 표와 그림 없이 말로만, 부모님이 끊지 않고 따라올 수 있는 순서로.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '은행 앱과 같은 숫자',
+        teaser: '직원들이 계산기를 믿기 시작한다. 인사팀에서 민원 대신 커피 기프티콘이 오고, DB 교체일에도 계산 코드는 한 줄도 열리지 않는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '1원의 왕복 메일',
+        teaser: '거의 맞는다. 다만 분기마다 절사 어딘가에서 1원이 어긋나고, 그 1원의 출처를 추적하는 메일 스레드가 계절마다 부활한다.',
+      },
+      {
+        grade: 'dawn',
+        title: '비과세 고객에게 세금을 뗀 날',
+        teaser: 'taxExempt가 소리 없이 false로 읽힌 아침, 65세 이상 가입자 명단을 든 감사팀이 도착한다. 원인 분석 요청은 물론 당신에게 온다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말을 여는 열쇠는 아직 아무도 회수하지 못했습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 5 — Stage 1 "분리의 감각" / 제과·제빵 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's1-bakery-01',
+    stage: 1,
+    stageTitle: '분리의 감각',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Easy',
+    scope: '단일 파일',
+    modes: ['developer'],
+    domain: '제과·제빵',
+    domainEmoji: '🥖',
+    title: '베이커스 퍼센트 레시피 스케일러 만들기',
+    estimatedMinutes: 90,
+    briefing: {
+      title: '밀가루는 언제나 100 — 제빵사의 수학',
+      content: `### 베이커스 퍼센트라는 발명
+
+제빵사의 레시피에는 "물 680g"이 아니라 **"물 68%"** 라고 적혀 있습니다. 기준은 항상 밀가루입니다. 밀가루 전체를 100%로 놓고 나머지 재료를 밀가루 대비 비율로 적는 표기법이 **베이커스 퍼센트(baker's percentage)** 입니다. 밀가루를 두 종류 섞으면 그 합이 100%가 됩니다. 왜 이렇게 쓸까요? 비율만 있으면 반죽 1kg이든 300kg이든 즉시 환산되고, 다른 가게의 레시피와도 곧바로 비교할 수 있기 때문입니다. 전 세계 베이커리가 쓰는 사실상의 공용어죠.
+
+### 수분율만 보면 빵의 정체가 보인다
+
+물 ÷ 밀가루, 즉 **수분율(hydration)** 은 빵의 성격을 결정합니다. 쫄깃하고 결이 고운 식빵은 60~65%, 겉이 바삭한 바게트는 65~75%, 큼직한 기공이 뚫린 치아바타는 80%를 넘습니다. 숙련된 제빵사는 수분율 숫자 하나로 반죽의 질감과 다루기 난이도를 짐작합니다.
+
+### 오븐은 물을 훔쳐 간다
+
+반죽 350g을 구우면 350g짜리 빵이 나오지 않습니다. 굽는 동안 수분이 증발해 보통 **10% 안팎이 사라집니다(굽기 손실)**. 그래서 "350g 바게트 10개"라는 주문을 받으면 손실률로 나눠 반죽량을 역산해야 합니다.
+
+### 이스트와 시간은 교환 가능하다
+
+이스트를 많이 넣으면 빨리 부풀고, 줄이면 천천히 부풀며 풍미가 깊어집니다. 그래서 냉장고에서 밤새 발효시키는 저온 장시간 발효 레시피는 이스트를 절반 이하로 줄입니다.
+
+### 곁들이는 상식
+
+프랑스는 1993년 이른바 **빵 법령(décret pain)** 으로 "전통 바게트"를 자처하려면 밀가루·물·소금·효모만 쓰고 냉동 생지를 쓰지 말라고 법으로 정했습니다. 레시피가 곧 법이 되는 세계도 있는 셈입니다.`,
+    },
+    scenario: `동네에서 잘되는 베이커리 사장님이 지인 소개로 일을 맡겨 왔습니다. 지금은 주문이 들어올 때마다 사장님이 **계산기를 두드려 반죽량과 재료를 역산**하는데, 새벽마다 하다 보니 실수가 잦답니다. "몇 그램짜리 몇 개"만 넣으면 재료 목록과 주문서가 나오는 프로그램을 원하십니다. 곧 매장 전광판과 모바일 앱에도 같은 계산 결과를 내보낼 계획이 있다고 합니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/bakery/Recipe.java',
+        content: `package com.daehan.bakery;
+
+/** 베이커스 퍼센트로 표현한 레시피 (완성된 코드 — 그대로 사용) */
+public record Recipe(
+        String name,
+        double hydrationPct,   // 수분율 (68.0 = 밀가루 대비 68%)
+        double saltPct,        // 소금 비율
+        double yeastPct        // 이스트 비율
+) {
+
+    /** 밀가루 100%를 포함한 총 베이커스 퍼센트 */
+    public double totalPct() {
+        return 100.0 + hydrationPct + saltPct + yeastPct;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bakery/RecipeScaler.java',
+        content: `package com.daehan.bakery;
+
+/**
+ * 레시피 스케일러 (구현 대상).
+ *
+ * 메서드를 어떻게 나눌지는 여러분의 설계입니다.
+ * 단, "계산"과 "화면에 보여줄 문장 만들기"가 한 메서드에 섞이면
+ * 전광판·모바일 앱 등 출력처가 늘어날 때마다 계산 코드를 다시 열게 됩니다.
+ */
+public class RecipeScaler {
+
+    /** 목표 개수 × 개당 완제품 중량과 굽기 손실률로 필요한 반죽량(g)을 구한다. */
+    public int doughNeeded(int count, int unitWeightG, double lossRate) {
+        // TODO 구현 (반올림 규칙은 요구사항 참조)
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+
+    // TODO 재료량 역산과 주문서 출력을 어떤 단위로 나눌지 직접 설계하세요.
+}`,
+      },
+    ],
+    requirements: [
+      '기준 환산 검증: 바게트 레시피(수분율 68%, 소금 2%, 이스트 1%)를 밀가루 1,000g 기준으로 환산하면 물 680g, 소금 20g, 이스트 10g, 반죽 총량 1,710g이 나와야 합니다.',
+      '주문 역산 검증: "350g 바게트 10개" 주문, 굽기 손실률 10% → 필요 반죽 = 10 × 350 ÷ (1 − 0.10) = 3,888.9g → 그램 단위 올림으로 3,889g.',
+      '재료 역산 규칙: 밀가루 = 필요 반죽량 ÷ (총 베이커스% ÷ 100)를 그램 반올림으로 먼저 확정하고, 나머지 재료는 확정된 밀가루량 × 각 비율을 그램 반올림합니다. 위 주문이면 밀가루 2,274g, 물 1,546g, 소금 45g, 이스트 23g. (반올림 때문에 재료 합계가 3,889g과 1~2g 어긋나는 것은 정상입니다)',
+      '저온 장시간 발효 옵션을 켜면 이스트만 절반 비율로 계산합니다. 위 주문이면 이스트 11g.',
+      '계산 결과는 지금은 매장 주문서 형식의 문자열로 출력하지만, 곧 전광판·모바일 앱 형식이 추가됩니다. 그때 계산 코드는 열어 보지 않아도 되게 해 주세요.',
+      '사장님 요청: "반죽은 조금 넉넉하게 준비하고 싶어요." (여유분이 몇 %인지는 물어볼 때마다 대답이 다릅니다)',
+    ],
+    constraints: [
+      '도메인 규칙: 모든 비율의 기준은 밀가루 100%입니다. 밀가루를 여러 종류 쓰면 그 합이 100%입니다.',
+      '그램은 정수로 다루며, 요구사항에 명시된 올림/반올림 규칙 외의 임의 처리는 금지합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '도메인 규칙(베이커스 퍼센트, 굽기 손실, 발효 옵션)을 정확한 계산 코드로 번역하는 훈련',
+      '계산(순수 로직)과 표현(문자열 포맷팅)을 분리하는 첫 감각 익히기',
+      '올림/반올림처럼 사소해 보이는 규칙도 요구사항의 일부임을 인식하기',
+      '수분율, 손실률 같은 도메인 용어를 코드 네이밍에 그대로 살리기',
+    ],
+    hints: [
+      '"필요 반죽량 계산", "그 반죽을 만들 재료 계산", "주문서 문장 만들기"는 서로 다른 질문입니다. 각각의 입력과 출력이 무엇인지 종이에 먼저 적어 보세요.',
+      '반올림 규칙이 계산마다 다릅니다(반죽량은 올림, 재료는 반올림). 규칙이 다른 계산을 한 메서드에 욱여넣으면 반드시 헷갈립니다.',
+      '계산 메서드는 숫자(또는 재료 목록 같은 작은 결과 객체)만 반환하게 하고, 문자열 조립은 별도 클래스(예: OrderSheetFormatter)에 맡기세요. 전광판이 추가되면 포맷터 하나만 늘어나는 구조가 정답에 가깝습니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '밀가루 0g 레시피',
+        description:
+          '밀가루가 0이면 수분율의 분모가 0이 되고, 역산에서는 0 나눗셈·NaN이 조용히 주문서까지 번질 수 있습니다. 좋은 방어: 계산 진입 전에 "밀가루 > 0, 비율 ≥ 0" 검증 계층을 두고 위반 시 명시적으로 실패하세요. NaN이 찍힌 주문서는 새벽 3시의 사장님을 매우 슬프게 합니다.',
+      },
+      {
+        title: '손실률 100%',
+        description:
+          '손실률이 1.0 이상이면 필요 반죽 = 주문량 ÷ (1 − 손실률)에서 0 나눗셈 또는 음수 반죽이 나옵니다. 굽는 동안 빵이 전부 증발하는 물리 현상은 아직 보고된 바 없으므로, 손실률은 0 이상 1 미만(현실적으로는 0.05~0.25)을 벗어나면 입력 단계에서 명시적으로 거부하는 것이 정답입니다.',
+      },
+      {
+        title: '0개 주문',
+        description:
+          '수량 0이나 음수 주문이 들어오면 반죽 0g, 재료 0g의 "유령 주문서"가 정상 출력됩니다. 좋은 방어: 수량 ≥ 1 검증과 함께, 실패 사유를 호출자에게 명확한 메시지로 돌려주세요. 조용한 빈 주문서는 언젠가 진짜 주문을 삼킵니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '기준 환산·주문 역산·발효 옵션의 검증 숫자가 모두 일치하는가. 올림/반올림 규칙이 명시대로 구현되었는가.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '계산과 표현의 분리',
+        description: '순수 계산과 문자열 포맷팅이 분리되어, 새 출력 형식 추가 시 계산 코드를 수정하지 않아도 되는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '도메인 타입화와 네이밍',
+        description: '재료 목록 등 결과가 원시 타입 나열이 아니라 의미 있는 타입으로 표현되고, 수분율·손실률 같은 용어가 이름에 살아 있는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '요구사항의 검증 숫자들이 단위 테스트로 고정되어 있는가. 반올림 경계가 다뤄졌는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"조금 넉넉하게"의 기준을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '홈베이킹에 갓 입문한 친구 (지금까지 계량컵으로 대충 계량하던 사람)',
+      prompt:
+        '친구에게 설명해 주세요. (1) 왜 제빵사는 컵이 아니라 그램과 퍼센트로 말하는지, (2) 수분율 숫자 하나가 빵에 대해 무엇을 알려주는지 — 식빵·바게트·치아바타 예시로, (3) "350g 바게트 10개" 주문이 어떤 단계를 거쳐 재료 목록으로 바뀌는지 순서대로. 마지막으로 여러분의 프로그램이 "계산하는 부분"과 "주문서를 예쁘게 쓰는 부분"으로 나뉜 이유를 요리에 빗대어(맛을 내는 일과 플레이팅이 다른 일이듯) 한 문장으로 정리하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '새벽 4시의 정적',
+        teaser: '사장님은 더 이상 계산기를 두드리지 않는다. 주문서는 반죽보다 먼저 완성되어 있고, 당신은 갓 구운 바게트를 정기적으로 받는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '가끔 틀리는 저울',
+        teaser: '빵은 나온다. 다만 몇 그램씩 어긋나는 날이 있고, 사장님은 "감으로 보정했다"며 당신을 흘깃 본다.',
+      },
+      {
+        grade: 'dawn',
+        title: 'NaN 그램의 아침',
+        teaser: '전광판에 "밀가루 NaN그램"이 표시된 채 개점하고, 그 사진이 동네 커뮤니티에서 당신보다 유명해진다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 레시피는 아직 공개되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 6 — Stage 2 "인터페이스는 계약" / 건축 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's2-zoning-01',
+    stage: 2,
+    stageTitle: '인터페이스는 계약',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '건축',
+    domainEmoji: '🏗',
+    title: '건폐율·용적률 — 건축 가능 규모 검토기',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '스카이라인은 두 개의 숫자로 조각된다',
+      content: `### 건폐율과 용적률
+
+같은 크기의 땅인데 어디에는 2층 상가가, 어디에는 40층 주상복합이 서는 이유는 **건폐율**과 **용적률**입니다. 건폐율 = 건축면적(하늘에서 내려다본 수평투영면적) ÷ 대지면적 × 100, 즉 "땅을 얼마나 **넓게** 덮을 수 있나"입니다. 용적률 = 지상층 연면적 합계 ÷ 대지면적 × 100, 즉 "얼마나 **높이** 쌓을 수 있나"입니다. 중요한 디테일: 용적률 산정용 연면적에서는 **지하층과 지상 부속주차장 면적이 빠집니다**. 같은 건물이라도 "전체 연면적"과 "용적률 산정용 연면적"이 다른 이유입니다.
+
+### 용도지역이라는 게임 규칙
+
+국토계획법은 땅을 용도지역으로 나누고 지역마다 상한을 둡니다. 이 미션에서 쓰는 예시 규정은 제1종일반주거 60%/150%, 제2종일반주거 60%/250%, 일반상업 80%/1300%입니다. 실제로는 법이 상한의 범위를 정하고 **지자체 조례**가 그 안에서 확정하기 때문에, 같은 "일반상업지역"이라도 도시마다 숫자가 다릅니다. 재건축 조합이 **종상향**에 사활을 거는 이유도 여기 있습니다. 2종에서 3종으로 한 단계만 올라가도 지을 수 있는 연면적, 곧 분양할 수 있는 면적이 수십 퍼센트 늘어나기 때문입니다.
+
+### 1916년 뉴욕, 조닝의 탄생
+
+1915년 맨해튼에 들어선 40층짜리 에퀴터블 빌딩이 주변 거리를 통째로 그늘에 가두자, 이듬해 뉴욕시는 세계 최초의 종합 조닝 조례를 만들어 일정 높이 이상은 벽면을 뒤로 물리도록(셋백) 강제했습니다. 웨딩케이크처럼 층층이 좁아지는 맨해튼 고전 마천루의 실루엣은 그 규정의 산물입니다. 도시의 모양은 우연이 아니라 규정의 결과입니다. 건축주의 꿈은 무한하지만 용적률은 유한하고, 그 유한한 숫자마저 끊임없이 바뀌고 늘어납니다.`,
+    },
+    scenario: `부동산 개발 컨설팅 회사의 사내 도구를 만듭니다. 영업 담당자가 필지 주소와 면적, 용도지역만 넣으면 **최대 건축면적·최대 연면적·대략적인 최대 층수**를 바로 뽑아 고객 미팅에 들고 가는 검토기입니다. 지금은 세 개 용도지역만 다루지만, 컨설팅 지역이 넓어지면서 **다음 분기에만 준주거·자연녹지 등 네 개 지역이 추가**될 예정이고, 도시마다 조례 값이 달라 같은 지역이라도 숫자를 덮어써야 하는 경우가 있습니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/daehan/archi/engine/ParcelStore.java',
+        content: `package com.daehan.archi.engine;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 초소형 인메모리 필지 저장소.
+ * 이 파일은 엔진입니다. 그대로 사용하세요. 수정/재구현 대상이 아닙니다.
+ */
+public class ParcelStore {
+
+    private final Map<String, Map<String, Object>> rows = new LinkedHashMap<>();
+    private int seq = 0;
+
+    /** 필지 행을 저장하고 생성된 id를 돌려준다. */
+    public String insert(Map<String, Object> row) {
+        seq++;
+        String id = "parcel-" + seq;
+        rows.put(id, new HashMap<>(row));
+        return id;
+    }
+
+    public List<Map<String, Object>> findAll() {
+        return new ArrayList<>(rows.values());
+    }
+
+    public Map<String, Object> findById(String id) {
+        return rows.get(id);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/archi/App.java',
+        content: `package com.daehan.archi;
+
+import com.daehan.archi.engine.ParcelStore;
+
+import java.util.Map;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력과 숫자가 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        ParcelStore store = new ParcelStore();
+
+        String p1 = store.insert(Map.of(
+                "address", "대전시 유성구 학하동 123-4",
+                "areaM2", 500.0,
+                "zone", "제2종일반주거지역"));
+
+        String p2 = store.insert(Map.of(
+                "address", "대전시 중구 은행동 55-1",
+                "areaM2", 400.0,
+                "zone", "일반상업지역",
+                "ordinanceFarPct", 800.0));   // 지자체 조례 용적률 제한
+
+        // TODO(학습자): 여러분이 설계한 경계 뒤에 ParcelStore를 숨기고,
+        //               ZoningService로 두 필지를 검토해 출력하세요.
+        // ZoningService service = ...;
+        // System.out.println(service.review(p1));
+        // System.out.println(service.review(p2));
+
+        // ===== 기대 출력 1: p1 =====
+        // [건축 가능 규모 검토] 대전시 유성구 학하동 123-4
+        // 용도지역: 제2종일반주거지역 (건폐율 60% / 용적률 250%)
+        // 최대 건축면적: 300.0㎡
+        // 최대 연면적(용적률 산정용, 지하층·부속주차장 제외): 1,250.0㎡
+        // 예상 최대 층수(기준층 300.0㎡ 가정): 4층 (잔여 50.0㎡)
+
+        // ===== 기대 출력 2: p2 (조례 오버라이드) =====
+        // [건축 가능 규모 검토] 대전시 중구 은행동 55-1
+        // 용도지역: 일반상업지역 (건폐율 80% / 용적률 1300% -> 조례 800% 적용)
+        // 최대 건축면적: 320.0㎡
+        // 최대 연면적(용적률 산정용, 지하층·부속주차장 제외): 3,200.0㎡
+        // 예상 최대 층수(기준층 320.0㎡ 가정): 10층 (잔여 0.0㎡)
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/archi/domain/Parcel.java',
+        content: `package com.daehan.archi.domain;
+
+/**
+ * 필지 정보 (완성된 코드 — 그대로 사용).
+ * ordinanceFarPct는 지자체 조례 용적률 제한. 없으면 null.
+ */
+public record Parcel(
+        String id,
+        String address,
+        double areaM2,
+        String zone,
+        Double ordinanceFarPct
+) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/archi/domain/ZoningService.java',
+        content: `package com.daehan.archi.domain;
+
+/**
+ * 건축 가능 규모 검토 서비스 (구현 대상).
+ *
+ * 두 가지가 여러분의 설계 몫입니다.
+ * 1) 용도지역별 규정을 어떻게 표현할 것인가 — 지역은 계속 늘어납니다.
+ * 2) 필지를 어디서 가져올 것인가 — 이 클래스가 ParcelStore를 직접 알면 안 됩니다.
+ * (경계용 인터페이스는 일부러 제공하지 않았습니다.)
+ */
+public class ZoningService {
+
+    // TODO 생성자에서 무엇을 주입받을지 설계하세요.
+
+    /** 검토 결과 요약. App.java의 기대 출력 형식과 일치해야 합니다. */
+    public String review(String parcelId) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '검증 시나리오 1: 대지 500㎡, 제2종일반주거지역(건폐율 60% / 용적률 250%) → 최대 건축면적 = 500 × 0.6 = 300.0㎡, 최대 연면적 = 500 × 2.5 = 1,250.0㎡. 기준층을 최대 건축면적으로 가정하면 1,250 ÷ 300 = 4.17 → 4개층 + 잔여 50.0㎡. App.java의 기대 출력과 정확히 일치해야 합니다.',
+      '필지에 지자체 조례 용적률이 지정되어 있으면 법정 상한 대신 조례 값을 적용합니다. 검증 시나리오 2: 대지 400㎡ 일반상업지역(80% / 1300%) + 조례 800% → 최대 건축면적 320.0㎡, 최대 연면적 3,200.0㎡, 기준층 320.0㎡ 가정 시 정확히 10층.',
+      '다음 분기에 준주거·자연녹지 등 용도지역 네 개가 추가됩니다. 영업팀 요청: "새 지역이 추가될 때 기존 검토 코드를 고치는 게 아니라, 규정 하나만 등록하면 끝나면 좋겠어요."',
+      '심의 대응 때문에 규정 계산 로직의 단위 테스트는 저장소 없이 돌아야 합니다. 저장은 ParcelStore를 쓰되, 검토·계산 코드가 ParcelStore를 직접 알아서는 안 됩니다. (내년에 부동산종합공부 API로 교체 예정)',
+      '결과 문구에 연면적이 "용적률 산정용"(지하층·부속주차장 제외) 기준임을 반드시 명시해 주세요. 고객이 전체 연면적과 혼동해 분쟁이 난 적이 있습니다.',
+      '현장에서 "한 필지가 두 용도지역에 걸쳐 있다"는 문의가 종종 옵니다. 걸침 필지의 처리 기준은 아직 법무 검토 중이라 전달받지 못했습니다.',
+    ],
+    constraints: [
+      'ParcelStore.java와 App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요.',
+      '예시 규정 값(제1종일반주거 60%/150%, 제2종일반주거 60%/250%, 일반상업 80%/1300%)은 이 미션의 기준값입니다. 실제 상한은 법령이 범위를 정하고 지자체 조례가 확정하므로 도시마다 다르다는 점을 코드 주석에 명시하세요.',
+      '면적은 소수 첫째 자리까지 표시합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '"용도지역 규정"이라는 계속 늘어나는 축을 계약(인터페이스 또는 규정 데이터)으로 추상화해, 추가 비용을 상수로 만드는 경험',
+      '저장소 경계를 도메인 쪽에서 정의해 인프라 교체(API 전환)에 대비하기',
+      '조례 오버라이드 같은 예외 규칙을 if 분기가 아니라 구조로 흡수하는 연습',
+      '도메인 수치 규칙을 테스트로 고정해 심의 대응 근거 만들기',
+    ],
+    hints: [
+      '검토 계산 자체는 곱셈 두 번입니다. 진짜 문제는 "지역마다 숫자가 다르고 계속 늘어난다"는 것. 바뀌는 것(지역별 규정)과 안 바뀌는 것(면적 계산식)을 종이에 나눠 적어 보세요.',
+      'if (zone.equals("제2종일반주거지역"))이 코드에 세 번째로 등장하는 순간 멈추세요. 새 지역이 올 때마다 그 if들을 전부 찾아다니는 미래가 보일 겁니다.',
+      '건폐율·용적률 상한을 답해 주는 ZoneRegulation 같은 계약을 정의하고, 지역별 규정을 등록하는 곳을 한 군데(레지스트리)만 두면 "새 지역 = 규정 하나 등록"이 됩니다. 조례 오버라이드는 그 규정 위에 덮는 얇은 장식(데코레이터)으로 표현할 수 있습니다. 필지 조회는 도메인이 정의한 인터페이스 뒤로 숨기세요.',
+    ],
+    hiddenCases: [
+      {
+        title: '대지면적 0㎡',
+        description:
+          '면적 0이 들어오면 최대 건축면적 0.0㎡, 층수 계산은 0 ÷ 0 = NaN이 되어 "NaN층"이 고객 앞에 인쇄될 수 있습니다. 좋은 방어: 필지를 불러오는 어댑터 계층에서 면적 > 0을 검증하고, 위반이면 계산으로 넘기지 말고 "검토 불가"로 명시적으로 실패하세요.',
+      },
+      {
+        title: '등록되지 않은 용도지역',
+        description:
+          '"제2종일반주거지역 "(끝에 공백)이나 신설 "복합용도지구" 같은 미등록 문자열이 오면 규정 조회가 null이 되거나 임의 기본값으로 흐를 수 있습니다. 기본값으로 대충 계산된 검토서가 고객 계약의 근거가 되는 것이 최악의 시나리오입니다. 좋은 방어: 미등록 지역은 "규정 미등록" 명시적 실패로 돌려주고, 규정 등록 경로를 안내하세요.',
+      },
+      {
+        title: '법보다 관대한 조례',
+        description:
+          '조례는 법정 상한을 낮출 수만 있는데, 입력 실수로 일반상업 1300% 위에 조례 1500%가 얹히면 그대로 계산되어 법 위반 검토서가 나갑니다. 좋은 방어: 조례 값을 등록·적용하는 시점에 "조례 ≤ 법정 상한" 불변식을 검증하고, 위반이면 조용히 상한으로 자르지 말고 데이터 오류로 명시적으로 보고하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '두 검증 시나리오의 숫자와 표기(소수 첫째 자리, 용적률 산정용 명시)가 기대 출력과 정확히 일치하는가. 조례 오버라이드가 정확한가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '확장에 열린 규정 구조',
+        description: '새 용도지역 추가가 기존 코드 수정 없이 "규정 하나 등록"으로 끝나는 구조인가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '경계 설계',
+        description: '필지 저장소 경계를 도메인 쪽에서 인터페이스로 정의했는가. 규정 계약의 시그니처가 적절한가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '규정 계산과 검토 로직의 단위 테스트가 ParcelStore 없이 도는가. 조례 유무·층수 잔여 경계가 다뤄졌는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '엔진 코드 오용 여부',
+        description: '도메인 코드가 ParcelStore를 직접 참조하지 않는가. 엔진 코드를 수정하거나 재구현하지 않았는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '상가 건물 매입을 고민 중인 삼촌 (부동산 계약 경험은 많지만 건축 법규는 처음)',
+      prompt:
+        '삼촌이 보고 있는 매물은 대지 400㎡ 일반상업지역입니다. "여기 몇 층까지 올릴 수 있냐"는 질문에 답해 주세요. (1) 건폐율과 용적률을 일상어로 — "얼마나 넓게"와 "얼마나 높이"로, (2) 등기부나 토지이용계획에 적힌 법정 상한과 실제 조례 값이 다를 수 있어 계약 전에 꼭 확인해야 한다는 것, (3) 이 검토기가 어떤 순서로 계산하는지 — 삼촌 매물 숫자를 그대로 넣어 320㎡, 3,200㎡, 10층이 나오는 과정을 단계별로. 층수는 "대략"이며 실제로는 일조·높이 제한 등이 더 있다는 한계도 정직하게 밝히세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '검토서가 계약서가 될 때',
+        teaser: '영업팀은 미팅 5분 전에 검토서를 뽑고, 고객은 그 숫자로 계약한다. 새 용도지역이 추가된 날에도 아무도 코드 리뷰를 소집하지 않는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '규정 개정에 끌려다니는 배포',
+        teaser: '계산은 맞는다. 다만 지역이 하나 늘 때마다 검토 코드가 열리고, 배포 일정이 조례 개정 일정의 부록이 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '법보다 높이 지은 날',
+        teaser: '조례보다 관대한 검토서가 계약의 근거가 되고, 법무팀이 회의실을 잡는다. 회의 제목에 당신의 모듈 이름이 들어간다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말은 아직 인허가가 나지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 7 — Stage 4 "레거시 길들이기" / 철도 / 기능 추가
+  // =========================================================================
+  {
+    id: 's4-ktx-01',
+    stage: 4,
+    stageTitle: '레거시 길들이기',
+    missionType: '기능 추가',
+    difficulty: 'Hard',
+    scope: '여러 파일',
+    modes: ['developer', 'plannerMeeting', 'plannerReview'],
+    providedFiles: [],
+    domain: '철도',
+    domainEmoji: '🚄',
+    title: '통일호가 살아 있는 예매 시스템에 KTX 넣기',
+    estimatedMinutes: 160,
+    briefing: {
+      title: '2004년 4월 1일, 뒤를 보고 달린 사람들',
+      content: `### 프랑스에서 온 기차, 한국에서 만든 기차
+
+2004년 4월 1일, 경부고속철도 KTX가 개통했습니다. 차량은 프랑스 알스톰의 TGV 기술을 이전받아 만들었는데, 초기 편성 일부는 프랑스에서 완성차로 들여오고 나머지는 기술 이전을 받아 국내에서 조립했습니다. "어디까지가 국산인가"를 두고 국산화 비율 논쟁이 한참 이어졌고, 이 경험이 훗날 국산 고속열차 개발의 밑거름이 됩니다.
+
+### 역방향 좌석 사태
+
+개통하자마자 터진 최대 민원은 속도도 요금도 아닌 **좌석의 방향**이었습니다. 수요에 대비해 좌석 수를 최대로 뽑으려고 회전하지 않는 고정식 좌석을 등을 맞대게 배치했는데, 그 결과 좌석의 절반 가까이가 **진행 방향을 등지는 역방향**이 된 겁니다. "돈 내고 뒤로 달린다"는 항의와 멀미 민원, 환불 소동이 이어졌고, 코레일은 **역방향 좌석 요금 할인**으로 달랬습니다. 모든 좌석이 앞을 보게 회전하는 시트는 한참 뒤 KTX-산천에 와서야 실현됩니다.
+
+### 괴담의 시간
+
+개통 초기에는 크고 작은 고장과 지연이 언론에 연일 보도되며 "고속철 괴담"이라는 말까지 돌았습니다. 새 시스템의 초기 결함은 언제나 실제보다 크게 들립니다 — 그리고 그 비난은 대개 현장과 전산실이 받습니다.
+
+### 그리고 전산실 이야기
+
+가장 조용히 고생한 곳은 예매 전산망이었습니다. 새마을·무궁화·통일호만 알던, 수십 년 굴러온 통합 예매·운임 시스템에 "고속열차"라는 낯선 개념을 욱여넣어야 했으니까요. 등급은 int 코드로 박혀 있고, 좌석은 전부 순방향이라는 가정이 코드 곳곳에 숨어 있는 세계. 지금부터 여러분이 들어갈 곳이 바로 그 세계입니다. 참고로 통일호는 KTX 개통 하루 전인 2004년 3월 31일에 퇴역했습니다. 코드에는 아직 살아 있지만요.`,
+    },
+    scenario: `때는 2003년 겨울. 여러분은 철도 예매 전산실에 파견된 개발자입니다. 내년 4월 개통하는 **KTX를 기존 통합 예매·운임 시스템에 추가**하라는 지시가 내려왔습니다. 이 시스템은 1994년부터 굴러왔고, 명절 승차권 대란 때마다 전 국민이 지켜보는 물건이라 **기존 열차의 운임과 좌석 배정은 단 1원, 단 한 좌석도 달라지면 안 됩니다.** 개통일은 미뤄지지 않습니다. 열차는 정시에 떠납니다.`,
+    legacyFiles: [
+      {
+        path: 'src/main/java/krail/TrainFare.java',
+        content: `package krail;
+
+// ------------------------------------------------------
+//  통합운임계산 TrainFare v2.3
+//  19940601 최초작성 (전산1과)
+//  19960401 장거리 체감제 도입
+//  19981001 통일호 요율 인하
+//  20031201 개통대비 임시 -- 나중에 정리 (윤주임)
+// ------------------------------------------------------
+public class TrainFare {
+
+    // grade: 1=새마을 2=무궁화 3=통일호
+    // km: 운행거리, dc: 0=없음 1=단체(10%) 2=경로(30%)
+    public static int calc(int grade, int km, int dc) {
+        int fare = 0;
+        if (grade == 1) {
+            fare = 4800 + km * 60;
+            if (km > 300) {
+                fare = fare - (km - 300) * 6;   // 장거리 체감 (19960401)
+            }
+            if (dc == 1) {
+                fare = fare - fare / 10;
+            } else if (dc == 2) {
+                fare = fare - fare * 3 / 10;
+            }
+        } else if (grade == 2) {
+            fare = 3200 + km * 40;
+            if (km > 300) {
+                fare = fare - (km - 300) * 4;   // 장거리 체감 (19960401)
+            }
+            if (dc == 1) {
+                fare = fare - fare / 10;
+            } else if (dc == 2) {
+                fare = fare - fare * 3 / 10;
+            }
+        } else if (grade == 3) {
+            // 20040331 통일호 폐지 예정. 블럭 지우지 말것 - 과거 정산 재계산시 필요 (윤주임)
+            fare = 2400 + km * 30;
+            if (dc == 1) {
+                fare = fare - fare / 10;
+            } else if (dc == 2) {
+                fare = fare - fare * 3 / 10;
+            }
+        } else {
+            fare = 3200 + km * 40;   // ????? 모르는 등급은 무궁화로 (19970812 역무 민원 때문)
+        }
+
+        if (fare < 800) {
+            fare = 800;   // 최저운임 (19950301)
+        }
+
+        // 19991108 IMF 특별할인 종료. 아래 살리지 말것
+        // if (dc == 9) { fare = fare / 2; }
+
+        // 20031201 개통대비 임시 -- 고속열차 들어오면 여기 고쳐야 함 (나중에 정리)
+        return fare;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/krail/SeatAlloc.java',
+        content: `package krail;
+
+// ------------------------------------------------------
+//  좌석배정 SeatAlloc v1.9
+//  19950520 최초작성 (전산1과)
+//  대전제: 모든 좌석은 진행방향(순방향)이다.
+//          객차 방향은 종착역에서 수동으로 돌린다 (19950520 합의)
+// ------------------------------------------------------
+public class SeatAlloc {
+
+    public static int[][] car = new int[15][72];   // 0=빈좌석 1=배정
+    public static int sold = 0;
+
+    // trainNo: 열차번호, cnt: 매수
+    // 리턴: 배정 내역 문자열, 부족하면 "매진"
+    public static String assign(int trainNo, int cnt) {
+        StringBuilder sb = new StringBuilder();
+        int need = cnt;
+        for (int c = 0; c < 15; c++) {
+            for (int s = 0; s < 72; s++) {
+                if (car[c][s] == 0 && need > 0) {
+                    car[c][s] = 1;
+                    sold = sold + 1;
+                    // 방향 구분 없음. 전부 순방향이므로 (19950520)
+                    sb.append((c + 1)).append("호차 ").append((s + 1)).append("번 (순방향)\\n");
+                    need = need - 1;
+                }
+            }
+        }
+        if (need > 0) {
+            // 19970915 명절대란 대비 입석 발권 -- 20010304 금지됨. 살리지 말것
+            // sb.append("입석 ").append(need).append("매\\n");
+            return "매진";
+        }
+        return sb.toString();
+    }
+
+    // 일마감 초기화. 심야 배치가 호출
+    public static void reset() {
+        for (int c = 0; c < 15; c++) {
+            for (int s = 0; s < 72; s++) {
+                car[c][s] = 0;
+            }
+        }
+        sold = 0;
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '기존 열차의 운임과 좌석 배정 결과는 단 1원, 단 한 좌석도 달라지면 안 됩니다. 예: 새마을호 400km 무할인 운임은 지금도 28,200원이고 KTX 추가 후에도 28,200원이어야 합니다. 명절 발권 검증에 쓸 수 있도록 수정 전 동작을 자동화된 테스트로 먼저 고정해 주세요.',
+      'KTX 등급을 추가합니다. KTX 운임은 기존 거리비례와 다른 별도 체계입니다: 기본운임 10,000원 + km당 120원. 검증 예시: 서울→부산 400km 직통(광명·천안아산 무정차) 순방향 = 10,000 + 400 × 120 = 58,000원.',
+      '광명·천안아산에 모두 정차하는 KTX는 소요시간이 길어 운임의 5%를 할인합니다. 검증 예시: 위 400km 열차가 두 역에 정차하면 58,000 × 0.95 = 55,100원. 할인 적용 후 원 미만은 절사합니다.',
+      'KTX 객차 좌석의 30%는 고정식 역방향입니다. 배정은 순방향 우선이며, 역방향 좌석이 배정되면 운임의 5%를 추가 할인합니다(정차 할인과 중복 적용, 정차 할인 → 역방향 할인 순서로 각 단계 절사). 검증 예시: 두 역 정차 + 역방향 = 55,100 × 0.95 = 52,345원. 배정 내역에는 좌석 방향이 표시되어야 합니다.',
+      '고객센터에 KTX↔일반열차 환승 승차권(예: 동대구에서 무궁화호 연계) 문의가 늘고 있어 다음 버전에서 지원할 예정입니다. 연계 할인율과 발권 규칙은 영업처에서 아직 전달받지 못했습니다.',
+      '수정 범위와 근거를 전산실 야간 당직자가 읽을 수 있는 변경 요약으로 남겨 주세요. 개통일 새벽에 코드를 열어 볼 사람은 여러분이 아닐 수도 있습니다.',
+    ],
+    constraints: [
+      '기존 공개 진입점 TrainFare.calc(int, int, int)와 SeatAlloc.assign(int, int)의 시그니처는 전국 역 창구 단말이 호출 중이므로 바꿀 수 없습니다.',
+      '도메인 규칙: 역방향 할인은 KTX에만 존재합니다. 기존 열차는 좌석 방향 개념 자체가 없습니다.',
+      '기존 코드의 주석(수정 이력)은 삭제하지 말고 보존하세요. 통일호 블럭도 과거 정산 재계산에 필요하므로 살려 두세요.',
+      '제한시간 160분 — 서울발 부산행 KTX가 종착하는 시간입니다. 무궁화호(5시간 30분)로 완주해도 됩니다만, 그건 여러분과 저만 아는 걸로 합시다.',
+    ],
+    learningGoals: [
+      '수정 전 특성화 테스트로 기존 운임·배정 동작을 그물처럼 고정하는 습관 강화',
+      '새 요구(KTX 운임 체계)를 기존 분기에 욱여넣지 않고 별도 단위로 분리해, 레거시와 신규 코드의 경계(심)를 의식적으로 설계하기',
+      '"모든 좌석은 순방향"처럼 코드 전체에 스며든 암묵적 가정을 찾아내고, 그 가정을 깨는 기능을 안전하게 추가하기',
+      'int 코드 기반 설계의 비용을 체감하고, 새 개념 추가 시 명시적 타입으로 감싸는 판단력 기르기',
+    ],
+    hints: [
+      '고치기 전에 현재의 운임표를 먼저 채집하세요. 등급 1·2·3 × 거리(0, 300 경계, 400) × 할인 코드 조합으로 calc()의 현재 답을 표로 만들면 그것이 특성화 테스트입니다. SeatAlloc은 reset()이 있어 테스트 간 초기화가 가능합니다.',
+      'KTX 운임을 calc() 안에 else if (grade == 4)로 넣고 싶은 유혹이 올 겁니다. 그 순간 KTX 규칙(정차 할인, 역방향 할인)이 1994년산 분기 숲에 이식됩니다. KTX 운임은 별도 클래스로 만들고, 기존 진입점에서는 위임만 하세요.',
+      '좌석 30% 역방향은 SeatAlloc의 "방향 구분 없음" 가정과 정면충돌합니다. 기존 배열을 건드리지 말고, KTX 전용 배정기를 새로 만들어 방향과 할인 정보를 함께 반환하게 하세요. 기존 열차는 기존 배정기를 그대로 타면 아무것도 변하지 않습니다.',
+    ],
+    // 히든 퀘스트: 미션 화면 어디에도 표시되지 않는다. 지문에 심어진 문장이 유일한 단서.
+    hiddenQuest: {
+      plant: '브리핑 마지막 문장("코드에는 아직 살아 있지만요")과 TrainFare.java의 통일호 분기(grade 3) — 2004-03-31 퇴역, 요구사항 어디에도 언급 없음.',
+      condition: '학습자가 요구받지 않은 통일호 분기를 스스로 발견해 정리하고, 흔적(커밋 메시지·주석·테스트 이름·리뷰 노트 중 하나)을 남겼는가.',
+      revealOnSuccess: '알아채셨나요 — 지문의 마지막 문장을. 통일호는 KTX 개통 하루 전에 퇴역했지만 코드에는 20년을 더 살았습니다. 당신은 아무도 시키지 않은 그 분기를 지웠고, 지우면서 기록을 남겼습니다. 통일호는 이제 커밋 히스토리에서 영면합니다. 어떤 문장은 힌트였습니다.',
+      revealOnMiss: '지문의 마지막 문장을 기억하시나요? "코드에는 아직 살아 있지만요." — 통일호 분기는 당신의 제출물에도 여전히 살아 있습니다. 요구사항에 없었으니 감점은 아닙니다. 다만 어떤 문장은 힌트였습니다. 다음 지문은 조금 다르게 읽히실 겁니다.',
+    },
+    // 기획자 모드 — 같은 문제, 다른 의자. stakeholders의 hiddenAgenda는 에이전트 연기 대본이며 UI에 절대 표시되지 않는다.
+    plannerMeeting: {
+      goal: "개통 D-60. '역방향 좌석 정책' — 배정 비율, 할인율, 고객 고지 방식 — 에 대한 관계 부서 합의문을 오늘 이 회의에서 도출한다.",
+      context: `개통을 60일 앞두고 시운전 시승단에서 역방향 좌석 항의가 나오기 시작했습니다. 어제는 한 일간지 기자가 "좌석 절반이 뒤를 본다는 게 사실이냐"고 홍보실에 물었고, 홍보실은 전산실에 물었고, 전산실은 회의를 잡으라고 했습니다. 그래서 **당신이 잡았습니다.** 당신은 예매 시스템 기획자이고, 오늘 이 자리에서 역방향 좌석의 **배정 비율 · 할인율 · 고지 방식**을 합의문으로 만들어야 합니다. 다음 회의는 없습니다 — 개통일이 먼저 옵니다.`,
+      opener: `(회의실. 벽걸이 달력의 4월 1일에 누군가 동그라미를 세 겹 쳐 놓았다.)
+
+다 모이셨으니 시작하겠습니다. 참석자를 소개합니다 — 예매시스템 개발 리드 박정도 님, 재무팀장 한미란 님, 법무 담당 서지훈 님, 역무 운영팀장 오갑수 님. 안건은 하나, 역방향 좌석 정책입니다. 배정 비율, 할인율, 고지 방식. 세 가지가 정해지면 회의는 끝납니다. 정해지지 않아도 개통은 합니다 — 그게 오늘의 문제고요. 기획자님, 진행 부탁드립니다.`,
+      stakeholders: [
+        {
+          name: '박정도',
+          role: '예매시스템 개발 리드 (전산1과, 1994년 입사)',
+          publicStance:
+            '개통일은 못 미룹니다. 30년 굴러온 시스템의 안정성이 최우선이고, 요금 유형 추가는 최소화해야 합니다. "역방향 할인" 같은 새 요금 유형은 개통 전 투입으로는 위험하다는 입장.',
+          hiddenAgenda:
+            '진짜 반대 이유는 복잡도가 아니다. 야간 정산 배치가 수년째 수기 보정으로 돌고 있고, 요금 유형이 하나라도 늘면 보정표가 안 맞아 그 사실이 드러난다. 이 얘기는 절대 먼저 꺼내지 않는다. "정산 쪽이 민감하다", "밤에 도는 게 많다"처럼 얼버무리다가, 기획자가 정산 배치의 실제 동작을 구체적으로 파고들면(예: "정산은 자동입니까?") 마지못해 시인한다. 시인한 뒤에는 오히려 협조적으로 변한다 — 20년 묵은 비밀을 혼자 지키는 것도 지쳤다. 수기 보정을 양성화(임시 보정 절차 문서화)해 주는 조건이면 요금 유형 1개 추가까지 수용.',
+        },
+        {
+          name: '한미란',
+          role: '재무팀장',
+          publicStance:
+            '환불 비용을 최소화해야 하고, 할인은 신중해야 합니다. "역방향 5% 할인이면 연간 수지가 붕괴된다"고 회의 내내 강하게 주장.',
+          hiddenAgenda:
+            '"5%면 수지 붕괴"는 협상용 엄포다. 내부 시산상 실제 마지노선은 3% — 3% 이하 제안이 나오면 못 이기는 척 조용히 수락한다. 다만 절대 먼저 3%를 입에 올리지 않고, 근거 숫자를 요구받으면 "시산 자료는 대외비"라며 버틴다. 기획자가 환불·이탈 비용을 역으로 계산해 들이밀면(할인이 환불 소동보다 싸다는 논리) 흔들리는 기색을 보인다. 5% 이상은 어떤 논리로도 수용 불가 — 그건 진짜다.',
+        },
+        {
+          name: '서지훈',
+          role: '법무 담당',
+          publicStance:
+            '소비자 고지 의무가 철저해야 합니다. 역방향 좌석임을 알리지 않고 판매하면 고지 의무 위반 소지가 있으므로, 판매 전 고지가 반드시 정책에 포함되어야 한다는 입장.',
+          hiddenAgenda:
+            '고지를 강하게 주장하지만, 정작 가장 확실한 수단인 약관 개정은 절대 피하고 싶다 — 여객 운송약관 개정은 국토부 신고 사항이라 개통 전 60일 안에 물리적으로 불가능하기 때문이다. 이 제약을 먼저 밝히지 않고 "고지 방식은 여러 층위가 있다"며 추상적으로 말한다. 누군가 "약관에 넣으면 되지 않느냐"고 하면 말을 돌리고, 기획자가 절차와 소요 기간을 구체적으로 캐물으면 그제야 신고 절차 문제를 시인한다. 원하는 착지점은 약관을 건드리지 않는 선 — 역사 안내문 + 발권 시 구두·화면 고지. 그 선이 합의문에 명시되면 만족한다.',
+        },
+        {
+          name: '오갑수',
+          role: '역무 운영팀장',
+          publicStance:
+            '창구 혼란 최소화가 최우선입니다. 명절 대란을 매년 치른 사람으로서, 발권 절차가 복잡해지는 어떤 정책에도 반대한다는 입장. 구체적 근거는 잘 대지 않고 "현장은 다르다"를 반복.',
+          hiddenAgenda:
+            '신형 발권 단말 교육이 전체 역무원의 절반도 안 끝났다. 요금 옵션이 2개를 넘어가면(예: 정차 할인 + 역방향 할인 + 또 무엇) 개통일 창구는 확실히 무너진다. 그런데 교육 지연의 책임자가 본인이라 이 사실을 회의에서 먼저 말하지 못한다. "현장은 다르다"는 말만 반복하며 버티다가, 기획자가 책임 추궁이 아니라 지원의 톤으로 현장 준비 상황을 물으면(예: "단말 교육은 어디까지 진행됐습니까? 필요하면 일정에 반영하겠습니다") 그제야 실토한다. 실토 후에는 가장 든든한 우군이 된다 — 옵션 수를 2개 이하로 묶고 교육 지원이 합의문에 들어가면 어떤 안이든 지지.',
+        },
+      ],
+      deliverable:
+        '회의가 끝나면 합의문을 제출하세요. 형식: ① 합의 항목 — 배정 비율 · 할인율 · 고지 방식 각각의 결정 내용, ② 각 결정의 근거, ③ 각 팀의 수용 조건 — 무엇을 받는 대신 무엇을 양보했는가, ④ 미결 사항과 후속 담당. 회의에서 캐내지 못한 사정은 합의문에 적을 수 없고, 적히지 않은 사정은 개통일 아침에 스스로 걸어 나옵니다.',
+    },
+    plannerReview: {
+      brief: `시승단 항의와 언론 문의가 겹치자 경영진이 개통 전 마지막 임원회의에 올릴 **'역방향 좌석 대응 종합 검토서'**를 요구했습니다. 작성자는 당신입니다. 할인율 숫자 하나를 정하는 문서가 아닙니다 — **안내문과 절차로 풀 수 있는 부분**과 **시스템을 고쳐야만 하는 부분**을 가르는 것이 이 검토서의 핵심입니다. 30년 된 전산망은 "고치면 된다"가 아니라 "고치면 무슨 일이 생기는가"를 물어야 하는 물건이고, 개통일은 검토가 끝나기를 기다려 주지 않습니다.`,
+      dimensions: [
+        {
+          name: '재정',
+          question:
+            '역방향 할인은 매 좌석마다 나가는 확정 비용이고, 환불과 고객 이탈은 터질지 모르는 변동 비용입니다. 할인율 몇 %까지가 환불 소동 한 번보다 싼가 — 손익분기를 어림 숫자로라도 제시하세요. "적당히"는 재무팀이 가장 싫어하는 단위입니다.',
+        },
+        {
+          name: '시스템',
+          question:
+            '30년 레거시에 새 요금 유형 하나를 넣는 일의 실제 범위는 어디까지인가. 어디까지가 코드 수정이고, 어디부터가 운영(창구 안내, 수작업 보정)으로 흡수 가능한가 — 그 경계선을 먼저 그으세요. 개발 범위를 못 가르는 검토서는 전산실에서 견적서로 반송됩니다.',
+        },
+        {
+          name: '법률',
+          question:
+            '역방향 좌석을 팔면서 무엇을, 언제, 어떤 형식으로 고지해야 하는가. 역사 안내문 수준으로 되는 것과 약관 개정(국토부 신고 사항)이 필요한 것의 경계는 어디이며, 개통까지 60일 안에 실제로 가능한 쪽은 어느 쪽인가.',
+        },
+        {
+          name: '운영',
+          question:
+            '정책이 아무리 정교해도 실행은 창구 단말과 역무원이 합니다. 발권 화면에 요금 옵션이 하나 늘 때 명절 창구에서 실제로 벌어지는 일을 기준으로, 현장이 감당 가능한 정책 복잡도의 상한을 정하세요.',
+        },
+        {
+          name: '여론',
+          question:
+            '지금은 "고속철 괴담" 국면입니다. 같은 할인이라도 "결함 시인"으로 보도되는 프레임과 "고객 배려"로 보도되는 프레임이 있습니다. 무엇을 먼저 발표하고 무엇을 묻어갈 것인가 — 발표 순서와 명분 설계까지가 이 검토서의 범위입니다.',
+        },
+      ],
+      deliverable:
+        '검토서 양식: ① 관점별 진단 — 5개 축 각각의 현재 상태와 리스크, ② 대응 옵션 2~3개 — 각 옵션이 5개 축에 미치는 영향 명시, ③ 트레이드오프 표(옵션 × 관점), ④ 권고안 1개와 그 이유. 옵션에는 시스템을 개발하지 않는 선택지를 반드시 하나 포함하세요 — 그것이 최선인지 아닌지는 검토서가 증명하면 됩니다.',
+    },
+    hiddenCases: [
+      {
+        title: '0km 승차권',
+        description:
+          '출발역과 도착역이 같은 0km 입력이 오면 기존 코드는 최저운임 규칙에 걸려 800원짜리 승차권을 발권하고, KTX 규칙을 그대로 만들면 10,000원짜리 "아무 데도 안 가는 표"가 나옵니다. 어느 쪽도 의도가 아닙니다. 좋은 방어: 운임 계산 이전의 검증 계층에서 거리 > 0을 확인하고 명시적으로 거부하세요. 같은 역 발착을 조용히 계산해 주는 시스템은 언젠가 정산 감사에서 발견됩니다.',
+      },
+      {
+        title: '4번 열차의 정체',
+        description:
+          '요구사항 어디에도 "KTX는 코드 4"라고 적혀 있지 않습니다. 그런데 지금 else 블럭은 모르는 등급을 조용히 무궁화 요율로 계산합니다(1997년 민원의 유산). 누군가 4를 KTX라 믿고 호출하면 58,000원짜리 표가 18,800원에 팔립니다. 에러 없이. 좋은 방어: 미지의 등급 코드는 기본값으로 흡수하지 말고 명시적으로 실패시키고, 새 개념은 int가 아니라 이름 있는 타입으로 들여오세요. int 코드 설계의 업보는 언제나 다음 세대가 갚습니다.',
+      },
+      {
+        title: '역방향만 남은 날',
+        description:
+          '명절 오후, 순방향이 모두 팔리고 역방향만 남았습니다. 안내 없이 역방향을 배정하면 고객은 열차에 타서야 뒤를 보고 있음을 알게 됩니다 — 2004년에 실제로 벌어진 일입니다. 좋은 방어: 배정 결과에 방향과 할인 적용 여부를 명시하고, "남은 좌석은 역방향뿐"이라는 사실을 발권 시점에 드러내 고객이 선택할 수 있게 하세요. 침묵 배정은 환불 창구의 줄이 되어 돌아옵니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '특성화 테스트 우선',
+        description: '수정 전에 기존 운임·좌석 배정 동작을 테스트로 고정했는가. 등급×거리 경계(300km)×할인 조합과 배정 상태 초기화가 다뤄졌는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '기존 동작 보존',
+        description: 'KTX 추가 후에도 기존 열차의 모든 케이스에서 변경 전후 결과가 일치하는가. 일치를 테스트로 증명했는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '새 운임 체계의 분리',
+        description: 'KTX 운임이 기존 calc()에 else if로 이식되지 않고 별도 단위로 분리되었는가. 레거시와 신규의 경계가 좁고 명확한가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '역방향 배정 로직',
+        description: '30% 역방향 구성, 순방향 우선 배정, 방향 표시, 할인 연동(정차→역방향 순서, 단계별 절사)이 정확히 구현되었는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '도메인 규칙 정확성',
+        description: '검증 예시(58,000 / 55,100 / 52,345원)와 숫자가 정확히 일치하는가. 할인 중복·절사 순서가 명세대로인가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+    ],
+    explainTask: {
+      audience: '2004년 4월 1일 아침, 부산 가는 첫 KTX를 타러 서울역에 온 할머니',
+      prompt:
+        '할머니의 좌석은 역방향입니다. 출발 전에 두 가지를 설명해 드리세요. (1) 왜 좌석 절반이 뒤를 보고 있는지 — 좌석을 한 자리라도 늘리려던 사정과, 그 대신 요금을 깎아 드린다는 것, (2) 왜 요금이 새마을호와 다르게 계산되는지 — 속도가 값이 되는 새 요금 체계를 숫자 하나로. 어려운 단어 없이, 열차 출발 전 1분 안에 끝나는 길이로. 마지막은 할머니가 안심하고 웃을 수 있는 한마디로 마무리하세요. ("도착이 너무 빨라서 놀라실 수는 있습니다" 같은.)',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '정시 출발',
+        teaser: '개통일 아침, 발권 창구는 평소와 다르지 않다. 전산실 야간 당직 일지에는 "특이사항 없음" 다섯 글자만 적힌다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '개통 첫 주의 패치 노트',
+        teaser: '열차는 달린다. 다만 매일 밤 운임 보정 패치가 나가고, 패치 노트 작성자 란에 같은 이름이 반복해서 찍힌다.',
+      },
+      {
+        grade: 'dawn',
+        title: '18,800원짜리 KTX',
+        teaser: '미지의 등급 코드가 무궁화 요율로 조용히 흡수된 채 개통하고, 첫 주말 정산에서 차액이 발견된다. 사후 보고서의 첫 인용은 당신의 커밋이다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 승차권은 아직 한 장도 발권되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 8 — Stage 1 "분리의 감각" / 음악·합창단 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's1-choir-01',
+    stage: 1,
+    stageTitle: '분리의 감각',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Easy',
+    scope: '단일 파일',
+    modes: ['developer'],
+    domain: '음악·합창단',
+    domainEmoji: '🎼',
+    title: '합창단 파트 배정기 — 이건 스케줄링 문제잖아',
+    estimatedMinutes: 90,
+    briefing: {
+      title: '네 개의 목소리 — 파트 나누기의 수학',
+      content: `어느 개발자가 카페에서 코드를 짜고 있었습니다. 옆 테이블에서는 합창단원들이 파트 연습 일정으로 다투는 중이었습니다. 소프라노는 모자라고, 베이스는 넘치고, 연습실은 하나뿐. 한참을 듣던 개발자는 이어폰을 뺐습니다 — "이건 스케줄링 문제잖아."
+
+### 왜 하필 네 파트인가
+
+합창은 대개 네 목소리로 이루어집니다. 소프라노(S), 알토(A), 테너(T), 베이스(B) — 높은 여성, 낮은 여성, 높은 남성, 낮은 남성이라는 인간 목소리의 자연스러운 분포입니다. 르네상스 시대에 정착한 이 체계는 화성학의 기본 단위인 4성부 화음과 맞물려 수백 년째 합창의 표준입니다.
+
+### 음은 숫자다
+
+컴퓨터는 "가운데 도"를 모르지만 숫자는 압니다. MIDI 표준은 모든 음에 정수 번호를 붙였습니다. 가운데 도(C4)가 60이고, 반음 올라갈 때마다 1씩 커집니다. 라(A4)는 69, 한 옥타브 위의 도(C5)는 72. "이 단원이 이 파트를 소화할 수 있는가"가 정수 비교 두 번으로 바뀌는 순간, 파트 배정은 계산 가능한 문제가 됩니다.
+
+### 평균율 — 오차를 없애는 대신 나눠 갖기
+
+완벽하게 순수한 음정만 쌓아 올리면 열두 반음 끝에서 옥타브가 미묘하게 어긋납니다(피타고라스 콤마). 평균율은 그 오차를 12개 반음에 균등하게 나누어 "모든 조가 똑같이 아주 조금씩 틀리게" 만든 타협입니다. 덕분에 피아노는 어느 조로든 연주할 수 있게 되었죠. 오차를 제거하는 대신 관리한다 — 부동소수점을 다뤄 본 사람에게는 낯익은 철학입니다.
+
+### 파트 나누기는 제약 충족 문제다
+
+단원마다 편하게 낼 수 있는 음역이 있고, 파트마다 요구 음역과 목표 인원이 있습니다. 누구를 어디에 앉힐 것인가 — 수강 신청 배정, 서버 자원 할당과 뼈대가 같은 제약 충족 문제입니다. 옆 테이블에서 세 시간째 이어지던 다툼의 정체가 사실 알고리즘이었다는 것. 그것을 알아본 대가로, 당신은 이제 그 합창단의 개발 담당입니다.`,
+    },
+    scenario: `그날 카페에서 명함을 건넨 죄로, 당신은 아마추어 합창단 '다솔합창단'의 파트 배정을 맡게 되었습니다. 지금은 총무님이 매 분기 엑셀과 눈대중으로 3시간씩 배정표를 만드는데, 배정이 발표될 때마다 "왜 제가 알토죠?"라는 항의가 따라온답니다. 규칙을 정해 프로그램이 배정하고, 사람은 규칙만 합의하면 되는 상태 — 그것이 지휘자님의 주문입니다. 배정 명단은 연습실 게시판에 붙이고, 곧 단체 채팅방 공지로도 나갈 예정입니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/choir/Member.java',
+        content: `package com.daehan.choir;
+
+/**
+ * 합창단원 (완성된 코드 — 그대로 사용).
+ * 음역은 MIDI 노트 번호로 표현한다. 가운데 도(C4) = 60.
+ */
+public record Member(String name, int lowestNote, int highestNote) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/choir/PartAssigner.java',
+        content: `package com.daehan.choir;
+
+import java.util.List;
+
+/**
+ * 파트 배정기 (구현 대상).
+ *
+ * 메서드를 어떻게 나눌지는 여러분의 설계입니다.
+ * 단, "누가 어느 파트에 앉는가"를 계산하는 코드와
+ * "게시판에 붙일 명단 문장을 만드는" 코드가 한 메서드에 섞이면,
+ * 단체 채팅방 공지 형식이 추가되는 날 계산 코드를 다시 열게 됩니다.
+ */
+public class PartAssigner {
+
+    /** 명단을 받아 파트를 배정한다. 배정 규칙은 요구사항 참조. */
+    public Object assign(List<Member> members) {
+        // TODO 반환 타입부터 여러분의 설계입니다. Object는 자리 표시일 뿐입니다.
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '파트 음역은 합창단 내규로 고정합니다(MIDI, C4=60): 소프라노 C4~A5(60~81), 알토 F3~D5(53~74), 테너 C3~A4(48~69), 베이스 E2~C4(40~60). 단원은 자기 음역이 파트 요구 음역을 완전히 포함할 때만(최저음 이하부터 최고음 이상까지) 그 파트를 소화할 수 있습니다.',
+      '배정 순서: 먼저 한 파트만 소화 가능한 단원을 명단 순서대로 앉히고, 그다음 여러 파트가 가능한 단원을 명단 순서대로 "목표 대비 부족 인원이 가장 큰 파트"에 배정합니다. 부족 인원이 같으면 소프라노→알토→테너→베이스 순으로 앞선 파트에 배정합니다.',
+      '목표 인원은 전체 단원 수에 S:A:T:B = 3:3:2:2 비율을 적용합니다. 이번 분기 명단은 10명이므로 소프라노 3, 알토 3, 테너 2, 베이스 2입니다.',
+      '검증 명단(10명, 괄호는 최저~최고 MIDI): 김한별(58~82), 이보라(52~83), 박다솜(53~76), 최으뜸(47~70), 정마루(38~62), 한가람(40~70), 서도담(51~75), 오누리(45~71), 강노을(39~70), 문온유(50~82) → 결과는 소프라노 김한별·이보라·문온유, 알토 박다솜·서도담, 테너 최으뜸·오누리·강노을, 베이스 정마루·한가람이어야 합니다. 알토는 1명 부족, 테너는 1명 초과 — 이 부족/초과 표시도 결과의 일부입니다.',
+      '배정 결과는 지금은 연습실 게시판용 명단 문자열로 출력합니다. 곧 단체 채팅방 공지 형식이 추가될 예정인데, 그때 배정 계산 코드는 열어 보지 않아도 되게 해 주세요.',
+      '지휘자님 요청: "베이스는 조금 두껍게 가면 좋겠어요." (몇 명부터 두꺼운 건지 여쭤보면, 지휘자님은 먼 산을 봅니다)',
+    ],
+    constraints: [
+      '도메인 규칙: 음은 MIDI 정수로만 다룹니다. 음이름 문자열(C4, A5)과 숫자 사이의 변환기는 이번 미션 범위 밖입니다.',
+      '배정은 요구사항의 순서 규칙을 그대로 따릅니다. "더 좋아 보이는" 임의 최적화는 금지 — 총무님이 손으로 따라 검산할 수 있어야 합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '도메인 규칙(음역 포함 판정, 우선순위 배정)을 처리 순서까지 정확하게 코드로 옮기는 훈련',
+      '자격 판정·배정·명단 출력이라는 세 가지 서로 다른 책임을 분리하는 감각',
+      '어디에도 속하지 못하는 입력을 침묵시키지 않고 결과에 드러내기',
+      '사람이 손으로 검산할 수 있는 결정적(deterministic) 규칙의 가치 인식',
+    ],
+    hints: [
+      '"이 단원이 어느 파트를 소화할 수 있는가"(자격 판정)와 "그래서 어디에 앉히는가"(배정)는 서로 다른 질문입니다. 판정을 먼저 순수 함수로 떼어 내면 배정 로직이 갑자기 단순해집니다.',
+      '배정이 두 단계(단일 가능자 → 복수 가능자)로 나뉘고 처리 순서가 결과를 바꿉니다. 검증 명단으로 각 단계가 끝날 때의 파트별 인원을 종이에 적어 가며 확인하세요.',
+      '배정 결과는 파트별 명단·부족/초과·미배정을 담은 결과 객체로 반환하고, 게시판 문장 조립은 별도 클래스(예: NoticeBoardFormatter)에 맡기세요. 공지 형식이 바뀌는 날, 배정 계산 코드는 닫힌 채로 있어야 합니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '어느 파트에도 못 앉는 단원',
+        description:
+          '음역이 좁은 단원(예: 55~70)은 네 파트 어느 요구 음역도 포함하지 못합니다. 이 단원이 결과 명단 어디에도 없이 조용히 사라지면 안 됩니다. 좋은 방어: "미배정" 명단을 결과의 1급 구성원으로 두고 게시판에도 표시하세요. 침묵 속에 탈락한 단원은 다음 연습에 나오지 않습니다.',
+      },
+      {
+        title: '최고음이 최저음보다 낮은 입력',
+        description:
+          '엑셀에서 옮기다 칸이 뒤집히면 음역이 60~48처럼 들어옵니다. 그대로 계산하면 모든 파트 판정이 조용히 false가 되어 "미배정"처럼 보이는 거짓 결과가 됩니다. 좋은 방어: 계산 진입 전 검증 계층에서 최저음 ≤ 최고음을 확인하고 위반 시 어느 단원의 데이터가 잘못됐는지 명시하며 실패하세요.',
+      },
+      {
+        title: '지원자가 0명인 파트',
+        description:
+          '테너 가능자가 아무도 없는 분기가 옵니다. 배정된 사람이 있는 파트만 돌며 명단을 만들면 테너가 게시판에서 통째로 사라집니다. 0명인 파트도 "테너: 0/2 (2명 부족)"으로 표기되어야 지휘자가 문제를 알 수 있습니다. 빈 컬렉션은 없는 것이 아니라 비어 있다는 정보입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '음역 포함 판정, 두 단계 배정 순서, 동률 규칙이 명세대로 구현되어 검증 명단의 결과와 일치하는가.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '책임 분리 (판정·배정·출력)',
+        description: '자격 판정, 배정 계산, 명단 포맷팅이 분리되어 새 출력 형식 추가 시 계산 코드를 수정하지 않아도 되는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '예외 입력의 명시적 처리',
+        description: '규칙 밖의 입력이 온다는 전제가 코드에 있는가. 침묵 탈락·침묵 실패 없이 검증과 명시적 결과로 드러나는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '검증 명단의 배정 결과가 단위 테스트로 고정되어 있는가. 단계별 경계(동률, 부족/초과)가 다뤄졌는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"조금 두껍게"의 기준을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '합창단 총무 (매 분기 엑셀과 눈대중으로 3시간씩 파트 배정을 해 온 분)',
+      prompt:
+        '총무님께 설명해 주세요. (1) 음을 숫자로 바꾸면 왜 "이 단원이 이 파트를 소화할 수 있는가"가 비교 두 번짜리 계산이 되는지, (2) 프로그램이 어떤 순서로 배정하는지 — 총무님이 종이와 연필로 따라 검산할 수 있게 단계별로, (3) 프로그램이 어떤 단원을 "미배정"으로 표시하는 이유, 그것이 탈락 통보가 아니라 데이터를 지키는 안전장치인 이유. 마지막으로 "누가 어디 앉는지 계산하는 일"과 "게시판 명단을 예쁘게 쓰는 일"이 왜 다른 일인지 합창에 빗대어(악보를 정하는 일과 무대에 서는 일이 다르듯) 한 문장으로 정리하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '화요일 저녁의 화음',
+        teaser: '배정표는 연습 시작 전에 게시판에 붙어 있고, 아무도 이의를 달지 않는다. 다툼의 주제는 회식 장소로 옮겨 갔다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '볼펜으로 고친 명단',
+        teaser: '배정표는 나온다. 다만 총무님이 출력물 위에 볼펜으로 두 명을 옮겨 적고, "프로그램이 아직 우리 단을 잘 몰라서"라고 변명해 준다.',
+      },
+      {
+        grade: 'dawn',
+        title: '비어 있는 자리',
+        teaser: '어느 파트에도 배정되지 못한 단원이 명단에서 소리 없이 사라지고, 정기 연주회 날 객석에서 그 이유를 묻는 연락이 온다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 악보는 아직 배부되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 9 — Stage 5 "거대한 구조" / 영화 오마주 (설국열차) / 리팩토링
+  // =========================================================================
+  {
+    id: 's5-snowpiercer-01',
+    stage: 5,
+    stageTitle: '거대한 구조',
+    missionType: '리팩토링',
+    difficulty: 'Normal',
+    scope: '모듈 경계',
+    modes: ['developer'],
+    domain: '영화 오마주',
+    domainEmoji: '🎬',
+    title: '달리는 열차의 벽 — 명부·배급·통행의 경계 다시 긋기',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '한 열차, 세 개의 세계',
+      content: `### 같은 단어, 다른 세계
+
+이 열차에서 "승객"이라는 단어는 세 가지 뜻으로 쓰입니다. 배급관리관에게 승객은 하루 배급량을 계산할 머릿수입니다. 보안총괄에게 승객은 위험 등급이 매겨진 관리 대상입니다. 명부관리자에게 승객은 태어나고 이동하고 기록되는 존재입니다. 셋은 같은 사람을 보면서 서로 다른 것을 봅니다.
+
+소프트웨어 설계는 이 현상에 이름을 붙였습니다 — **바운디드 컨텍스트(bounded context)**. 같은 개념이라도 문맥마다 의미와 필요한 정보가 다르므로, 하나의 거대한 "승객" 모델을 전 시스템이 공유하는 대신 문맥마다 자기 모델을 갖고 경계에서는 계약으로만 대화하게 하자는 것입니다. 경계가 없으면 어느 팀의 사정이 곧바로 다른 팀의 장애가 됩니다.
+
+### 콘웨이 법칙 — 조직도가 아키텍처를 그린다
+
+1968년 멜빈 콘웨이는 "시스템의 구조는 그것을 만든 조직의 소통 구조를 닮는다"고 썼습니다. 배급팀과 보안팀이 회의 대신 서로의 장부를 몰래 뒤져 왔다면, 코드도 서로의 내부 데이터를 직접 뒤지고 있을 것입니다. 코드의 결합도는 종종 조직이 소통해 온 방식의 화석입니다.
+
+### 멈출 수 없는 시스템
+
+어느 영화에는 17년째 한 번도 멈추지 않고 달리는 열차가 나옵니다. 꼬리칸과 엔진칸 사이에 문과 통행증이 있고, 배급과 질서가 그 문에 걸려 있는 세계. 그 열차의 가장 무서운 제약은 계급이 아니라 이것입니다 — **열차는 정비를 위해 멈출 수 없다**. 당신이 인수인계받은 시스템도 같습니다. 운행을 세우지 않은 채, 달리는 열차 위에서 벽을 다시 세워야 합니다. 리팩토링에 "동작 보존"이라는 조건이 붙는 이유가 여기에 있습니다.`,
+    },
+    scenario: `당신은 '열차 운영 시스템'의 유지보수를 인수인계받았습니다. 전임자가 남긴 문서는 한 줄입니다 — "명부 배열 인덱스 순서 절대 바꾸지 말 것." 명부(Registry)·배급(Ration)·통행(Gate) 세 시스템이 한 코드베이스에서 서로의 내부 데이터를 직접 읽고 씁니다. 이번 분기 요구는 '작업 통행' — 정비 승객이 지정 시간대에 앞칸으로 이동할 수 있어야 합니다. 보안총괄은 규칙 추가를 원하고, 배급관리관은 자기 시스템이 건드려지는 것을 원하지 않으며, 두 사람 다 상대 팀 장애가 자기 팀 업무를 세우는 일이 반복되는 데 지쳐 있습니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/train/registry/PassengerRegistry.java',
+        content: `package com.train.registry;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 승객 명부. 17년째 운영 중.
+ * 배열 인덱스: [0]=이름 [1]=소속칸(TAIL/MID/FRONT) [2]=배급등급(A/B/C)
+ *             [3]=위험등급(LOW/HIGH) [4]=배급상태(OK/SUSPENDED)
+ * 주의: 배급팀과 보안팀이 이 Map을 직접 읽고 씁니다. 인덱스 순서를 바꾸지 마세요.
+ *       (2019년에 한 번 바꿨다가 3일간 전원 배급이 정지된 적 있음)
+ */
+public class PassengerRegistry {
+
+    public static final Map<String, String[]> PASSENGERS = new HashMap<>();
+
+    static {
+        PASSENGERS.put("P-1031", new String[] {"길만호", "TAIL", "C", "LOW", "OK"});
+        PASSENGERS.put("P-2044", new String[] {"서예강", "MID", "B", "LOW", "OK"});
+        PASSENGERS.put("P-2077", new String[] {"차오름", "MID", "B", "HIGH", "SUSPENDED"});
+        PASSENGERS.put("P-2101", new String[] {"노들", "MID", "C", "LOW", "OK"});
+        PASSENGERS.put("P-3001", new String[] {"모현", "FRONT", "A", "LOW", "OK"});
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/train/ration/RationService.java',
+        content: `package com.train.ration;
+
+import com.train.registry.PassengerRegistry;
+
+/** 배급 시스템. 명부의 배열을 직접 읽고 쓴다. */
+public class RationService {
+
+    /** 등급별 하루 배급량(g)을 계산한다. */
+    public int dailyRationOf(String passengerId) {
+        String[] p = PassengerRegistry.PASSENGERS.get(passengerId);
+        if (p[4].equals("SUSPENDED")) {
+            return 0;
+        }
+        int base;
+        switch (p[2]) {
+            case "A": base = 600; break;
+            case "B": base = 450; break;
+            default: base = 300;
+        }
+        // 보안팀 요청(3년 전 구두 합의): 위험 등급이 높으면 30% 감량
+        if (p[3].equals("HIGH")) {
+            base = base * 70 / 100;
+        }
+        return base;
+    }
+
+    /** 배급 위반 시 정지 처리 — 명부 배열에 직접 기록한다. */
+    public void suspend(String passengerId) {
+        PassengerRegistry.PASSENGERS.get(passengerId)[4] = "SUSPENDED";
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/train/gate/GateControl.java',
+        content: `package com.train.gate;
+
+import com.train.ration.RationService;
+import com.train.registry.PassengerRegistry;
+
+/** 통행 승인 시스템. 명부와 배급의 사정을 전부 직접 안다. */
+public class GateControl {
+
+    private final RationService rationService = new RationService();
+
+    /** targetSection으로의 통행을 승인할 수 있는가. */
+    public boolean mayPass(String passengerId, String targetSection) {
+        String[] p = PassengerRegistry.PASSENGERS.get(passengerId);
+
+        // 꼬리칸은 앞으로 갈 수 없다
+        if (p[1].equals("TAIL") && !targetSection.equals("TAIL")) {
+            return false;
+        }
+        // 중간칸 -> 엔진칸(FRONT)은 심사 대상
+        if (p[1].equals("MID") && targetSection.equals("FRONT")) {
+            // 배급 정지자 통행 금지 (배급팀 내부 상태를 직접 확인)
+            if (p[4].equals("SUSPENDED")) {
+                return false;
+            }
+            // 배급량이 적은 승객은 위험 승객으로 간주한다 (2021년 임시 조치)
+            if (rationService.dailyRationOf(passengerId) < 400) {
+                return false;
+            }
+            return true;
+        }
+        return p[1].equals(targetSection);
+    }
+
+    /** 무단 통행 적발 — 위험 등급을 올리고 배급을 정지시킨다. */
+    public void reportViolation(String passengerId) {
+        PassengerRegistry.PASSENGERS.get(passengerId)[3] = "HIGH";
+        rationService.suspend(passengerId);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/train/TrainOps.java',
+        content: `package com.train;
+
+import com.train.gate.GateControl;
+import com.train.ration.RationService;
+
+/** 운영 콘솔. 아침 점호 때 실행한다. */
+public class TrainOps {
+
+    public static void main(String[] args) {
+        RationService ration = new RationService();
+        GateControl gate = new GateControl();
+
+        System.out.println("P-1031 배급: " + ration.dailyRationOf("P-1031") + "g");
+        System.out.println("P-2044 배급: " + ration.dailyRationOf("P-2044") + "g");
+        System.out.println("P-2077 배급: " + ration.dailyRationOf("P-2077") + "g");
+        System.out.println("P-2101 배급: " + ration.dailyRationOf("P-2101") + "g");
+        System.out.println("P-2044 -> FRONT: " + gate.mayPass("P-2044", "FRONT"));
+        System.out.println("P-2077 -> FRONT: " + gate.mayPass("P-2077", "FRONT"));
+        System.out.println("P-2101 -> FRONT: " + gate.mayPass("P-2101", "FRONT"));
+        System.out.println("P-1031 -> MID: " + gate.mayPass("P-1031", "MID"));
+    }
+}`,
+      },
+    ],
+    requirements: [
+      "신규 '작업 통행': 명부에 정비조로 등록된 중간칸 승객은 작업 시간대(06시 이상 10시 미만)에 한해 엔진칸(FRONT) 통행이 허용됩니다. 시간대 밖에는 기존 규칙이 그대로 적용됩니다. 정비조 명단은 명부가 관리합니다 — 이번 분기 정비조는 노들(P-2101)입니다.",
+      '동작 보존 검증: 아침 점호 결과는 리팩토링 후에도 동일해야 합니다 — 배급 P-1031 300g, P-2044 450g, P-2077 0g, P-2101 300g / 통행 P-2044→FRONT 허용, P-2077→FRONT 거부, P-2101→FRONT 거부, P-1031→MID 거부. 작업 통행 적용 후: P-2101의 FRONT 요청은 08시에 허용, 12시에 거부.',
+      '배급 시스템이 멈춘 날에도 통행 승인은 계속되어야 합니다. 그 반대도 마찬가지입니다.',
+      '보안팀은 승객의 배급 내역을 볼 권한이 없고, 배급팀은 위험 등급을 매길 권한이 없습니다. 각 시스템은 자기 업무에 필요한 것만, 정해진 창구로 물어봅니다.',
+      '명부는 하나입니다. 같은 승객이 배급 시스템과 통행 시스템에서 서로 다른 상태로 기억되어서는 안 됩니다.',
+      '보안총괄 요청: "정비조라도 위험한 승객은 곤란합니다. 적당히 걸러 주세요." (어디부터가 "적당히"인지는 회의 때마다 다릅니다)',
+    ],
+    constraints: [
+      '리팩토링 미션입니다 — 요구사항 2의 점호 결과가 어긋나는 순간 그것은 개선이 아니라 사고입니다.',
+      '엔진칸 내부 코드는 건드릴 수 없습니다. 엔진은 신성합니다. 전임자 주석에도 그렇게 적혀 있습니다.',
+      '빅뱅 재작성 금지. 매 단계에서 시스템이 돌아가는 상태를 유지하며 옮기세요. 열차는 정비를 위해 멈추지 않습니다.',
+      '외부 프레임워크 없이 순수 Java 17로 작성합니다. 모듈 경계는 패키지와 인터페이스로 표현하세요.',
+    ],
+    learningGoals: [
+      '바운디드 컨텍스트를 코드 수준에서 경험하기 — 같은 "승객"이 문맥마다 다른 모델이 되는 이유',
+      '공개된 내부 자료구조(public Map)를 계약(인터페이스) 뒤로 숨기는 점진적 절차',
+      '모듈 간 장애 격리 — 한 시스템의 다운이 다른 시스템을 세우지 않는 구조',
+      '규칙의 주인 찾기 — 이 판단은 어느 모듈의 책임인가를 묻는 습관',
+    ],
+    hints: [
+      '각 시스템이 승객에 대해 실제로 묻는 질문을 목록으로 적어 보세요. 배급은 "등급과 정지 여부", 통행은 "소속 칸과 통행 제한 여부"만 궁금합니다. 그 목록이 곧 명부가 답해야 할 계약입니다.',
+      'public Map을 없애는 것이 아니라 감싸는 것부터 시작하세요. 호출부를 하나씩 계약 뒤로 옮기고, 마지막 직접 접근이 사라진 뒤에야 내부 구조를 바꿉니다. 순서가 반대면 열차가 섭니다.',
+      '게이트의 "배급량 400g 미만 차단"은 원래 무엇을 걸러 내려던 규칙이었을까요. 배급량은 등급과 위험도의 그림자일 뿐입니다. 규칙의 원래 의미를 되살려 주인 모듈에게 돌려주되, 현재 승객들에 대한 결과는 그대로여야 합니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '명부에 없는 승객의 통행 요청',
+        description:
+          '존재하지 않는 ID(P-9999)로 통행을 요청하면 현재 코드는 NullPointerException으로 즉사합니다. 게이트 프로세스가 죽으면 전 열차의 통행 심사가 멈추고, 예외를 대충 삼키면 유령이 엔진칸에 들어갑니다. 좋은 방어: 경계에서 "미등록 승객"을 명시적 거부 사유로 다루세요. 명부에 없다는 것도 하나의 답입니다.',
+      },
+      {
+        title: '두 모듈이 기억하는 서로 다른 승객',
+        description:
+          '모듈을 나누다 보면 각자 승객 사본이나 캐시를 갖고 싶어집니다. 배급 모듈에서 정지 처리된 승객을 통행 모듈이 옛 상태로 기억하면, 배급 정지자가 엔진칸을 활보합니다. 좋은 방어: 승객 상태의 단일 진실 공급원을 정하고, 나머지 모듈은 보관하지 말고 물어보게 하세요. 정합성 붕괴는 코드가 아니라 사본에서 시작됩니다.',
+      },
+      {
+        title: '순환 참조 — 서로를 부르는 두 칸',
+        description:
+          '게이트는 위반자의 위험 등급을 올리고 배급을 정지시키며, 배급은 위험 등급을 읽어 감량합니다. 이대로 모듈을 자르면 Gate→Ration→Registry←Gate의 순환 고리가 컴파일 의존성으로 드러납니다. 좋은 방어: "위반 사건이 일어났다"는 사실과 "그래서 각 모듈이 무엇을 할지"를 분리하세요. 순환은 대개 사건과 반응을 한 호출에 욱여넣을 때 생깁니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '모듈 경계와 계약 설계',
+        description: '명부·배급·통행이 내부 자료구조가 아니라 계약(인터페이스)으로 대화하는가. 각 모듈이 필요한 것만 아는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '동작 보존',
+        description: '아침 점호의 검증 결과가 리팩토링 전후로 동일한가. 이를 보증하는 테스트가 리팩토링 전에 마련되었는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '의존 방향과 정보 은닉',
+        description: '순환 의존이 제거되고 의존 방향이 한쪽으로 정리되었는가. public 자료구조 직접 접근이 사라졌는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '작업 통행 구현 정확성',
+        description: '시간대 경계(06시 포함, 10시 미포함)와 정비조 판정이 명세대로 동작하며, 기존 규칙과의 우선순위가 명확한가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"적당히 걸러 주세요"의 기준을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '꼬리칸 대표 (통행증 제도가 바뀔 때마다 가장 먼저 의심하는 사람)',
+      prompt:
+        '꼬리칸 대표에게 설명해 주세요. (1) 이번 개편에서 통행 규칙 자체는 무엇 하나 바뀌지 않는다는 것 — 바뀌는 것은 규칙을 지키는 방식이라는 것, (2) 꼬리칸 입장에서 무엇이 좋아지는지 — 배급 시스템이 고장 난 날에도 통행 심사가 멈추지 않고, 배급 담당자가 위험 등급을 마음대로 볼 수 없게 된다는 것, (3) "각 팀이 필요한 것만 안다"는 원칙이 감시의 축소이지 확대가 아닌 이유. 상대는 시스템을 믿지 않는 사람입니다. 기술 용어 없이, 의심을 존중하면서 설득하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '아무도 눈치채지 못한 개편',
+        teaser: '작업 통행은 예정일에 조용히 열렸다. 배급 시스템이 점검으로 멈춘 목요일에도 게이트는 평소처럼 열리고 닫혔고, 그 사실을 알아챈 사람은 당신뿐이다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '무전기 운영 체제',
+        teaser: '게이트는 돌아간다. 다만 배급 점검일마다 보안총괄이 무전으로 수동 개방을 지시하고, 그 무전 내역이 매주 당신의 할 일 목록으로 돌아온다.',
+      },
+      {
+        grade: 'dawn',
+        title: '3호차의 아침',
+        teaser: '배급 모듈 장애가 게이트를 함께 세웠다. 출근 시간대 통로에 갇힌 정비조 명단이 사후 보고서 부록 A가 되고, 부록 B는 당신의 커밋 목록이다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말로 가는 문은 아직 열리지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 10 — Stage 6 "구조로 세상 읽기" / 도서관·분류 / 설계 리뷰
+  // =========================================================================
+  {
+    id: 's6-dewey-01',
+    stage: 6,
+    stageTitle: '구조로 세상 읽기',
+    missionType: '설계 리뷰',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '도서관·분류',
+    domainEmoji: '📚',
+    title: '설계 리뷰 — 세계를 열 칸에 넣으려는 사람들에게',
+    estimatedMinutes: 120,
+    briefing: {
+      title: '1876년, 세계를 열 칸에 넣은 남자',
+      content: `### 십진법의 야심
+
+1876년, 미국의 사서 멜빌 듀이는 세계의 모든 지식을 10개의 칸으로 나누는 체계를 발표했습니다. 000 총류, 100 철학, 200 종교, 300 사회과학, 그리고 900 역사까지. 각 칸은 다시 10칸으로, 그 칸은 또 10칸으로 나뉩니다. 듀이 십진분류(DDC)는 오늘날까지 전 세계 도서관에서 가장 널리 쓰이는 분류법입니다. 도서관 책등에 붙은 숫자가 바로 그것입니다.
+
+### 체계는 미래를 예측하지 못한다
+
+듀이가 체계를 만들 때 컴퓨터는 없었습니다. 그래서 20세기에 태어난 컴퓨터과학은 갈 곳이 없어 000 "총류"의 틈새(004~006)에 낑겨 들어갔습니다. 세계에서 가장 큰 지식 산업 하나가 백과사전과 신문 옆에서 셋방살이를 하는 셈입니다. 어떤 분류 체계든 만들어진 순간의 세계를 박제합니다 — 그리고 세계는 계속 바뀝니다.
+
+### 분류는 세계관이다
+
+DDC의 종교(200번대)는 열 칸 중 여덟 칸 이상이 기독교의 몫입니다. 1876년 미국 사서의 눈에 비친 세계가 그랬기 때문입니다. 분류는 중립적인 정리 기술이 아니라 무엇이 중심이고 무엇이 "기타"인지에 대한 선언입니다. 그래서 분류 체계를 리뷰한다는 것은 번호 체계를 검사하는 일이 아니라, 그 체계가 세계를 어떻게 보고 있는지, 그 시선이 10년 뒤에도 유효한지를 묻는 일입니다.
+
+### 이번에는 코드를 고치지 않습니다
+
+당신은 사내 TF가 만든 문서 분류 체계 설계안을 읽고, 그 설계가 어떤 미래를 견디지 못하는지 찾아 글로 씁니다. 듀이의 체계는 150년을 버텼지만 컴퓨터과학의 등장을 예측하지 못했습니다. 이 설계안은, 다음 조직 개편을 버틸 수 있을까요.`,
+    },
+    scenario: `사내 문서관리 TF가 6개월간 만든 '전사 문서 분류 체계 설계안 v0.9'가 다음 주 경영진 보고를 앞두고 있습니다. TF 팀장이 당신에게 사전 리뷰를 요청했습니다 — "통과의례 같은 거예요. 편하게 봐 주세요." 설계안은 자신감이 넘치고, 문장은 매끄럽고, 표는 정갈합니다. 다만 당신은 압니다. 설계 문서에서 가장 위험한 문장은 틀린 문장이 아니라, 아무도 반박하지 않은 문장이라는 것을.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'docs/DESIGN.md',
+        content: `# 전사 문서 분류 체계 설계안 (v0.9 — 검토용)
+
+작성: 문서관리 TF (2026-06)
+
+## 1. 목표
+
+전사에 흩어진 문서(추정 12만 건)에 단일한 분류와 식별자를 부여한다.
+분류 체계는 한 번 확정 후 최소 10년 유지를 목표로 한다.
+
+## 2. 대분류 (조직 구조 기반)
+
+현행 조직도를 기준으로 대분류 9개와 기타 1개를 둔다.
+부서 담당자가 자기 부서 문서를 즉시 분류할 수 있다는 것이 본 체계의 최대 강점이다.
+
+| 코드 | 대분류 | 주관 조직 |
+|---|---|---|
+| 10 | 경영일반 | 경영지원본부 |
+| 20 | 인사 | 인사팀 |
+| 30 | 재무·회계 | 재무본부 |
+| 40 | 법무 | 법무실 |
+| 50 | 영업 | 영업본부 |
+| 60 | 구매·조달 | 구매팀 |
+| 70 | 생산·품질 | 생산본부 |
+| 80 | 연구개발 | 기술연구소 |
+| 90 | 홍보·대외 | 커뮤니케이션실 |
+| 99 | 기타 | (미지정) |
+
+## 3. 분류 규칙
+
+- 모든 문서는 정확히 하나의 대분류에 속한다.
+- 구매 계약서처럼 성격이 겹치는 문서(재무? 법무? 구매?)는 작성 부서의 판단에 따라 분류한다.
+- 분류가 애매하면 99(기타)로 분류한다. 추후 여유가 있을 때 재분류한다.
+
+## 4. 문서 ID 규칙
+
+문서 ID에 분류 코드를 포함해, ID만 보고도 문서의 성격을 알 수 있게 한다 (본 체계의 두 번째 강점).
+
+형식: 대분류(2자리)-부서코드(3자리)-연도(4자리)-일련번호(5자리)
+예: 30-FIN-2026-00042 (재무본부가 2026년에 등록한 42번째 재무·회계 문서)
+
+문서 ID는 전자결재, 메일, 계약서 각주 등 전 시스템에서 문서를 지칭하는 공식 식별자로 사용한다.
+
+## 5. 재분류
+
+문서가 재분류되면 새 분류 코드로 ID를 재발급하고, 구 ID는 폐기한다.
+(재분류는 드물 것으로 예상되어 상세 절차는 생략한다)`,
+      },
+      {
+        path: 'src/main/java/com/daehan/docs/Category.java',
+        content: `package com.daehan.docs;
+
+/** 대분류. 조직 개편 시 이 enum을 함께 개정한다. */
+public enum Category {
+    GENERAL(10, "경영일반"),
+    HR(20, "인사"),
+    FINANCE(30, "재무·회계"),
+    LEGAL(40, "법무"),
+    SALES(50, "영업"),
+    PROCUREMENT(60, "구매·조달"),
+    PRODUCTION(70, "생산·품질"),
+    RND(80, "연구개발"),
+    PR(90, "홍보·대외"),
+    ETC(99, "기타");
+
+    private final int code;
+    private final String label;
+
+    Category(int code, String label) {
+        this.code = code;
+        this.label = label;
+    }
+
+    public int code() { return code; }
+    public String label() { return label; }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/docs/DocumentId.java',
+        content: `package com.daehan.docs;
+
+/**
+ * 문서 ID. 형식: 대분류(2)-부서(3)-연도(4)-일련(5)
+ * ID만 보고 문서의 성격을 알 수 있다는 것이 본 설계의 자랑이다.
+ */
+public record DocumentId(Category category, String deptCode, int year, int serial) {
+
+    public String formatted() {
+        return String.format("%02d-%s-%04d-%05d", category.code(), deptCode, year, serial);
+    }
+
+    /** ID 문자열에서 분류를 복원한다 — 어느 시스템이든 ID만 있으면 분류를 안다. */
+    public static Category categoryOf(String documentId) {
+        int code = Integer.parseInt(documentId.substring(0, 2));
+        for (Category c : Category.values()) {
+            if (c.code() == code) {
+                return c;
+            }
+        }
+        return Category.ETC;   // 모르는 코드는 일단 기타로
+    }
+
+    /** 재분류: 새 분류로 ID를 다시 발급한다. 구 ID는 폐기한다. */
+    public DocumentId reclassify(Category newCategory) {
+        return new DocumentId(newCategory, deptCode, year, serial);
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '산출물은 critique.md 한 편입니다. 설계안(DESIGN.md)과 코드 두 파일을 함께 읽고, 지적마다 설계안의 해당 문장이나 코드를 근거로 인용하세요.',
+      '결함을 3개 이상 찾으세요. 각 결함에는 "언제, 어떤 사건이 일어나면, 어떤 사고로 이어지는지" 시나리오가 반드시 붙어야 합니다. "나쁘다"가 아니라 "터진다"를 쓰세요.',
+      '각 결함에 대안을 1개 이상 제시하세요. 단, 전체 대안 중 최소 1개는 분류 체계나 코드를 바꾸지 않고 운영(절차·정책·담당자 규칙)으로 해결하는 옵션이어야 합니다.',
+      '결함에 우선순위를 매기세요 — "도입 전에 반드시 고칠 것"과 "도입 후에 개선해도 되는 것"을 구분하고 이유를 적으세요.',
+      '설계안이 스스로 "강점"이라고 내세운 항목 중 실제로는 비용인 것이 있는지 검토하세요.',
+      '경영진 의견: "분류는 한 번 정하면 10년은 가야 합니다." (무엇이 10년을 가야 하는지는 회의록마다 다릅니다)',
+    ],
+    constraints: [
+      '설계 리뷰 미션입니다 — 코드 수정과 대체 설계안 전체 작성은 범위 밖입니다. 산출물은 critique.md 하나입니다.',
+      '모든 지적에는 근거 인용과 사고 시나리오가 붙어야 합니다. "느낌상 위험해 보임"은 리뷰가 아니라 점괘입니다.',
+      '"제가 했으면 이렇게 안 했죠"는 리뷰 용어가 아닙니다. TF도 6개월 전의 자신에게 하고 싶은 말입니다.',
+      '결함의 개수보다 치명도 판단이 평가됩니다. 사소한 지적 열 개보다 치명적인 지적 세 개가 낫습니다.',
+    ],
+    learningGoals: [
+      '설계 문서를 비판적으로 읽기 — 매끄러운 문장 뒤의 깨지기 쉬운 가정 찾기',
+      '식별자에 의미를 넣는 설계(스마트 키)의 장기 비용 이해 — 주민등록번호 지역코드의 교훈',
+      '분류 체계와 조직 구조를 결합할 때 생기는 취약성 인식 — 콘웨이의 저주',
+      '설계를 바꾸지 않고 운영으로 문제를 흡수하는 대안을 사고 목록에 넣기',
+      '비평을 채택 가능한 형태로 쓰는 기술 — 우선순위, 근거, 시나리오',
+    ],
+    hints: [
+      '결함은 문서 안이 아니라 미래에서 발견됩니다. 설계안에 사건을 하나씩 던져 보세요 — "조직 개편이 났다", "문서가 재분류됐다", "3년 치 문서가 쌓였다". 어떤 문장이 부러지는지 보세요.',
+      'DocumentId.categoryOf()를 호출할 시스템들을 상상해 보세요. ID를 복사해 간 메일, 계약서 각주, 외부 시스템은 재발급 공지를 받지 못합니다. 식별자의 첫 번째 의무는 똑똑함이 아니라 불변입니다.',
+      '주민등록번호 뒷자리에는 한때 출생 지역 코드가 들어 있었습니다. 2020년에 그 코드가 왜, 어떤 비용을 치르고 사라졌는지 찾아보세요. 설계안 4장이 다르게 읽힐 겁니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '기타(99)의 블랙홀화',
+        description:
+          '설계안 3장은 "애매하면 기타로, 여유가 있을 때 재분류"를 명시합니다. 그 여유는 오지 않습니다. 잔여 카테고리는 분류를 미루는 가장 싼 방법이므로 해마다 부풀어, 몇 년 뒤 최대 분류가 "기타"인 체계가 됩니다. 분류 체계의 죽음은 대개 틀린 분류가 아니라 잔여 칸의 비만으로 시작됩니다.',
+      },
+      {
+        title: 'categoryOf()의 침묵',
+        description:
+          'DocumentId.categoryOf()는 모르는 코드를 만나면 예외를 던지는 대신 기타(ETC)를 반환합니다. 체계 개정으로 새 대분류 코드가 생기는 순간, 개정을 배포받지 못한 구버전 시스템들이 새 문서를 전부 조용히 "기타"로 읽습니다. 오류가 아니라 오분류라서 로그도 알람도 없습니다 — 통계가 이상하다는 소문이 돌 때쯤엔 몇 달치입니다.',
+      },
+      {
+        title: '"생략한다"는 문장',
+        description:
+          '설계안 5장의 "재분류는 드물 것으로 예상되어 상세 절차는 생략한다"가 실은 가장 큰 결함입니다. 조직 개편 한 번이면 재분류는 수만 건 단위로 일어나고, 그 순간 "재분류 시 ID 재발급" 정책과 결합해 전 시스템의 참조가 한꺼번에 깨집니다. 설계 문서에서 "생략한다"는 종종 "가장 어려워서 미뤘다"의 동의어입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '결함 발견 (치명도 가중)',
+        description: '심어진 결함을 찾았는가. 치명적인 결함(ID 인코딩, 조직도 결합)일수록 높은 배점. 스스로 찾은 정당한 결함도 인정.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '근거의 구체성',
+        description: '각 지적이 설계안의 문장·코드 인용과 "언제 어떤 사고로 터지는지" 시나리오를 갖추었는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '대안의 실행가능성',
+        description: '대안이 12만 건 문서와 진행 중인 일정이라는 현실 위에서 실행 가능한가. 운영으로 해결하는 옵션이 포함되었는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '글의 명료성과 설득 구조',
+        description: '우선순위가 분명하고, 읽는 사람이 다음에 무엇을 하면 되는지가 명확한 비평인가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"10년은 가야 합니다"에서 무엇이 10년을 가야 하는지(ID? 분류 트리? 문서?)를 되물었거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '분류 체계를 만든 TF 팀장 (6개월을 갈아 넣었고, 다음 주 경영진 보고를 앞둔 사람)',
+      prompt:
+        '발견한 결함 중 가장 치명적인 하나를 골라 TF 팀장에게 전하는 글을 쓰세요. (1) 설계안이 잘한 점을 구체적으로 먼저 짚고, (2) 결함을 "당신의 실수"가 아니라 "앞으로 일어날 사건"으로 서술하고, (3) 대안이 팀장의 경영진 보고를 오히려 튼튼하게 만드는 방향임을 보여 주세요. 목표는 논쟁에서 이기는 것이 아니라 설계가 고쳐지는 것입니다. 상대가 방어적으로 변하는 순간, 기술적으로 옳은 리뷰도 실패합니다.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '개정 이력의 한 줄',
+        teaser: '설계안은 v1.0으로 조용히 배포되고, 당신의 리뷰는 "검토 의견 반영"이라는 개정 이력 한 줄로 남는다. 10년 뒤에도 문서 ID는 바뀌지 않는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '분기마다 정리의 날',
+        teaser: '체계는 도입됐다. 분기마다 "기타(99) 문서 정리의 날" 공지가 전사 메일로 오고, 협조자 명단 첫 줄에 당신의 이름이 있다.',
+      },
+      {
+        grade: 'dawn',
+        title: '전사 공지: 문서 ID 일괄 변경 안내',
+        teaser: '조직 개편과 함께 12만 건의 ID가 재발급되고, 깨진 링크 제보 채널이 개설된다. 채널 공지사항에는 당신의 리뷰가 "검토 완료"로 인용되어 있다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 서가는 아직 비어 있습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 11 — Stage 3 "의존성 역전" / 시베리아 횡단철도 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's3-transsib-01',
+    stage: 3,
+    stageTitle: '의존성 역전',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '시베리아 횡단철도',
+    domainEmoji: '🚂',
+    title: '모스크바 시간으로 달리는 열차 — 환승 계산기',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '9,289km, 시간대 8개, 기준은 하나',
+      content: `### 세 개의 시계
+
+2018년까지 시베리아 횡단철도의 모든 열차는 **모스크바 시간**으로 달렸습니다. 시간표도, 승차권도, 역 구내의 큰 시계까지도요. 블라디보스토크에 아침 7시에 내려도 역의 시계는 자정을 가리켰습니다 — 그 도시의 현지 시간은 모스크바보다 7시간 빠르니까요. 그래서 승강장에는 언제나 세 개의 시간이 공존했습니다. 시간표의 모스크바 시간, 도시의 현지 시간, 그리고 며칠째 열차에서 내리지 않은 승객의 몸이 기억하는 제3의 시간.
+
+### 왜 그렇게까지 했을까
+
+모스크바에서 블라디보스토크까지 9,289km. 이 선로 하나가 시간대 여덟 개를 통과합니다. 철도 운행에서 시각의 모호함은 곧 사고입니다 — "예카테린부르크 14시 발"이 어느 시간대의 14시인지 역마다 다르게 해석한다면, 단선 구간의 교행 계획과 관제는 성립할 수 없습니다. 그래서 러시아 철도는 전 구간을 단일 기준에 묶었습니다. 기준이 하나면 변환은 표시의 문제일 뿐이지만, 기준이 여덟이면 계산 자체가 오염됩니다. 소프트웨어가 저장과 연산을 UTC로 통일하고 사용자 화면에서만 현지 시각으로 바꾸는 것과 정확히 같은 설계입니다.
+
+### 2018년 8월의 전환
+
+그리고 2018년 8월, 러시아 철도는 승차권과 시간표의 표기를 현지 시간으로 바꿨습니다. 승객에게 익숙한 시간을 보여 주자는 결정이었지만, 운행의 내부 기준까지 여덟 조각으로 쪼갠 것은 아닙니다. 바뀐 것은 표시이고, 지켜진 것은 기준입니다. 시간의 단일 진실 공급원(single source of truth)은 그대로 두고, 변환을 경계로 밀어낸 것 — 이번에 여러분이 코드로 재현할 구조가 바로 이것입니다.`,
+    },
+    scenario: `다국적 여행사 '트랜스루트'의 시베리아 횡단 상품팀이 **환승 계산기**를 의뢰했습니다. 철도사에서 받는 운행 원본 데이터는 지금도 운행 기준인 모스크바 시간으로 옵니다. 상담원은 서울·베를린·모스크바 지사에서 같은 프로그램을 쓰는데, 지금은 각자 엑셀로 시차를 더하다가 지사마다 다른 답을 내는 사고가 반복되고 있습니다. 고객에게는 현지 시각을, 계산에는 단 하나의 기준을 — 그것이 상품팀의 주문입니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/transroute/feed/TrainCall.java',
+        content: `package com.transroute.feed;
+
+/**
+ * 시간표의 한 행 (데이터팀 소유 계약의 일부 — 그대로 사용).
+ * 모든 시각은 "여정 day일차의 HH:MM"이며, basis가 그 기준을 밝힌다.
+ * 데이터팀 계약 문서 v2: basis는 항상 "MSK"(모스크바 기준)여야 한다.
+ * 단, 2018년 표기 전환 이후 유입분에 "LOCAL"이 섞인 사례가 보고되어 있다.
+ */
+public record TrainCall(
+        String trainNo,
+        String station,
+        int day,            // 여정 N일차 (1부터)
+        String arrival,     // "HH:MM", 시발역이면 null
+        String departure,   // "HH:MM", 종착역이면 null
+        String basis        // "MSK"가 계약 / 그 외는 계약 위반
+) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/transroute/feed/TimetableFeed.java',
+        content: `package com.transroute.feed;
+
+/**
+ * 시간표 피드 계약 (데이터팀 소유 — 버전 v2, 변경은 공지 절차를 거친다).
+ * 이 인터페이스와 구현은 엔진입니다. 수정·재구현 금지, 그대로 사용하세요.
+ * 잘 관리되는 외부 경계의 예 — 계약이 문서화되어 있고, 어겨지는 방식까지 문서에 적혀 있습니다.
+ */
+public interface TimetableFeed {
+
+    /** 해당 열차가 해당 역에 서는 행을 돌려준다. 없으면 null. */
+    TrainCall callAt(String trainNo, String station);
+}`,
+      },
+      {
+        path: 'src/main/java/com/transroute/feed/RzdTimetableFeed.java',
+        content: `package com.transroute.feed;
+
+import java.util.List;
+
+/** 인메모리 피드 구현 (엔진 — 그대로 사용). */
+public class RzdTimetableFeed implements TimetableFeed {
+
+    private final List<TrainCall> calls = List.of(
+            new TrainCall("002M", "이르쿠츠크", 3, "09:13", "09:43", "MSK"),
+            new TrainCall("362", "이르쿠츠크", 3, "12:50", "13:05", "MSK"),
+            new TrainCall("070", "예카테린부르크", 1, "23:40", "23:58", "MSK"),
+            new TrainCall("104", "예카테린부르크", 2, "01:02", "01:15", "MSK"),
+            new TrainCall("008N", "노보시비르스크", 2, "19:37", "20:02", "LOCAL"));
+
+    @Override
+    public TrainCall callAt(String trainNo, String station) {
+        for (TrainCall c : calls) {
+            if (c.trainNo().equals(trainNo) && c.station().equals(station)) {
+                return c;
+            }
+        }
+        return null;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/transroute/App.java',
+        content: `package com.transroute;
+
+import com.transroute.feed.RzdTimetableFeed;
+import com.transroute.feed.TimetableFeed;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력과 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        TimetableFeed feed = new RzdTimetableFeed();
+
+        // TODO(학습자): 여러분이 설계한 경계 뒤에 피드와 시간대 정보를 두고,
+        //               TransferPlanner로 두 환승을 검토해 출력하세요.
+        // TransferPlanner planner = ...;
+        // System.out.println(planner.review("002M", "362", "이르쿠츠크"));
+        // System.out.println(planner.review("070", "104", "예카테린부르크"));
+
+        // ===== 기대 출력 1: 이르쿠츠크 환승 =====
+        // [환승 검토] 이르쿠츠크 (UTC+8) — 002M -> 362
+        // 도착: 3일차 09:13 (모스크바) / 3일차 14:13 (현지)
+        // 출발: 3일차 13:05 (모스크바) / 3일차 18:05 (현지)
+        // 환승 대기: 3시간 52분
+
+        // ===== 기대 출력 2: 예카테린부르크 환승 =====
+        // [환승 검토] 예카테린부르크 (UTC+5) — 070 -> 104
+        // 도착: 1일차 23:40 (모스크바) / 2일차 01:40 (현지)
+        // 출발: 2일차 01:15 (모스크바) / 2일차 03:15 (현지)
+        // 환승 대기: 1시간 35분
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/transroute/domain/TransferPlanner.java',
+        content: `package com.transroute.domain;
+
+/**
+ * 환승 계산기 (구현 대상).
+ *
+ * 두 가지가 여러분의 설계 몫입니다.
+ * 1) 역의 시간대(UTC 오프셋)를 어디서 얻을 것인가 — 이 클래스가 시스템 기본
+ *    시간대나 현재 시각을 직접 읽어서는 안 됩니다.
+ * 2) 피드(TimetableFeed)에 어디까지 의존할 것인가 — 계산 로직의 단위 테스트는
+ *    피드 구현 없이 돌아야 합니다.
+ * (경계용 인터페이스는 일부러 제공하지 않았습니다.)
+ */
+public class TransferPlanner {
+
+    // TODO 생성자에서 무엇을 주입받을지 설계하세요.
+
+    /** 환승 검토 요약. App.java의 기대 출력 형식과 일치해야 합니다. */
+    public String review(String arrivingTrainNo, String departingTrainNo, String station) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '검증 시나리오 1(이르쿠츠크, UTC+8): 002M 열차 도착 3일차 09:13(모스크바 기준), 362 열차 출발 3일차 13:05(모스크바 기준). 모스크바는 UTC+3이므로 현지 시각은 +5시간 — 도착 14:13, 출발 18:05. 환승 대기 = 13:05 − 09:13 = 3시간 52분. App.java의 기대 출력과 정확히 일치해야 합니다.',
+      '검증 시나리오 2(예카테린부르크, UTC+5): 070 열차 도착 1일차 23:40(모스크바) → 현지로는 2일차 01:40, 날짜가 넘어갑니다. 104 열차 출발 2일차 01:15(모스크바) → 현지 03:15. 환승 대기 1시간 35분. 현지 표기의 일차(N일차)가 정확히 밀려야 합니다.',
+      '계산의 기준은 모스크바 시간 하나입니다. 대기시간은 모스크바 기준 시각끼리의 차이로 구하고, 현지 시각은 표시할 때만 파생시킵니다. 두 기준을 섞은 계산이 우연히 맞는 것은 통과가 아닙니다.',
+      '상담원은 서울·베를린·모스크바 지사에서 같은 프로그램을 씁니다. 결과는 실행하는 PC의 시간대·현재 시각과 무관해야 하고, 계산 로직의 단위 테스트는 지금이 몇 시든, 어느 시간대의 장비에서든 같은 결과로 통과해야 합니다. 도메인 코드가 시스템 시계와 기본 시간대(now(), systemDefault() 류)를 직접 읽는 것을 금지합니다.',
+      '시간표는 데이터팀 소유의 TimetableFeed 계약으로 공급됩니다. 계산·판정 로직의 단위 테스트는 피드 구현(RzdTimetableFeed) 없이 돌아야 합니다.',
+      '상품팀 요청: "환승 대기가 너무 짧으면 위험 표시를 해 주세요." (몇 분부터가 "너무 짧은" 것인지는 상품마다 다르다는 답만 돌아왔습니다)',
+    ],
+    constraints: [
+      'TrainCall.java, TimetableFeed.java, RzdTimetableFeed.java, App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요.',
+      '도메인 규칙: 시각은 "여정 N일차 + HH:MM" 표기를 유지합니다. 이 미션의 시간대 오프셋은 정수 시간만 다룹니다(30분 단위 시간대는 범위 밖).',
+      '이 미션의 역별 시간대(모스크바 UTC+3, 예카테린부르크 UTC+5, 노보시비르스크 UTC+7, 이르쿠츠크 UTC+8)는 기준값입니다. 어디에 두든, 계산 코드 안에 숫자로 흩어지지 않게 하세요.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '시간(시계·시간대)이라는 외부 세계를 도메인 밖으로 밀어내, 테스트가 실행 환경과 무관해지는 구조 만들기',
+      '단일 기준으로 저장·계산하고 경계에서만 변환하는 원칙(UTC 원칙)을 도메인 규칙으로 체감하기',
+      '잘 관리된 외부 계약(TimetableFeed)과 도메인이 소유한 포트의 차이를 경험하고, 무엇을 어댑터로 감쌀지 판단하기',
+      '자정·일차 경계 같은 시간 계산의 함정을 정규화(경과 분)로 제거하는 연습',
+    ],
+    hints: [
+      '이 계산에 "지금 몇 시인지"가 필요한 순간은 사실 한 번도 없습니다. 필요한 것은 시간표 위의 시각뿐입니다. 코드에 now()를 쓰고 싶어졌다면, 그것이 정말 계산의 입력인지 자문해 보세요.',
+      '"N일차 HH:MM"을 문자열이나 (일차, 시, 분) 세 조각으로 들고 다니면 자정 경계마다 분기가 생깁니다. "여정 시작부터 경과한 분" 하나로 정규화하면 대기시간은 뺄셈 한 번이 되고, 표시용 변환은 마지막에 한 곳에서만 일어납니다.',
+      '현지 표시는 경과분 + (역 오프셋 − 3시간)입니다. "이 역의 오프셋은 몇인가"를 답하는 작은 인터페이스(예: StationZones)를 도메인 쪽에 정의하고, 실제 데이터는 바깥에서 주입하세요. 의존 화살표가 도메인을 향해 꺾이는 그 지점이 이번 스테이지의 전부입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '도착보다 이른 출발',
+        description:
+          '일차(day)가 누락되거나 뒤바뀐 데이터가 오면 환승 대기가 음수가 됩니다. 음수 대기를 "−52분"으로 성실하게 출력하는 계산기는 데이터 오류를 상담 창구까지 배달하는 셈입니다. 좋은 방어: "대기시간 ≥ 0" 불변식을 계산 결과에 걸고, 위반이면 어느 열차의 어느 시각이 문제인지 밝히며 명시적으로 실패하세요.',
+      },
+      {
+        title: '지도에 없는 역',
+        description:
+          '시간대 정보가 등록되지 않은 역(신설역, 개명역)이 오면 오프셋 조회가 비거나 null이 됩니다. 조용히 모스크바 시간을 현지 시각인 척 표시하면 고객은 최대 7시간 어긋난 안내를 받습니다. 좋은 방어: 미등록 역은 기본값으로 때우지 말고 "시간대 미등록"으로 명시적으로 실패시키고, 등록 경로를 안내하세요.',
+      },
+      {
+        title: 'basis: "LOCAL"의 잠입',
+        description:
+          '피드 계약은 basis="MSK"를 약속하지만, 2018년 표기 전환 이후 유입분에는 "LOCAL"이 실제로 섞여 있습니다(노보시비르스크 행). 이를 모스크바 기준으로 해석하면 조용히 4시간 어긋납니다. 좋은 방어: 경계 어댑터에서 basis를 검증해 계약 위반 행을 명시적으로 거부하세요. 계약은 읽으라고 문서화되어 있고, 위반을 걸러 내라고 경계가 있습니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '두 검증 시나리오의 모스크바/현지 시각, 일차 이월, 대기시간이 기대 출력과 정확히 일치하는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '시간 의존성의 역전',
+        description: '도메인 코드가 시스템 시계·기본 시간대를 직접 읽지 않는가. 시간대 정보가 도메인이 정의한 포트 뒤에 있는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '경계 설계',
+        description: '피드와 시간대 데이터가 어댑터 계층에서 검증·변환되어 도메인에는 깨끗한 값만 들어오는가. 의존 방향이 도메인을 향하는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '계산 로직의 단위 테스트가 피드 구현 없이, 실행 환경의 시간대와 무관하게 도는가. 자정·일차 경계가 다뤄졌는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"너무 짧은 환승"의 기준을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '시베리아 횡단 상품을 처음 맡은 신입 상담원 (개발 지식 없음)',
+      prompt:
+        '신입 상담원에게 설명해 주세요. (1) 왜 2018년까지 승차권과 역 시계가 서로 다른 시간을 가리켰는지 — 기준이 하나여야 했던 철도의 사정을, (2) 우리 계산기는 왜 모스크바 시간으로만 계산하고 마지막에만 현지 시각으로 바꾸는지 — 지사마다 답이 달랐던 엑셀 시절의 사고가 왜 다시는 일어날 수 없는지, (3) 화면의 현지 시각이 이상하다고 느껴질 때 무엇을 의심하고 누구에게 물어야 하는지. 시차 계산 공식 없이, 상담 중에 고객에게 그대로 옮겨 말할 수 있는 언어로.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '세 지사, 같은 답',
+        teaser: '서울과 베를린과 모스크바가 같은 화면을 보고, 시차 이야기는 회의에서 사라진다. 상담 매뉴얼의 시차 계산 부록은 조용히 폐기된다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '베를린 지사의 문의 메일',
+        teaser: '대체로 맞는다. 다만 자정을 넘는 환승에서 가끔 일차가 하루 어긋나고, 그때마다 베를린 지사의 같은 상담원이 같은 제목의 메일을 보낸다.',
+      },
+      {
+        grade: 'dawn',
+        title: '플랫폼의 7시간',
+        teaser: '모스크바 시간이 현지 시각인 척 안내되고, 고객은 이미 떠난 열차를 승강장에서 기다린다. 환불 규정 어디에도 "시간대"라는 항목은 없다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 시각표는 아직 게시되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 12 — Stage 2 "인터페이스는 계약" / 혈액형 수혈 매칭 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's2-blood-01',
+    stage: 2,
+    stageTitle: '인터페이스는 계약',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Easy',
+    scope: '단일 파일',
+    modes: ['developer'],
+    domain: '혈액형 수혈 매칭',
+    domainEmoji: '🩸',
+    title: '수혈 호환 매칭기 — 섞이면 안 되는 것을 코드로',
+    estimatedMinutes: 90,
+    briefing: {
+      title: '1900년까지, 수혈은 도박이었다',
+      content: `### 왜 어떤 피는 섞이면 안 되는가
+
+수혈은 20세기 초까지 성공과 죽음이 반반인 도박이었습니다. 어떤 환자는 살아나고 어떤 환자는 수혈 직후 급사했는데, 아무도 이유를 몰랐습니다. 1900년 카를 란트슈타이너가 사람의 피를 ABO 유형으로 나눌 수 있음을 발견하면서 수수께끼가 풀렸습니다. 적혈구 표면에는 **항원**이, 혈장에는 그에 맞서는 **항체**가 있어서, 항원과 항체가 잘못 만나면 피가 엉겨 붙습니다. A형 항체를 가진 사람에게 A항원 혈액이 들어가면 몸이 그것을 침입자로 보고 파괴하는 것이죠.
+
+### O형은 주고, AB형은 받는다
+
+ABO 규칙은 여기서 나옵니다. O형 적혈구에는 A도 B도 없어 누구에게나 줄 수 있는 **만능 공여자**입니다. 반대로 AB형은 A항체도 B항체도 없어 누구의 피든 받는 **만능 수혈자**입니다. 여기에 Rh 인자가 겹칩니다. D항원이 없는 **Rh−는 Rh+에게 줄 수 있지만 그 반대는 안 됩니다.** Rh− 환자에게 Rh+ 피를 넣으면 항체가 만들어져, 그다음 수혈이나 임신에서 문제가 됩니다. 그래서 응급 상황의 원칙은 하나로 모입니다 — **혈액형을 확인할 시간이 없으면 O형 음성(O−)을 준다.**
+
+### 호환표는 사실 타입 시스템이다
+
+공여자 유형과 수혈자 유형의 짝을 "된다/안 된다"로 채운 표가 수혈 호환 매트릭스입니다. 프로그래밍 언어를 다뤄 본 사람에게 이 표는 낯설지 않습니다 — 어떤 타입을 어떤 자리에 대입할 수 있는가를 규정하는 규칙, 즉 타입 시스템의 대입 가능성과 뼈대가 같기 때문입니다. 다만 여기서는 컴파일 오류 대신 사람이 다칩니다. 이번 미션에서 여러분이 옮길 규칙은 그런 무게를 가진 규칙입니다.`,
+    },
+    scenario: `종합병원 수혈의학과의 사내 시스템에 **수혈 호환 매칭 기능**을 넣습니다. 의뢰인 혈액형을 넣으면 재고 중 안전하게 수혈 가능한 혈액을 골라 주는 기능입니다. 혈액 재고는 **다른 팀(혈액은행 관리부)이 소유한 낡은 시스템**이 관리하고, 우리는 그 시스템을 고칠 권한이 없습니다 — 우리 쪽에서 할 수 있는 일은 그 시스템에 물어보고, 돌아온 답을 우리 방식으로 다시 정리하는 것뿐입니다. 응급실에서도 호출하는 기능이라, 틀린 매칭은 소프트웨어 버그가 아니라 의료 사고가 됩니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/hosp/bloodbank/BloodBank.java',
+        content: `package com.hosp.bloodbank;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 혈액은행 재고 시스템 (혈액은행 관리부 소유 — 엔진입니다. 수정 금지, 그대로 사용).
+ *
+ * 주의: 이 클래스는 우리 팀 소유가 아닙니다. 오래된 시스템이라 규약이 엉성합니다.
+ *  - 혈액형은 문자열이 아니라 내부 int 코드로 다룬다 (아래 표 참조).
+ *  - 재고 조회는 없는 코드에 대해 예외 대신 -1을 돌려줄 때가 있다.
+ *  - typeName은 모르는 코드에 대해 null을 돌려준다.
+ * 규약을 바꿔 달라고 요청했지만 "다음 차수 고도화 때"라는 답만 3년째 돌아옵니다.
+ *
+ * 내부 혈액형 코드:
+ *   0=O-  1=O+  2=A-  3=A+  4=B-  5=B+  6=AB-  7=AB+
+ */
+public class BloodBank {
+
+    private final Map<Integer, Integer> stock = new HashMap<>();
+
+    public BloodBank() {
+        stock.put(0, 12);  // O-
+        stock.put(1, 40);  // O+
+        stock.put(2, 3);   // A-
+        stock.put(3, 25);  // A+
+        stock.put(4, 0);   // B-  (재고 없음)
+        stock.put(5, 15);  // B+
+        stock.put(6, 2);   // AB-
+        stock.put(7, 8);   // AB+
+    }
+
+    /** 코드별 재고 단위 수. 등록되지 않은 코드는 -1을 돌려준다(0이 아님에 주의). */
+    public int unitsOf(int typeCode) {
+        Integer v = stock.get(typeCode);
+        if (v == null) {
+            return -1;
+        }
+        return v;
+    }
+
+    /** 코드 -> 표기 문자열("O-" 등). 모르는 코드는 null. */
+    public String typeName(int typeCode) {
+        switch (typeCode) {
+            case 0: return "O-";
+            case 1: return "O+";
+            case 2: return "A-";
+            case 3: return "A+";
+            case 4: return "B-";
+            case 5: return "B+";
+            case 6: return "AB-";
+            case 7: return "AB+";
+            default: return null;
+        }
+    }
+
+    /** 시스템이 아는 모든 코드. (순서 보장 없음) */
+    public int[] allCodes() {
+        return new int[] {0, 1, 2, 3, 4, 5, 6, 7};
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/hosp/match/App.java',
+        content: `package com.hosp.match;
+
+import com.hosp.bloodbank.BloodBank;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력과 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        BloodBank bank = new BloodBank();
+
+        // TODO(학습자): BloodBank를 여러분의 깨끗한 계약 뒤로 감싸고,
+        //               TransfusionMatcher로 아래 두 요청을 처리해 출력하세요.
+        // TransfusionMatcher matcher = ...;
+        // System.out.println(matcher.match("A+"));
+        // System.out.println(matcher.match("B-"));
+
+        // ===== 기대 출력 1: 수혈자 A+ =====
+        // [수혈 호환 매칭] 수혈자 A+
+        // 호환 혈액형: O-, O+, A-, A+
+        // 재고 있는 호환 혈액: O-(12), O+(40), A-(3), A+(25)
+        // 권장(응급 시): O-
+
+        // ===== 기대 출력 2: 수혈자 B- =====
+        // [수혈 호환 매칭] 수혈자 B-
+        // 호환 혈액형: O-, B-
+        // 재고 있는 호환 혈액: O-(12)
+        // 권장(응급 시): O-
+        // 주의: B- 재고 0단위 — 호환이나 재고 없음
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/hosp/match/TransfusionMatcher.java',
+        content: `package com.hosp.match;
+
+/**
+ * 수혈 호환 매칭기 (구현 대상).
+ *
+ * 두 가지가 여러분의 설계 몫입니다.
+ * 1) ABO/RhD 호환 규칙을 어떻게 표현할 것인가 — if 산탄총이 아니라 규칙으로.
+ * 2) 낡은 BloodBank(외부 팀 소유)를 어떻게 다룰 것인가 — 이 클래스가 int 코드와
+ *    -1/null 같은 엉성한 규약을 직접 상대하면, 규약이 바뀌는 날 이 클래스가 열립니다.
+ *    깨끗한 계약(우리 도메인 언어)을 정의하고 BloodBank를 그 뒤에 숨기세요.
+ *    (계약용 인터페이스는 일부러 제공하지 않았습니다.)
+ */
+public class TransfusionMatcher {
+
+    // TODO 생성자에서 무엇을 주입받을지 설계하세요.
+
+    /** 수혈 호환 매칭 요약. App.java의 기대 출력 형식과 일치해야 합니다. */
+    public String match(String recipientType) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      'ABO 규칙: O형 적혈구는 모든 ABO형에 줄 수 있고(만능 공여), AB형은 모든 ABO형에서 받을 수 있습니다(만능 수혈). A형은 A·O에서, B형은 B·O에서 받습니다. 즉 공여 혈액의 항원이 수혈자에게 없으면 호환입니다.',
+      'RhD 규칙: Rh−는 Rh+와 Rh− 모두에게 줄 수 있지만, Rh+는 Rh+에게만 줄 수 있습니다. 검증 시나리오 1: 수혈자 A+의 호환 공여형은 O−, O+, A−, A+ 네 가지입니다.',
+      '검증 시나리오 2: 수혈자 B−의 호환 공여형은 O−, B− 두 가지뿐입니다(Rh−는 Rh− 또는 O−에서만 받음). App.java의 두 기대 출력과 정확히 일치해야 합니다.',
+      '재고 표시: 호환 혈액형 중 실제로 재고가 1단위 이상 있는 것만 재고 목록에 (수량)과 함께 보여 줍니다. 호환이지만 재고가 0인 혈액형은 재고 목록에서 빠지되, 요청 혈액형 자체의 재고가 0이면 "주의" 문구로 알립니다(시나리오 2의 B−).',
+      '응급 권장: 호환 목록에 관계없이 응급 시 권장은 항상 O−입니다. 다만 O− 재고가 0이면 권장 줄에 "O− 재고 소진" 경고를 함께 띄웁니다.',
+      '수혈의학과 요청: "희귀 혈액형은 재고가 임계치 아래로 떨어지면 별도 표시를 하고 싶어요." (어느 혈액형이 "희귀"이고 임계치가 몇 단위인지는 아직 내규로 정해지지 않았습니다)',
+    ],
+    constraints: [
+      'BloodBank.java와 App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요. BloodBank는 다른 팀 소유라 우리가 규약을 바꿀 수 없습니다.',
+      '도메인 규칙: 이 미션은 적혈구(RBC) 수혈 호환만 다룹니다. 혈장·혈소판의 반대 방향 호환 규칙은 범위 밖입니다.',
+      'BloodBank의 엉성한 규약(int 코드, -1 반환, null 반환)이 매칭 로직 곳곳에 새어 들지 않게 하세요. 경계에서 한 번 검증·변환하고, 도메인 안에서는 깨끗한 타입만 다룹니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '의료 도메인 규칙(ABO/RhD 호환)을 오차 없이, 조건문 산탄총이 아니라 규칙으로 코드화하는 훈련',
+      '내가 소유하지 않은 엉성한 외부 시스템을, 내가 정의한 깨끗한 계약 뒤로 감싸는 어댑터 설계',
+      '호환표를 대입 가능성(타입 시스템)의 관점으로 바라보는 사고 확장',
+      '경계에서의 방어 — 외부 규약의 -1·null 같은 함정을 도메인에 들이지 않기',
+    ],
+    hints: [
+      '호환 판정을 8×8 표로 하드코딩하고 싶어질 겁니다. 그 전에 항원 집합으로 생각해 보세요 — 공여형의 ABO 항원 집합이 수혈자의 항원 집합에 포함되고, Rh는 (공여 − 또는 수혈자 +)이면 호환입니다. 규칙 두 줄이 표 64칸을 대신합니다.',
+      'BloodBank.unitsOf()의 −1과 typeName()의 null은 "없음"이 아니라 "규약 위반"입니다. 이 값들을 매칭 로직까지 흘려보내면 재고 −1단위가 "있음"으로 새어 들 수 있습니다. 우리 쪽 어댑터에서 한 번 걸러, 도메인에는 정상 재고만 넘기세요.',
+      'BloodType를 enum(또는 항원 정보를 담은 값 객체)으로 두고, "이 형이 저 형에게 줄 수 있는가"를 그 타입의 메서드로 만드세요. BloodBank의 int 코드는 어댑터가 이 타입으로 번역합니다. 도메인 코드 어디에도 0~7 숫자가 보이지 않으면 성공입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '"O+·" 같은 오타 혈액형',
+        description:
+          '접수 창구에서 "O+"를 "O+·"나 "o positive"로 잘못 넘기면, 관대한 파서는 이를 조용히 어떤 형으로 뭉개고 엉뚱한 호환 목록을 내놓습니다. 수혈에서 조용한 오분류는 최악의 실패입니다. 좋은 방어: 알 수 없는 혈액형 문자열은 매칭으로 넘기지 말고 입구에서 명시적으로 거부하세요 — "판독 불가"는 "아무 형"보다 안전합니다.',
+      },
+      {
+        title: '재고 0인 응급 상황',
+        description:
+          '대량 사고로 O− 재고가 0이 된 밤이 옵니다. O−를 무조건 권장으로 출력하는 코드는 창고에 없는 피를 가리키고, 응급실은 그 화면을 믿고 시간을 잃습니다. 좋은 방어: 권장을 낼 때 재고 상태를 함께 확인해, O−가 소진됐으면 그 사실을 경고로 드러내세요. 재고 조회의 −1(규약 위반)을 0(소진)과 구분하는 것도 여기서 중요합니다.',
+      },
+      {
+        title: 'Rh 정보 누락',
+        description:
+          'ABO는 왔는데 Rh가 비어 "A"만 넘어오는 경우가 있습니다(오래된 차트, 검사 미완). Rh를 임의로 +나 −로 가정하면 한쪽은 항체 형성 위험, 다른 쪽은 멀쩡한 재고를 버립니다. 좋은 방어: Rh 불명은 추측하지 말고 "Rh 미상 — 확인 필요"로 명시하세요. 안전 측 기본값이 있다면 그것이 왜 안전한지 근거를 남기고, 없다면 판정을 보류하는 것이 정답입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: 'ABO/RhD 호환 판정이 두 검증 시나리오와 정확히 일치하는가. O−/AB+ 특례와 Rh 방향이 정확한가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '외부 경계의 캡슐화',
+        description: '엉성한 BloodBank(int 코드, −1/null)가 우리 도메인 계약 뒤로 감싸여, 매칭 코드가 외부 규약을 직접 상대하지 않는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '호환 규칙의 표현',
+        description: '호환 판정이 64칸 하드코딩이 아니라 항원/Rh 규칙으로 표현되어, 읽고 검산할 수 있는가. 혈액형이 의미 있는 타입인가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '두 시나리오와 재고 0·응급 권장 경계가 단위 테스트로 고정되어 있는가. 8종 전 혈액형 호환이 검증되었는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"희귀 혈액형 임계치"의 기준을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '헌혈은 자주 하지만 수혈 원리는 처음 듣는 친구',
+      prompt:
+        '친구에게 설명해 주세요. (1) 왜 O형은 "누구에게나 주는 피"이고 AB형은 "누구에게나 받는 피"인지 — 항원과 항체를 열쇠와 자물쇠에 빗대어, (2) 응급실에서 혈액형을 모를 때 왜 O− 음성을 주는지, (3) 우리 프로그램이 왜 재고 시스템의 답을 그대로 쓰지 않고 한 번 "우리 말로 번역"해서 쓰는지 — 남의 창고 장부를 그대로 믿지 않고 우리 장부에 옮겨 적는 일에 빗대어. 수혈은 사람 목숨이 걸린 일이니, 틀리면 안 되는 이유를 과장 없이 정확히 전하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '조용한 혈액은행',
+        teaser: '응급실이 매칭 화면을 믿기 시작한다. 낡은 재고 시스템이 다음 고도화에서 규약을 또 바꿨지만, 열린 파일은 어댑터 하나뿐이었다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '손으로 다시 보는 표',
+        teaser: '매칭은 돈다. 다만 당직 의사가 습관처럼 종이 호환표로 한 번 더 대조하고, "시스템은 참고만"이라는 포스트잇이 모니터에 붙는다.',
+      },
+      {
+        grade: 'dawn',
+        title: '−1단위의 밤',
+        teaser: '재고 시스템의 −1이 "있음"으로 새어 든 밤, 창고에 없는 혈액이 화면에서 추천된다. 사고 조사 위원회의 첫 질문은 "화면은 왜 있다고 했는가"이다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 혈액은 아직 교차 적합 시험을 통과하지 못했습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 13 — Stage 4 "레거시 길들이기" / 히든 피겨스 오마주 / 리팩토링
+  // =========================================================================
+  {
+    id: 's4-figures-01',
+    stage: 4,
+    stageTitle: '레거시 길들이기',
+    missionType: '리팩토링',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '영화 오마주',
+    domainEmoji: '🎬',
+    title: '검산 노트와 한 치도 다르지 않게 — 재진입 창 계산의 이관',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '기계를 믿지 못한 사람들',
+      content: `### 사람이 컴퓨터이던 시절
+
+1960년대 초, 우주 프로그램의 궤도 계산은 사람이 했습니다. 방 하나 가득한 계산원들이 종이와 계산자로 재진입 궤적을 손으로 풀었고, 그들의 직업명은 문자 그대로 "컴퓨터(computer)"였습니다. 이윽고 IBM 대형 컴퓨터가 들어오면서 그 일이 기계로 넘어갔지만, 전환은 매끄럽지 않았습니다. 기계가 내놓은 숫자를 아무도 완전히 믿지 못했으니까요.
+
+### 검산 노트라는 안전장치
+
+그래서 결정적인 순간, 관제팀은 기계가 계산한 재진입 좌표를 **사람에게 다시 검산시켰습니다.** 계산원의 노트에 적힌 수치와 IBM의 출력이 일치할 때에야 비로소 그 숫자를 신뢰했습니다. 기계를 향한 불신이 만든 이 이중 검산 절차는, 소프트웨어 공학이 훗날 **특성화 테스트(characterization test)** 라 부르게 되는 것의 원형입니다 — 새 구현이 기존의 검증된 동작을 한 치도 벗어나지 않았음을, 숫자로 증명하는 일.
+
+### 이관되는 것과 검증하는 것
+
+이번 미션에서 여러분은 대체되는 쪽이 아니라 검증하는 쪽에 섭니다. 1960년대식으로 짜인 재진입 창 계산 코드 — 전역 변수에 값을 쌓고, 플래그로 흐름을 꺾고, 정체 모를 상수가 박힌 그 코드 — 를 새 모듈(IBM)로 옮기되, **계산원의 검산 노트에 적힌 수치와 단 1초도 어긋나서는 안 됩니다.** 노트의 숫자가 곧 동작 보존의 스펙입니다. 기계가 사람을 대체하던 그 방에서, 마지막까지 남아 숫자를 지킨 것은 사람의 노트였습니다.`,
+    },
+    scenario: `여러분은 재진입 관제 소프트웨어의 현대화 팀에 합류했습니다. 재진입 창(reentry window)을 계산하는 핵심 코드가 1961년에 작성된 채 아직도 돌아갑니다. 이 코드는 값을 **관제실 데이터판(공용 게시판)에서 직접 읽어 옵니다** — 추적반이 새 관측치를 그 판에 꽂아 두면, 계산 코드가 5초마다 그 판을 훑어보는 방식입니다. 팀장의 지시는 둘입니다. 첫째, 계산을 새 모듈로 옮겨 입력을 명시적으로 받게 하되, 둘째, **계산원 캐서린의 검산 노트에 적힌 수치와 한 치도 다르면 안 된다.** 노트는 지금도 금고에 있습니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/gov/space/board/FlightDataBoard.java',
+        content: `package gov.space.board;
+
+/**
+ * 관제실 데이터판 (추적반 소유 — 엔진입니다. 수정 금지, 그대로 사용).
+ *
+ * 1961년 방식 그대로의 "공용 게시판"입니다. 추적반이 관측치를 이 전역 필드에
+ * 꽂아 두면, 여러 계산 코드가 각자 이 판을 5초마다 폴링해 값을 읽어 갑니다.
+ * 아무나 언제든 덮어쓸 수 있고, 누가 마지막에 썼는지는 아무도 모릅니다.
+ *   vhi = 재진입 속도 지수 (100 ft/s 단위)
+ *   ang = 진입각 (0.1도 단위)
+ *   wt  = 캡슐 중량 지수
+ */
+public class FlightDataBoard {
+
+    // 추적반이 여기에 카드를 꽂는다. 계산 코드는 여기를 폴링한다.
+    public static int vhi = 0;
+    public static int ang = 0;
+    public static int wt = 0;
+
+    /** 추적반이 새 관측 카드를 게시판에 꽂는다. */
+    public static void postCard(int vhi, int ang, int wt) {
+        FlightDataBoard.vhi = vhi;
+        FlightDataBoard.ang = ang;
+        FlightDataBoard.wt = wt;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/gov/space/App.java',
+        content: `package gov.space;
+
+import gov.space.board.FlightDataBoard;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력(= 캐서린의 검산 노트)과 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        // 추적반이 관측 카드 A를 게시판에 꽂는다.
+        FlightDataBoard.postCard(259, 63, 18);
+
+        // TODO(학습자): 새 모듈(IBM)로 재진입 창을 계산해 출력하세요.
+        //   레거시는 게시판을 직접 폴링했지만, 새 모듈은 입력을 명시적으로 받아야 합니다.
+        // ReentryModule ibm = ...;
+        // System.out.println(ibm.compute(카드A));
+
+        // 관측 카드 B
+        FlightDataBoard.postCard(240, 50, 20);
+        // System.out.println(ibm.compute(카드B));
+
+        // ===== 검산 노트 — 카드 A (vhi=259, ang=63, wt=18) =====
+        // [재진입 창] 관측 카드 A
+        // 항력 계수(k): 94
+        // 공칭 중심시각(T): 557초 (09:17)
+        // 창 반폭(W): 114초
+        // 재진입 창: 443초(07:23) ~ 671초(11:11)
+
+        // ===== 검산 노트 — 카드 B (vhi=240, ang=50, wt=20) =====
+        // [재진입 창] 관측 카드 B
+        // 항력 계수(k): 100
+        // 공칭 중심시각(T): 520초 (08:40)
+        // 창 반폭(W): 140초
+        // 재진입 창: 380초(06:20) ~ 660초(11:00)
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/gov/space/legacy/ReentryCalc.java',
+        content: `package gov.space.legacy;
+
+import gov.space.board.FlightDataBoard;
+
+// ------------------------------------------------------------------
+//  재진입창 산출 ReentryCalc  REV.C
+//  19610714 최초작성 (계산반)
+//  19620203 항력식 개정. gK 손대지 말것 - 노트 대조 끝남
+//  19620930 얕은진입각 창하한 추가 (플래그 gFloor)
+//  값은 게시판에서 읽는다. 인자로 받지 말것 (추적반 폴링 규약, 19610714)
+// ------------------------------------------------------------------
+public class ReentryCalc {
+
+    // 전역 작업 레지스터. 계산 중간값이 여기 쌓인다. 초기화는 run() 진입 시.
+    public static int gK = 0;      // 항력계수
+    public static int gT = 0;      // 공칭 중심시각(초)
+    public static int gW = 0;      // 창 반폭(초)
+    public static int gFloor = 0;  // 1 = 창하한 걸림
+
+    /** 게시판을 폴링해 재진입 창을 산출한다. 리턴: "open,close" (초) */
+    public static String run() {
+        int v = FlightDataBoard.vhi;
+        int a = FlightDataBoard.ang;
+        int w = FlightDataBoard.wt;
+
+        gK = 0; gT = 0; gW = 0; gFloor = 0;
+
+        // 1행: 항력계수 (19620203 개정)
+        gK = w * 3 + 40;   // 3, 40 = 표준대기 계수. 바꾸면 노트 안 맞음
+
+        // 2행: 공칭 중심시각
+        gT = v * 3 - a * 2 - gK;
+
+        // 3행: 창 반폭 (진입각 얕을수록 넓다)
+        gW = 240 - a * 2;
+        if (gW < 60) {
+            gFloor = 1;
+            gW = 60;   // 19620930 창하한. GOTO L9 대신 (박기사)
+        }
+
+        int open = gT - gW;
+        int close = gT + gW;
+        return open + "," + close;
+    }
+
+    // 노트 출력용. 관제 상황판에서 아직 쓴다고 함 (19630110)
+    public static String note() {
+        run();
+        return "K" + gK + "/T" + gT + "/W" + gW;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/gov/space/ibm/ReentryModule.java',
+        content: `package gov.space.ibm;
+
+/**
+ * 신규 재진입 창 모듈 (IBM — 구현 대상).
+ *
+ * 레거시(ReentryCalc)는 게시판(FlightDataBoard)을 전역으로 폴링하고
+ * 전역 레지스터(gK, gT, gW)에 중간값을 쌓았습니다. 새 모듈의 목표는 둘입니다.
+ * 1) 입력을 명시적으로 받는다 — 이 클래스가 FlightDataBoard를 직접 폴링해서는 안 됩니다.
+ *    게시판을 읽어 오는 일은 경계(어댑터)의 몫이고, 계산은 순수해야 합니다.
+ * 2) 계산 결과가 캐서린의 검산 노트(App.java 기대 출력)와 한 치도 다르지 않아야 합니다.
+ * (입력을 담을 값 객체와 경계 인터페이스는 여러분이 설계합니다.)
+ */
+public class ReentryModule {
+
+    /** 재진입 창 산출 요약. App.java의 검산 노트 형식과 일치해야 합니다. */
+    public String compute(/* TODO 입력 타입은 여러분의 설계 */ Object card) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '검산 노트가 곧 스펙입니다. 카드 A(vhi=259, ang=63, wt=18)의 결과는 k=94, T=557초, W=114초, 창 443~671초여야 합니다. 계산 절차: k = wt×3 + 40, T = vhi×3 − ang×2 − k, W = 240 − ang×2(단 60 미만이면 60), 창 = [T−W, T+W]. App.java의 두 검산 노트와 정확히 일치해야 합니다.',
+      '카드 B(vhi=240, ang=50, wt=20)의 결과는 k=100, T=520초, W=140초, 창 380~660초입니다. 이관 전 레거시(ReentryCalc)와 이관 후 새 모듈의 출력이 모든 검증 카드에서 1초도 달라지지 않음을 자동화된 테스트로 먼저 고정하세요.',
+      '새 모듈(ReentryModule)은 게시판(FlightDataBoard)을 직접 폴링해서는 안 됩니다. 5분마다, 아니 5초마다 우리 값을 덮어쓰는 그 공용 게시판을 읽어 오는 일은 경계(어댑터)의 책임입니다. 계산 로직은 명시적으로 전달받은 입력만으로, 게시판 없이 단위 테스트가 돌아야 합니다.',
+      '레거시의 전역 레지스터(gK, gT, gW, gFloor)에 중간값을 쌓는 방식을 새 모듈로 그대로 옮기지 마세요. 같은 계산을 두 번 호출해도 서로 간섭하지 않아야 합니다(전역 상태 제거).',
+      '이관 범위와 근거를, 코드를 모르는 관제 검증관이 읽고 "노트와 일치함"을 납득할 수 있는 변경 요약으로 남기세요.',
+      '관제팀 요청: "창이 너무 좁으면 재진입이 위험하니 경고를 띄우고 싶습니다." (창 반폭 몇 초 미만이 "너무 좁은" 것인지는 비행별로 다르다고만 합니다)',
+    ],
+    constraints: [
+      'FlightDataBoard.java와 App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요. 게시판은 추적반 소유라 우리가 폴링 규약을 바꿀 수 없습니다.',
+      '레거시 ReentryCalc.java의 계산 상수(3, 40, 2, 240, 60)와 절차는 검산 노트가 검증한 값입니다. 이관 중에도 이 수치와 순서를 임의로 "정리"하지 마세요 — 노트가 스펙입니다.',
+      '레거시 코드의 수정 이력 주석은 삭제하지 말고 보존하세요. gK를 손대지 말라는 1962년 주석에는 이유가 있습니다(노트 대조가 끝난 값).',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '검증된 레거시 동작을 특성화 테스트로 고정한 뒤, 그 그물 안에서 안전하게 이관하는 절차 체득',
+      '전역 상태 폴링(공용 게시판)이라는 숨은 입력 통로를 명시적 입력으로 바꾸는 의존성 정리',
+      '전역 작업 레지스터로 흐르던 중간 계산을, 상태 없는 순수 계산으로 옮기는 감각',
+      '"이해했으니 정리한다"의 유혹과 "노트가 스펙이다"의 규율 사이에서 균형 잡기',
+    ],
+    hints: [
+      '이관보다 먼저 할 일은 사진 찍기입니다. 카드 A·B는 물론, 진입각을 아주 크게 준 얕은 창(gFloor가 걸리는 경우)까지 레거시 run()의 출력을 표로 받아 적으세요. 그 표가 캐서린의 노트를 대신하는 특성화 테스트입니다.',
+      '새 모듈이 FlightDataBoard.vhi를 직접 읽는 순간, "게시판 없이 테스트"와 "전역 상태 제거"가 동시에 무너집니다. 게시판 값을 읽어 입력 값 객체(예: ObservationCard)로 옮겨 주는 얇은 어댑터를 경계에 두고, 계산 모듈은 그 값 객체만 받게 하세요.',
+      'gK, gT, gW는 계산 순서상 잠깐 필요한 중간값일 뿐 상태가 아닙니다. 지역 변수로 내리거나 작은 결과 레코드로 반환하면, 같은 계산을 연달아 두 번 해도 값이 섞이지 않습니다. 상수 3·40·240은 지우지 말고 이름을 붙이세요 — 노트를 바꾸는 게 아니라 노트에 각주를 다는 일입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '아무도 안 꽂은 게시판',
+        description:
+          '추적반이 카드를 꽂기 전에 계산이 돌면 게시판 값은 전부 0입니다. 레거시는 그대로 k=40, T=−40짜리 "창"을 성실히 계산해 음수 시각을 내놓습니다. 관제 상황판에 뜬 음수 재진입 시각은 아무도 웃어넘길 수 없습니다. 좋은 방어: 경계에서 게시판이 실제 관측 카드로 채워졌는지 검증하고, 비어 있으면 계산으로 넘기지 말고 "관측 미수신"으로 명시적으로 실패하세요.',
+      },
+      {
+        title: '누군가 덮어쓴 카드',
+        description:
+          '공용 게시판은 아무나 언제든 덮어쓸 수 있습니다. 우리가 읽는 순간과 계산하는 순간 사이에 추적반이 다음 비행 값을 꽂으면, 한 계산 안에서 서로 다른 카드가 섞입니다. 좋은 방어: 경계에서 게시판 값을 한 번에 읽어 불변 값 객체로 스냅샷을 뜨고, 계산은 그 스냅샷만 쓰세요. 전역을 여러 번 폴링하는 계산은 언제나 경합에 진 자입니다.',
+      },
+      {
+        title: '창하한에 걸린 급진입',
+        description:
+          '진입각이 매우 큰(가파른) 카드에서는 W = 240 − ang×2가 60 아래로 내려가 gFloor가 걸리고 W가 60으로 고정됩니다. 이관하며 이 하한 분기를 빠뜨리면 노트와 어긋나고, 반대로 이 경우를 "위험한 급진입"으로 잘못 삼켜도 안 됩니다. 좋은 방어: 하한이 걸린 사실 자체를 결과에 드러내(플래그 보존), 노트 수치는 지키면서 관제가 급진입을 알아볼 수 있게 하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '특성화 테스트 우선',
+        description: '이관 전에 레거시 동작(카드 A·B·창하한 경계)을 테스트로 고정했는가. 검산 노트 수치가 테스트로 못박였는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '동작 보존',
+        description: '이관 후 새 모듈의 출력이 모든 검증 카드에서 레거시와 1초도 다르지 않은가. 이를 테스트로 증명했는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '입력 경계와 전역 제거',
+        description: '새 모듈이 게시판을 직접 폴링하지 않고 명시적 입력을 받는가. 전역 작업 레지스터가 상태 없는 계산으로 바뀌어 재호출에 안전한가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '계산 로직의 순수성',
+        description: '계산이 게시판·전역 없이 단위 테스트 가능한 단위로 분리되었는가. 상수에 이름이 붙되 수치는 노트대로 보존되었는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"너무 좁은 창"의 기준을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '코드를 모르는 관제 검증관 (재진입 절차는 훤히 알지만 프로그램은 남의 일인 사람)',
+      prompt:
+        '검증관에게 이관 작업을 보고하세요. (1) 왜 계산을 옮기기 전에 "기존 코드가 내놓는 숫자를 통째로 노트에 옮겨 적는 일"(특성화 테스트)부터 했는지 — 캐서린의 검산 노트에 빗대어, (2) 새 모듈이 옛 코드와 단 1초도 다르지 않다는 것을 무엇으로 보장하는지, (3) 옛 방식(아무나 덮어쓰는 공용 게시판을 훔쳐보던 것)과 새 방식(관측 카드를 손에 받아 드는 것)의 차이가 왜 안전을 높이는지. 프로그래밍 용어 없이, 사람이 기계를 검산하던 그 방의 언어로.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '노트와 같은 숫자',
+        teaser: '새 모듈의 첫 출력이 금고 속 노트와 한 줄도 다르지 않다. 검증관은 노트를 덮고, 그날 이후 아무도 그 계산을 다시 손으로 풀지 않는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '금고를 여는 밤',
+        teaser: '대체로 맞는다. 다만 급진입 카드가 올 때마다 창하한 값이 한 번씩 어긋나, 검증관이 금고에서 노트를 꺼내 대조하는 밤이 이어진다.',
+      },
+      {
+        grade: 'dawn',
+        title: '음수 재진입 시각',
+        teaser: '누군가 게시판을 덮어쓴 사이 두 카드가 섞인 채 계산되고, 관제 상황판에 음수 재진입 시각이 뜬다. 사고 조사 보고서의 부록에 옛 전역 변수 이름이 나열된다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 궤도는 아직 아무도 검산하지 못했습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 14 — Stage 3 "의존성 역전" / 기업 재무·회생 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's3-homeplus-01',
+    stage: 3,
+    stageTitle: '의존성 역전',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer', 'plannerReview'],
+    domain: '기업 재무·회생',
+    domainEmoji: '💼',
+    title: '워터폴의 맨 아래 — 회생 시나리오 시뮬레이터',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '폭포는 아래까지 내려가지 않는다',
+      content: `### 7조 원짜리 인수의 구조
+
+2015년, 사모펀드 MBK파트너스는 영국 테스코로부터 홈플러스를 약 7조 원에 인수했습니다. 당시 아시아 최대 규모의 차입매수(LBO)로 보도된 거래였습니다. LBO는 인수 대금의 상당 부분을 빚으로 조달하고, 그 원리금을 사실상 인수된 회사의 현금흐름으로 갚아 나가는 구조입니다. 집을 사며 받은 대출을 그 집의 월세 수입으로 갚는 그림과 비슷합니다 — 다만 여기서 '집'은 수만 명이 일하는 회사입니다.
+
+### 자산이 비용으로 바뀌다
+
+인수 후 홈플러스는 여러 점포를 매각한 뒤 다시 임차해 영업하는 세일 앤드 리스백(sale & leaseback)을 진행했습니다. 매각 대금으로 빚을 줄일 수 있지만, 그 대가로 자산(내 건물)이 비용(남의 건물 임대료)으로 바뀝니다. 보도 기준으로 연간 수천억 원대의 임대료가 고정비로 자리 잡았고, 이 구조가 회사를 취약하게 만들었다는 시각과 오프라인 유통업 전반의 침체가 겹친 결과라는 시각이 함께 있습니다.
+
+### 2025년 3월, 회생법원
+
+2025년 3월, 홈플러스는 신용등급 강등 국면에서 기업회생을 신청했습니다. 이후 대주주 측은 보유 지분의 무상소각 방침을 밝혔고, 노동조합은 고용 불안 속에 파업으로 맞섰습니다. 회생 절차의 변제에는 법이 정한 순서가 있습니다 — 공익채권, 회생담보권, 회생채권, 그리고 맨 마지막이 주주. 현금이 폭포처럼 위에서 아래로 흐르며 순서대로 채워지는 이 구조를 워터폴(waterfall)이라 부릅니다. 폭포의 맨 아래에 주주가 있고, 그 폭포의 바깥에 — 순번표조차 받지 않은 채 — 계산대의 사람들이 서 있습니다. 이번 미션은 그 폭포를 정확히 계산하는 일입니다.`,
+    },
+    scenario: `여러분은 구조조정 자문사의 개발 지원 인력입니다. 가상의 대형마트 **R사**(브리핑의 사건과 구조는 같지만, 아래의 모든 수치는 실제 회사와 무관한 연습용 가상 숫자입니다)의 **회생 시나리오 시뮬레이터**를 만듭니다. 영업현금흐름·임대료·채무·이자율을 넣으면 워터폴 분배와 채권자별 회수율이 나오는 도구입니다. 문제는 입력값입니다 — 임대료와 이자율은 지금 협상 테이블 위에 있어서 **숫자가 매주 바뀝니다.** 자문사 팀장의 주문: "숫자가 바뀔 때마다 계산 로직을 다시 컴파일할 수는 없습니다."`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/rsa/dealroom/DealRoomFeed.java',
+        content: `package com.rsa.dealroom;
+
+import java.util.Map;
+
+/**
+ * 데이터룸 피드 (재무 자문 파트 소유 — 엔진입니다. 수정 금지, 그대로 사용).
+ * 자문사 스프레드시트를 그대로 덤프한 것이라 모든 값이 문자열입니다.
+ * 협상이 진행 중인 항목에는 숫자 대신 "미정"이 들어옵니다. 값은 매주 갱신됩니다.
+ * 금액 단위: 억 원.
+ */
+public class DealRoomFeed {
+
+    /** 최신 협상 스냅샷. */
+    public Map<String, String> latest() {
+        return Map.of(
+                "operatingCashflow", "6000",   // 연간 영업현금흐름(임대료·필수 운영비 지급 전)
+                "annualRent", "3000",          // 연간 임대료 (재협상 중)
+                "essentialOpex", "1200",       // 임금 등 필수 운영비
+                "securedPrincipal", "2500",    // 담보부 채무 원금
+                "securedRatePct", "4",         // 담보부 채무 연 이자율(%)
+                "unsecuredDebt", "3400",       // 무담보 채무
+                "collateralValue", "2000",     // 담보 자산 평가액
+                "rentEscalationYr3", "미정");  // 3년차 이후 임대료 인상률
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/rsa/App.java',
+        content: `package com.rsa;
+
+import com.rsa.dealroom.DealRoomFeed;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력과 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        DealRoomFeed feed = new DealRoomFeed();
+
+        // TODO(학습자): 협상 숫자의 공급처를 여러분이 설계한 포트 뒤에 두고,
+        //               WaterfallSimulator로 두 시나리오를 계산해 출력하세요.
+        // WaterfallSimulator sim = ...;
+        // System.out.println(sim.simulate(기본 시나리오));
+        // System.out.println(sim.simulate(임대료 20% 인하 시나리오));
+
+        // ===== 기대 출력 1: 기본 시나리오 (임대료 3,000억) =====
+        // [회생 워터폴] R사 — 연간 영업현금흐름 6,000억
+        // 1순위 공익채권: 4,200억 / 4,200억 (회수율 100.0%) | 잔여 재원 1,800억
+        // 2순위 회생담보권: 1,800억 / 2,000억 (회수율 90.0%) | 잔여 재원 0억
+        // 3순위 회생채권: 0억 / 4,000억 (회수율 0.0%)
+        // 4순위 주주: 0억
+        // ※ 담보부 원리금 2,600억 중 담보평가액 2,000억까지 담보권 인정, 600억은 회생채권 합산
+
+        // ===== 기대 출력 2: 임대료 20% 인하 시나리오 (임대료 2,400억) =====
+        // [회생 워터폴] R사 — 연간 영업현금흐름 6,000억
+        // 1순위 공익채권: 3,600억 / 3,600억 (회수율 100.0%) | 잔여 재원 2,400억
+        // 2순위 회생담보권: 2,000억 / 2,000억 (회수율 100.0%) | 잔여 재원 400억
+        // 3순위 회생채권: 400억 / 4,000억 (회수율 10.0%)
+        // 4순위 주주: 0억
+        // ※ 담보부 원리금 2,600억 중 담보평가액 2,000억까지 담보권 인정, 600억은 회생채권 합산
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/rsa/domain/WaterfallSimulator.java',
+        content: `package com.rsa.domain;
+
+/**
+ * 회생 워터폴 시뮬레이터 (구현 대상).
+ *
+ * 두 가지가 여러분의 설계 몫입니다.
+ * 1) 협상 중인 숫자(임대료, 이자율 등)를 어디서 얻을 것인가 — 이 클래스가
+ *    DealRoomFeed의 문자열 Map을 직접 뒤져서는 안 됩니다. 숫자가 매주 바뀌어도
+ *    계산 로직은 다시 열리지 않아야 합니다.
+ * 2) 워터폴 규칙(순위, 담보 인정 한도, 강등)을 어떻게 검산 가능한 코드로 표현할 것인가.
+ * (경계용 인터페이스는 일부러 제공하지 않았습니다.)
+ */
+public class WaterfallSimulator {
+
+    // TODO 생성자에서 무엇을 주입받을지 설계하세요.
+
+    /** 워터폴 분배 요약. App.java의 기대 출력 형식과 일치해야 합니다. */
+    public String simulate(String scenarioName) {
+        // TODO 시그니처 설계도 여러분의 몫입니다. 이 형태는 자리 표시일 뿐입니다.
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '변제 순위는 공익채권 → 회생담보권 → 회생채권 → 주주 순이며, 상위 순위가 전액 채워지기 전에는 아래로 한 푼도 내려가지 않습니다. 검증 시나리오 1(기본): 영업현금흐름 6,000억, 공익채권 = 임대료 3,000억 + 필수 운영비 1,200억 = 4,200억 → 잔여 재원 1,800억. 담보부 원리금 = 2,500억 × 1.04 = 2,600억이지만 담보평가액 2,000억까지만 담보권으로 인정, 초과 600억은 회생채권으로 강등되어 회생채권 총액은 3,400 + 600 = 4,000억. 분배 결과: 담보권 1,800/2,000(90.0%), 회생채권 0/4,000(0.0%), 주주 0억. App.java 기대 출력과 정확히 일치해야 합니다.',
+      '검증 시나리오 2(임대료 20% 인하): 임대료 2,400억 → 공익채권 3,600억, 잔여 재원 2,400억 → 담보권 2,000억 전액(100.0%), 회생채권 400/4,000(10.0%), 주주 0억. 두 시나리오 모두에서 주주 몫이 0원임이 출력에 드러나야 합니다 — 폭포는 거기까지 내려가지 않습니다.',
+      '회수율은 소수 첫째 자리까지 표시합니다. 금액은 억 원 단위 정수로 다루고, 임의 반올림을 금지합니다.',
+      '임대료·이자율 등 협상 항목은 매주 바뀝니다. 시나리오 값의 공급처는 여러분이 도메인 쪽에 정의한 포트(인터페이스) 뒤에 두고, DealRoomFeed(문자열 Map)는 어댑터에서만 다루세요. 워터폴 계산의 단위 테스트는 피드 없이, 순수 자바 객체만으로 돌아야 합니다.',
+      '자문사 문서 규칙: 모든 출력에는 어떤 가정(임대료, 이자율)으로 계산했는지가 함께 남아야 합니다. 가정 없는 숫자는 회의실에서 무기가 아니라 사고가 됩니다.',
+      '법무 파트 전달: 회생채권 내부에서 상거래채권(납품대금)을 금융채권보다 우대 변제할지가 논의 중입니다. (우대 여부와 비율은 아직 결정되지 않았습니다)',
+    ],
+    constraints: [
+      'DealRoomFeed.java와 App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요.',
+      '도메인 규칙: 담보권은 담보평가액 한도까지만 인정되고, 초과분은 회생채권으로 강등됩니다. 이 규칙이 계산 코드에서 이름을 가진 단계로 보여야 합니다.',
+      '이 미션의 수치는 전부 가상입니다. 브리핑의 실제 사건 수치를 계산에 끌어오지 마세요 — 실화는 구조를 배우는 재료이고, 검증은 가상 숫자로 합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '회생 변제 순위(공익채권 → 담보권 → 회생채권 → 주주)와 담보 인정 한도·강등 규칙을 정확한 코드로 번역하기',
+      '매주 바뀌는 외부 숫자(협상 값)를 도메인이 소유한 포트 뒤로 밀어내, 값의 변경이 재컴파일이 아니라 주입으로 흡수되게 만들기',
+      '문자열 덤프(스프레드시트형 데이터)를 경계에서 검증·변환해 도메인에 깨끗한 타입만 들이는 습관',
+      'LBO·세일 앤드 리스백·워터폴이라는 재무 상식을 시뮬레이션 가능한 구조로 이해하기',
+    ],
+    hints: [
+      '워터폴은 본질적으로 "남은 재원에서 min(재원, 채권액)을 떼어 주고 내려가는" 반복입니다. 순위 하나를 (이름, 채권액) → (변제액, 회수율)로 바꾸는 순수 함수를 만들면, 4단계 폭포는 그 함수를 리스트로 접는 일이 됩니다.',
+      '담보 인정 한도(min(원리금, 담보평가액))와 강등(초과분을 회생채권에 합산)은 분배가 시작되기 전의 "채권 확정" 단계입니다. 확정과 분배를 서로 다른 단계로 나누면 각각을 따로 테스트할 수 있습니다.',
+      'DealRoomFeed의 "미정" 같은 문자열이 Integer.parseInt에 닿는 순간이 사고 지점입니다. 어댑터에서 스냅샷을 검증·변환해 도메인용 시나리오 객체를 만들고, 계산 코드는 그 객체만 받게 하세요. 피드 교체(다음 주 숫자)가 곧 객체 하나 교체가 됩니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '현금흐름이 음수인 분기',
+        description:
+          '업황 악화 시나리오에서 영업현금흐름이 공익채권보다 작아지면 잔여 재원이 음수가 됩니다. 순진한 코드는 음수 재원을 그대로 아래 순위에 "분배"해 담보권 회수율이 음수로 찍힙니다. 좋은 방어: 재원 ≥ 0 불변식을 두고, 공익채권조차 충당하지 못하는 상태는 분배 결과가 아니라 "운영 불능 시나리오"라는 별도 국면으로 명시해 드러내세요.',
+      },
+      {
+        title: '담보가 채무보다 큰 경우',
+        description:
+          '담보평가액 3,000억에 담보부 원리금 2,600억인 시나리오가 오면, min 없이 담보평가액을 그대로 담보권 인정액으로 쓰는 코드는 존재하지 않는 400억을 담보권자에게 배분합니다. 담보권은 채권액까지만이고, 초과 담보 가치는 다른 채권자들의 재원입니다. 좋은 방어: 인정액 = min(원리금, 담보평가액)을 규칙으로 명시하고, 양방향(담보 부족·담보 초과) 모두 테스트로 고정하세요.',
+      },
+      {
+        title: '"미정"이라는 숫자',
+        description:
+          '3년차 임대료 인상률처럼 협상 중인 값은 피드에 "미정"으로 들어옵니다. 이를 조용히 0으로 바꿔 계산하면 장기 시나리오의 재원이 과대평가되고, 그 숫자가 협상 테이블에 오릅니다. 좋은 방어: 변환 불가 값은 경계에서 명시적으로 거부하거나 "가정 필요" 상태로 표시해, 결과물에 어떤 값이 확정이고 어떤 값이 가정인지 드러나게 하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '두 검증 시나리오의 순위별 변제액·회수율·잔여 재원이 기대 출력과 정확히 일치하는가. 담보 인정 한도와 강등이 정확한가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '의존성 역전',
+        description: '협상 숫자의 공급처가 도메인이 정의한 포트 뒤에 있는가. 값 변경이 계산 코드 수정 없이 주입으로 흡수되는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '경계 설계와 검증',
+        description: '문자열 Map(DealRoomFeed)이 어댑터에서 검증·변환되어 도메인에는 깨끗한 시나리오 객체만 들어오는가. "미정" 처리가 명시적인가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '워터폴 계산의 단위 테스트가 피드 없이 도는가. 경계(재원 0, 담보 초과, 상위 순위 미충족)가 다뤄졌는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '상거래채권 우대 같은 미결정 규칙을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    plannerReview: {
+      brief: `회생 개시 결정이 나왔고, 매장에서는 파업이 진행 중입니다. 관리인(경영진)이 다음 주 채권자협의회 전에 **'회생 국면 종합 대응 검토서'**를 요구했습니다. 작성자는 당신입니다. 할인율이나 폐점 수를 정하는 문서가 아닙니다 — **돈으로 푸는 부분, 절차로 푸는 부분, 신뢰로만 풀리는 부분**을 가르는 것이 이 검토서의 핵심입니다. 회생 기업의 가장 큰 적자는 장부가 아니라 "저기 곧 망한대"라는 문장이고, 그 문장은 매출로 청구됩니다.`,
+      dimensions: [
+        {
+          name: '재무',
+          question:
+            '임대료 재협상과 점포 폐점은 둘 다 고정비를 줄이지만 성격이 다릅니다. 재협상 10%가 아끼는 돈, 점포 하나를 닫아 아끼는 돈, 그리고 닫힌 점포가 주변 상권과 온라인 전환에서 죽이는 매출 — 세 숫자의 어림값을 놓고 비교하세요. 워터폴 시뮬레이션에서 어느 쪽이 회생채권 회수율을 더 올리는지가 채권자협의회의 언어입니다.',
+        },
+        {
+          name: '고용',
+          question:
+            '파업의 요구(고용 보장)를 수용하는 비용과 거부하는 비용을 모두 계산하세요. 거부 비용에는 파업 장기화, 숙련 인력 이탈, 그리고 "직원이 도망치는 회사"라는 보도가 포함됩니다. 임금이 공익채권으로 최우선 변제된다는 사실은 협상 테이블에서 어느 쪽의 카드입니까.',
+        },
+        {
+          name: '법률',
+          question:
+            '회생 절차에서 관리인이 할 수 있는 것과 없는 것의 경계를 그으세요. 불리한 임대차계약의 해지·변경은 어디까지 가능한가, 단체협약과 체불임금은 어떤 보호를 받는가, 대주주 지분 무상소각은 채권자와 직원에게 각각 무엇을 의미하는가.',
+        },
+        {
+          name: '운영',
+          question:
+            '점포를 줄이면 물류가 함께 무너질 수 있습니다. 폐점 후보가 물류 허브 반경에서 빠질 때 남은 점포들의 배송·재고 회전에 무슨 일이 생기는지, 점포 축소와 물류망 재설계 중 무엇이 먼저인지를 순서로 제시하세요.',
+        },
+        {
+          name: '여론',
+          question:
+            '"망한다더라"는 소문은 상품권 사용 기피, 납품사 이탈, 고객 이탈로 이어져 스스로를 실현합니다. 지금 국면에서 무엇을 먼저, 누구의 입으로 발표해야 소문의 속도를 늦출 수 있는지 — 발표의 순서와 화자 선정까지가 이 검토서의 범위입니다.',
+        },
+      ],
+      deliverable:
+        '검토서 양식: ① 관점별 진단 — 5개 축 각각의 현재 상태와 리스크, ② 대응 옵션 2~3개 — 각 옵션이 5개 축에 미치는 영향 명시, ③ 트레이드오프 표(옵션 × 관점), ④ 권고안 1개와 이유. 옵션에는 점포 폐점도 시스템 개편도 없이 신뢰 회복(고용 합의, 납품대금 우선 변제 공언, 상품권 보증)으로 푸는 선택지를 반드시 하나 포함하세요 — 그것이 최선인지 아닌지는 검토서가 증명하면 됩니다.',
+    },
+    explainTask: {
+      audience: '25년째 계산대에서 일해 온 직원 대표 (파업 집행부, "재무 용어는 다 사측 말장난"이라 생각하는 분)',
+      prompt:
+        '직원 대표에게 워터폴 시뮬레이터가 보여 주는 것을 설명하세요. (1) 변제 순위가 무엇이고 왜 주주가 폭포의 맨 아래인지 — 대주주 지분 무상소각이 그 순서의 결과라는 것, (2) 임금과 퇴직금이 공익채권으로 폭포의 맨 위에서 최우선 변제된다는 사실 — 이것이 위로가 아니라 법이 정한 권리라는 것, (3) 이 시뮬레이터가 보여 줄 수 있는 것(숫자의 결과)과 결정할 수 없는 것(누구를 지킬 것인가)의 경계. 상대의 불신은 정당한 경험에서 나온 것입니다. 설득하려 들지 말고, 숫자를 검산할 수 있는 힘을 넘겨주는 방식으로 쓰세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '같은 숫자를 보는 회의',
+        teaser: '채권자도 노조도 같은 시뮬레이터 출력을 들고 협상에 앉는다. 숫자 싸움이 가정 싸움으로 바뀌고, 그것은 진전이다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '매주 다시 뽑는 표',
+        teaser: '계산은 맞는다. 다만 협상 값이 바뀔 때마다 코드 어딘가의 상수를 고쳐 다시 배포하고, 배포 이력이 협상 일지와 나란히 쌓인다.',
+      },
+      {
+        grade: 'dawn',
+        title: '미정이 0이 된 날',
+        teaser: '"미정"이 조용히 0으로 계산된 장기 시나리오가 채권자협의회에 배포되고, 다음 날 자문사는 정정 공문과 함께 신뢰를 잃는다. 원인 분석의 첫 줄에 parseInt가 있다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 변제 계획은 아직 인가되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 15 — Stage 5 "거대한 구조" / 역사적 해프닝 (덴버 공항 1995) / 리팩토링
+  // =========================================================================
+  {
+    id: 's5-denver-01',
+    stage: 5,
+    stageTitle: '거대한 구조',
+    missionType: '리팩토링',
+    difficulty: 'Hard',
+    scope: '모듈 경계',
+    modes: ['developer'],
+    domain: '역사적 해프닝 · 항공',
+    domainEmoji: '✈️',
+    title: '가방이 공항을 이긴 날 — 수하물 시스템의 경계 재설계',
+    estimatedMinutes: 180,
+    briefing: {
+      title: '덴버 1995 — 전부가 아니면 전무였던 시스템',
+      content: `### 세계에서 가장 야심 찬 수하물 시스템
+
+1989년 착공한 덴버 신공항은 수하물 처리를 통째로 자동화하려 했습니다. 무인 텔레카 수천 대가 수십 km의 궤도를 달리며, 체크인 카운터에서 게이트까지 사람 손 없이 가방을 나르는 설계였죠. 공항 전체가 이 시스템 하나를 전제로 지어졌습니다 — 전 항공사, 전 터미널, 전 구간을 한 번에.
+
+### 시연회의 참사
+
+1994년, 언론 앞에서 열린 시연회는 소프트웨어 실패학의 전설이 됐습니다. 카트가 충돌하고, 가방이 궤도에서 튕겨 나가 찢어지고, 옷가지가 흩어졌습니다. 개항은 당초 계획보다 16개월 늦어졌고, 그 지연의 대부분이 수하물 시스템 몫이었으며, 빈 공항을 유지하는 데만 하루 수십만 달러가 넘게 들어간 것으로 보도됐습니다. 사후 분석이 꼽는 원인은 지금도 교과서에 실립니다. 전 구간 동시 개통을 전제한 **빅뱅 통합**, 한 곳의 지연이 전체를 세우는 **모듈 간 결합**, 그리고 바코드 오독률과 카트의 관성 같은 **물리 세계의 엣지케이스 과소평가**.
+
+### 공항은 결국 열렸다 — 시스템 없이
+
+1995년 2월, 공항은 문을 열었습니다. 자동 시스템은 유나이티드 항공 한 곳이 축소판으로만 썼고, 나머지 항공사는 사람과 컨베이어로 짐을 날랐습니다. 그리고 2005년, 그 축소판마저 완전히 폐기됩니다 — 수동 운영이 더 쌌기 때문입니다. 시스템이 모든 것을 해내야만 열 수 있다고 믿는 동안, 공항은 열리지 못했습니다. 일부가 죽어도 나머지가 돌아가는 구조였다면 어땠을까 — 이번 미션의 질문이 그것입니다.`,
+    },
+    scenario: `때는 1994년 가을, 개항이 또 연기된 공항. 여러분은 수하물 시스템 하청 개발팀에 투입됐습니다. 체크인·분류·카트 배차·적하 네 모듈은 지금 서로의 내부 데이터를 직접 읽고 쓰는 한 몸이라, **한 모듈이 멈추면 공항 전체의 짐이 멈춥니다.** 운영위원회의 새 방침은 명확합니다 — "전부 자동이 아니어도 좋다. **한 구역이 죽으면 그 구역만 사람이 밀면 된다.** 전부를 멈추는 것만은 안 된다." 단, 지금 돌아가는 아침 점검 출력은 한 글자도 달라지면 안 됩니다. 개항 연기 브리핑은 이제 그만하고 싶으니까요.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/dia/airline/AirlineTicketTable.java',
+        content: `package com.dia.airline;
+
+/**
+ * 항공사 발권 공유 테이블 (항공사 전산 소유 — 엔진입니다. 수정 금지, 그대로 사용).
+ * 1990년대식 연동: 항공사 발권 시스템이 이 테이블에 행을 쓰고,
+ * 공항 측 시스템들이 주기적으로 폴링해서 읽어 갑니다.
+ * 스키마 협상에 18개월이 걸렸고, 바꾸자는 말은 아무도 다시 꺼내지 않습니다.
+ * 행 형식: {수하물 태그, 항공편, 게이트}
+ */
+public class AirlineTicketTable {
+
+    public static final String[][] ROWS = {
+            {"T-100", "UA1001", "A12"},
+            {"T-200", "KE702", "B03"},
+            {"T-300", "DL155", "C22"},
+    };
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/dia/checkin/CheckIn.java',
+        content: `package com.dia.checkin;
+
+import com.dia.airline.AirlineTicketTable;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+// ------------------------------------------------------
+//  체크인 수하물 등록 v1.2 (1993.04 자동화 연동분)
+//  BAGS 배열 인덱스: [0]=항공편 [1]=게이트 [2]=구역 [3]=카트 [4]=상태
+//  주의: 분류반과 카트반이 이 맵을 직접 읽고 쓴다. 인덱스 순서 바꾸지 말 것
+// ------------------------------------------------------
+public class CheckIn {
+
+    public static final Map<String, String[]> BAGS = new LinkedHashMap<>();
+
+    /** 발권 테이블을 폴링해 수하물을 등록한다. */
+    public static void poll() {
+        for (String[] row : AirlineTicketTable.ROWS) {
+            if (!BAGS.containsKey(row[0])) {
+                BAGS.put(row[0], new String[] {row[1], row[2], "", "", "REGISTERED"});
+            }
+        }
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/dia/sort/Sorter.java',
+        content: `package com.dia.sort;
+
+import com.dia.checkin.CheckIn;
+
+/** 분류 시스템. 체크인의 내부 맵을 직접 읽고 쓴다. */
+public class Sorter {
+
+    /** 게이트 첫 글자가 구역이다 (1993년 합의. 게이트는 늘 A/B/C로 시작한다고 함). */
+    public static void sortAll() {
+        for (String[] bag : CheckIn.BAGS.values()) {
+            bag[2] = bag[1].substring(0, 1);
+            bag[4] = "SORTED";
+        }
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/dia/cart/CartScheduler.java',
+        content: `package com.dia.cart;
+
+import com.dia.checkin.CheckIn;
+
+/** 텔레카 배차. 체크인 맵과 구역별 카트 재고를 직접 다룬다. */
+public class CartScheduler {
+
+    // 구역별 가용 카트. 반납 로직은 v2에서 하기로 함 (1994.06 메모. 아직 v2 없음)
+    public static int cartA = 2;
+    public static int cartB = 1;
+    public static int cartC = 0;
+    public static int seqA = 0;
+    public static int seqB = 0;
+    public static int seqC = 0;
+
+    public static void assignAll() {
+        for (String[] bag : CheckIn.BAGS.values()) {
+            String zone = bag[2];
+            if (zone.equals("A") && cartA > 0) {
+                cartA--; seqA++;
+                bag[3] = "A-" + seqA;
+                bag[4] = "CARTED";
+            } else if (zone.equals("B") && cartB > 0) {
+                cartB--; seqB++;
+                bag[3] = "B-" + seqB;
+                bag[4] = "CARTED";
+            } else if (zone.equals("C") && cartC > 0) {
+                cartC--; seqC++;
+                bag[3] = "C-" + seqC;
+                bag[4] = "CARTED";
+            } else {
+                bag[4] = "WAITING";   // 카트 없음. 언제까지 기다리나? (1994.06 회의 결론 없음)
+            }
+        }
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/dia/load/Loader.java',
+        content: `package com.dia.load;
+
+import com.dia.checkin.CheckIn;
+
+import java.util.Map;
+
+/** 적하 시스템. 앞 모듈들의 사정을 전부 직접 안다. */
+public class Loader {
+
+    public static String manifest() {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String[]> e : CheckIn.BAGS.entrySet()) {
+            String[] b = e.getValue();
+            if (b[4].equals("CARTED")) {
+                sb.append(e.getKey()).append(" ").append(b[0]).append(" 게이트 ").append(b[1])
+                        .append(" -> 구역 ").append(b[2]).append(" / 카트 ").append(b[3])
+                        .append(" / 적하 완료\n");
+            } else {
+                sb.append(e.getKey()).append(" ").append(b[0]).append(" 게이트 ").append(b[1])
+                        .append(" -> 구역 ").append(b[2]).append(" / 카트 없음 / 대기\n");
+            }
+        }
+        return sb.toString();
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/dia/BaggageOps.java',
+        content: `package com.dia;
+
+import com.dia.cart.CartScheduler;
+import com.dia.checkin.CheckIn;
+import com.dia.load.Loader;
+import com.dia.sort.Sorter;
+
+/** 운영 콘솔. 아침 점검 때 실행한다. */
+public class BaggageOps {
+
+    public static void main(String[] args) {
+        CheckIn.poll();
+        Sorter.sortAll();
+        CartScheduler.assignAll();
+        System.out.print(Loader.manifest());
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '동작 보존 검증: 아침 점검 출력은 리팩토링 후에도 동일해야 합니다 — "T-100 UA1001 게이트 A12 -> 구역 A / 카트 A-1 / 적하 완료", "T-200 KE702 게이트 B03 -> 구역 B / 카트 B-1 / 적하 완료", "T-300 DL155 게이트 C22 -> 구역 C / 카트 없음 / 대기". 수정 전에 이 출력을 자동화된 테스트로 먼저 고정하세요.',
+      '체크인·분류·배차·적하는 서로의 내부 자료구조(BAGS 배열, 카트 카운터)를 직접 읽고 쓰지 않고, 각자 필요한 것만 계약(인터페이스)으로 묻습니다. 수하물 데이터의 주인은 한 모듈이어야 하고, 배열 인덱스 [0]~[4]의 의미가 코드 밖으로 새지 않아야 합니다.',
+      '부분 개통: 배차 모듈이 멈춘 상태(장애를 테스트에서 주입할 수 있어야 합니다)에서도 체크인과 분류는 정상 동작하고, 적하는 수동 모드로 전환되어 "[수동 운반 지시서]" 아래 "T-100 UA1001 구역 A -> 게이트 A12" 형식으로 세 건을 출력해야 합니다. 한 모듈의 장애가 다른 모듈의 예외로 전파되면 실패입니다.',
+      '항공사 발권 테이블(AirlineTicketTable)은 항공사 소유라 폴링 방식 자체는 바꿀 수 없습니다. 다만 테이블을 직접 아는 코드는 어댑터 한 곳으로 좁히고, 나머지는 여러분이 정의한 계약으로만 수하물 정보를 받으세요.',
+      '내년에 D 구역이 신설됩니다. 구역 추가가 기존 분류·배차 코드의 수정이 아니라 구성(설정) 등록으로 끝나는 구조로 만들어 주세요.',
+      '운영위원회 방침: "카트 대기가 길어지면 해당 구역을 수동으로 전환한다." (얼마나 길어지면 전환하는지는 "상황 봐서"라는 답만 돌아왔습니다)',
+    ],
+    constraints: [
+      '리팩토링 미션입니다 — 요구사항 1의 점검 출력이 어긋나는 순간 그것은 개선이 아니라 사고입니다.',
+      'AirlineTicketTable.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요.',
+      '빅뱅 재작성 금지. 매 단계에서 시스템이 돌아가는 상태를 유지하며 옮기세요. 개항 연기는 이미 충분히 했습니다.',
+      '외부 프레임워크 없이 순수 Java 17로 작성합니다. 모듈 경계는 패키지와 인터페이스로 표현하세요.',
+    ],
+    learningGoals: [
+      '한 덩어리 공유 상태(공용 맵·카운터)로 결합된 모듈들을 계약 기반 경계로 잘라 내는 절차 체득',
+      '부분 실패를 전제한 설계 — 한 모듈의 장애가 전체 정지가 아니라 국소적 성능 저하(degrade)로 흡수되는 구조',
+      '"전부 자동 아니면 전무"라는 암묵적 전제를 발견하고, 수동 절차를 실패가 아니라 설계의 1급 구성원으로 편입하기',
+      '물리 세계와 닿는 시스템에서 엣지케이스(오독, 자원 고갈)가 명세가 아니라 현실에서 온다는 감각',
+    ],
+    hints: [
+      '각 모듈이 수하물에 대해 실제로 묻는 질문을 적어 보세요. 분류는 "게이트가 어디냐", 배차는 "구역이 어디냐", 적하는 "카트가 배정됐느냐"만 궁금합니다. 그 질문 목록이 곧 수하물 저장소가 답해야 할 계약이고, 배열 인덱스는 그 계약 뒤로 사라집니다.',
+      '부분 개통의 열쇠는 적하가 배차의 "결과"가 아니라 "응답"에 의존하게 만드는 것입니다. 배차에게 물었을 때 정상 응답·재고 없음·모듈 다운이 모두 명시적인 답으로 돌아오면, 적하는 그 답에 따라 자동/수동을 스스로 고를 수 있습니다. 예외가 새어 나가게 두는 순간 전체가 함께 죽습니다.',
+      '구역(A/B/C, 곧 D)은 문자열 첫 글자가 아니라 등록된 개념이어야 합니다. 게이트→구역 매핑과 구역별 카트 풀을 한 곳(구성 레지스트리)에서 등록하게 하면, D 구역 신설과 "게이트는 늘 A/B/C로 시작한다"는 1993년의 가정이 함께 정리됩니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '읽을 수 없는 태그',
+        description:
+          '현실의 바코드는 명세보다 자주 찢어집니다. 발권 테이블에 "T-3O0"(숫자 0이 아니라 알파벳 O) 같은 오독 태그나 스캐너의 "??"가 오면, 지금 코드는 조용히 등록해 유령 수하물을 만듭니다. 실제 덴버에서도 오독률이 설계 가정을 넘어선 것이 붕괴의 한 축이었습니다. 좋은 방어: 태그 형식을 어댑터에서 검증하고, 판독 불가 수하물은 버리지도 흘리지도 말고 "수동 확인 큐"라는 명시적 자리로 보내세요.',
+      },
+      {
+        title: '카트가 한 구역에 다 몰린 날',
+        description:
+          '반납 로직이 없는 배차(1994년 메모의 "v2에서")는 카트를 소모품처럼 씁니다. 대형편이 몰리면 한 구역이 카트를 전부 흡수하고, 다른 구역은 재고 0으로 무한 대기 — 전체 정지와 구분되지 않는 상태가 됩니다. 좋은 방어: 구역별 재고에 불변식(총량 보존)을 두고, 재고 고갈을 "대기"가 아니라 감지 가능한 신호로 승격시켜 해당 구역만 수동 전환이 발동되게 하세요.',
+      },
+      {
+        title: '존재하지 않는 게이트',
+        description:
+          '항공사가 게이트를 "Z99"로 잘못 입력하면, 첫 글자를 구역으로 쓰는 지금 규칙은 Z 구역이라는 유령 구역을 발명하고 그 짐은 카트도 사람도 오지 않는 대기 상태에 갇힙니다. 좋은 방어: 구역은 등록된 목록에서만 조회하고, 미지의 게이트는 명시적 실패와 함께 수동 확인 큐로 보내세요. 시스템이 모르는 곳으로 가는 짐은 없어야 합니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '모듈 경계와 계약 설계',
+        description: '네 모듈이 공유 자료구조가 아니라 계약으로 대화하는가. 수하물 데이터의 주인이 명확하고 배열 인덱스가 캡슐화되었는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '동작 보존',
+        description: '아침 점검 출력이 리팩토링 전후로 동일한가. 이를 보증하는 테스트가 리팩토링 전에 마련되었는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '부분 개통 (장애 격리)',
+        description: '배차 장애 주입 시 체크인·분류가 계속 돌고 적하가 수동 지시서로 전환되는가. 장애가 예외 전파가 아니라 명시적 상태로 다뤄지는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '외부 경계 처리',
+        description: '발권 테이블 접근이 어댑터 한 곳으로 좁혀지고, 태그·게이트 검증이 경계에서 이루어지는가. 구역 추가가 구성 등록으로 끝나는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '"상황 봐서" 같은 미정의 전환 기준을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '개항 연기 브리핑에 지친 공항 운영위원장 (비개발자, 예산과 일정의 언어로 사고하는 사람)',
+      prompt:
+        '운영위원장에게 재설계안을 보고하세요. (1) 지금 구조에서 왜 한 모듈의 장애가 공항 전체의 짐을 세우는지 — 네 부서가 장부 하나를 같이 쓰는 사무실에 빗대어, (2) 재설계 후에는 배차가 멈춰도 무슨 일이 벌어지는지를 시간 순서로 — 몇 번 게이트의 짐이 언제 어떻게 사람 손으로 넘어가는지, (3) "수동 절차를 설계에 포함하는 것"이 자동화의 포기가 아니라 개항을 가능하게 만드는 조건인 이유. 위원장이 회의에서 그대로 옮겨 말할 수 있는 세 문장을 마지막에 붙이세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '조용한 개항',
+        teaser: '개항일 아침, 수하물 상황판에는 자동 두 구역과 수동 한 구역이 나란히 초록불이다. 언론은 쓸 것이 없어 활주로 사진을 찍는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '무전기가 많은 공항',
+        teaser: '짐은 흐른다. 다만 구역 하나가 대기에 빠질 때마다 운영실이 무전으로 수동 전환을 지시하고, 그 무전 횟수가 매주 회의 안건이 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '궤도 위의 옷가지',
+        teaser: '배차 장애가 예외가 되어 전 모듈을 관통한 아침, 컨베이어는 멈추고 시연회의 사진이 기사에 재인용된다. 이번에는 여러분의 시스템 이름과 함께.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 탑승구는 아직 안내되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 16 — Stage 2 "인터페이스는 계약" / 천문·시간 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's2-lunar-01',
+    stage: 2,
+    stageTitle: '인터페이스는 계약',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '천문·시간',
+    domainEmoji: '🌙',
+    title: '당신의 연휴는 달이 정한다 — 공휴일 계산기',
+    estimatedMinutes: 120,
+    briefing: {
+      title: '설날은 왜 매년 다른 날인가',
+      content: `### 달과 태양은 약속한 적이 없다
+
+설날과 추석은 음력의 날입니다. 음력 한 달은 달의 삭망 주기인 약 29.5일이라 열두 달을 채워도 354일 — 태양이 한 바퀴 도는 365일에 11일이 모자랍니다. 그대로 두면 설날이 해마다 11일씩 앞당겨져 몇십 년 뒤에는 한여름에 세배를 하게 되죠. 그래서 음력은 **19년에 일곱 번 윤달**을 끼워 계절을 붙잡습니다(메톤 주기). 달력에 한 달이 통째로 더 생기는 해가 주기적으로 온다는 뜻입니다. 설날이 1월 말과 2월 중순 사이를 오가는 이유, 그리고 어느 해의 추석이 유난히 늦는 이유가 전부 이 조율의 결과입니다.
+
+### 하늘을 읽어 시간을 내리다
+
+음력 날짜는 수식 몇 줄로 못 구합니다. 달과 태양의 실제 운행을 관측·계산해야 하고, 그래서 조선에서 역법은 왕의 독점 사업이었습니다 — 하늘을 읽어 백성에게 때를 알려 준다는 **관상수시(觀象授時)**. 달력을 만드는 권한이 곧 통치였고, 세종이 조선 하늘 기준의 역법 칠정산을 만든 것은 그 주권의 선언이었습니다. 오늘날 그 일은 한국천문연구원이 잇고 있습니다. 매년 발표되는 음양력 대조표가 현대의 관상수시인 셈이죠. 여러분의 코드가 음력을 "계산"하지 않고 고시 데이터를 "받아 쓰는" 것은 게으름이 아니라 이 역사에 대한 정확한 태도입니다.
+
+### 공휴일은 천문학에 법을 더한 것
+
+여기에 법이 겹칩니다. 대체공휴일은 2014년 설·추석·어린이날부터 도입되어 2021년과 2023년에 걸쳐 대상이 늘었는데, **규칙이 공휴일마다 다릅니다.** 설·추석 연휴는 일요일과 겹칠 때만, 어린이날이나 광복절은 토요일과 겹쳐도 대체일이 생깁니다. 그러니 "다음 연휴 언제냐"는 질문은 사실 천문 관측 결과와 법 개정 이력을 함께 조회하는 문제입니다. 당신의 연휴는 달과 국회가 함께 정합니다.`,
+    },
+    scenario: `사내 근태 시스템에 **공휴일 계산기** 모듈을 만듭니다. 연도를 넣으면 그해의 공휴일 목록(날짜·이름·대체공휴일 여부)을 돌려주는 기능으로, 연차 계산과 급여 마감이 이 모듈을 바라보게 됩니다. 음양력 변환은 천문연구원 고시 기반의 변환 테이블(엔진)이 제공됩니다. 인사팀의 걱정은 하나입니다 — "임시공휴일이 수시로 생기고(선거일, 국가장), 대체공휴일 규칙도 법 개정으로 계속 바뀌더라고요. **그때마다 개발자를 부르지 않게** 해 주세요."`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/daehan/holiday/engine/LunarTable.java',
+        content: `package com.daehan.holiday.engine;
+
+import java.time.LocalDate;
+import java.util.Map;
+
+/**
+ * 음양력 변환 테이블 (엔진입니다. 수정/재구현 금지, 그대로 사용).
+ * 한국천문연구원 고시 기반 — 음력 명절의 양력 날짜.
+ * 음양력 변환은 산술이 아니라 관측·고시의 영역이므로, 이 테이블이 유일한 출처입니다.
+ * 수록 연도: 2024~2026. 매년 고시에 맞춰 한 행씩 늘어납니다.
+ */
+public class LunarTable {
+
+    // {설날(음력 1/1)의 양력, 추석(음력 8/15)의 양력, 윤달(0=없음)}
+    private static final Map<Integer, String[]> TABLE = Map.of(
+            2024, new String[] {"2024-02-10", "2024-09-17", "0"},
+            2025, new String[] {"2025-01-29", "2025-10-06", "6"},   // 2025년은 윤6월
+            2026, new String[] {"2026-02-17", "2026-09-25", "0"});
+
+    /** 해당 연도 설날(음력 1월 1일)의 양력 날짜. 수록되지 않은 연도는 null. */
+    public LocalDate seollal(int year) {
+        String[] row = TABLE.get(year);
+        return row == null ? null : LocalDate.parse(row[0]);
+    }
+
+    /** 해당 연도 추석(음력 8월 15일)의 양력 날짜. 수록되지 않은 연도는 null. */
+    public LocalDate chuseok(int year) {
+        String[] row = TABLE.get(year);
+        return row == null ? null : LocalDate.parse(row[1]);
+    }
+
+    /** 윤달이 드는 달. 없으면 0, 수록되지 않은 연도는 -1. */
+    public int leapMonth(int year) {
+        String[] row = TABLE.get(year);
+        return row == null ? -1 : Integer.parseInt(row[2]);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/holiday/App.java',
+        content: `package com.daehan.holiday;
+
+import com.daehan.holiday.engine.LunarTable;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력(발췌 검증)과 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        LunarTable table = new LunarTable();
+
+        // TODO(학습자): 공휴일 규칙들을 여러분이 설계한 계약 뒤에 등록하고,
+        //               HolidayCalendar로 연도별 공휴일을 조회해 출력하세요.
+        // HolidayCalendar calendar = ...;
+        // System.out.println(calendar.of(2024));
+        // System.out.println(calendar.of(2025));
+        // System.out.println(calendar.of(2026));
+
+        // ===== 발췌 검증 1: 2024년 =====
+        // 02-09 (금) 설 연휴
+        // 02-10 (토) 설날
+        // 02-11 (일) 설 연휴
+        // 02-12 (월) 대체공휴일(설날)
+        // 05-05 (일) 어린이날
+        // 05-06 (월) 대체공휴일(어린이날)
+
+        // ===== 발췌 검증 2: 2025년 =====
+        // 10-05 (일) 추석 연휴
+        // 10-06 (월) 추석
+        // 10-07 (화) 추석 연휴
+        // 10-08 (수) 대체공휴일(추석)
+
+        // ===== 발췌 검증 3: 2026년 =====
+        // 03-01 (일) 삼일절
+        // 03-02 (월) 대체공휴일(삼일절)
+        // 08-15 (토) 광복절
+        // 08-17 (월) 대체공휴일(광복절)
+        // 09-24 (목) 추석 연휴
+        // 09-25 (금) 추석
+        // 09-26 (토) 추석 연휴
+        // ※ 2026년 추석 연휴는 토요일과 겹치지만 대체공휴일이 없습니다 — 설·추석은 일요일만 해당.
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/holiday/domain/HolidayCalendar.java',
+        content: `package com.daehan.holiday.domain;
+
+/**
+ * 공휴일 달력 (구현 대상).
+ *
+ * 설계의 핵심은 "공휴일 하나"라는 계약입니다. 고정일(삼일절), 음력 기반(설·추석 연휴),
+ * 대체 규칙 있음/없음, 규칙의 종류(일요일만/토·일)까지 — 공휴일마다 사정이 다릅니다.
+ * 이 다름을 if 분기의 숲이 아니라, 공휴일 규칙 계약 + 규칙 등록 한 곳으로 표현하세요.
+ * 임시공휴일 추가나 법 개정이 "규칙 하나 등록/수정"으로 끝나면 성공입니다.
+ * (계약용 인터페이스는 일부러 제공하지 않았습니다.)
+ */
+public class HolidayCalendar {
+
+    // TODO 생성자에서 무엇을 등록/주입받을지 설계하세요.
+
+    /** 해당 연도의 공휴일 목록(날짜순). App.java의 발췌 검증과 일치해야 합니다. */
+    public String of(int year) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '대상 공휴일: 신정(1/1), 설 연휴(설날 전날~다음날 3일), 삼일절(3/1), 어린이날(5/5), 현충일(6/6), 광복절(8/15), 추석 연휴(추석 전날~다음날 3일), 개천절(10/3), 한글날(10/9), 성탄절(12/25). 설날·추석의 양력 날짜는 반드시 LunarTable에서 얻습니다. (부처님오신날 등 추가 음력 공휴일은 테이블 확장 후 2차 범위입니다)',
+      '대체공휴일 규칙은 공휴일마다 다릅니다. ① 설·추석 연휴: 연휴가 일요일과 겹칠 때만, 연휴 다음의 첫 번째 비공휴일이 대체공휴일. ② 삼일절·어린이날·광복절·개천절·한글날·성탄절: 토요일 또는 일요일과 겹치면 그날 다음의 첫 번째 비공휴일이 대체공휴일. ③ 신정·현충일: 대체공휴일 없음.',
+      '검증(전부 실제 달력입니다): 2024년 설 연휴 2/9(금)~2/11(일) → 일요일 겹침 → 대체 2/12(월). 2024년 어린이날 5/5(일) → 대체 5/6(월). 2025년 추석 연휴 10/5(일)~10/7(화) → 대체 10/8(수). App.java의 발췌 검증과 정확히 일치해야 합니다.',
+      '반례 검증: 2026년 추석 연휴 9/24(목)~9/26(토)는 토요일과 겹치지만 설·추석 규칙은 일요일만 해당하므로 대체공휴일이 없어야 하고, 같은 해 광복절 8/15(토)는 토·일 규칙이므로 대체 8/17(월)이 있어야 합니다. 이 차이가 테스트로 고정되어야 합니다.',
+      '인사팀 요청: 임시공휴일(선거일, 국가장)이 수시로 추가되고 대체공휴일 규칙도 법 개정으로 바뀝니다. 새 공휴일 추가나 규칙 변경이 기존 공휴일 코드를 수정하는 일이 아니라, 규칙 하나를 등록·교체하는 일이 되게 해 주세요.',
+      '인사팀 추가 문의: "창립기념일도 유급휴일인데 넣어 주실 거죠?" (창립기념일이 공휴일과 겹칠 때 대체 휴일을 부여할지는 아직 노무 검토 중입니다)',
+    ],
+    constraints: [
+      'LunarTable.java와 App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요. 음력 날짜를 산술로 추정하는 코드를 작성하지 마세요 — 변환은 고시(테이블)의 영역입니다.',
+      '도메인 규칙: 대체공휴일을 정할 때 "다음의 첫 번째 비공휴일"은 주말과 다른 공휴일을 모두 건너뛴 날입니다.',
+      '요일 계산은 java.time을 사용하되, 시스템 시계나 기본 시간대에 의존하는 API(now() 류)는 쓰지 마세요. 연도가 입력이고 결과는 언제 실행해도 같아야 합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '"공휴일 하나"라는 공통 계약을 발견하고, 서로 다른 대체 규칙(일요일만/토·일/없음)을 계약 구현의 다양성으로 흡수하기',
+      '규칙 등록을 한 곳으로 모아, 법 개정·임시공휴일이라는 잦은 변경을 기존 코드 수정 없이 받아들이는 구조(개방-폐쇄) 만들기',
+      '계산할 수 없는 데이터(천문 고시)와 계산해야 하는 규칙(법)의 경계를 구분하는 감각',
+      '실제 달력이라는 절대 기준으로 자기 코드를 검증하는 습관',
+    ],
+    hints: [
+      '고정일이든 음력 기반이든, 모든 공휴일은 "연도를 주면 날짜들을 내놓고, 자기 대체 규칙을 안다"로 요약됩니다. 그 한 문장이 계약(인터페이스)입니다. 설 연휴 같은 3일짜리는 날짜를 여러 개 내놓는 구현일 뿐, 계약은 같습니다.',
+      '대체공휴일은 두 단계로 나누면 쉬워집니다. 1단계: 모든 규칙이 원래 날짜를 내놓아 그해의 공휴일 집합을 만든다. 2단계: 각 공휴일이 자기 대체 규칙으로 그 집합을 보며 대체일을 계산한다. "다음 첫 비공휴일" 탐색이 집합 조회 하나가 됩니다.',
+      '대체 규칙(없음/일요일만/토·일)은 세 가지뿐이고 앞으로 늘어날 후보입니다. 규칙을 공휴일 정의에 값이나 전략으로 붙여 두면, 법이 바뀌는 날 해당 공휴일의 등록부 한 줄만 바뀝니다. 2026년 추석(토요일 겹침, 대체 없음)이 그 설계의 시금석입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '윤달이 낀 해',
+        description:
+          '"음력은 양력보다 해마다 11일쯤 빠르다"는 어림으로 캐시하거나 보간하는 코드는 윤달이 든 해에 크게 어긋납니다. 2025년에는 윤6월이 있어 추석이 10월까지 밀렸습니다 — 산술 추정으로는 9월 중순이 나옵니다. 좋은 방어: 음력 날짜의 출처를 테이블 하나로 강제하고, 테이블 밖 추정 로직이 코드에 존재하지 않게 하세요. leapMonth()가 0이 아닌 해를 테스트에 반드시 포함하세요.',
+      },
+      {
+        title: '대체공휴일이 공휴일 위에 떨어질 때',
+        description:
+          '대체일을 "겹친 날 + 1일"로 계산하면, 그 다음 날이 이미 다른 공휴일인 해에 대체공휴일이 기존 공휴일 위에 포개져 하루가 조용히 증발합니다. 연휴가 몰리는 해(설 연휴와 삼일절, 추석 연휴와 개천절·한글날)에 실제로 일어나는 교차입니다. 좋은 방어: "다음 첫 번째 비공휴일"을 그해 전체 공휴일 집합과 대조하며 탐색하고, 이 교차 시나리오를 테스트로 고정하세요.',
+      },
+      {
+        title: '테이블에 없는 연도',
+        description:
+          '2027년을 조회하면 LunarTable은 null을 돌려줍니다. 이를 흘려보내면 NPE로 죽거나, 더 나쁘게는 설·추석 없는 공휴일 목록이 정상처럼 반환되어 연차 계산이 통째로 틀어집니다. 좋은 방어: 수록 범위를 벗어난 연도는 "고시 데이터 없음"으로 명시적으로 실패시키고, 어느 연도까지 조회 가능한지를 답할 수 있는 창구를 두세요. 달력이 비어 있는 것과 없는 것은 다릅니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '발췌 검증과 반례 검증(2026 추석 무대체/광복절 대체)이 실제 달력과 정확히 일치하는가. 연휴 3일 구성과 대체일 탐색이 정확한가.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '공휴일 계약 설계',
+        description: '공휴일과 대체 규칙이 공통 계약으로 추상화되고, 규칙 차이(없음/일요일만/토·일)가 분기 숲이 아니라 구조로 표현되는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '확장에 열린 등록 구조',
+        description: '임시공휴일 추가·규칙 개정이 기존 코드 수정 없이 등록 한 곳의 변경으로 끝나는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '검증·반례가 단위 테스트로 고정되어 있는가. 윤달 해, 규칙 교차(대체일이 공휴일과 겹침), 테이블 밖 연도가 다뤄졌는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '창립기념일 대체 부여 같은 미결정 사항을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '연차 정산 문의에 시달리는 인사팀 담당자 (비개발자, 매년 달력을 손으로 대조하는 분)',
+      prompt:
+        '인사팀 담당자에게 설명해 주세요. (1) 설날이 왜 매년 다른 날인지 — 달의 열두 달이 태양의 1년보다 11일 짧다는 것과 윤달을, 달력 없이 말로만, (2) 대체공휴일 규칙이 왜 공휴일마다 다른지 — 2026년 추석(토요일, 대체 없음)과 광복절(토요일, 대체 있음)을 예로, (3) 임시공휴일이 생겼을 때 이제 무엇을 하면 되는지 — "개발자를 부르는 일"과 "규칙을 등록하는 일"의 차이를 업무 언어로. 마지막으로, 시스템이 계산하지 않고 천문연구원 고시를 받아 쓰는 이유를 한 문장으로 정리하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '아무도 달력을 의심하지 않는다',
+        teaser: '연말 연차 정산이 문의 없이 끝난다. 이듬해 임시공휴일이 발표된 날, 인사팀은 등록 화면에서 3분 만에 일을 끝내고 개발팀은 그 사실을 나중에 안다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '수기 보정 스프레드시트',
+        teaser: '대체로 맞는다. 다만 연휴가 몰리는 해마다 인사팀이 "시스템이 놓친 하루"를 엑셀로 따로 관리하고, 그 파일 이름이 매년 버전업된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '사라진 대체공휴일',
+        teaser: '규칙 교차로 하루가 증발한 채 급여 마감이 돌고, 전 직원의 연차 잔액이 하루씩 어긋난다. 정정 공지 메일의 발신자는 인사팀이지만, 회의실에 불려 가는 것은 당신이다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말은 아직 고시되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 17 — Stage 1 "분리의 감각" / 부동산 (주택청약) / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's1-cheongyak-01',
+    stage: 1,
+    stageTitle: '분리의 감각',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '단일 파일',
+    modes: ['developer'],
+    domain: '부동산 · 주택청약',
+    domainEmoji: '🏠',
+    title: '84점 만점의 인생 — 청약 가점 계산기',
+    estimatedMinutes: 100,
+    briefing: {
+      title: '숫자 세 개로 요약되는 기다림',
+      content: `### 추첨에서 점수로
+
+아파트가 지어지는 속도보다 사려는 사람이 늘어나는 속도가 빠르면, 남는 방법은 줄 세우기뿐입니다. 오랫동안 그 줄은 추첨이었습니다 — 방금 통장을 만든 투자자와 15년을 기다린 무주택자가 같은 확률을 받는 줄. 투기 과열기마다 이 복권식 배분이 문제가 됐고, 2007년 **청약가점제**가 도입됩니다. 기다린 사람에게 점수를 주고, 점수 높은 순서로 당첨시키자는 것.
+
+### 84점의 구조
+
+가점은 딱 세 항목, 만점은 84점입니다. **무주택기간 최대 32점** — 1년 미만 2점에서 시작해 1년마다 2점씩, 15년 이상이면 32점. **부양가족 수 최대 35점** — 0명 5점에서 1명마다 5점씩, 6명 이상이면 35점. **청약통장 가입기간 최대 17점** — 6개월 미만 1점, 6개월~1년 2점, 이후 1년마다 1점씩 15년 이상 17점. 표만 보면 덧셈 세 번입니다. 함정은 표 밖에 있습니다 — 무주택기간은 만 30세부터(그 전에 혼인했다면 혼인신고일부터) 세고, 부양가족은 등본에 누가 몇 년째 올라 있는지에 따라 갈리고, 세대원 중 한 명이라도 집이 있으면 애초에 자격이 달라집니다. 실제 청약에서 가점 오기입은 당첨 취소 사유입니다 — 계산기가 틀리면 안 되는 이유입니다.
+
+### 만점자가 존재하는 세계
+
+84점은 이론값이 아닙니다. 15년 이상 무주택으로 버티고, 부양가족이 여섯이고, 통장을 15년 넘게 부은 사람 — 인기 단지 발표일에는 실제로 만점 통장이 등장합니다. 무주택 15년, 부양 6명, 통장 15년. 어떤 사람의 15년이 숫자 세 개로 압축되어 아파트 한 채 앞에 줄을 섭니다. 이번에 만들 것은 그 세 숫자를 계산하는 코드입니다. 덧셈은 쉽습니다. 그 덧셈이 누구의 무엇을 세는지 정확히 아는 것이 이 미션입니다.`,
+    },
+    scenario: `부동산 정보 앱 스타트업에서 **청약 가점 계산기**를 만듭니다. 사용자가 생년월일·혼인신고일·무주택 시작 시점·등본상 가족·통장 가입일을 넣으면 항목별 점수와 합계, 산정 근거를 보여 주는 기능입니다. 지금은 웹 화면에 뿌리지만 곧 앱 푸시("가점이 오를 예정이에요")와 PDF 리포트가 추가됩니다. 대표님의 당부: "가점 잘못 계산해서 사용자가 당첨 취소당하면 우리 회사도 끝이에요. 근거 없이 점수만 띡 나오는 계산기는 안 됩니다."`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/cheongyak/Applicant.java',
+        content: `package com.daehan.cheongyak;
+
+import java.time.LocalDate;
+import java.util.List;
+
+/**
+ * 청약 신청자 정보 (완성된 코드 — 그대로 사용).
+ * 기준일(입주자모집공고일)은 계산 시점에 별도로 전달된다.
+ */
+public record Applicant(
+        LocalDate birthDate,          // 생년월일
+        LocalDate marriageDate,       // 혼인신고일 (미혼이면 null)
+        LocalDate homelessSince,      // 세대 전원이 무주택이 된 날 (유주택이면 null)
+        LocalDate accountOpenedDate,  // 청약통장 가입일
+        List<Member> householdMembers // 등본상 세대 구성원 (본인 제외)
+) {
+
+    /** 세대 구성원 (완성된 코드 — 그대로 사용). */
+    public record Member(
+            String relation,          // "배우자", "자녀", "부", "모", "형제자매" ...
+            LocalDate birthDate,      // 생년월일
+            boolean married,          // 혼인 여부
+            boolean ownsHome,         // 주택 소유 여부
+            int yearsOnRegister       // 동일 등본 연속 등재 기간(년)
+    ) {
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/cheongyak/ScoreCalculator.java',
+        content: `package com.daehan.cheongyak;
+
+import java.time.LocalDate;
+
+/**
+ * 청약 가점 계산기 (구현 대상).
+ *
+ * 메서드와 클래스를 어떻게 나눌지는 여러분의 설계입니다.
+ * 단, 이 안에는 서로 다른 세 가지 일이 섞여 있습니다.
+ *  1) 자격 판정 — 애초에 가점제 대상인가 (세대원 주택 소유 등)
+ *  2) 점수 계산 — 세 항목의 기간·인원을 점수표로 환산
+ *  3) 근거 표현 — 사용자에게 보여 줄 산정 근거 문장 만들기
+ * 셋이 한 메서드에 섞이면, PDF 리포트가 추가되는 날 점수표 코드를 다시 열게 됩니다.
+ */
+public class ScoreCalculator {
+
+    /** 기준일(입주자모집공고일) 기준 가점 산정. 반환 타입부터 여러분의 설계입니다. */
+    public Object calculate(Applicant applicant, LocalDate baseDate) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '점수표(스펙): ① 무주택기간(최대 32점) — 1년 미만 2점, 이후 1년마다 2점 가산, 15년 이상 32점. ② 부양가족 수(최대 35점) — 0명 5점, 1명마다 5점 가산, 6명 이상 35점. ③ 통장 가입기간(최대 17점) — 6개월 미만 1점, 6개월 이상 1년 미만 2점, 이후 1년마다 1점 가산, 15년 이상 17점.',
+      '무주택기간의 기산일: 만 30세가 된 날부터 셉니다. 단, 만 30세 이전에 혼인했다면 혼인신고일부터 셉니다. 실제 무주택기간은 "기산일"과 "세대 전원이 무주택이 된 날(homelessSince)" 중 늦은 날부터 기준일까지입니다. 세대원 중 주택 소유자가 있으면 무주택기간은 0점 처리하고 그 사유를 결과에 명시합니다.',
+      '부양가족 인정(단순화 스펙): 배우자는 무조건 인정. 직계존속(부·모)은 같은 등본에 3년 이상 연속 등재 + 본인이 무주택일 때 인정. 자녀는 만 30세 미만 미혼이면 인정. 본인은 세지 않습니다.',
+      '검증 예제 1: 만 42세, 만 33세부터 세대 전원 무주택(무주택기간 9년), 등본에 배우자와 만 30세 미만 미혼 자녀 2명, 통장 가입 10년 → 무주택 20점 + 부양가족(3명) 20점 + 통장 12점 = 52점.',
+      '검증 예제 2(만점): 만 47세, 만 30세부터 무주택 17년, 등본에 배우자 + 미혼 자녀 3명 + 5년째 등재된 무주택 부모 2명(부양 6명), 통장 가입 16년 → 32 + 35 + 17 = 84점. 항목별 점수와 산정 근거(어느 구간에 걸렸는지)가 결과에 함께 나와야 합니다.',
+      '고객센터 최다 문의를 화면에 반영해 달라는 요청: "동생이랑 같이 살면 부양가족이죠?" (형제자매의 인정 여부는 위 단순화 스펙 표에 없습니다 — 임의로 넣거나 빼지 말고 확인이 필요합니다)',
+    ],
+    constraints: [
+      '점수표의 구간과 배점은 스펙 그대로 구현합니다. "비슷하게 계단식"이 아니라 표의 숫자 그대로여야 합니다 — 가점 1점이 당첨을 가릅니다.',
+      '기간 계산은 기준일(baseDate)을 인자로 받아 수행합니다. 시스템 현재 시각(now() 류)을 쓰지 마세요 — 모집공고일이 곧 기준입니다.',
+      '점수만 반환하는 설계는 불합격입니다. 항목별 점수와 산정 근거가 함께 반환되어야 합니다 (대표님 당부 참조).',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '규정 문서(점수표·기산 규칙)를 구간 하나 틀리지 않게 코드로 옮기는 정밀 번역 훈련',
+      '자격 판정 / 점수 계산 / 근거 표현이라는 세 책임을 분리해, 출력 형식 추가가 계산 코드를 건드리지 않게 만들기',
+      '기산일 규칙(만 30세 vs 혼인신고일 중 이른 것, 무주택 시작일과 늦은 것)처럼 조건이 겹치는 날짜 로직을 명료한 함수로 떼어 내기',
+      '"점수 세 개"의 뒤에 있는 도메인(가점제가 생긴 이유, 오기입의 결과)을 이해하고 코드에 반영하기',
+    ],
+    hints: [
+      '"이 세대는 가점제 대상인가"(자격), "몇 점인가"(계산), "어떻게 보여 줄 것인가"(표현)는 서로 다른 질문입니다. 자격 판정을 맨 앞에 순수 함수로 떼어 놓으면, 뒤의 점수 계산이 "이미 자격 있는 세대"라는 가정 위에서 단순해집니다.',
+      '무주택기간의 기산일은 "만 30세가 된 날과 혼인신고일 중 이른 날"이 아니라, 혼인이 30세 이전일 때만 혼인신고일입니다. 그리고 실제 기간의 시작은 그 기산일과 homelessSince 중 늦은 날입니다. 이 두 문장을 각각 이름 있는 메서드로 만들면 헷갈릴 자리가 사라집니다.',
+      '세 점수표는 전부 "기간/인원 → 구간 → 점수"라는 같은 모양입니다. 구간표를 데이터(배열이나 작은 레코드 목록)로 두고 조회 함수 하나로 세 항목을 처리하면, 표가 바뀌는 날 코드가 아니라 표만 바뀝니다. 산정 근거 문장은 그 구간 조회 결과에서 자연스럽게 나옵니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '만 28세 미혼 신청자',
+        description:
+          '기산일이 만 30세가 되는 날인데 신청자가 아직 만 28세라면, 순진한 뺄셈은 무주택기간을 음수로 만들고 음수 구간은 표에 없으므로 예외 또는 엉뚱한 점수가 나옵니다. 이 경우 무주택기간 점수는 규정상 0점이 아니라 "1년 미만 2점"도 아닌, 기산 전이므로 0점입니다. 좋은 방어: 기간 계산 전에 "기산일이 기준일보다 미래"인 상태를 명시적으로 다루고, 결과 근거에 "만 30세 도달 전"을 표시하세요.',
+      },
+      {
+        title: '부양가족 7명',
+        description:
+          '대가족 세대가 부양가족 7명으로 계산되면, 상한 없이 5점씩 더하는 코드는 40점을 만들어 만점(84점)을 넘는 가점을 출력합니다. 존재할 수 없는 점수는 조용히 나가는 순간 서비스 신뢰가 끝납니다. 좋은 방어: 항목별 상한(32/35/17)을 구간표 자체에 박아 넣고, 합계가 84를 넘으면 계산 버그로 간주해 명시적으로 실패하는 불변식을 두세요.',
+      },
+      {
+        title: '미래에서 온 통장',
+        description:
+          '입력 실수로 통장 가입일이 기준일보다 미래면 가입기간이 음수가 됩니다. 음수를 "6개월 미만 1점"으로 뭉개면 잘못된 입력이 그럴듯한 점수로 둔갑합니다. 좋은 방어: 모든 날짜 입력에 대해 "기준일 이전" 검증을 입구에서 수행하고, 위반 시 어느 필드가 왜 이상한지 밝히며 명시적으로 실패하세요. 계산기가 잘못된 입력을 바로잡아 주는 척하는 것이 최악입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '점수표 구간·기산일 규칙·부양가족 인정 조건이 스펙대로 구현되어 두 검증 예제(52점, 84점)와 정확히 일치하는가.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '책임 분리 (자격·계산·표현)',
+        description: '자격 판정, 점수 계산, 근거 표현이 분리되어 새 출력 형식(푸시, PDF) 추가 시 계산 코드를 수정하지 않아도 되는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '날짜 로직의 명료성',
+        description: '기산일·기간 계산이 이름 있는 단위로 분리되어 규정 문서와 대조하며 읽을 수 있는가. 기준일이 인자로 흐르는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '두 검증 예제와 구간 경계(15년, 6명, 6개월), 만 30세 전·후가 단위 테스트로 고정되어 있는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '형제자매 인정 여부를 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '내 집 마련을 준비하며 처음 청약통장을 만든 회사 동기',
+      prompt:
+        '동기에게 설명해 주세요. (1) 가점제가 왜 생겼고 84점이 어떻게 구성되는지 — 세 항목과 각 만점을, (2) 동기의 가점이 앞으로 어떻게 오르는지 — 만 30세 기산 규칙 때문에 지금 몇 살이냐에 따라 무주택 점수의 출발선이 달라진다는 것을 구체적 나이 예시로, (3) 우리 계산기가 점수만 보여 주지 않고 산정 근거를 함께 보여 주는 이유 — 가점 오기입이 당첨 취소로 이어지는 세계에서 근거란 무엇인지. 부동산 용어를 쓸 때마다 일상어로 한 번씩 풀어 주세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '발표일의 정적',
+        teaser: '당첨자 발표일, 문의 채널이 조용하다. 앱의 점수와 청약홈의 점수가 한 번도 다르지 않았고, 리뷰에는 "근거까지 보여 줘서 믿는다"가 쌓인다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '별표가 늘어나는 공지',
+        teaser: '계산은 대체로 맞는다. 다만 경계 사례가 나올 때마다 "일부 조건에서는 청약홈 기준을 따르세요"라는 각주가 늘고, 공지의 별표 개수가 신뢰의 반비례 지표가 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '취소된 당첨',
+        teaser: '앱이 2점 높게 계산한 가점을 믿고 청약한 사용자가 당첨 취소를 통보받는다. 캡처가 커뮤니티를 돌고, 회의실 화이트보드에는 그 사용자의 15년이 타임라인으로 그려진다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 당첨자는 아직 발표되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 18 — Stage 7 "테스트가 설계를 이끈다" / 전기요금 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's7-tariff-01',
+    stage: 7,
+    stageTitle: '테스트가 설계를 이끈다',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '단일 파일',
+    modes: ['developer'],
+    domain: '전기요금 · 누진제',
+    domainEmoji: '⚡',
+    title: '요금 폭탄의 경계선 — 테스트 먼저 쓰는 누진제 계산기',
+    estimatedMinutes: 120,
+    briefing: {
+      title: '경계값을 아는 자가 도메인을 아는 자다',
+      content: `### 1974년에 태어난 계단
+
+주택용 전기요금 누진제는 1974년 오일쇼크의 산물입니다. 기름 한 방울 안 나는 나라에서 전기를 아껴 쓰게 하려면, 많이 쓸수록 단가가 비싸지는 계단을 만들면 된다는 발상이었죠. 이 계단은 점점 가팔라져 한때 6단계, 최고 단가가 최저 단가의 11배를 넘었습니다.
+
+### 2016년 여름, 계단이 무너지다
+
+그리고 2016년의 기록적 폭염. 에어컨을 튼 가정들의 고지서에 평소의 두세 배 요금이 찍히면서 "요금 폭탄" 민원이 폭발했습니다. 결국 그해 12월 누진제는 6단계에서 3단계로 개편됐고, 이후 여름(7~8월)에는 구간 자체를 넓혀 주는 완화 조치가 더해졌습니다. 같은 350kWh를 써도 7월과 6월의 요금이 다른 이유입니다. 요금표는 정치와 날씨의 역사이고, 그 역사는 전부 **경계값**에 새겨져 있습니다 — 몇 kWh에서 계단이 꺾이는가, 하계는 언제 시작되는가.
+
+### 테스트를 먼저 쓴다는 것
+
+켄트 벡의 《테스트 주도 개발》이 가르치는 것은 테스트 기법이 아니라 순서입니다. 코드를 쓰기 전에 "이 코드가 통과해야 할 시험 목록"을 먼저 적는 것. 누진제 계산기라면 그 목록은 자명합니다 — 정확히 300kWh인 달, 0kWh인 달, 구간이 꺾이는 딱 그 지점들. 경계값 목록을 막힘없이 적을 수 있다면 도메인을 이해한 것이고, 적다가 막힌다면 아직 스펙을 다 읽지 않은 것입니다. 테스트는 검사 도구이기 전에 **이해했음의 증거**입니다. 이번 미션에서는 그 증거를 구현보다 먼저 제출하게 됩니다.`,
+    },
+    scenario: `에너지 절약 앱 스타트업이 **"이번 달 예상 전기요금" 기능**을 만듭니다. 사용자가 사용량을 넣으면 누진제 요금을 보여 주는 계산기인데, 지난달 베타에서 경쟁 앱이 300kWh 경계에서 요금을 틀리게 보여 줘 앱스토어 리뷰가 무너지는 것을 다 같이 목격했습니다. 그래서 팀 리드의 지시가 특별합니다 — **"구현 말고 테스트부터 보여 주세요. 어떤 경계를 검증할 건지 목록으로."** 이번 미션의 제출물은 절반이 테스트입니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/tariff/TariffCalculator.java',
+        content: `package com.daehan.tariff;
+
+/**
+ * 주택용 누진제 요금 계산기 (구현 대상).
+ *
+ * 이 스테이지의 규칙: 이 파일보다 테스트 파일을 먼저 여세요.
+ * 1) 검증할 항목의 목록(테스트 리스트)을 테스트 파일 상단 주석으로 먼저 적는다.
+ * 2) 테스트 하나를 쓰고, 통과할 만큼만 구현하고, 다음 테스트로 간다.
+ * 리뷰는 구현 코드만큼 테스트 코드를 읽습니다 — 이름이 스펙을 말하는지,
+ * 한 테스트가 한 가지를 검증하는지, 경계가 빠짐없이 못박혔는지.
+ */
+public class TariffCalculator {
+
+    /** 월 사용량(kWh)과 청구월(1~12)로 요금(원)을 계산한다. 규칙은 요구사항 참조. */
+    public int monthlyBill(int usageKwh, int billingMonth) {
+        // TODO 구현 — 단, 테스트가 먼저입니다.
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '요금표(이 미션의 단순화 기준값): 3구간 누진제. 구간 경계는 비하계 200/400kWh, 하계(7월·8월) 300/450kWh. 기본요금은 도달한 최고 구간 기준으로 1구간 900원, 2구간 1,600원, 3구간 7,300원. 전력량요금은 구간별 단가 × 그 구간에서 쓴 양으로, 1구간 100원/kWh, 2구간 200원/kWh, 3구간 300원/kWh. 요금 = 기본요금 + 전력량요금 합계.',
+      '검증 예제 1: 350kWh를 6월(비하계)에 쓰면 1,600 + 200×100 + 150×200 = 51,600원. 같은 350kWh를 8월(하계)에 쓰면 1,600 + 300×100 + 50×200 = 41,600원. 하계 완화 한 줄이 정확히 10,000원 차이를 만듭니다 — 2016년 여름 민원의 축소판입니다.',
+      '검증 예제 2: 500kWh는 비하계 7,300 + 20,000 + 40,000 + 30,000 = 97,300원, 하계 7,300 + 30,000 + 30,000 + 15,000 = 82,300원.',
+      '구현보다 테스트를 먼저 작성하세요. 테스트 파일 상단에 테스트 리스트(무엇을 검증하는지 한 줄씩)를 주석으로 남기고, 리스트의 항목과 테스트 메서드가 1:1로 대응해야 합니다. 경계값 — 0kWh, 정확히 200/300/400/450kWh, 하계 경계월(6월 vs 7월, 8월 vs 9월) — 은 각각 별도의 테스트로 못박혀야 합니다.',
+      '테스트 이름은 서술형으로: "test1" 이 아니라 "하계_경계인_정확히_300kWh는_1구간_기본요금을_적용한다"처럼, 이름만 읽어도 스펙이 복원되는 수준이어야 합니다. 한 테스트는 한 가지만 검증합니다.',
+      '기획팀 전달: "복지 할인(다자녀·생명유지장치)도 곧 반영해야 해요." (할인율과 누진 계산과의 적용 순서는 요금팀 회신 전입니다)',
+    ],
+    constraints: [
+      '요금표의 숫자와 경계는 위 스펙 그대로 구현합니다. 실제 한전 요금표와는 단가가 다른 학습용 기준값임을 코드 주석에 명시하세요.',
+      '금액은 정수(원)로 다루며 임의 반올림을 금지합니다.',
+      '테스트 프레임워크는 JUnit 스타일로 가정하되, 실행 환경이 없어도 읽는 것만으로 검증 의도가 전달되게 작성하세요.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '테스트 리스트를 먼저 적는 습관 — 경계값 목록이 곧 도메인 이해의 증거임을 체감하기',
+      '테스트가 이끄는 구현: 한 번에 전부가 아니라, 테스트 하나를 통과할 만큼씩 자라는 코드',
+      '서술적 테스트 이름과 "한 테스트 한 검증"으로, 테스트 코드를 두 번째 스펙 문서로 만들기',
+      '경계값(구간, 계절)이 몰린 도메인에서 테스트하기 쉬운 구조(구간표의 데이터화)가 저절로 유도되는 경험',
+    ],
+    hints: [
+      '테스트 리스트가 먼저입니다. 스펙을 읽으며 "요금이 꺾이는 지점"을 전부 적어 보세요 — 0, 200, 300, 400, 450, 그리고 6월↔7월. 리스트가 10줄을 넘지 않으면 아직 하계×구간 조합을 다 못 본 것입니다.',
+      '정확히 300kWh는 6월에는 2구간 요금(기본 1,600원)이고 8월에는 1구간 요금(기본 900원)입니다. 이 한 쌍을 테스트로 먼저 못박으면, "하계 여부 → 구간표 선택 → 구간별 합산"이라는 구현 순서가 저절로 그려집니다.',
+      '구간 경계(200/400, 300/450)를 if 조건식에 흩뿌리면 테스트가 실패할 때마다 조건식을 다시 읽어야 합니다. 구간표를 데이터(경계, 기본요금, 단가의 목록)로 두고 계산 루프는 하나만 두면, 테스트도 표도 읽기 쉬워지고 4번째 구간이 와도 표 한 줄입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '음수 사용량',
+        description:
+          '계량기 교체나 검침 보정 롤백으로 사용량이 음수로 들어오는 달이 실제로 있습니다. 순진한 계산기는 음수 구간을 만들어 마이너스 요금 고지서를 뽑습니다. 좋은 방어: 사용량 ≥ 0 검증을 입구에 두고 위반 시 명시적으로 실패하세요 — 그리고 그 검증도 테스트 리스트의 한 줄이어야 합니다. 방어 코드에 테스트가 없으면 다음 리팩토링 때 소리 없이 사라집니다.',
+      },
+      {
+        title: '15일짜리 달',
+        description:
+          '검침일이 바뀌면 사용일수가 15일뿐인 청구월이 생깁니다. 실제 요금 제도는 이런 달의 구간을 일수 비례로 조정하는데, 이 미션의 스펙에는 그 규칙이 없습니다. 좋은 방어: 없는 규칙을 임의로 구현하지 말고, "사용일수가 표준과 다른 달"이 스펙 밖임을 가정으로 문서화하고 질문으로 되돌리세요. 테스트 리스트에 "미결: 단수 청구월"이라고 적어 두는 것 — 그것도 테스트 주도의 일부입니다.',
+      },
+      {
+        title: '4번째 구간이 생기는 날',
+        description:
+          '누진제는 정치와 날씨에 따라 다시 개편됩니다. 4구간 신설이나 경계 이동이 왔을 때, 구간이 if-else 사슬에 박혀 있으면 모든 조건식을 다시 검산해야 하고, 구간표가 데이터라면 표 한 줄과 테스트 몇 개로 끝납니다. 좋은 방어: 지금 만든 경계값 테스트들이 개정 후에도 회귀 그물로 작동하는지 — 테스트가 구현 세부가 아니라 스펙(입력→요금)을 검증하고 있는지 확인하세요. 구현에 붙은 테스트는 개편 날 전부 다시 씁니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '테스트 품질',
+        description: '경계값(0, 200/300/400/450, 하계 경계월)이 빠짐없이 별도 테스트로 못박혔는가. 테스트 이름이 스펙을 서술하는가. 한 테스트가 한 가지만 검증하는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트 우선의 증거',
+        description: '테스트 리스트 주석이 있고 테스트 메서드와 1:1 대응하는가. 구현이 테스트 목록의 범위를 넘어 과잉 설계되지 않았는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '도메인 규칙 정확성',
+        description: '두 검증 예제(51,600/41,600원, 97,300/82,300원)와 경계값 요금이 스펙과 정확히 일치하는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '계산 코드의 단순성',
+        description: '구간표가 데이터로 표현되어 계산 루프가 하나인가. 하계 완화가 표 선택으로 흡수되어 조건 분기가 흩어지지 않았는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '복지 할인의 적용 순서 같은 미정 규칙을 임의 확정하지 않고 질문했거나 테스트 리스트에 미결로 기록했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '테스트 코드를 "일 두 번 하는 것"이라 생각하는 옆 팀 선배 개발자',
+      prompt:
+        '선배에게 설명해 주세요. (1) 왜 이 계산기는 테스트를 먼저 썼는지 — 경계값 목록을 적는 행위가 스펙 읽기의 완성이라는 것을 300kWh의 6월/8월 요금 차이로, (2) 테스트 리스트 주석이 어떻게 코드 리뷰와 신규 입사자 온보딩 문서를 겸하는지, (3) 4번째 구간이 신설되는 날 테스트가 있는 팀과 없는 팀의 그날 하루가 어떻게 다른지를 시간 순서로. 정색한 원칙 강의가 아니라, 같이 겪은 "경쟁 앱 300kWh 사태"에서 출발하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '고지서와 같은 숫자',
+        teaser: '사용자들이 실제 고지서와 앱을 대조하기 시작하고, 숫자는 한 번도 다르지 않다. 앱스토어 리뷰에 "이 앱은 경계에서 안 틀림"이라는 문장이 올라온다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '여름마다 열리는 파일',
+        teaser: '대체로 맞는다. 다만 하계 경계가 걸린 문의가 올 때마다 계산 코드를 열어 눈으로 검산하고, 7월 첫 주는 매년 조금 길게 느껴진다.',
+      },
+      {
+        grade: 'dawn',
+        title: '경계의 리뷰 폭탄',
+        teaser: '정확히 300kWh를 쓴 하계 사용자들에게 2구간 요금이 표시되고, "이 앱도 똑같네"라는 리뷰가 별점 하나와 함께 쌓인다. 경쟁 앱의 사태가 이번에는 당신의 사례가 된다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 검침은 아직 이루어지지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 19 — Stage 8 "실패를 설계하다" / 결제 / 기능 추가
+  // =========================================================================
+  {
+    id: 's8-payment-01',
+    stage: 8,
+    stageTitle: '실패를 설계하다',
+    missionType: '기능 추가',
+    difficulty: 'Hard',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '결제 · PG 연동',
+    domainEmoji: '💳',
+    title: '타임아웃 너머의 결제 — 멱등키와 보상의 설계',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '모른다는 상태를 설계하라',
+      content: `### 타임아웃의 딜레마
+
+결제 요청을 보냈는데 30초가 지나도록 응답이 없습니다. 자, 결제는 된 걸까요, 안 된 걸까요? 정답은 "모른다"입니다. 요청이 PG사에 닿기 전에 죽었을 수도, 승인은 됐는데 응답만 길에서 사라졌을 수도 있습니다. 여기서 순진한 재시도를 하면 고객 카드에 같은 금액이 두 번 찍히고(이중 결제), 재시도를 포기하면 돈은 나갔는데 주문은 없는 유령 결제가 남습니다. 실제 커머스 장애 보고서의 단골 유형이 정확히 이 두 갈래입니다.
+
+### 잘 실패하는 시스템
+
+마이클 나이가드의 《Release It!》은 이 지점에서 관점을 뒤집습니다 — 목표는 실패하지 않는 시스템이 아니라 **잘 실패하는 시스템**이다. 외부 연동 지점(integration point)은 언젠가 반드시 느려지고 끊어지므로, 타임아웃을 명시하고, 무너진 연동이 전체를 끌고 내려가지 않게 격벽을 치고, 그리고 무엇보다 "모른다"라는 결과를 일급 상태로 다루라는 것입니다. 실패 경로를 설계하지 않은 시스템은 실패 경로를 고객이 발견해 줍니다.
+
+### 같은 질문에는 같은 답 — 멱등성
+
+딜레마를 푸는 열쇠는 **멱등키(idempotency key)**입니다. 재시도를 "새 결제"가 아니라 "아까 그 결제, 어떻게 됐어요?"로 만드는 것 — 같은 주문에는 같은 참조번호를 붙여 보내면, PG사는 이미 처리한 요청을 다시 승인하는 대신 그때의 결과를 돌려줍니다. 타임아웃이 나면 단정하지 말고 그 번호로 조회하고, 승인됐는데 주문을 확정할 수 없다면 취소로 되돌립니다(보상 트랜잭션). 성공 경로는 누구나 짭니다. 이번 미션에서 여러분이 짜는 것은 나머지 전부입니다.`,
+    },
+    scenario: `커머스 플랫폼의 결제 모듈을 맡게 됐습니다. 지금 코드는 낙관주의자가 짰습니다 — 타임아웃이 나면 실패로 간주하고, 재시도는 매번 **새 참조번호로 새 요청**을 보냅니다. 그 결과 지난 분기 이중 결제가 7건, 그중 1건이 SNS에 캡처로 돌았습니다. CTO의 말이 요구사항의 전부를 요약합니다 — **"고객 카드에 같은 금액이 두 번 찍히면 그건 CS가 아니라 뉴스에 나옵니다."** PG사 API는 남의 시스템이라 못 고칩니다. 우리가 고칠 수 있는 것은 우리의 태도뿐입니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/pgnet/PgResponse.java',
+        content: `package com.pgnet;
+
+/**
+ * PG사 응답 (PG사 SDK — 엔진입니다. 수정 금지, 그대로 사용).
+ * code 체계는 PG사 연동 문서 17페이지가 전부입니다:
+ *   "0000" 승인 / "1001" 한도초과 / "2002" 카드정지
+ *   "4004" 해당 거래 없음 / "5005" 이미 취소됨 / "9999" 알 수 없음(PG 내부 오류)
+ */
+public record PgResponse(String code, String message, int approvedAmountKrw) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/pgnet/PgTimeoutException.java',
+        content: `package com.pgnet;
+
+/**
+ * 30초 내 응답 없음 (PG사 SDK — 엔진). 주의: 이 예외가 났어도
+ * 승인은 성사됐을 수 있습니다. PG사 기술지원 답변: "그럴 수 있죠."
+ */
+public class PgTimeoutException extends RuntimeException {
+
+    public PgTimeoutException(String message) {
+        super(message);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/pgnet/PgClient.java',
+        content: `package com.pgnet;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * PG사 표준 클라이언트 v3.2 (PG사 SDK — 엔진입니다. 수정·재구현 금지, 그대로 사용).
+ *
+ * 문서 17페이지 하단, 작은 글씨: "동일한 merchantTxRef로 재요청 시
+ * 신규 승인 없이 최초 처리 결과를 반환합니다." — 이 한 줄이 이 SDK의
+ * 가장 중요한 문장이지만, 아무도 17페이지까지 읽지 않습니다.
+ *
+ * 학습용 시뮬레이션: cardToken이 "SLOW-"로 시작하면 승인은 기록되지만
+ * 응답 전에 PgTimeoutException이 발생합니다(응답이 길에서 사라진 상황).
+ */
+public class PgClient {
+
+    private final Map<String, PgResponse> processed = new HashMap<>();
+    private final Map<String, Integer> refunded = new HashMap<>();
+
+    /** 승인 요청. 같은 merchantTxRef는 최초 결과를 그대로 반환한다(문서 17p). */
+    public PgResponse approve(String merchantTxRef, int amountKrw, String cardToken) {
+        if (processed.containsKey(merchantTxRef)) {
+            return processed.get(merchantTxRef);
+        }
+        PgResponse r = new PgResponse("0000", "승인", amountKrw);
+        processed.put(merchantTxRef, r);
+        if (cardToken.startsWith("SLOW-")) {
+            throw new PgTimeoutException("응답 시간 초과 (승인 여부 알 수 없음)");
+        }
+        return r;
+    }
+
+    /** 거래 상태 조회. 모르는 참조번호는 "4004". */
+    public PgResponse inquire(String merchantTxRef) {
+        PgResponse r = processed.get(merchantTxRef);
+        if (r == null) {
+            return new PgResponse("4004", "해당 거래 없음", 0);
+        }
+        int back = refunded.getOrDefault(merchantTxRef, 0);
+        return new PgResponse(r.code(), r.message(), r.approvedAmountKrw() - back);
+    }
+
+    /** 취소(전액/부분). 승인된 거래만 가능, 이미 전액 취소면 "5005". */
+    public PgResponse cancel(String merchantTxRef, int amountKrw) {
+        PgResponse r = processed.get(merchantTxRef);
+        if (r == null || !r.code().equals("0000")) {
+            return new PgResponse("4004", "해당 거래 없음", 0);
+        }
+        int back = refunded.getOrDefault(merchantTxRef, 0);
+        if (back >= r.approvedAmountKrw()) {
+            return new PgResponse("5005", "이미 취소됨", 0);
+        }
+        refunded.put(merchantTxRef, back + amountKrw);
+        return new PgResponse("0000", "취소 완료", amountKrw);
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/pay/PaymentService.java',
+        content: `package com.daehan.pay;
+
+import com.pgnet.PgClient;
+import com.pgnet.PgResponse;
+import com.pgnet.PgTimeoutException;
+
+// ------------------------------------------------------
+//  결제 서비스 v1.4
+//  20230811 재시도 3회 추가 (그날 장애 이후. 이걸로 해결됨 -- 김선임)
+//  20240302 타임아웃은 실패 처리 (고객 대기 못 시킴 -- 김선임)
+// ------------------------------------------------------
+public class PaymentService {
+
+    private final PgClient pg = new PgClient();
+
+    /** 주문 결제. 성공 시 "결제 완료", 실패 시 "결제 실패". */
+    public String pay(String orderId, int amountKrw, String cardToken) {
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            String ref = "TX-" + System.nanoTime();   // 매번 새 참조번호. 겹칠 일 없음
+            try {
+                PgResponse r = pg.approve(ref, amountKrw, cardToken);
+                if (r.code().equals("0000")) {
+                    return "결제 완료";
+                }
+            } catch (PgTimeoutException e) {
+                // 타임아웃 = 실패로 간주하고 재시도 (20240302)
+            }
+        }
+        return "결제 실패";
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '멱등성: 같은 주문의 결제 요청이 몇 번 반복돼도(재시도, 새로고침, 네트워크 재전송) 고객 카드에는 최대 한 번만 승인이 발생해야 합니다. 참조번호(merchantTxRef)를 매번 새로 만들지 말고 주문에서 결정적으로 유도해, 재시도가 "새 결제"가 아니라 "같은 결제의 재확인"이 되게 하세요. PG 문서 17페이지의 동일 참조번호 규칙이 여러분의 무기입니다.',
+      '검증 시나리오(멱등키 동작 표): 주문 ORD-1024, 39,800원, 카드 "SLOW-777". ① 1차 요청 → 타임아웃 ② 같은 참조번호로 상태 조회 → "0000" 승인 확인 ③ 결과: 결제 완료, 총 승인 1건 39,800원. 현재 레거시는 같은 상황에서 승인 2~3건(최대 119,400원)을 만듭니다 — 개선 전후의 이 차이를 테스트로 증명하세요.',
+      '타임아웃은 실패가 아닙니다: PgTimeoutException을 받으면 실패 단정 대신 상태 조회(inquire)로 확인하고, 조회로도 확인되지 않으면(예: "9999") 주문을 "확인 중(UNKNOWN)" 상태로 남기세요. 고객에게 실패를 안내했는데 돈이 나가 있는 것이 최악의 경로입니다.',
+      '보상 트랜잭션: 승인은 확인됐지만 주문을 확정할 수 없는 경우(재고 소진 등을 파라미터로 가정), cancel로 승인을 되돌리고 결과를 기록하세요. 보상마저 실패하면 예외를 삼키지 말고 "수동 대사 필요" 상태로 명시해 남깁니다.',
+      '결제는 명시적 상태 기계로 관리합니다: REQUESTED → APPROVED / FAILED / UNKNOWN, 이후 CONFIRMED / COMPENSATED / NEEDS_REVIEW. 어떤 입력 순서에서도 상태가 로그 문자열이 아니라 코드의 타입으로 존재해야 합니다.',
+      'CS팀 질문: "확인 중 상태는 언제까지 확인 중인가요?" (자동 재조회를 몇 번, 몇 초 간격으로 하고 그 후 누구의 몫이 되는지는 아직 정책이 없습니다)',
+    ],
+    constraints: [
+      'PgClient.java, PgResponse.java, PgTimeoutException.java는 PG사 SDK(엔진)입니다. 수정·재구현 금지, 그대로 사용하세요. PG사의 응답 코드 문자열이 결제 도메인 코드 곳곳에 새어 들지 않게 경계에서 번역하세요.',
+      '기존 공개 시그니처 pay(String, int, String)는 주문 모듈이 호출 중이므로 유지하세요. 내부는 새 구조에 위임해도 됩니다.',
+      '도메인 규칙: 승인 여부가 불명확한 거래를 실패로 단정해 고객에게 안내하는 것을 금지합니다. "모른다"는 상태로 남기고 확인 절차를 태웁니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '"모른다(UNKNOWN)"를 일급 상태로 설계에 편입하기 — 성공/실패 이분법이 만드는 사고의 구조 이해',
+      '멱등키로 재시도의 의미를 "새 요청"에서 "같은 질문의 반복"으로 바꾸는 경험',
+      '보상 트랜잭션과 수동 대사 큐 — 자동으로 되돌릴 수 있는 실패와 사람이 봐야 하는 실패의 구분',
+      '외부 SDK의 문자열 코드 체계를 경계에서 도메인 타입으로 번역해, 남의 시스템의 어휘가 내 도메인을 오염시키지 않게 하기',
+    ],
+    hints: [
+      '참조번호가 System.nanoTime()인 순간 모든 재시도는 새 결제가 됩니다. 참조번호를 orderId에서 결정적으로 만들면(예: "ORD-1024-PAY"), 문서 17페이지의 규칙 덕분에 PG사가 여러분 대신 중복을 막아 줍니다 — 멱등성의 절반은 이미 상대방에게 있습니다.',
+      '타임아웃 처리 순서를 종이에 먼저 그리세요: 타임아웃 → inquire → "0000"이면 승인으로 승격 / "4004"면 미도달이므로 같은 참조번호로 재시도 안전 / "9999"면 UNKNOWN으로 보류. 이 세 갈래가 코드에서 세 개의 이름 있는 경로로 보여야 합니다.',
+      '상태 전이는 enum과 전이 메서드로 못박고, 허용되지 않은 전이(FAILED → CONFIRMED 같은)는 예외로 막으세요. 상태 기계가 명시적이면 "부분 환불 후 재시도" 같은 궤도 밖 시나리오가 컴파일 타임과 테스트에서 걸립니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '유령 결제 — 타임아웃 뒤의 승인',
+        description:
+          '타임아웃이 났지만 PG사에서는 승인이 성사된 경우("SLOW-" 카드가 재현합니다), 실패로 단정하고 끝내면 돈은 나갔는데 주문이 없는 유령 결제가 남습니다. 고객이 카드 명세서를 볼 때까지 아무도 모릅니다. 좋은 방어: 타임아웃 경로에서 반드시 같은 참조번호로 조회해 승인 여부를 확정하고, 확정 불가면 UNKNOWN으로 남겨 재확인 절차가 있음을 상태로 드러내세요.',
+      },
+      {
+        title: '멱등키 충돌',
+        description:
+          '참조번호를 주문에서 유도할 때 규칙이 엉성하면(예: 주문번호 뒷자리만 사용) 서로 다른 주문이 같은 키를 갖게 되고, 두 번째 주문의 결제 요청이 첫 주문의 승인 결과를 돌려받아 "결제 완료"로 위장됩니다 — 돈은 안 나갔는데 주문은 확정되는, 이중 결제의 거울상입니다. 좋은 방어: 키 유도 규칙에 주문 전체 식별자를 쓰고, 응답의 승인 금액이 이번 주문 금액과 일치하는지 교차 검증하세요.',
+      },
+      {
+        title: '부분 환불 뒤의 재시도',
+        description:
+          '부분 취소가 일어난 거래에 뒤늦은 재시도나 조회가 도착하면, 조회 응답의 코드는 여전히 "0000"이지만 남은 승인 금액은 원래와 다릅니다. 코드만 보고 "승인 완료 39,800원"으로 처리하면 장부와 PG 정산이 어긋납니다. 좋은 방어: 조회 결과를 해석할 때 코드와 금액을 함께 검증하고, 금액 불일치는 자동 처리하지 말고 "수동 대사 필요"로 승격시키세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '멱등성 설계',
+        description: '참조번호가 주문에서 결정적으로 유도되고, 반복 요청에서 승인이 최대 1건임이 테스트로 증명되는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '불확실성(UNKNOWN)의 처리',
+        description: '타임아웃이 실패로 단정되지 않고 조회→확정/보류의 명시적 경로를 타는가. UNKNOWN이 상태 기계의 일급 상태인가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '보상과 상태 기계',
+        description: '보상 트랜잭션과 그 실패(수동 대사)가 설계되어 있는가. 상태 전이가 타입으로 강제되고 위반이 막히는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '경계 격리와 테스트',
+        description: 'PG 응답 코드 문자열이 경계에서 도메인 타입으로 번역되는가. 핵심 시나리오(타임아웃 후 승인, 반복 요청)가 테스트로 고정되었는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: 'UNKNOWN의 재조회 정책 같은 미결정 사항을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '이중 결제 캡처 사태 이후 결제팀을 불신하는 CS팀장 (비개발자, 환불 처리의 달인)',
+      prompt:
+        'CS팀장에게 개선 내용을 설명하세요. (1) 왜 이중 결제가 났었는지 — "응답이 없으면 다시 보낸다"가 왜 위험한지를 택배 재발송에 빗대어, (2) 이제는 무엇이 다른지 — 같은 주문은 같은 번호로만 묻기 때문에 카드에 두 번 찍히는 일이 구조적으로 불가능하다는 것, (3) 새로 생기는 "확인 중" 상태가 CS 화면에서 무엇을 의미하고, 어떤 경우에 CS가 개입하게 되는지(수동 대사). 마지막으로 "결제 실패"와 "확인 중"을 고객에게 다르게 안내해야 하는 이유를 한 문장으로 정리하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '뉴스에 나오지 않는 결제',
+        teaser: '분기 이중 결제 0건. 타임아웃은 여전히 매일 발생하지만, 전부 확인 절차를 타고 조용히 완료되거나 조용히 되돌려진다. CS팀장이 회식에서 결제팀 옆에 앉는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '수동 대사의 아침',
+        teaser: '이중 결제는 사라졌다. 다만 UNKNOWN이 쌓이는 속도가 처리 속도보다 빨라, 매주 월요일 아침 수동 대사 목록을 내려받는 일이 당신의 루틴이 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '캡처 2탄',
+        teaser: '금액 검증 없는 멱등키가 다른 주문의 승인을 물고 들어온 밤, "결제도 안 했는데 주문 완료"라는 캡처가 다시 돈다. 이번 뉴스의 헤드라인에는 재발이라는 단어가 붙는다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 승인 코드는 아직 발급되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 20 — Stage 9 "동시성의 감각" / 공연 티켓팅 / 리팩토링
+  // =========================================================================
+  {
+    id: 's9-ticketing-01',
+    stage: 9,
+    stageTitle: '동시성의 감각',
+    missionType: '리팩토링',
+    difficulty: 'Hard',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '공연 티켓팅',
+    domainEmoji: '🎤',
+    title: '0.3초의 전쟁 — 같은 좌석이 두 번 팔리는 코드',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '두 손이 동시에 같은 좌석을 잡을 때',
+      content: `### 매진까지 0.3초
+
+인기 아이돌 콘서트의 티켓 오픈. 수십만 명이 같은 초에 접속해 몇천 개의 좌석을 두고 경쟁합니다. 수강신청, 명절 기차표와 함께 한국 인터넷의 3대 전쟁으로 불리는 이 순간, 서버 안에서는 더 미시적인 전쟁이 벌어집니다 — 두 요청이 **같은 좌석을 두고 몇 마이크로초 차이로** 도착하는 전쟁.
+
+### 확인과 행동 사이의 틈
+
+문제의 코드는 어디서나 같은 모양입니다. "좌석이 비었는지 확인한다(check) → 비었으면 배정한다(act)". 단일 사용자 세계에서는 완벽한 논리지만, 확인과 행동 사이에는 아무리 짧아도 시간의 틈이 있습니다. 그 틈에 다른 요청이 끼어들면 — 두 요청 모두 "비었음"을 보고, 두 요청 모두 배정에 성공합니다. 같은 좌석의 티켓 두 장. 이 패턴에는 이름이 있습니다: **check-then-act 경쟁 상태**. 그리고 그 틈의 폭을 레이스 윈도(race window)라 부릅니다.
+
+### 공유된 가변 상태 — 모든 악의 근원
+
+《자바 병렬 프로그래밍》(JCiP)이 한 문장으로 요약하는 진단: 동시성 버그의 근원은 스레드가 아니라 **여럿이 동시에 읽고 쓰는 변경 가능한 상태**다. 좌석 맵이 공유되고, 누구나 확인하고 쓸 수 있는 한, 틈은 반드시 착취당합니다. 더 고약한 것은 이 버그의 성질입니다 — 동시성 버그는 재현되지 않습니다, 목격될 뿐. 테스트 환경에서는 천 번을 돌려도 멀쩡하다가 티켓 오픈 날에만 나타납니다. 그래서 이 스테이지의 훈련은 실행이 아니라 **읽기**입니다. 코드를 두 사람의 눈으로 동시에 읽으며, 틈이 있는 줄을 찾아내는 것.`,
+    },
+    scenario: `공연 예매 스타트업 '겟티켓'의 좌석 선점 코드를 인수인계받았습니다. 증상은 명확합니다 — **같은 좌석 티켓이 두 장 발권되는 사고가 공연마다 3~4건.** 공연장에서 두 관객이 한 좌석 앞에 서고, 현장 스태프가 사과하며 스탠딩석 팔찌를 채워 줍니다. 개발팀 노트북에서는 천 번을 돌려도 재현되지 않습니다. 실행으로 잡을 수 없으니, 이번 미션은 코드를 읽어 레이스를 찾아 표시하고, 틈 자체가 존재하지 않는 구조로 바꾸는 것입니다. 티켓 오픈은 다음 달, 이번엔 돔 공연입니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/venue/VenueChart.java',
+        content: `package com.venue;
+
+import java.util.List;
+
+/**
+ * 좌석 배치도 제공 (공연기획사 시스템 — 엔진입니다. 수정 금지, 그대로 사용).
+ * 공연별 판매 대상 좌석 ID 목록을 내려 준다. 판매 상태와는 무관한 정적 데이터.
+ */
+public class VenueChart {
+
+    /** 판매 대상 좌석 ID 목록 (사전순). */
+    public List<String> sellableSeats(String showId) {
+        return List.of("A-01", "A-02", "A-03", "B-01", "B-02");
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/getticket/SeatMap.java',
+        content: `package com.getticket;
+
+import java.util.HashMap;
+import java.util.Map;
+
+// ------------------------------------------------------
+//  좌석 상태 보관 v1.0
+//  주의: 선점 서비스와 정산 배치가 이 맵을 직접 읽고 씁니다.
+// ------------------------------------------------------
+public class SeatMap {
+
+    // seatId -> userId. 값이 없으면 빈 좌석.
+    public static final Map<String, String> SEATS = new HashMap<>();
+
+    // 통계용 판매 카운터 (대시보드가 10초마다 읽어 감)
+    public static int soldCount = 0;
+}`,
+      },
+      {
+        path: 'src/main/java/com/getticket/ReserveService.java',
+        content: `package com.getticket;
+
+// ------------------------------------------------------
+//  좌석 선점 서비스 v2.3
+//  20240117 중복 발권 제보로 확인 로직 추가 (확인하고 배정하니까 안전함 -- 박선임)
+// ------------------------------------------------------
+public class ReserveService {
+
+    /** 좌석 선점. 성공 시 "선점 완료", 이미 팔렸으면 "이미 선점된 좌석". */
+    public String reserve(String seatId, String userId) {
+        String owner = SeatMap.SEATS.get(seatId);          // (1) 확인
+        if (owner == null) {
+            SeatMap.SEATS.put(seatId, userId);             // (2) 배정
+            SeatMap.soldCount = SeatMap.soldCount + 1;     // (3) 통계
+            return "선점 완료 " + seatId;
+        }
+        if (owner.equals(userId)) {
+            return "선점 완료 " + seatId;                  // 같은 사람이면 통과 (20240117)
+        }
+        return "이미 선점된 좌석";
+    }
+
+    /** 선점 취소. 결제 이탈 시 CS가 수동 호출한다. 자동 만료는 없음(TODO 3년째). */
+    public String cancel(String seatId, String userId) {
+        String owner = SeatMap.SEATS.get(seatId);
+        if (owner != null && owner.equals(userId)) {
+            SeatMap.SEATS.remove(seatId);
+            SeatMap.soldCount = SeatMap.soldCount - 1;
+            return "선점 해제 " + seatId;
+        }
+        return "해제 대상 아님";
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/getticket/TicketOps.java',
+        content: `package com.getticket;
+
+/** 운영 점검 콘솔. 단일 흐름 점검용 — 여기서는 아무 문제가 없어 보인다. */
+public class TicketOps {
+
+    public static void main(String[] args) {
+        ReserveService svc = new ReserveService();
+        System.out.println(svc.reserve("A-01", "user-kim"));
+        System.out.println(svc.reserve("A-01", "user-lee"));
+        System.out.println(svc.cancel("A-01", "user-kim"));
+        System.out.println(svc.reserve("A-01", "user-lee"));
+        // 기대 출력:
+        // 선점 완료 A-01
+        // 이미 선점된 좌석
+        // 선점 해제 A-01
+        // 선점 완료 A-01
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '레이스 읽기(제출물의 일부): 레거시에서 두 요청이 동시에 들어왔을 때 잘못된 결과가 나는 지점을 전부 찾아, 해당 줄에 "// RACE:" 주석으로 어떤 인터리빙에서 무엇이 깨지는지 표시하세요. 최소 세 곳입니다 — 확인과 배정 사이, 통계 카운터의 갱신, 취소와 선점의 교차.',
+      '검증 시나리오(인터리빙 표): 두 사용자 kim과 lee가 A-01에 동시 요청. T1(kim): 확인 → 비었음 / T2(lee): 확인 → 비었음 / T1: 배정 성공 / T2: 배정 성공(kim을 덮어씀) → 티켓 두 장, 좌석 주인은 lee, soldCount는 2. 개선 후에는 같은 인터리빙에서 정확히 한 명만 "선점 완료"를 받아야 하고, 이를 판단 근거와 함께 리뷰 노트로 설명해야 합니다.',
+      '원자적 선점: "확인"과 "배정"이 분리된 두 걸음이 아니라 한 걸음이어야 합니다 (예: putIfAbsent 같은 원자적 넣기, 명시적 잠금 범위). 어떤 방식을 고르든 "틈이 왜 사라지는지"를 주석으로 설명하세요.',
+      '홀드와 만료: 선점 후 일정 시간 안에 결제가 없으면 좌석이 자동으로 풀려야 합니다. 시간은 시스템 시계 직접 호출이 아니라 주입받은 시계로 다뤄, 만료 로직이 테스트에서 시간을 돌려 가며 검증 가능해야 합니다.',
+      '공유 상태 봉인: public static 맵과 카운터가 외부에 직접 노출되지 않아야 합니다. 단일 흐름 점검(TicketOps)의 기대 출력 4줄은 개선 후에도 동일해야 합니다.',
+      '운영팀 전달: "홀드는 적당히 짧게 해 주세요. 너무 길면 암표상이 좌석을 잠가요." (몇 분이 적당한지는 공연마다 다르다는 답만 돌아왔습니다)',
+    ],
+    constraints: [
+      'VenueChart.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요.',
+      '실행 환경에서 멀티스레드 재현 테스트는 요구하지 않습니다 — 이 미션의 검증은 정적 읽기입니다. 다만 단일 흐름 동작(기대 출력 4줄)과 만료 로직은 테스트로 고정하세요.',
+      '도메인 규칙: 좌석의 상태는 빈 좌석 → 홀드(사용자, 만료시각) → 확정 세 가지뿐이며, 상태와 전이가 코드의 타입으로 드러나야 합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다. java.util.concurrent는 표준 라이브러리입니다 — 마음껏 쓰세요.',
+    ],
+    learningGoals: [
+      'check-then-act 패턴을 코드에서 식별하고, 레이스 윈도가 어느 두 줄 사이에 있는지 짚어 내는 읽기 능력',
+      '공유된 가변 상태를 봉인하고, 확인-행동을 원자적 연산 하나로 접는 구조 감각',
+      '"재현되지 않는 버그"를 실행이 아니라 추론으로 다루는 훈련 — 인터리빙 표로 사고하기',
+      '홀드·만료처럼 시간이 개입하는 동시성 규칙에서 시계를 주입해 검증 가능성을 확보하기 (S3의 복습)',
+    ],
+    hints: [
+      '레이스를 찾는 요령: 상태를 읽는 줄과 그 결과로 상태를 쓰는 줄 사이에 손가락을 끼워 보세요. 그 틈에 다른 사용자의 같은 코드가 통째로 실행된다고 상상하는 것 — 그것이 인터리빙 읽기입니다. soldCount = soldCount + 1도 읽기와 쓰기 두 걸음이라는 것을 잊지 마세요.',
+      '원자적 선점의 핵심은 "비었으면 넣기"를 맵에게 한 번에 시키는 것입니다. ConcurrentHashMap.putIfAbsent(seatId, hold)는 넣기에 성공한 딱 한 명에게만 null을 돌려줍니다 — 성공 판정을 반환값으로 하면 확인 단계 자체가 사라집니다.',
+      '만료를 "백그라운드가 청소"로 설계하면 결제 완료와 만료 해제가 또 다른 레이스를 만듭니다. 대신 좌석을 잡으려는 쪽이 기존 홀드의 만료 여부를 원자적 교체(replace) 조건으로 확인하게 하면, 청소부 없이도 만료가 동작하고 경쟁 지점이 한 곳으로 모입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '만료 직전의 결제 완료',
+        description:
+          '홀드 만료 시각과 결제 완료가 같은 순간에 교차하면 — 결제는 성공했는데 좌석은 만료로 풀려 다른 사람에게 팔릴 수 있습니다. 돈을 낸 두 사람이 한 좌석을 갖는 최악의 조합입니다. 좋은 방어: 결제 확정을 "홀드가 아직 유효할 때만 성공하는" 원자적 상태 전이로 만들고, 전이에 실패한 결제는 자동 환불 경로로 명시해 보내세요.',
+      },
+      {
+        title: '자기 자신과의 레이스',
+        description:
+          '티켓팅의 국민 행동, 더블클릭. 같은 사용자의 요청 두 개가 동시에 들어오면 "같은 사람이면 통과" 로직이 두 요청 모두에 성공을 돌려주고, 결제 페이지가 두 개 열려 이중 결제로 이어질 수 있습니다. 좋은 방어: 선점을 사용자 기준으로 멱등하게 — 같은 사용자의 중복 선점은 새 홀드가 아니라 기존 홀드를 돌려주게 하세요. S8에서 배운 멱등성이 동시성에서도 무기가 됩니다.',
+      },
+      {
+        title: '취소와 선점의 교차',
+        description:
+          'kim의 취소와 lee의 선점이 겹치면 — lee가 "이미 선점됨"을 확인한 직후 kim이 취소해, 빈 좌석인데 아무도 못 사는 상태가 되거나, 반대로 취소의 remove와 선점의 put이 꼬여 soldCount가 실제 판매 좌석 수와 어긋납니다. 대시보드가 틀린 매진율을 보여 주는 원인입니다. 좋은 방어: 취소도 "내 홀드일 때만 성공하는" 원자적 조건부 제거로 만들고, 카운터는 별도 변수가 아니라 좌석 상태에서 파생시키세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '레이스 식별 (읽기)',
+        description: 'check-then-act, 카운터 갱신, 취소 교차의 세 지점이 RACE 주석으로 정확히 짚였고, 각 인터리빙 설명이 타당한가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '원자적 선점 구조',
+        description: '확인과 배정이 원자적 연산 하나로 접혔는가. 성공 판정이 반환값/전이 결과로 이루어지는가. 틈이 사라진 이유가 설명되었는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '홀드·만료 설계',
+        description: '홀드 상태와 만료가 타입으로 표현되고, 시계 주입으로 테스트 가능한가. 만료가 새 레이스를 만들지 않는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '공유 상태 봉인과 동작 보존',
+        description: 'public static 노출이 제거되고 상태 접근이 한 경로로 모였는가. 단일 흐름 기대 출력이 보존되는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '홀드 시간의 기준을 임의 확정하지 않고 질문했거나 설정 주입으로 열어 두고 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '공연장에서 중복 좌석 사과를 도맡아 온 현장 운영 매니저 (비개발자)',
+      prompt:
+        '운영 매니저에게 설명하세요. (1) 같은 좌석 티켓 두 장이 어떻게 만들어졌는지 — "확인하고 배정하는 사이의 찰나"를 두 명이 동시에 한 좌석을 가리키는 현장 상황에 빗대어, (2) 왜 사무실에서는 재현이 안 됐는지 — 이 버그는 손님이 몰릴 때만 나타난다는 것, (3) 개선 후에는 무엇이 달라지는지 — 이제 좌석을 잡는 행위 자체가 한 명만 통과시키는 개찰구가 됐다는 것, 그리고 홀드 만료로 결제 이탈 좌석이 자동으로 풀린다는 것. 다음 공연 오픈 날 매니저가 무전기 대신 무엇을 보면 되는지로 마무리하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '무전기가 조용한 오픈',
+        teaser: '돔 공연 티켓 오픈, 3분 매진. 현장 중복 좌석 0건. 운영 매니저의 무전기는 그날 처음으로 스탠딩 안내에만 쓰인다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '월요일의 카운터 보정',
+        teaser: '중복 발권은 사라졌다. 다만 대시보드의 매진율이 가끔 실제와 어긋나, 매주 월요일 카운터를 손으로 다시 세는 배치가 하나 늘었다.',
+      },
+      {
+        grade: 'dawn',
+        title: '한 좌석 앞의 두 사람',
+        teaser: '만료와 결제가 교차한 좌석이 두 번 팔리고, 공연 당일 그 자리 앞에서 두 관객이 각자의 QR을 내민다. 사과문의 초안을 쓰는 것은 이번에도 현장이지만, 원인 보고서는 당신 몫이다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 좌석은 아직 아무도 선점하지 못했습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 21 — Stage 10 "데이터가 흐르는 길" / 커머스 재고 / 리팩토링
+  // =========================================================================
+  {
+    id: 's10-stock-01',
+    stage: 10,
+    stageTitle: '데이터가 흐르는 길',
+    missionType: '리팩토링',
+    difficulty: 'Normal',
+    scope: '모듈 경계',
+    modes: ['developer'],
+    domain: '커머스 · 재고',
+    domainEmoji: '🛒',
+    title: '재고가 세 곳에 사는 집 — 진실과 사본의 재설계',
+    estimatedMinutes: 150,
+    briefing: {
+      title: '캐시는 전부 파생 데이터다',
+      content: `### 같은 질문, 세 개의 대답
+
+"이 티셔츠, 지금 살 수 있나요?" — 이 질문에 커머스 시스템은 세 곳에서 대답합니다. 주문을 처리하는 재고 원장, 상품 페이지가 읽는 캐시, 그리고 검색 결과의 품절 배지. 셋이 같은 값을 보여 주는 동안은 아무도 이 구조를 의식하지 않습니다. 문제는 셋이 **각자 갱신될 때** 시작됩니다 — 주문 코드가 원장을 고치고, 캐시를 고치고, 검색 인덱스를 고치는 세 번의 쓰기(double write) 중 하나가 실패하거나 순서가 뒤집히는 순간, 검색에는 "판매중"인데 주문은 "품절"인 상품이 태어납니다.
+
+### 진실은 하나, 나머지는 파생
+
+마틴 클레프만의 《데이터 중심 애플리케이션 설계》가 이 혼돈에 준 정리는 단순합니다. **캐시와 인덱스는 전부 파생 데이터(derived data)다.** 스스로 진실을 주장할 자격이 없고, 하나의 기록 시스템(system of record)으로부터 다시 계산될 수 있어야 합니다. 그리고 파생을 만드는 가장 믿을 만한 길은 "여기저기서 각자 쓰기"가 아니라, 진실에 일어난 변화를 **순서 있는 이벤트의 흐름**으로 흘려보내고 각 사본이 그 흐름을 따라가게 하는 것입니다. 시베리아 횡단철도 미션에서 시간의 기준이 하나였듯, 재고의 기준도 하나여야 합니다 — 나머지는 전부 그 기준의 그림자입니다.
+
+### 늦는 것과 틀린 것
+
+사본은 진실보다 늦을 수 있습니다. 그것은 설계된 성질입니다(최종 일관성). 위험한 것은 늦는 사본이 아니라, **틀린 채로 영영 머무는 사본**입니다 — 이벤트를 놓치고도 따라잡을 방법이 없는 캐시, 순서가 뒤집힌 채 적용된 인덱스. 이번 미션에서 여러분이 만드는 것은 빠른 시스템이 아니라, 틀렸을 때 스스로 바로잡을 수 있는 시스템입니다.`,
+    },
+    scenario: `중견 커머스 '다올몰'의 재고 표시 사고를 인수인계받았습니다. 증상: **"검색에는 판매중인데 들어가면 품절", "품절 표시인데 주문이 됨"** — 이런 CS가 주당 40건. 원인은 코드에 있습니다. 주문 서비스가 재고 원장·상품 캐시·검색 인덱스를 **직접, 제각각, 서로 다른 순서로** 갱신하고, 취소 경로는 아예 인덱스 갱신을 빼먹습니다(주석에는 "TODO 검색팀 API 자리"가 3년째). 마침 전사 이벤트 로그 인프라가 도입됐습니다. 이제 진실을 한 곳에 모으고, 나머지가 그 흐름을 따라가게 만들 차례입니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/daol/infra/EventLog.java',
+        content: `package com.daol.infra;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+/**
+ * 사내 이벤트 로그 (인프라팀 제공 — 엔진입니다. 수정/재구현 금지, 그대로 사용).
+ * append-only. 이벤트마다 전역 순번(seq)이 붙고, 구독자에게 순서대로 전달된다.
+ * 구독자가 죽었다 살아나면 replayFrom(seq)으로 놓친 구간을 다시 받을 수 있다.
+ */
+public class EventLog {
+
+    /** 이벤트 한 건. */
+    public record Event(long seq, String type, String sku, int delta) {
+    }
+
+    private final List<Event> log = new ArrayList<>();
+    private final List<Consumer<Event>> subscribers = new ArrayList<>();
+    private long seq = 0;
+
+    /** 이벤트를 기록하고 구독자들에게 전달한다. 부여된 순번을 돌려준다. */
+    public long append(String type, String sku, int delta) {
+        seq++;
+        Event e = new Event(seq, type, sku, delta);
+        log.add(e);
+        for (Consumer<Event> sub : subscribers) {
+            sub.accept(e);
+        }
+        return seq;
+    }
+
+    public void subscribe(Consumer<Event> listener) {
+        subscribers.add(listener);
+    }
+
+    /** fromSeq 이후(미포함)의 이벤트를 순서대로 돌려준다. */
+    public List<Event> replayFrom(long fromSeq) {
+        return log.stream().filter(e -> e.seq() > fromSeq).toList();
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daol/stock/StockLedger.java',
+        content: `package com.daol.stock;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/** 재고 원장. 주문 처리의 기준값 — 이라고는 하는데, 아래 둘도 각자 재고를 안다. */
+public class StockLedger {
+
+    public static final Map<String, Integer> QTY = new HashMap<>();
+
+    static {
+        QTY.put("TS-001", 10);   // 반팔 티셔츠
+        QTY.put("MUG-002", 1);   // 머그컵 (마지막 1개)
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daol/page/PageCache.java',
+        content: `package com.daol.page;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/** 상품 페이지 캐시. 주문 서비스가 직접 고쳐 준다. */
+public class PageCache {
+
+    public static final Map<String, Integer> DISPLAY_QTY = new HashMap<>();
+
+    static {
+        DISPLAY_QTY.put("TS-001", 10);
+        DISPLAY_QTY.put("MUG-002", 1);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daol/search/SearchIndex.java',
+        content: `package com.daol.search;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/** 검색 인덱스의 판매 상태. 역시 주문 서비스가 직접 고쳐 준다. */
+public class SearchIndex {
+
+    public static final Map<String, String> BADGE = new HashMap<>();
+
+    static {
+        BADGE.put("TS-001", "판매중");
+        BADGE.put("MUG-002", "판매중");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daol/order/OrderService.java',
+        content: `package com.daol.order;
+
+import com.daol.page.PageCache;
+import com.daol.search.SearchIndex;
+import com.daol.stock.StockLedger;
+
+// ------------------------------------------------------
+//  주문 서비스 v3.1 — 세 저장소를 손수 맞춰 준다 (언젠가는 어긋난다)
+// ------------------------------------------------------
+public class OrderService {
+
+    /** 주문 1건. 세 곳을 제각각 갱신한다. */
+    public String placeOrder(String sku) {
+        int qty = StockLedger.QTY.get(sku);
+        if (qty <= 0) {
+            return "품절";
+        }
+        StockLedger.QTY.put(sku, qty - 1);
+        PageCache.DISPLAY_QTY.put(sku, qty - 1);
+        if (qty - 1 <= 0) {
+            SearchIndex.BADGE.put(sku, "품절");
+        }
+        return "주문 완료 " + sku;
+    }
+
+    /** 주문 취소. 인덱스 갱신이 없다 — "TODO 검색팀 API 자리" (2023.05, 아직 그대로) */
+    public String cancelOrder(String sku) {
+        int qty = StockLedger.QTY.get(sku);
+        StockLedger.QTY.put(sku, qty + 1);
+        PageCache.DISPLAY_QTY.put(sku, qty + 1);
+        // TODO 검색팀 API 자리
+        return "취소 완료 " + sku;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daol/StoreOps.java',
+        content: `package com.daol;
+
+import com.daol.order.OrderService;
+import com.daol.page.PageCache;
+import com.daol.search.SearchIndex;
+import com.daol.stock.StockLedger;
+
+/** 운영 점검 콘솔. 아침 점검 때 실행한다. */
+public class StoreOps {
+
+    public static void main(String[] args) {
+        OrderService svc = new OrderService();
+        svc.placeOrder("TS-001");
+        svc.placeOrder("TS-001");
+        svc.placeOrder("TS-001");
+        svc.cancelOrder("TS-001");
+        svc.placeOrder("MUG-002");
+
+        System.out.println("TS-001 원장 " + StockLedger.QTY.get("TS-001")
+                + " / 캐시 " + PageCache.DISPLAY_QTY.get("TS-001")
+                + " / 배지 " + SearchIndex.BADGE.get("TS-001"));
+        System.out.println("MUG-002 원장 " + StockLedger.QTY.get("MUG-002")
+                + " / 캐시 " + PageCache.DISPLAY_QTY.get("MUG-002")
+                + " / 배지 " + SearchIndex.BADGE.get("MUG-002"));
+        // 기대 출력 (동작 보존 기준):
+        // TS-001 원장 8 / 캐시 8 / 배지 판매중
+        // MUG-002 원장 0 / 캐시 0 / 배지 품절
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '진실의 단일 출처: 재고의 증감은 오직 재고 원장에서만 일어납니다. 주문·취소 코드가 캐시와 검색 인덱스를 직접 쓰는 줄은 전부 사라져야 합니다.',
+      '파생 데이터의 갱신은 이벤트로: 원장의 변화를 EventLog에 기록하고(placed/canceled, sku, 증감), 캐시와 인덱스는 각자 구독자로서 이벤트를 순번(seq) 순서대로 적용해 자기 값을 파생시킵니다. 취소 경로의 3년 묵은 TODO도 이 구조에서는 저절로 사라져야 합니다 — 인덱스가 이벤트를 구독하는 한, 어떤 경로도 인덱스를 잊을 수 없습니다.',
+      '동작 보존: 아침 점검(StoreOps)의 기대 출력 2줄 — TS-001 원장 8/캐시 8/배지 판매중, MUG-002 원장 0/캐시 0/배지 품절 — 은 개편 후에도 동일해야 합니다. 수정 전에 테스트로 고정하세요.',
+      '사본은 늦을 수 있으나 틀린 채 머물면 안 됩니다: 구독자가 이벤트를 놓친 상황(구독 일시 중단을 테스트로 재현)에서, 마지막으로 적용한 순번을 기억했다가 replayFrom으로 따라잡는 재동기화 경로가 있어야 합니다. 따라잡은 뒤의 값은 원장에서 다시 계산한 값과 일치해야 합니다.',
+      '모듈 경계: 캐시·인덱스 모듈이 원장의 내부 Map을 직접 읽지 않아야 하며, 세 모듈은 이벤트와 조회 계약으로만 연결됩니다.',
+      '기획팀 요청: "검색 결과의 재고 표시는 실시간이면 좋겠어요." (몇 초까지의 지연이 허용되는지, SLA 숫자는 아직 아무도 정해 주지 않았습니다)',
+    ],
+    constraints: [
+      'EventLog.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요.',
+      '도메인 규칙: 파생 저장소(캐시·인덱스)는 언제든 버리고 원장에서 재구축할 수 있어야 합니다 — 재구축 경로가 코드로 존재해야 합니다.',
+      '이벤트에는 순번이 있습니다. 순번을 무시하고 적용하는 구독자는 이 미션에서 버그로 간주합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '기록 시스템(진실)과 파생 데이터(캐시·인덱스)의 구분 — 더블 라이트가 왜 반드시 어긋나는지 체감',
+      '순서 있는 이벤트 스트림으로 사본을 갱신하는 구조와, 순번이 곧 정합성의 화폐라는 감각',
+      '최종 일관성을 비즈니스 언어로 다루기 — "늦어도 되는 것"과 "틀리면 안 되는 것"의 경계 긋기',
+      '유실·중복·역전이라는 스트림의 3대 사고에 대한 방어(순번 검증, 재동기화, 멱등 적용) 설계',
+    ],
+    hints: [
+      '개편의 첫 커밋은 이벤트 발행이 아니라 점검 출력의 테스트화입니다. 그물을 먼저 치고, 그다음 placeOrder에서 캐시·인덱스 쓰기를 지우는 대신 원장 갱신 + 이벤트 발행 한 쌍으로 바꾸세요. 구독자를 하나씩 붙일 때마다 테스트가 초록인지 확인하며 갑니다.',
+      '각 구독자에게 "마지막으로 적용한 seq"를 기억시키세요. 새 이벤트의 seq가 기대값(마지막+1)보다 크면 구멍이 난 것이고 — 그때가 replayFrom을 부를 순간입니다. 같거나 작으면 이미 본 이벤트이니 버립니다(멱등 적용). 이 두 줄이 유실과 중복을 동시에 막습니다.',
+      '품절 배지는 이벤트의 delta가 아니라 파생된 수량에서 계산하세요("수량 0 이하 = 품절"). 배지를 이벤트 종류에서 직접 만들면 취소 이벤트마다 배지 규칙이 흩어지고, 수량에서 파생시키면 규칙이 한 곳에 삽니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '순서가 뒤집힌 이벤트',
+        description:
+          '재시도나 네트워크 사정으로 취소(+1)가 주문(-1)보다 먼저 도착하는 일은 분산 환경의 일상입니다. 순번 없이 도착 순서대로 적용하는 캐시는 중간 순간에 재고를 실제보다 크게 보여 주고, 그 순간의 화면을 믿고 주문한 고객이 품절 CS가 됩니다. 좋은 방어: 적용 전에 순번을 검증해 기대 순번이 아니면 보류(버퍼)하거나 재동기화를 트리거하세요. 도착 순서는 사실이 아니고, 순번이 사실입니다.',
+      },
+      {
+        title: '이벤트를 놓친 구독자',
+        description:
+          '검색 인덱스 프로세스가 재배포로 30초 죽어 있는 동안 흘러간 이벤트는 영영 돌아오지 않습니다 — 재동기화 경로가 없다면. 놓친 줄도 모르는 사본은 "틀린 채 머무는 사본"의 교과서입니다. 좋은 방어: 구독 재개 시 마지막 적용 순번부터 replayFrom으로 따라잡는 절차를 코드로 두고, 따라잡기 완료 전에는 자신의 값에 "동기화 중" 표시를 붙여 소비자가 신선도를 알게 하세요.',
+      },
+      {
+        title: '음수 재고를 표시하는 캐시',
+        description:
+          '중복 적용이나 역전이 겹치면 캐시 수량이 -1이 될 수 있습니다. 상품 페이지에 "-1개 남음"이 뜨는 것은 웃기지만, 그 캐시로 구매 가능 판단을 하는 코드가 있다면 웃을 수 없습니다. 좋은 방어: 파생 값에 불변식(수량 ≥ 0)을 걸되, 위반 시 0으로 조용히 보정하지 말고 재동기화를 트리거하며 기록을 남기세요. 불변식 위반은 표시 문제가 아니라 파이프라인 사고의 증상입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '단일 진실 출처 구조',
+        description: '재고 증감이 원장 한 곳으로 모이고, 파생 저장소 직접 쓰기(더블 라이트)가 완전히 제거되었는가. 재구축 경로가 존재하는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '이벤트 기반 파생 갱신',
+        description: '구독자가 순번을 검증하며 멱등하게 적용하는가. 놓친 구간의 재동기화(replayFrom)가 동작하는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '동작 보존',
+        description: '아침 점검의 기대 출력 2줄이 개편 전후로 동일한가. 이를 테스트로 먼저 고정했는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '모듈 경계',
+        description: '캐시·인덱스가 원장 내부 Map을 직접 읽지 않고, 세 모듈이 이벤트·조회 계약으로만 연결되는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '표시 지연 SLA 같은 미결정 사항을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '품절 CS 40건을 매주 처리해 온 CS팀 리더 (비개발자)',
+      prompt:
+        'CS팀 리더에게 개편을 설명하세요. (1) 왜 "검색은 판매중, 주문은 품절"이 생겼는지 — 세 개의 칠판에 세 사람이 제각각 적던 구조를 비유로, (2) 개편 후에는 칠판이 하나가 되고 나머지는 그 칠판을 베껴 쓰는 사본이 된다는 것 — 사본이 몇 초 늦을 수는 있지만 다른 말을 하지는 않게 됐다는 것, (3) 그래도 CS가 들어오면 무엇을 확인해 달라고 답하면 되는지 — "지금 원장 기준 재고"라는 단 하나의 질문. 다음 주간 회의에서 CS 건수 그래프 옆에 붙일 한 줄 설명으로 마무리하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '그래프가 심심한 주간 회의',
+        teaser: '품절 CS 주 40건이 3건이 되고, 그 3건도 전부 택배 문제였다. 검색팀 API TODO 주석은 커밋 히스토리 속에서만 산다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '새로고침 안내 멘트',
+        teaser: '불일치는 사라졌다. 다만 재동기화가 돌 때마다 몇 초씩 옛 재고가 보여, CS 스크립트에 "새로고침 한번 부탁드립니다"가 공식 멘트로 추가된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '-1개 남음',
+        teaser: '역전된 이벤트가 검증 없이 적용된 밤, 인기 상품 페이지에 "-1개 남음"이 캡처되어 커뮤니티 유머 게시판 1위에 오른다. 웃지 못하는 사람은 회의실에 모여 있다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 이벤트는 아직 발행되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 22 — Stage 11 "단순함의 철학" / 카페 키오스크 / 리팩토링
+  // =========================================================================
+  {
+    id: 's11-kiosk-01',
+    stage: 11,
+    stageTitle: '단순함의 철학',
+    missionType: '리팩토링',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '카페 키오스크',
+    domainEmoji: '☕',
+    title: '아메리카노 한 잔에 파일 일곱 개 — 과분리 레거시 병합',
+    estimatedMinutes: 120,
+    briefing: {
+      title: '분리를 배운 자만이 병합할 자격이 있다',
+      content: `### 이 커리큘럼의 자기반성
+
+여기까지 오는 동안 우리는 줄곧 분리를 배웠습니다. 책임을 나누고, 계약을 추출하고, 경계를 긋고. 그 훈련은 옳았습니다 — 그런데 이번 미션의 레거시를 만든 사람도 아마 같은 훈련을 받았을 겁니다. 그는 배운 대로 나눴습니다. 모든 클래스가 5줄이고, 모든 구현 앞에 인터페이스가 서 있고, 모든 호출이 다음 계층으로 정중하게 전달됩니다. 그리고 신메뉴 하나를 추가하려면 파일 일곱 개를 열어야 합니다. **분리는 수단이지 목적이 아닙니다.** 수단이 목적이 되는 순간, 설계 원칙은 복잡도의 생산 라인이 됩니다.
+
+### 깊은 모듈 — 작은 문, 큰 방
+
+존 아우스터하우트는 《A Philosophy of Software Design》에서 좋은 모듈을 이렇게 정의합니다. **인터페이스는 좁고, 구현은 깊은 모듈** — 문은 작은데 방은 큰 구조. 반대말은 얕은 모듈입니다. 문 크기와 방 크기가 같아서, 문을 여는 수고에 대한 보상이 없는 클래스. 호출을 그대로 다음에게 넘기는 pass-through 메서드, 구현이 하나뿐인데 "언젠가를 위해" 서 있는 인터페이스가 그 전형입니다. 그의 진단으로 복잡도의 출처는 둘뿐입니다 — **의존성**, 그리고 **불명료함**. 얕은 계층은 그 둘을 모두 늘립니다. 추상화가 정보를 숨기지 못하면, 그것은 설계가 아니라 통행료입니다.
+
+### 다만, 전부 합치면 그것도 틀린다
+
+주의할 것이 하나 있습니다. 이 레거시 안에도 진짜 필요한 분리가 숨어 있습니다 — 구현이 실제로 둘인 경계가. 병합의 칼을 휘두르다 그것까지 베면 동작이 부러집니다. 무엇을 합치고 무엇을 남길지 가르는 눈, 그것이 분리를 배운 사람만이 가질 수 있는 자격이고, 이 커리큘럼의 마지막 훈련입니다.`,
+    },
+    scenario: `동네 카페 사장님의 키오스크 소프트웨어를 인수인계받았습니다. 전임 개발자는 성실했고, 공부도 많이 한 사람이었습니다 — 주문 하나가 지나가는 길에 파일이 14개 있습니다. 사장님의 요청은 소박합니다. **"신메뉴 하나 넣는 데 왜 견적이 이틀인가요? 파일을 일곱 개 고쳐야 한다면서요."** 다음 달 신메뉴는 콜드브루와 말차라떼, 그다음 달은 시즌 메뉴 셋. 이 속도면 메뉴판이 코드를 이깁니다. 출력되는 영수증은 지금과 같아야 합니다 — 단골들이 영수증 모양에 예민합니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/cafe/OrderRequest.java',
+        content: `package com.cafe;
+
+/** 주문 요청. temp가 null이면 키오스크에서 온도 선택을 건너뛴 것. */
+public record OrderRequest(String menu, String size, String temp, int shots, String channel) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/KioskMain.java',
+        content: `package com.cafe;
+
+/** 키오스크 진입점. */
+public class KioskMain {
+
+    public static void main(String[] args) {
+        OrderProcessor processor = new OrderProcessor();
+        System.out.println(processor.process(new OrderRequest("아메리카노", "GRANDE", null, 1, "KIOSK")));
+        System.out.println(processor.process(new OrderRequest("카페라떼", "TALL", "ICE", 0, "KIOSK")));
+        System.out.println(processor.process(new OrderRequest("아메리카노", "TALL", "ICE", 2, "APP")));
+        // 기대 출력:
+        // [영수증] 아메리카노 (GRANDE/HOT/샷1) 5,500원
+        // [영수증] 카페라떼 (TALL/ICE/샷0) 5,000원
+        // [알림톡] 아메리카노 (TALL/ICE/샷2) 5,500원
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/OrderProcessor.java',
+        content: `package com.cafe;
+
+/** 주문 처리 오케스트레이터. 각 단계를 순서대로 부른다. */
+public class OrderProcessor {
+
+    private final OrderNormalizer normalizer = new OrderNormalizer();
+    private final OrderValidator validator = new OrderValidator();
+    private final IBeverageFactoryProvider factoryProvider = new BeverageFactoryProviderImpl();
+
+    public String process(OrderRequest request) {
+        OrderRequest normalized = normalizer.normalize(request);
+        validator.validate(normalized);
+        Beverage beverage = factoryProvider.getFactory().create(normalized);
+        IPriceStrategy strategy = new DefaultPriceStrategy();
+        int price = strategy.price(beverage);
+        IReceiptPrinter printer = normalized.channel().equals("APP")
+                ? new KakaoReceiptSender()
+                : new ThermalReceiptPrinter();
+        return printer.print(beverage, price);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/OrderNormalizer.java',
+        content: `package com.cafe;
+
+/** 주문 정규화. 이름과 달리, 하는 일이 하나 더 있다. */
+public class OrderNormalizer {
+
+    public OrderRequest normalize(OrderRequest req) {
+        String temp = req.temp();
+        if (temp == null) {
+            temp = "HOT";   // 2022.11 키오스크 온도 선택 누락 대응. 둘 데가 없어서 여기 둠 (조대리)
+        }
+        return new OrderRequest(req.menu().trim(), req.size(), temp, req.shots(), req.channel());
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/OrderValidator.java',
+        content: `package com.cafe;
+
+import java.util.List;
+
+/** 주문 검증. 사이즈 목록 확인이 전부다. */
+public class OrderValidator {
+
+    private static final List<String> SIZES = List.of("TALL", "GRANDE", "VENTI");
+
+    public void validate(OrderRequest req) {
+        if (!SIZES.contains(req.size())) {
+            throw new IllegalArgumentException("알 수 없는 사이즈: " + req.size());
+        }
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/IBeverageFactoryProvider.java',
+        content: `package com.cafe;
+
+/** 음료 팩토리 제공자 인터페이스. 구현은 하나뿐이다. */
+public interface IBeverageFactoryProvider {
+
+    BeverageFactory getFactory();
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/BeverageFactoryProviderImpl.java',
+        content: `package com.cafe;
+
+/** 팩토리 제공자 구현. new를 한 번 대신 해 준다. */
+public class BeverageFactoryProviderImpl implements IBeverageFactoryProvider {
+
+    @Override
+    public BeverageFactory getFactory() {
+        return new BeverageFactory();
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/BeverageFactory.java',
+        content: `package com.cafe;
+
+import java.util.Map;
+
+/** 음료 생성. 메뉴별 기본 가격은 여기 산다. */
+public class BeverageFactory {
+
+    private static final Map<String, Integer> BASE_PRICE = Map.of(
+            "아메리카노", 4500,
+            "카페라떼", 5000);
+
+    public Beverage create(OrderRequest req) {
+        Integer base = BASE_PRICE.get(req.menu());
+        if (base == null) {
+            throw new IllegalArgumentException("없는 메뉴: " + req.menu());
+        }
+        return new Beverage(req.menu(), req.size(), req.temp(), req.shots(), base);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/Beverage.java',
+        content: `package com.cafe;
+
+/** 만들어진 음료. */
+public record Beverage(String menu, String size, String temp, int shots, int basePrice) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/IPriceStrategy.java',
+        content: `package com.cafe;
+
+/** 가격 전략 인터페이스. 전략은 지금까지 하나뿐이었다. */
+public interface IPriceStrategy {
+
+    int price(Beverage beverage);
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/DefaultPriceStrategy.java',
+        content: `package com.cafe;
+
+/** 기본 가격 계산. 샷 +500원, 사이즈 GRANDE +500원, VENTI +1,000원. */
+public class DefaultPriceStrategy implements IPriceStrategy {
+
+    @Override
+    public int price(Beverage b) {
+        int p = b.basePrice() + b.shots() * 500;
+        if (b.size().equals("GRANDE")) {
+            p = p + 500;
+        } else if (b.size().equals("VENTI")) {
+            p = p + 1000;
+        }
+        return p;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/IReceiptPrinter.java',
+        content: `package com.cafe;
+
+/** 영수증 출력 인터페이스. */
+public interface IReceiptPrinter {
+
+    String print(Beverage beverage, int price);
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/ThermalReceiptPrinter.java',
+        content: `package com.cafe;
+
+/** 감열지 영수증. 키오스크 주문용. */
+public class ThermalReceiptPrinter implements IReceiptPrinter {
+
+    @Override
+    public String print(Beverage b, int price) {
+        return String.format("[영수증] %s (%s/%s/샷%d) %,d원",
+                b.menu(), b.size(), b.temp(), b.shots(), price);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/cafe/KakaoReceiptSender.java',
+        content: `package com.cafe;
+
+/** 알림톡 영수증. 앱 주문용 — 이 인터페이스의 두 번째 구현이자, 존재 이유. */
+public class KakaoReceiptSender implements IReceiptPrinter {
+
+    @Override
+    public String print(Beverage b, int price) {
+        return String.format("[알림톡] %s (%s/%s/샷%d) %,d원",
+                b.menu(), b.size(), b.temp(), b.shots(), price);
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '동작 보존: KioskMain의 기대 출력 3줄 — 아메리카노 GRANDE 5,500원(영수증), 카페라떼 TALL 5,000원(영수증), 아메리카노 앱 주문 5,500원(알림톡) — 은 개편 후에도 한 글자도 달라지면 안 됩니다. 수정 전에 테스트로 고정하세요.',
+      '병합: 주문 흐름의 파일 수를 절반 이하로 줄이세요. 구현이 하나뿐이고 정보를 숨기지 못하는 인터페이스(IBeverageFactoryProvider, IPriceStrategy 등)와 호출을 그대로 넘기기만 하는 계층은 병합 대상입니다. 개편 후 "신메뉴 하나 추가에 수정하는 지점"이 1~2곳이어야 합니다.',
+      '남길 것을 남기기: 영수증 출력은 감열지와 알림톡, 실제 구현이 둘입니다. 이 경계는 정당한 분리이므로 유지하되, 왜 이것만 남기고 나머지는 합쳤는지 판단 기준을 리뷰 노트로 남기세요.',
+      '메뉴와 옵션 가격(기본가, 샷 +500, 사이즈 추가금)은 코드 분기가 아니라 데이터로 두어, 콜드브루·말차라떼 추가가 데이터 등록으로 끝나게 하세요.',
+      '증거 제출: 개편 전과 후에 대해 "신메뉴 1개 추가 시 열어야 하는 파일 목록"을 각각 적은 비교표를 리뷰 노트에 포함하세요. 사장님의 질문("왜 이틀인가요?")에 대한 답이 그 표입니다.',
+      '사장님 예고: "포인트 적립도 곧 넣을 거예요. 아마도? 내년쯤?" (적립 규칙도 시점도 미정입니다 — 이를 근거로 지금 인터페이스를 미리 만들어 둘지는 여러분이 판단하고, 판단의 근거를 남기세요)',
+    ],
+    constraints: [
+      '리팩토링 미션입니다 — 기대 출력 3줄이 어긋나는 순간 그것은 단순화가 아니라 사고입니다.',
+      '도메인 규칙: 온도 미지정 주문은 HOT으로 처리됩니다. 이 규칙은 2022년 키오스크 사고의 산물로, 어디로 옮기든 살아 있어야 합니다.',
+      '병합의 근거는 "구현이 하나라서"가 아니라 "인터페이스가 정보를 숨기지 못해서"여야 합니다. 판단마다 한 줄 근거를 남기세요.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '얕은 모듈(pass-through, 구현 하나짜리 인터페이스)을 식별하고 깊은 모듈로 병합하는 판단력',
+      '복잡도의 출처(의존성, 불명료함)를 기준으로 추상화의 값어치를 계산하는 습관 — 추상화는 공짜가 아니다',
+      '병합 속에서도 지켜야 할 정당한 분리(실제 다형성이 있는 경계)를 가려내는 눈',
+      '변경 비용(신메뉴 추가에 여는 파일 수)을 설계 품질의 측정 지표로 쓰는 훈련 — 분리는 수단이지 목적이 아니다',
+    ],
+    hints: [
+      '병합 전에 신메뉴 추가를 머릿속으로 한번 수행해 보세요. 콜드브루를 넣으려면 어떤 파일들이 열립니까? 그 목록에 있는데 콜드브루에 대해 아무 결정도 하지 않는 파일 — 그것이 얕은 계층입니다. 결정이 없는 곳에 파일이 있을 이유가 없습니다.',
+      'IBeverageFactoryProvider를 지우기 전에 구현을 세어 보세요(하나), IReceiptPrinter도 세어 보세요(둘). 개수가 판단의 전부는 아니지만 첫 번째 신호입니다. 그리고 pass-through를 걷어 낼 때는 각 계층 안에 숨은 "한 줄짜리 진짜 일"(HOT 기본값, 사이즈 검증)을 먼저 찾아 옮길 곳을 정하세요 — 사슬은 걷어 내고 일은 남깁니다.',
+      '옵션 가격이 if (size.equals(...)) 분기에 있으면 시즌 메뉴가 올 때마다 분기가 자랍니다. 메뉴 기본가와 옵션 추가금을 하나의 가격표 데이터로 합치면, 주문 흐름은 "가격표 조회 + 합산 + 영수증"이라는 좁은 문 뒤의 깊은 방 하나로 정리됩니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '두 번째 구현의 존재',
+        description:
+          '병합 열풍에 휩쓸려 IReceiptPrinter까지 감열지 출력으로 합쳐 버리면, 앱 주문 고객의 알림톡 영수증이 조용히 사라집니다 — 세 번째 기대 출력이 그 사고를 즉시 잡아 줍니다. 인터페이스 하나를 지우기 전에 반드시 구현의 개수와 호출 경로를 확인하세요. 과분리의 해독제는 무분별한 병합이 아니라, 분리마다 근거를 요구하는 것입니다.',
+      },
+      {
+        title: '옵션 조합 폭발',
+        description:
+          '병합하면서 음료 종류를 클래스로(Americano, Latte...), 옵션을 하위 분기로 표현하면 샷×사이즈×온도 조합마다 코드가 자랍니다 — 과분리를 과상속으로 바꾼 것뿐입니다. 좋은 방어: 음료와 옵션을 데이터(가격표)로 두고 조합은 계산으로 처리하세요. 조합이 폭발해도 데이터는 폭발하지 않습니다.',
+      },
+      {
+        title: '사슬에 숨어 있던 한 줄',
+        description:
+          'OrderNormalizer는 pass-through처럼 보이지만 "온도 null → HOT" 부수효과를 품고 있습니다. 사슬을 통째로 걷어 내면 온도 미지정 주문의 영수증이 (GRANDE/null/샷1)로 바뀌거나 예외로 죽습니다 — 첫 번째 기대 출력이 그 함정의 감시자입니다. 좋은 방어: 계층을 지우기 전에 각 계층의 diff를 실제로 읽고, 숨은 규칙은 이름을 붙여(기본값 정책) 명시적인 자리로 옮기세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '깊은 모듈로의 병합',
+        description: '얕은 인터페이스와 pass-through 계층이 근거와 함께 제거되고, 주문 흐름이 좁은 문·깊은 방 구조로 정리되었는가. 파일 수 목표를 달성했는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '동작 보존',
+        description: '기대 출력 3줄(HOT 기본값, 알림톡 포함)이 개편 전후로 동일하고, 이를 테스트로 먼저 고정했는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '남긴 분리의 판단',
+        description: '영수증 경계처럼 실제 다형성이 있는 분리를 유지했고, 합친 것과 남긴 것의 기준이 일관되게 문서화되었는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '변경 비용의 입증',
+        description: '신메뉴 추가 파일 목록 비교표가 제출되었고, 개편 후 수정 지점이 1~2곳(데이터 등록)으로 줄었는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '포인트 적립 같은 불확실한 미래 요구에 대해 선제 추상화 여부를 근거와 함께 판단하고 기록했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '견적 이틀에 상처받은 카페 사장님 (비개발자, 메뉴 개발은 하루면 끝내는 분)',
+      prompt:
+        '사장님께 설명해 주세요. (1) 왜 지금까지 신메뉴 하나에 파일 일곱 개를 고쳤는지 — 주방 동선에 빗대어(컵 하나 꺼내는데 문 일곱 개를 여는 주방), (2) 개편 후에는 신메뉴 추가가 무엇으로 바뀌는지 — 코드 수정이 아니라 메뉴판(가격표)에 한 줄 적는 일이 된다는 것, (3) 다만 영수증 기계와 알림톡처럼 진짜로 다른 일 두 가지는 일부러 나눠 뒀다는 것과 그 이유. 마지막으로 다음 신메뉴 콜드브루의 예상 소요 시간을 말씀드리고, 그 시간이 왜 믿을 만한 숫자인지 한 문장으로 끝내세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '메뉴판이 이기지 못한 코드',
+        teaser: '콜드브루 추가에 20분, 시즌 메뉴 셋에 한 시간. 사장님은 견적을 묻는 대신 시식을 권하기 시작하고, 파일 열네 개의 시대는 커밋 로그에만 남는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '반쯤 얕은 계단',
+        teaser: '파일은 줄었다. 다만 합치다 만 계층이 두엇 남아, 신메뉴마다 "이 파일도 고쳐야 하나?"를 확인하는 10분이 의식처럼 남는다.',
+      },
+      {
+        grade: 'dawn',
+        title: '조용히 사라진 알림톡',
+        teaser: '병합의 칼이 영수증 경계까지 벤 날, 앱 주문 고객들의 영수증이 소리 없이 증발한다. 단골의 제보로 알게 된 사장님의 표정이 견적 이틀 때보다 어둡다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 레시피는 아직 메뉴판에 없습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 23 — Stage 7 "테스트가 설계를 이끈다" / 해운·항해 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's7-tide-01',
+    stage: 7,
+    stageTitle: '테스트가 설계를 이끈다',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '해운·항해',
+    domainEmoji: '🌊',
+    title: '물때를 아는 코드 — 입출항 시간창 계산기',
+    estimatedMinutes: 130,
+    briefing: {
+      title: '경계값을 아는 자가 항구를 안다',
+      content: `### 바다의 시간표
+
+바닷물은 하루에 두 번 차고 두 번 빠집니다. 달과 태양의 인력이 지구의 물을 잡아당기는 조석(潮汐) — 달·태양·지구가 일직선이 되는 보름과 그믐엔 차이가 커지고(사리), 직각이 되면 작아집니다(조금). 어부와 뱃사람들은 수천 년 동안 이 리듬을 "물때"라 부르며 시간표로 썼습니다. 항구에 언제 들어갈 수 있는가는 곧 물이 언제 차는가였으니까요.
+
+### 흘수와 수심 — 통과의 방정식
+
+배가 물에 잠기는 깊이를 **흘수(draft)**라 합니다. 항로의 기본 수심에 그 시각의 조위(조석 높이)를 더한 것이 실제 수심이고, 실제 수심이 흘수에 안전 여유(underkeel clearance)를 더한 값 이상일 때만 배는 지나갈 수 있습니다. 대형선일수록 이 조건을 만족하는 시간대가 하루 중 몇 시간뿐이라, 항만 관제는 선박마다 **입출항 가능 시간창(tidal window)**을 계산해 줍니다. 창을 놓치면 다음 만조까지 바다 위에서 기다리고, 창을 잘못 계산하면 배가 바닥에 앉습니다. 2021년 수에즈 운하를 막은 컨테이너선의 이초(離礁) 작업이 대조기 만조에 맞춰졌던 것도 같은 계산입니다.
+
+### 테스트 리스트가 곧 해도다
+
+켄트 벡의 《테스트 주도 개발》이 말하는 첫 습관 — 코드 전에 통과해야 할 시험의 목록을 적는 것 — 은 이 도메인에서 특히 자연스럽습니다. 시간창 계산기의 시험 목록은 물때 그 자체거든요. 조위가 필요 수심과 **정확히 같아지는 순간**은 통과인가? 창이 **자정을 걸치면** 어떻게 표기하는가? 아무리 물이 빠져도 지나갈 수 있는 작은 배와, 만조에도 못 들어오는 큰 배는? 이 목록을 막힘없이 적을 수 있을 때, 여러분은 항구를 이해한 것입니다. 경계값을 아는 자가 항구를 압니다.`,
+    },
+    scenario: `항만 운영사의 관제 지원팀에 **입출항 시간창 계산기**를 만들어 줍니다. 조석표(만조·간조의 시각과 조위)는 해양조사원 데이터를 받아 오는 엔진이 제공하고, 여러분은 "흘수 X미터 선박이 기본 수심 Y미터 항로를 통과할 수 있는 시간창"을 계산합니다. 지난달 타사 시스템이 창의 끝 경계를 1분 잘못 계산해 벌크선이 항로 한가운데서 회항한 사건 이후, 관제실장의 요구는 단호합니다 — **"구현 말고, 어떤 경계를 검증했는지부터 보여 주세요."** 이 스테이지의 규칙대로, 테스트가 먼저입니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/port/tide/TideTable.java',
+        content: `package com.port.tide;
+
+import java.util.List;
+
+/**
+ * 조석표 (해양조사원 데이터 연동 — 엔진입니다. 수정/재구현 금지, 그대로 사용).
+ * 하루의 극조(만조/간조) 목록을 돌려준다. 시각은 "자정으로부터의 분"이며,
+ * 창 계산에 필요한 다음 날 첫 극조는 1440을 넘는 분으로 포함되어 있다.
+ * 극조와 극조 사이의 조위는 선형 보간으로 근사한다 (이 미션의 단순화 규칙 —
+ * 실제 조위 곡선은 사인형이지만, 여기서는 검산 가능성을 위해 직선을 쓴다).
+ */
+public class TideTable {
+
+    /** 극조 하나: 시각(분)과 조위(m). */
+    public record TideEvent(int minute, double heightM) {
+    }
+
+    /** 검증 기준일의 극조 목록 (다음 날 첫 극조 포함, 시각 오름차순). */
+    public List<TideEvent> eventsOf(String date) {
+        if (date.equals("2026-08-01")) {
+            return List.of(
+                    new TideEvent(180, 1.0),    // 03:00 간조
+                    new TideEvent(540, 5.0),    // 09:00 만조
+                    new TideEvent(900, 1.0),    // 15:00 간조
+                    new TideEvent(1260, 5.0),   // 21:00 만조
+                    new TideEvent(1620, 1.0));  // 다음 날 03:00 간조
+        }
+        return List.of();
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/port/window/TidalWindowCalculator.java',
+        content: `package com.port.window;
+
+/**
+ * 입출항 시간창 계산기 (구현 대상).
+ *
+ * 이 스테이지의 규칙: 이 파일보다 테스트 파일을 먼저 여세요.
+ * 1) 검증 항목의 목록(테스트 리스트)을 테스트 파일 상단 주석으로 먼저 적는다.
+ * 2) 테스트 하나 → 통과할 만큼의 구현 → 다음 테스트의 리듬으로 간다.
+ * 경계가 많은 도메인입니다 — 조위가 필요 수심과 정확히 같은 순간, 자정을 걸치는 창,
+ * 창이 없는 배, 하루 종일이 창인 배. 리뷰는 그 경계들이 테스트로 못박혔는지를 봅니다.
+ */
+public class TidalWindowCalculator {
+
+    /**
+     * 통과 가능 시간창 목록. 계산 구간은 당일 첫 극조 시각부터 자정(1440분)까지.
+     * 조건: 기본 수심 + 조위 >= 흘수 + 안전 여유 (등호 포함).
+     */
+    public Object windows(String date, double draftM, double channelDepthM, double clearanceM) {
+        // TODO 반환 타입 설계부터 여러분의 몫입니다. 테스트가 먼저입니다.
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '통과 조건(스펙): 기본 수심 + 그 시각의 조위 ≥ 흘수 + 안전 여유 (등호 포함 — 정확히 같으면 통과). 조위는 인접한 두 극조 사이를 선형 보간합니다. 계산 구간은 당일 첫 극조 시각부터 자정(24:00)까지이며, 보간에는 엔진이 주는 다음 날 첫 극조를 사용합니다.',
+      '검증 예제(2026-08-01 조석표: 간조 03:00 1.0m, 만조 09:00 5.0m, 간조 15:00 1.0m, 만조 21:00 5.0m, 익일 03:00 1.0m): 흘수 6.5m, 기본 수심 4.0m, 여유 0.5m인 벌크선의 필요 조위는 6.5 + 0.5 − 4.0 = 3.0m. 시간창은 정확히 두 개 — 06:00~12:00, 18:00~24:00. 두 번째 창이 자정에서 끝나는 표기까지 검증 대상입니다.',
+      '경계 검증: 같은 조석표에서 흘수 4.2m·여유 0.3m(필요 조위 0.5m ≤ 최저 간조 1.0m)는 계산 구간 전체(03:00~24:00)가 창이어야 하고, 흘수 9.0m·여유 0.5m(필요 조위 5.5m > 최고 만조 5.0m)는 창이 하나도 없어야 합니다. "창 없음"은 빈 목록이되, 결과에 사유(최대 조위로도 부족)가 담겨야 합니다.',
+      '테스트 우선: 구현 전에 테스트 리스트를 주석으로 작성하고 리스트 항목과 테스트 메서드를 1:1로 대응시키세요. 필수 경계 — 필요 조위와 조위가 정확히 같은 순간(등호), 만조 꼭짓점이 창의 한 점인 경우, 자정 종료, 창 없음, 전 구간 창 — 는 각각 별도의 서술형 이름 테스트여야 합니다.',
+      '창의 시각은 분 단위 정수로 계산하고 "HH:MM" 형식으로 표기합니다. 보간 계산의 중간값 반올림 규칙(분 미만 버림/올림)이 창의 시작과 끝에서 안전한 방향(시작은 늦게, 끝은 일찍)인지 — 그 판단을 테스트 이름에 드러내세요.',
+      '관제실 추가 요청: "야간에는 대형선 통항을 제한하고 싶어요." (야간의 정의 — 일몰 기준인지 고정 시각인지 — 는 아직 항만마다 다르다는 답만 돌아왔습니다)',
+    ],
+    constraints: [
+      'TideTable.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요. 조위 곡선의 선형 보간은 이 미션의 명시적 단순화입니다 — 실제 조석 계산과 다름을 코드 주석에 남기세요.',
+      '도메인 규칙: 창의 판정은 등호 포함(≥)입니다. 안전 여유를 등호 처리로 흡수하려는 임의 변경을 금지합니다 — 여유는 이미 입력에 있습니다.',
+      '계산 로직의 단위 테스트는 TideTable 없이(극조 목록을 직접 주입해) 돌 수 있어야 합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '테스트 리스트 먼저 — 도메인의 경계값 목록을 적는 행위가 스펙 이해의 완성임을 다른 도메인에서 한 번 더 체감하기',
+      '등호 포함/제외, 반올림 방향 같은 미세 규칙이 안전에 직결되는 도메인에서 테스트 이름으로 규칙을 문서화하기',
+      '보간·교차점 계산을 순수 함수로 분리해 테이블 없이 테스트 가능한 구조가 자연히 유도되는 경험',
+      '조석이라는 물리 세계의 리듬을 계산 가능한 모델로 옮기며 단순화의 경계를 명시하는 습관',
+    ],
+    hints: [
+      '테스트 리스트의 절반은 스펙 문장에서 그대로 나옵니다 — "등호 포함", "자정까지", "창 없음". 나머지 절반은 조석표를 그려 보면 나옵니다. 종이에 톱니 모양 조위 그래프를 그리고 필요 조위 3.0m에 수평선을 그어 보세요. 선이 그래프와 만나는 점의 개수가 곧 테스트의 개수입니다.',
+      '창의 시작과 끝은 "직선과 수평선의 교차점"입니다. 두 극조 (t1,h1)-(t2,h2) 사이에서 필요 조위 h를 지나는 시각은 t1 + (h−h1)/(h2−h1)×(t2−t1) — 이 교차점 계산 하나를 순수 함수로 빼서 먼저 테스트로 못박으면, 창 조립은 그 함수를 이어 붙이는 일이 됩니다.',
+      '상승 구간과 하강 구간을 따로 다루려 하면 분기가 늘어납니다. "조위 ≥ 필요조위인 구간의 합집합"으로 생각하면 극조 목록을 한 번 훑으며 진입점(상승 교차)과 이탈점(하강 교차)을 수집하는 루프 하나로 정리되고, 자정 절단은 마지막에 구간을 자르는 후처리가 됩니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '이 빠진 조석표',
+        description:
+          '통신 장애나 관측 결측으로 극조가 세 개뿐이거나 시각이 역순인 데이터가 오는 날이 있습니다. 선형 보간은 조용히 이상한 기울기를 만들어 존재하지 않는 창을 그립니다. 좋은 방어: 계산 전에 극조 목록의 최소 개수·시각 오름차순·만조와 간조의 교대를 검증하고, 위반이면 창을 계산하지 말고 "조석표 이상"으로 명시적으로 실패하세요. 틀린 창은 없는 창보다 위험합니다.',
+      },
+      {
+        title: '흘수 0의 유령선',
+        description:
+          '입력 실수로 흘수가 0이나 음수로 들어오면 필요 조위가 음수가 되어 "항상 통과"라는 그럴듯한 답이 나옵니다. 물에 잠기지 않는 배는 없습니다. 좋은 방어: 흘수 > 0, 여유 ≥ 0, 기본 수심 > 0의 입력 검증을 입구에 두고 명시적으로 거부하세요 — 그리고 그 검증들도 테스트 리스트의 항목이어야 합니다.',
+      },
+      {
+        title: '한 점짜리 창',
+        description:
+          '필요 조위가 만조 조위와 정확히 같으면(이 조석표에서 필요 조위 5.0m) 창은 09:00 정각 단 한 점입니다. 수학적으로는 통과 가능이지만, 폭 0분의 창을 항해사에게 "통과 가능"으로 건네면 그것은 좌초 안내문입니다. 좋은 방어: 창의 최소 폭이라는 개념이 스펙에 없음을 발견하고 질문으로 되돌리거나, 점 창을 별도 표시("이론상 순간 통과")로 구분하세요. 등호 경계 테스트가 이 사례를 수면 위로 끌어올립니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '테스트 품질',
+        description: '필수 경계(등호, 점 창, 자정, 창 없음, 전 구간)가 각각 서술형 이름의 독립 테스트로 못박혔는가. 한 테스트 한 검증이 지켜졌는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트 우선의 증거',
+        description: '테스트 리스트 주석이 있고 테스트와 1:1 대응하는가. 구현이 리스트 범위를 넘어 과잉 설계되지 않았는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '도메인 규칙 정확성',
+        description: '검증 예제의 두 창(06:00~12:00, 18:00~24:00)과 경계 검증(전 구간 창, 창 없음)이 정확히 일치하는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '계산 구조',
+        description: '교차점 계산이 순수 함수로 분리되어 테이블 없이 테스트되는가. 상승/하강 분기 대신 구간 수집으로 정리되었는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '야간 통항 제한의 기준 같은 미정의 규칙을 임의 확정하지 않고 질문했거나 테스트 리스트에 미결로 남겼는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '30년 경력의 도선사 (물때는 몸으로 알지만 소프트웨어 검증은 처음인 분)',
+      prompt:
+        '도선사님께 설명하세요. (1) 이 계산기가 물때를 어떻게 아는지 — 조석표의 극조 사이를 직선으로 잇는 단순화를 정직하게 밝히고, 그 단순화가 안전 방향인지 아닌지, (2) 코드를 짜기 전에 "시험 목록"부터 만들었다는 것 — 도선사님이 신참에게 항로의 위험 지점 목록부터 외우게 하는 것과 같은 이유임을, (3) 창의 끝 1분이 틀렸던 타사 사고가 우리 시스템에서는 어느 테스트에 걸려 배포 전에 죽는지. 항해 용어는 그대로 쓰되, 소프트웨어 용어는 배의 언어로 번역하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '창대로 들어온 배',
+        teaser: '대조기의 벌크선들이 계산된 창의 한가운데로 정확히 들어온다. 관제실장은 타사 사고 기사를 책갈피에서 지우고, 테스트 리스트를 신입 교육 자료로 가져간다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '5분의 안전 마진',
+        teaser: '창은 맞는다. 다만 반올림 방향을 아무도 확신하지 못해 관제사들이 창의 양 끝을 5분씩 잘라 쓰고, 그 관행이 매뉴얼이 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '바닥에 앉은 배',
+        teaser: '점 창이 "통과 가능"으로 안내된 사리 날, 만조 꼭짓점을 2분 지난 배가 항로에서 속도를 잃는다. 예인선 비용 청구서와 함께 창 계산 로그가 소환된다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 물때는 아직 오지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 24 — Stage 1 "분리의 감각" / 게임 (가챠 확률) / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's1-gacha-01',
+    stage: 1,
+    stageTitle: '분리의 감각',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Easy',
+    scope: '단일 파일',
+    modes: ['developer'],
+    domain: '게임 · 확률형 아이템',
+    domainEmoji: '🎰',
+    title: '1%의 진실 — 가챠 확률 공시 계산기',
+    estimatedMinutes: 90,
+    briefing: {
+      title: '100번 뽑으면 나온다는 착각',
+      content: `### 63.4%의 진실
+
+"획득 확률 1%면 100번 뽑으면 나오는 거 아냐?" — 게임 커뮤니티의 영원한 착각입니다. 매 회가 독립 시행이라면 100번 안에 한 번이라도 나올 확률은 1 − 0.99¹⁰⁰ = **63.4%**. 셋 중 하나는 100번을 뽑고도 빈손이라는 뜻입니다. 기대값과 보장은 다른 말이고, 그 간극에서 과금과 원성이 함께 자랍니다.
+
+### 천장이라는 사회적 합의
+
+그래서 현대 가챠에는 **천장(pity)**이 생겼습니다. 일정 횟수까지 못 뽑으면 확률이 계단식으로 올라가고, 정해진 회차에는 100%로 보장되는 구조 — 확률의 잔인함에 상한선을 긋는 장치입니다. 그리고 2021년, 국내 게임계를 뒤흔든 확률 조작 논란들 끝에 확률형 아이템의 **확률 공시가 법제화**됐습니다(2024년 시행). 이제 "몇 회차에 확률이 몇 %인가"는 마케팅 문구가 아니라 법적 공시 사항이고, 공시표의 숫자가 실제 구현과 다르면 그것은 버그가 아니라 위법입니다.
+
+### 주사위 없이 계산하기
+
+오해를 하나 걷어냅시다 — 이번 미션에 난수는 없습니다. 공시 계산은 전부 결정적(deterministic) 수학입니다. 회차별 확률에서 누적 획득 확률을 곱셈으로 쌓고, 기대 시도 횟수를 합산하고, 그 결과를 공시표로 찍어 내는 것. 같은 입력이면 언제나 같은 표가 나와야 감사에 쓸 수 있습니다. 다만 이 계산 안에는 성격이 다른 두 가지 일이 숨어 있습니다 — **확률을 계산하는 일**과 **표를 예쁘게 찍는 일**. 공시 양식은 법이 바뀔 때마다 달라지지만 수학은 달라지지 않습니다. 어디서 갈라야 할지, 이제 감이 오실 겁니다.`,
+    },
+    scenario: `모바일 게임사의 사업팀에서 급한 요청이 왔습니다. 신규 픽업 가챠의 **확률 공시표**를 게임 내 팝업과 공식 홈페이지, 그리고 자율규제 제출 양식 세 곳에 내야 합니다. 지금은 기획자가 엑셀로 계산해 세 곳에 복사-붙여넣기를 하는데, 지난 시즌 홈페이지 표와 인게임 표의 소수점이 달라 "확률 조작이냐"는 민원이 터졌습니다. 계산은 하나, 양식은 여럿 — 요구는 그게 전부입니다. 참고로 공시표가 틀리면 사과문은 사업팀이 쓰지만, 원인 규명 회의는 개발팀 자리에서 열립니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/game/gacha/GachaSpec.java',
+        content: `package com.game.gacha;
+
+/**
+ * 가챠 확률 설정 (완성된 코드 — 그대로 사용).
+ * baseRate: 기본 확률 (0.01 = 1%)
+ * softPityStart: 이 회차 "다음"부터 확률 상승 (60이면 61회차부터 상승)
+ * rateStep: 상승 구간에서 회차당 더해지는 확률 (0.10 = 10%p)
+ * 확률은 100%를 넘지 않는다 (도달 시 그 회차가 천장).
+ */
+public record GachaSpec(double baseRate, int softPityStart, double rateStep) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/game/gacha/DisclosureCalculator.java',
+        content: `package com.game.gacha;
+
+/**
+ * 확률 공시 계산기 (구현 대상).
+ *
+ * 메서드를 어떻게 나눌지는 여러분의 설계입니다.
+ * 단, "확률 수학"과 "공시표 문장 만들기"가 한 메서드에 섞이면
+ * 공시 양식이 추가되는 날(그날은 옵니다) 수학 코드를 다시 열게 됩니다 —
+ * 그리고 수학 코드를 여는 날마다 소수점이 달라질 위험도 함께 열립니다.
+ */
+public class DisclosureCalculator {
+
+    /** n회차의 획득 확률 (천장 규칙 반영). */
+    public double rateAt(GachaSpec spec, int attempt) {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+
+    // TODO 누적 획득 확률, 천장 회차, 기대 시도 횟수, 공시표 생성을
+    //      어떤 단위로 나눌지 직접 설계하세요.
+}`,
+      },
+    ],
+    requirements: [
+      '검증 설정: baseRate 1%, softPityStart 60, rateStep 10%p. 회차별 확률은 1~60회 1%, 61회 11%, 62회 21% … 69회 91%, 70회 101%→100%로 캡. 따라서 천장은 70회차입니다 — 천장 회차는 하드코딩이 아니라 설정에서 계산되어야 합니다.',
+      '누적 획득 확률 F(n) = 1 − Π(1−pᵢ). 검증 수치(퍼센트, 소수 둘째 자리 반올림): F(10) = 9.56%, F(60) = 45.28%, F(65) = 92.33%, F(70) = 100.00%. 이 네 값이 정확히 재현되어야 합니다.',
+      '기대 시도 횟수 E = Σ P(n회 이상 필요) = Σ(1−F(n)) (n=0부터 천장−1까지). 검증 수치: 47.24회 (소수 둘째 자리 반올림). "1%니까 평균 100회"가 아닌 이유가 이 숫자 하나로 설명됩니다.',
+      '공시표 생성: 회차 구간별 확률(1~60회 1.00%, 61회 11.00%, …), 천장 회차, 누적 확률 이정표(10/60/65회), 기대 시도 횟수를 담은 표를 문자열로 출력합니다. 계산 결과(숫자)와 표 생성(문자열)은 분리되어, 새 공시 양식(자율규제 제출용 등)이 추가될 때 계산 코드는 열지 않아야 합니다.',
+      '표시 규칙: 모든 퍼센트는 소수 둘째 자리 반올림으로 표기하되, 내부 계산은 반올림 없이 이어 갑니다. 표시값을 다음 계산에 재사용하는 순간 세 양식의 소수점이 다시 어긋나기 시작합니다.',
+      '사업팀 추가 요청: "10연차(10회 묶음 뽑기) 보너스 확률도 공시에 넣어 주세요." (10연차 보너스의 규칙 자체가 아직 기획 확정 전입니다)',
+    ],
+    constraints: [
+      '난수 사용 금지 — 이 미션의 모든 계산은 결정적입니다. Random이 import되는 순간 공시는 감사 불능이 됩니다.',
+      '도메인 규칙: 확률 상승은 softPityStart 다음 회차부터, 100% 도달 회차가 천장입니다. 천장 이후 회차의 확률 질의는 정의역 밖입니다.',
+      '검증 수치의 반올림은 표시 단계에서만 수행합니다 (내부는 double 원값 유지).',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '확률 수학(누적 곱, 기대값 합)을 정확한 코드로 옮기고 검증 수치로 스스로 검산하는 훈련',
+      '계산(순수 수학)과 표현(공시표 포맷)의 분리 — 양식은 여럿, 진실은 하나',
+      '표시용 반올림과 내부 정밀도의 구분이 "소수점 민원"을 구조적으로 막는다는 것 체감',
+      '기대값과 보장의 차이(63.4%의 진실)를 코드와 숫자로 설명할 수 있게 되기',
+    ],
+    hints: [
+      '"n회차의 확률", "n회차까지의 누적 확률", "천장 회차", "기대 시도 횟수", "공시표 문자열" — 이 다섯은 서로 다른 질문입니다. 각각의 입력과 출력을 종이에 적어 보면, 앞의 넷은 숫자를 다루고 마지막 하나만 문장을 다룬다는 것이 보입니다. 그 경계가 클래스의 경계입니다.',
+      '누적 확률은 "안 나올 확률의 곱"으로 쌓는 것이 실수 없이 안전합니다: miss = 1.0에서 시작해 회차마다 miss *= (1−pᵢ), F(n) = 1−miss. 기대값은 E = Σ(1−F(n))을 n=0부터 천장−1까지 — 공식을 코드에 옮기기 전에 F(70)=100%가 합의 마지막 항을 0으로 만드는지 손으로 확인해 보세요.',
+      '공시표 포맷터는 계산기의 "숫자 결과 객체"만 받게 하세요. 포맷터 안에서 rateAt을 다시 부르기 시작하면 양식마다 계산 경로가 갈라지고, 지난 시즌의 소수점 민원이 재림합니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '천장이 없는 설정',
+        description:
+          'rateStep이 0이거나 음수인 설정이 들어오면 확률이 영원히 100%에 도달하지 못해, 천장 회차 계산이 무한 루프를 돌거나 공시표가 "천장: 없음"을 조용히 찍습니다. 확률형 아이템 규제에서 천장 없는 공시는 그 자체로 사고입니다. 좋은 방어: 설정 검증 계층에서 "유한한 회차 안에 100% 도달"을 확인하고, 불가능한 설정은 계산 전에 명시적으로 거부하세요.',
+      },
+      {
+        title: '기본 확률 0%',
+        description:
+          'baseRate 0 또는 음수, 1 초과 같은 설정 오류는 누적 곱을 그럴듯하게 통과해 "기대 시도 횟수 70.00회" 같은 정상적으로 보이는 오답을 만듭니다. 좋은 방어: 0 < baseRate ≤ 1, rateStep ≥ 0 범위 검증을 입구에 두세요. 공시는 틀린 값이 그럴듯할수록 위험합니다 — 아무도 검산하지 않으니까요.',
+      },
+      {
+        title: '0.30000000000000004%',
+        description:
+          '이진 부동소수점은 0.01 + 0.10 같은 십진수를 정확히 표현하지 못해, 원값을 그대로 문자열로 찍으면 공시표에 0.30000000000000004% 같은 숫자가 등장합니다. 커뮤니티는 이것을 버그가 아니라 조작의 증거로 읽습니다. 좋은 방어: 표시 단계의 반올림 규칙을 한 곳으로 모으고, 표시 문자열 검증 테스트(정확히 "11.00%"인가)를 두세요. 내부 정밀도와 표시 규칙의 분리가 이 미션의 숨은 주제입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '회차별 확률, 천장 70회, F(10)/F(60)/F(65)/F(70), 기대 시도 47.24회가 검증 수치와 정확히 일치하는가.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '계산과 표현의 분리',
+        description: '확률 수학과 공시표 포맷팅이 분리되어, 새 양식 추가 시 계산 코드를 수정하지 않아도 되는가. 포맷터가 계산 결과 객체만 소비하는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '정밀도 규율',
+        description: '반올림이 표시 단계 한 곳에서만 일어나고 내부 계산은 원값을 유지하는가. 표시 문자열이 테스트로 고정되었는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '검증 수치 네 개와 기대값, 천장 계산이 단위 테스트로 고정되었는가. 설정 검증(천장 없음, 범위 밖)이 다뤄졌는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '10연차 보너스처럼 기획 미확정 요구를 임의 구현하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '확률 공시 민원 답변을 쓰다 지친 사업팀 기획자 (수학은 엑셀 함수까지)',
+      prompt:
+        '기획자에게 설명하세요. (1) "1%인데 왜 100번 뽑아도 안 나오냐"는 민원에 쓸 수 있는 정확한 답 — 63.4%의 계산을 엑셀 셀 하나로 재현하는 법까지, (2) 천장 70회가 설정에서 어떻게 계산되는지 — 그래서 기획이 확률을 바꾸면 공시표의 어디까지 자동으로 따라오는지, (3) 왜 이제 세 양식의 소수점이 절대 어긋날 수 없는지 — 계산하는 곳이 한 곳뿐이라는 구조를 "원본 하나에 복사본 셋"으로. 마지막으로 다음 시즌 공시표 작성에 걸리는 시간을 말해 주세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '소수점이 같은 세 개의 표',
+        teaser: '인게임, 홈페이지, 제출 양식의 숫자가 소수 둘째 자리까지 같다. 확률 민원 게시판의 화력이 옆 게임으로 옮겨 가고, 기획자는 엑셀 파일을 조용히 휴지통에 넣는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '시즌마다 열리는 계산기',
+        teaser: '표는 맞는다. 다만 새 양식이 올 때마다 포맷터가 아니라 계산기가 열리고, 열 때마다 검증 수치 네 개를 손으로 다시 확인하는 의식이 반복된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '스크린샷 4만 공유',
+        teaser: '공시표의 0.30000000000000004%가 캡처되어 "조작 증거"로 4만 번 공유된다. 해명문의 "부동소수점 표현 오차"라는 문구는 사태를 조금도 진정시키지 못한다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 확률은 공시되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 25 — Stage 4 "레거시 길들이기" / 야구 (머니볼 오마주) / 리팩토링
+  // =========================================================================
+  {
+    id: 's4-saber-01',
+    stage: 4,
+    stageTitle: '레거시 길들이기',
+    missionType: '리팩토링',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '야구 · 세이버메트릭스',
+    domainEmoji: '⚾',
+    title: '타율은 볼넷을 모른다 — 스카우팅 리포트에 OPS 넣기',
+    estimatedMinutes: 140,
+    briefing: {
+      title: '숫자가 야구를 다시 읽은 해',
+      content: `### 타율이라는 오래된 안경
+
+한 세기 동안 타자의 가치는 타율이 말해 줬습니다. 안타 나누기 타수 — 간명하고, 중계 화면에 넣기 좋고, 그리고 중요한 것을 빠뜨립니다. **볼넷.** 타율의 분모(타수)에는 볼넷이 아예 없어서, 공을 끝까지 골라 1루에 걸어 나가는 능력이 타율에는 0으로 기록됩니다. 아웃당하지 않고 루에 나가는 것이 득점의 원료라면, 타율은 원료의 일부만 세는 저울인 셈입니다.
+
+### 빌 제임스와 2002년의 오클랜드
+
+1977년부터 통계학자 빌 제임스는 이 저울의 결함을 집요하게 파고들며 야구를 숫자로 다시 읽는 **세이버메트릭스**를 세웠습니다. 그리고 2002년, 메이저리그 최저 수준 연봉 총액의 오클랜드가 이 관점으로 팀을 짰습니다 — 타율은 평범해도 출루율(OBP)이 높은, 시장이 저평가한 선수들을 모아서. 그 시즌 20연승. 야구단 운영의 상식이 바뀐 해였고, 이 이야기는 책과 영화로 남았습니다. 핵심 지표는 셋입니다. **출루율 OBP** = (안타+볼넷+몸에 맞는 공) ÷ (타수+볼넷+몸에 맞는 공+희생플라이), **장타율 SLG** = 총루타 ÷ 타수, 그리고 둘의 합 **OPS**.
+
+### 30년 된 리포트를 존중하며 고치기
+
+여러분이 받을 시스템은 타율의 시대에 태어났습니다. 30년치 스카우팅 리포트가 이 코드의 출력 형식 그대로 구단 문서고에 쌓여 있고, 스카우터들은 그 형식으로 대화합니다. 새 지표를 넣자고 옛 리포트를 깨뜨리면, 잃는 것은 코드가 아니라 30년의 비교 가능성입니다. 기존 출력은 한 글자도 다르지 않게 — 특성화 테스트로 먼저 묶고, 새 관점은 그 옆에 새 체계로 세웁니다. 레거시 길들이기의 정석대로.`,
+    },
+    scenario: `프로야구단 '한성 피닉스' 전력분석팀의 스카우팅 리포트 시스템을 맡았습니다. 1990년대에 만들어진 이 시스템은 **타율과 홈런만으로 선수 등급을 매깁니다.** 새로 온 단장의 지시: "출루율·장타율·OPS를 리포트에 추가하세요. 단, **기존 등급과 리포트 형식은 절대 건드리지 마세요** — 30년치 리포트와 비교가 되어야 하고, 원로 스카우터들이 그 형식으로 삽니다." 시스템에는 흥미로운 선수가 하나 걸려 있습니다. 타율 .275라 "보통" 등급인데, 볼넷을 88개나 고르는 선수 — 새 지표는 그를 어떻게 읽을까요.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/phoenix/scout/PlayerStat.java',
+        content: `package com.phoenix.scout;
+
+/**
+ * 선수 시즌 기록 (완성된 코드 — 그대로 사용).
+ * doubles=2루타, triples=3루타. sacFly는 1954년 이후 기록에만 존재한다(그 전엔 -1).
+ */
+public record PlayerStat(
+        String name,
+        int atBats,      // 타수
+        int hits,        // 안타
+        int doubles,     // 2루타
+        int triples,     // 3루타
+        int homeRuns,    // 홈런
+        int walks,       // 볼넷
+        int hitByPitch,  // 몸에 맞는 공
+        int sacFly       // 희생플라이 (-1 = 미집계 시대 기록)
+) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/phoenix/scout/ScoutReport.java',
+        content: `package com.phoenix.scout;
+
+// ------------------------------------------------------
+//  스카우팅 리포트 v1.0  (1994 전산화 사업)
+//  등급 기준은 스카우트부 내규 7호. 30년째 그대로다.
+//  출력 형식 바꾸지 말것 - 문서고의 옛 리포트와 대조해야 함 (1998 메모)
+// ------------------------------------------------------
+public class ScoutReport {
+
+    /** 선수 한 명의 리포트 한 줄. */
+    public static String line(PlayerStat p) {
+        double avg = (double) p.hits() / p.atBats();
+        String grade;
+        if (avg >= 0.300) {
+            grade = "특급";
+        } else if (avg >= 0.280) {
+            grade = "우수";
+        } else if (avg >= 0.250) {
+            grade = "보통";
+        } else {
+            grade = "관망";
+        }
+        String tag = "";
+        if (p.homeRuns() >= 25) {
+            tag = " (거포)";
+        }
+        return String.format("%s: 타율 %s 홈런 %d -> %s%s",
+                p.name(), fmt3(avg), p.homeRuns(), grade, tag);
+    }
+
+    /** .275 형식 (앞자리 0 없이 소수 셋째 자리 반올림). */
+    static String fmt3(double v) {
+        return String.format("%.3f", v).substring(1);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/phoenix/ScoutOps.java',
+        content: `package com.phoenix;
+
+import com.phoenix.scout.PlayerStat;
+import com.phoenix.scout.ScoutReport;
+
+/** 리포트 출력 콘솔. 스카우트 회의 전에 실행한다. */
+public class ScoutOps {
+
+    public static void main(String[] args) {
+        PlayerStat a = new PlayerStat("박정확", 480, 132, 25, 3, 12, 88, 6, 5);
+        PlayerStat b = new PlayerStat("강스윙", 510, 153, 30, 2, 28, 20, 2, 6);
+
+        System.out.println(ScoutReport.line(a));
+        System.out.println(ScoutReport.line(b));
+        // 기대 출력 (동작 보존 기준):
+        // 박정확: 타율 .275 홈런 12 -> 보통
+        // 강스윙: 타율 .300 홈런 28 -> 특급 (거포)
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '기존 리포트의 출력(형식·등급·태그)은 한 글자도 달라지면 안 됩니다. 수정 전에 두 검증 선수("박정확: 타율 .275 홈런 12 -> 보통", "강스윙: 타율 .300 홈런 28 -> 특급 (거포)")와 등급 경계(.300, .280, .250, 홈런 25)를 특성화 테스트로 먼저 고정하세요.',
+      '새 지표 체계를 별도 단위로 추가합니다: OBP = (안타+볼넷+몸에 맞는 공) ÷ (타수+볼넷+몸에 맞는 공+희생플라이), SLG = 총루타 ÷ 타수 (총루타 = 단타 + 2×2루타 + 3×3루타 + 4×홈런, 단타 = 안타−2루타−3루타−홈런), OPS = OBP + SLG. 표기는 기존 리포트와 같은 .390 형식(소수 셋째 자리 반올림)입니다.',
+      '검증 수치 — 박정확(타수 480, 안타 132, 2루타 25, 3루타 3, 홈런 12, 볼넷 88, 몸에 맞는 공 6, 희생플라이 5): OBP .390, SLG .415, OPS .805. 강스윙(타수 510, 안타 153, 2루타 30, 3루타 2, 홈런 28, 볼넷 20, 몸에 맞는 공 2, 희생플라이 6): OBP .325, SLG .531, OPS .857. 타율 순위(강스윙 우위)와 출루율 순위(박정확 우위)가 뒤집히는 것 — 그것이 이 지표의 존재 이유이며, 리뷰 노트에 한 줄로 언급하세요.',
+      '새 지표 리포트는 기존 line()과 분리된 새 출력(예: sabermetricLine)으로 제공하되, 계산 로직은 문자열 조립과 분리되어 단위 테스트 가능해야 합니다.',
+      '기존 등급 내규(타율 기준)와 새 지표는 섞지 마세요 — 새 지표 기반 등급은 스카우트부 합의 전입니다. 이번 릴리스는 "옛 등급 옆에 새 숫자"까지입니다.',
+      '전력분석팀 요청: "OPS 기준의 새 등급 컷도 곧 정할 거예요." (컷 값도, 기존 등급과의 병기 방식도 아직 회의 중입니다)',
+    ],
+    constraints: [
+      '리팩토링 미션입니다 — 기대 출력 2줄이 어긋나는 순간 그것은 개선이 아니라 30년치 문서고와의 단절입니다.',
+      '기존 코드의 주석(내규 7호, 1998 메모)은 보존하세요. 형식이 왜 얼어붙어 있는지에 대한 역사적 근거입니다.',
+      '도메인 규칙: OBP의 분모에는 희생플라이가 들어가고 타율의 분모에는 들어가지 않습니다. 이 차이를 임의로 "통일"하지 마세요 — 두 지표는 다른 질문에 답합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '특성화 테스트로 기존 출력을 고정한 뒤 새 기능을 옆에 세우는, 레거시 확장의 안전 절차 재훈련',
+      '같은 원천 데이터에서 다른 질문(타율/출루율)에 답하는 지표들을 별도 단위로 설계하는 감각',
+      '표기 규칙(.275 형식) 같은 사소해 보이는 형식이 도메인에서는 비교 가능성이라는 자산임을 이해하기',
+      '세이버메트릭스라는 도메인 상식 — 지표는 중립이 아니라 관점이라는 것',
+    ],
+    hints: [
+      '첫 커밋은 ScoutOps의 두 줄을 그대로 붙인 특성화 테스트입니다. 등급 경계는 기록을 조작한 가상 선수로 만드세요 — 타율 정확히 .300(예: 타수 500 안타 150), .280, .250, 그리고 홈런 정확히 25. 경계 선수 네 명이면 내규 7호 전체가 그물에 들어옵니다.',
+      '새 지표 계산기는 PlayerStat만 받는 순수 클래스로 두고, ScoutReport.line()은 손대지 마세요. 손대고 싶어지는 순간(예: fmt3 재사용) — 복사가 결합보다 쌉니다. 형식 규칙이 우연히 같은 것과 같아야만 하는 것은 다릅니다. 다만 fmt3의 규칙(.415 표기)은 새 쪽에도 동일 스펙으로 필요하니 스펙 차원에서 테스트로 못박으세요.',
+      'OBP 분모(타수+볼넷+몸에 맞는 공+희생플라이)와 타율 분모(타수)를 헷갈리는 것이 이 도메인의 국민 버그입니다. 검증 수치 .390과 .275를 각각 손으로 한 번 재현해 본 뒤 코드로 옮기세요 — 박정확의 볼넷 88개가 분모와 분자에 동시에 들어가는 것을 눈으로 확인하는 것이 중요합니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '타수 0의 선수',
+        description:
+          '개막전 대주자나 투수는 타수 0으로 시즌을 보낼 수 있습니다. 타율과 SLG의 분모가 0이 되어 NaN이 리포트에 그대로 인쇄되고, 등급 비교(NaN >= 0.300)는 조용히 false가 되어 "관망"이 찍힙니다 — 에러 없이 나온 그럴듯한 오답입니다. 좋은 방어: 타수 0을 계산 전에 감지해 "기록 부족"으로 명시 처리하고, 그 경우의 리포트 표기를 스펙 질문으로 되돌리세요.',
+      },
+      {
+        title: '1954년 이전의 기록',
+        description:
+          '희생플라이는 1954년부터 별도 집계됐습니다 — 그 전 시대 기록은 sacFly가 -1(미집계)로 옵니다. -1을 그대로 분모에 넣으면 OBP가 미세하게 부풀고, 아무도 눈치채지 못합니다. 좋은 방어: 미집계 값을 0으로 뭉개지도, 그대로 계산하지도 말고 "OBP 산출 불가(희생플라이 미집계 시대)"를 명시하세요. 원로 스카우터의 옛 기록 비교 요청은 반드시 옵니다.',
+      },
+      {
+        title: '안타가 타수보다 많은 기록',
+        description:
+          '전산 이관 오류로 안타 > 타수인 행이 들어오면 타율이 1.000을 넘고, 등급은 태연히 "특급"이 됩니다. 야구 규칙상 존재할 수 없는 기록이 시스템에서는 최고 등급이 되는 것입니다. 좋은 방어: 입력 검증 계층에서 도메인 불변식(안타 ≤ 타수, 2루타+3루타+홈런 ≤ 안타)을 확인하고, 위반 행은 등급을 매기지 말고 데이터 오류로 명시 격리하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '특성화 테스트',
+        description: '수정 전에 기존 출력과 등급 경계(.300/.280/.250, 홈런 25)를 테스트로 고정했는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '기존 동작 보존',
+        description: '기대 출력 2줄과 기존 등급 로직이 변경 후에도 완전히 동일한가. 테스트로 증명했는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '새 지표의 분리와 정확성',
+        description: 'OBP/SLG/OPS가 별도 단위로 구현되어 검증 수치(.390/.415/.805, .325/.531/.857)와 정확히 일치하는가. 계산과 표기가 분리되었는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '도메인 규칙의 존중',
+        description: '타율과 OBP의 분모 차이가 정확히 유지되는가. 새 지표가 기존 등급에 섞여 들지 않았는가.',
+        weight: 10,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: 'OPS 등급 컷과 병기 방식 같은 미확정 사항을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '타율의 시대를 40년 산 원로 스카우터 (박정확을 "보통"으로 분류한 내규 7호의 작성자)',
+      prompt:
+        '원로 스카우터에게 새 지표를 설명하세요. (1) 타율이 무엇을 놓치는지 — 박정확의 볼넷 88개가 타율에는 0으로, 출루율에는 그대로 잡히는 것을 그 선수의 실제 시즌으로, (2) OPS .805가 "보통" 등급과 어떻게 다른 이야기를 하는지, (3) 그리고 가장 중요한 것 — 내규 7호와 30년치 리포트는 한 글자도 바뀌지 않았다는 것. 새 숫자는 옛 저울을 부정하는 것이 아니라 다른 질문에 답하는 두 번째 저울이라는 점을, 상대의 40년을 존중하는 언어로 전하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '두 저울이 놓인 회의실',
+        teaser: '스카우트 회의 테이블에 옛 리포트와 새 지표가 나란히 놓인다. 박정확의 이적료 협상이 조용히 시작되고, 원로 스카우터가 처음으로 OBP 열에 형광펜을 긋는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '수기로 적는 OPS',
+        teaser: '지표는 나온다. 다만 미집계 시대 기록이 낀 비교 요청마다 분석원이 손으로 재계산하고, 그 엑셀의 이름이 "진짜최종_OPS_v7"이 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '문서고와의 단절',
+        teaser: '형식이 반 칸 어긋난 리포트가 배포되고, 30년치 문서와의 대조 작업이 전면 중단된다. 원로 스카우터의 항의 전화는 단장을 거치지 않고 전산실로 직접 온다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 스카우팅 리포트는 아직 작성되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 26 — Stage 10 "데이터가 흐르는 길" / 지도·측량 / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's10-coords-01',
+    stage: 10,
+    stageTitle: '데이터가 흐르는 길',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '지도·측량',
+    domainEmoji: '🗺',
+    title: '하나의 위치, 세 개의 좌표 — 사본이 배달을 보낸 곳',
+    estimatedMinutes: 140,
+    briefing: {
+      title: '지구는 완벽한 공이 아니라서',
+      content: `### 좌표계가 여러 개인 이유
+
+지구는 완벽한 공이 아니라 적도가 불룩한 타원체이고, 그 표면을 평평한 지도와 화면에 옮기려면 어딘가를 반드시 일그러뜨려야 합니다. 그래서 좌표계는 하나가 아닙니다. GPS가 쓰는 전 지구 기준의 위도·경도(WGS84), 나라마다 자기 땅이 가장 덜 일그러지게 투영한 평면 좌표(한국의 지적도가 쓰는 TM 계열), 그리고 사람이 부르는 주소. **같은 지점이 시스템 안에서 세 가지 이름으로 삽니다.** 측량의 역사는 곧 이 변환표를 만든 역사입니다 — 삼각점을 심으며 국토를 잰 대삼각측량부터, 단위 하나 어긋나 화성 궤도선을 잃은 1999년의 사고(Mars Climate Orbiter)까지, 표현이 여럿인 곳에는 언제나 불일치의 함정이 있었습니다.
+
+### 셋 중 누가 진실인가
+
+마틴 클레프만의 《데이터 중심 애플리케이션 설계》의 렌즈로 보면 이 문제의 구조는 익숙합니다. TM 좌표와 그리드 주소는 위경도에서 **계산으로 파생된 데이터**입니다. 파생 데이터는 진실을 주장할 자격이 없고, 원본이 바뀌면 다시 계산되어야 합니다. 사고는 언제나 파생이 원본 행세를 할 때 납니다 — 가게가 이전해 위경도는 바뀌었는데 지적 좌표 캐시는 옛 자리를 가리키고, 배달 기사는 사본을 믿고 빈 건물 앞에 섭니다.
+
+### 늦는 사본과 거짓말하는 사본
+
+파생 좌표가 원본보다 몇 초 늦는 것은 설계된 성질입니다. 위험한 것은 갱신 이벤트를 놓치고도 모르는 사본, 순서가 뒤집힌 채 적용된 사본, 그리고 누군가 직접 덮어써 원본과 영영 갈라선 사본입니다. 이번 미션은 세 개의 좌표가 한 진실의 세 그림자로 살게 만드는 일입니다 — 그림자가 본체를 앞서 걷기 시작하면, 배달은 엉뚱한 골목에서 끝납니다.`,
+    },
+    scenario: `배달 플랫폼 '가까움'의 픽업 지점 관리 시스템을 만듭니다. 가게마다 위치가 세 표현으로 저장됩니다 — 지도 핀을 찍는 **위경도(원본)**, 지적 조회용 **TM 평면좌표**, 기사 안내용 **그리드 주소**. 지난달 사고: 한 치킨집이 두 블록 이전하며 지도 핀은 옮겼는데 TM 캐시와 그리드 주소가 옛 값으로 남아, 기사 42명이 빈 가게 앞에서 전화를 돌렸습니다. 좌표 변환식은 지도팀 엔진이 제공합니다. 여러분의 일은 변환이 아니라 **흐름**입니다 — 원본이 바뀌면 파생이 반드시, 순서대로, 따라오게 만드는 것.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/near/geo/GeoConverter.java',
+        content: `package com.near.geo;
+
+/**
+ * 좌표 변환 엔진 (지도팀 소유 — 엔진입니다. 수정/재구현 금지, 그대로 사용).
+ * 이 미션의 변환식은 검산 가능하도록 단순화한 가상 선형식입니다.
+ * 실제 TM 투영 수학이 아님을 밝혀 둡니다 (실제로는 타원체 투영 계산).
+ *   X = round((경도 − 124.0) × 100000)  [m]
+ *   Y = round((위도 − 33.0) × 110000)   [m]
+ *   그리드 주소 = "그리드 " + (X/1000 내림) + "-" + (Y/1000 내림)
+ */
+public class GeoConverter {
+
+    /** TM 평면좌표 (m 단위 정수). */
+    public record Tm(long x, long y) {
+    }
+
+    public Tm toTm(double lat, double lon) {
+        long x = Math.round((lon - 124.0) * 100000);
+        long y = Math.round((lat - 33.0) * 110000);
+        return new Tm(x, y);
+    }
+
+    public String toGrid(Tm tm) {
+        return "그리드 " + (tm.x() / 1000) + "-" + (tm.y() / 1000);
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/near/infra/GeoEventLog.java',
+        content: `package com.near.infra;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+
+/**
+ * 위치 변경 이벤트 로그 (인프라팀 제공 — 엔진입니다. 수정/재구현 금지, 그대로 사용).
+ * append-only. 이벤트마다 전역 순번(seq)이 붙고 구독자에게 순서대로 전달된다.
+ * 놓친 구간은 replayFrom(seq)으로 다시 받는다.
+ */
+public class GeoEventLog {
+
+    /** 위치 변경 이벤트: 가게 ID와 새 위경도. */
+    public record Moved(long seq, String storeId, double lat, double lon) {
+    }
+
+    private final List<Moved> log = new ArrayList<>();
+    private final List<Consumer<Moved>> subscribers = new ArrayList<>();
+    private long seq = 0;
+
+    public long append(String storeId, double lat, double lon) {
+        seq++;
+        Moved e = new Moved(seq, storeId, lat, lon);
+        log.add(e);
+        for (Consumer<Moved> sub : subscribers) {
+            sub.accept(e);
+        }
+        return seq;
+    }
+
+    public void subscribe(Consumer<Moved> listener) {
+        subscribers.add(listener);
+    }
+
+    public List<Moved> replayFrom(long fromSeq) {
+        return log.stream().filter(e -> e.seq() > fromSeq).toList();
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/near/store/StoreLocationService.java',
+        content: `package com.near.store;
+
+/**
+ * 픽업 지점 위치 서비스 (구현 대상).
+ *
+ * 설계 원칙 세 가지가 여러분의 몫입니다.
+ * 1) 진실은 위경도 원본 하나 — TM과 그리드 주소는 파생이며, 원본 저장소만이 쓰기를 받는다.
+ * 2) 파생 갱신은 GeoEventLog의 이벤트를 순번대로 적용해서만 일어난다.
+ * 3) 파생 저장소는 언제든 원본에서 재구축 가능해야 한다 (재동기화 경로 필수).
+ * (원본/파생 저장소의 구조와 경계 인터페이스는 여러분이 설계합니다.)
+ */
+public class StoreLocationService {
+
+    // TODO 생성자에서 무엇을 조립할지 설계하세요.
+
+    /** 가게 이전 처리: 원본 갱신 + 이벤트 발행. */
+    public void move(String storeId, double lat, double lon) {
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+
+    /** 기사 안내 화면용 조회. App.java의 기대 출력 형식과 일치해야 합니다. */
+    public String riderView(String storeId) {
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/near/App.java',
+        content: `package com.near;
+
+import com.near.store.StoreLocationService;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력과 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        // TODO(학습자): 서비스를 조립하고 아래 시나리오를 실행하세요.
+        // StoreLocationService svc = ...;
+        // svc.move("CHK-42", 37.5665, 126.9780);   // 치킨집 등록 (서울)
+        // System.out.println(svc.riderView("CHK-42"));
+        // svc.move("CHK-42", 35.1796, 129.0756);   // 부산으로 이전
+        // System.out.println(svc.riderView("CHK-42"));
+
+        // ===== 기대 출력 1: 등록 직후 =====
+        // [CHK-42] 위경도 37.5665,126.9780 / TM 297800,502315 / 그리드 297-502
+
+        // ===== 기대 출력 2: 이전 반영 후 =====
+        // [CHK-42] 위경도 35.1796,129.0756 / TM 507560,239756 / 그리드 507-239
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '진실의 단일 출처: 위경도 원본 저장소만 쓰기를 받습니다. TM 좌표와 그리드 주소 저장소는 원본을 직접 쓰는 코드가 없어야 하며, 오직 이벤트 적용과 재구축으로만 갱신됩니다.',
+      '검증 시나리오: CHK-42를 위경도 37.5665,126.9780으로 등록하면 파생값은 TM 297800,502315 / 그리드 297-502. 이후 35.1796,129.0756으로 이전하면 TM 507560,239756 / 그리드 507-239. App.java의 기대 출력 두 줄과 정확히 일치해야 합니다.',
+      '순서 보장: 파생 구독자는 이벤트를 순번(seq) 순서로만 적용합니다. 순번 검증에 걸린 이벤트(구멍, 중복)는 적용하지 말고 보류 또는 재동기화를 트리거해야 하며, 이 동작이 테스트로 증명되어야 합니다.',
+      '재동기화: 구독이 끊겼다 재개된 파생 저장소가 "마지막 적용 순번"부터 replayFrom으로 따라잡는 경로, 그리고 파생 전체를 버리고 원본에서 재구축하는 경로 — 두 가지가 모두 코드로 존재해야 합니다. 따라잡은 뒤의 값은 원본에서 즉시 변환한 값과 일치해야 합니다.',
+      '기사 화면(riderView)은 파생 저장소를 읽습니다. 파생이 원본보다 뒤처져 있는 동안의 표시 정책(옛 값? "동기화 중"?)을 정하고 그 근거를 리뷰 노트에 남기세요.',
+      '운영팀 문의: "그리드 주소 자릿수를 지역별로 다르게 하자는 얘기가 있어요." (표준화 회의가 진행 중이라 규칙이 언제 어떻게 바뀔지는 아무도 모릅니다)',
+    ],
+    constraints: [
+      'GeoConverter.java와 GeoEventLog.java, App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요. 변환식이 학습용 가상식임은 엔진 주석에 이미 명시되어 있습니다.',
+      '도메인 규칙: 파생 좌표(TM, 그리드)를 입력으로 받아 원본을 갱신하는 역방향 쓰기를 금지합니다. 역변환의 반올림 오차가 원본을 오염시킵니다.',
+      '파생 저장소는 언제든 폐기 후 재구축 가능해야 합니다 — 재구축 결과가 원본과 일치함을 테스트로 보이세요.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '원본과 파생 데이터의 비대칭 — 쓰기는 한 곳, 나머지는 계산 결과라는 원칙을 좌표 도메인으로 체감',
+      '순번 검증·보류·재동기화로 스트림의 3대 사고(역전, 유실, 중복)를 방어하는 구조 연습 (S10 심화)',
+      '역방향 쓰기(파생→원본)가 왜 금지인지 — 변환 왕복의 반올림 오차와 진실의 오염 이해',
+      '지연을 숨기지 않고 표시 정책으로 다루는 감각 — 사본의 신선도는 사용자 경험의 일부다',
+    ],
+    hints: [
+      '저장소를 세 개 만들되 쓰기 메서드는 원본에만 두세요. 파생 저장소의 공개 인터페이스에 put이 존재하는 순간, 언젠가 누군가(대개 3개월 뒤의 본인) 그것을 호출합니다. 파생의 갱신 창구는 이벤트 리스너 하나뿐이어야 합니다.',
+      '순번 검증은 재고 미션과 같은 두 줄입니다 — 기대 순번(마지막+1)보다 크면 구멍(재동기화), 작거나 같으면 이미 본 것(버림). 이 규칙을 파생 저장소마다 복사하지 말고, "순번을 지키는 구독자"라는 공통 부품으로 한 번만 만드세요.',
+      '재구축은 사실 가장 쉬운 코드입니다: 원본 전체를 훑으며 변환기를 다시 돌리는 것. 어려운 것은 재구축 중의 조회 처리입니다 — 재구축 완료 순번을 기록해 두면 "어느 시점의 진실까지 반영됐는가"를 답할 수 있고, 그것이 기대 출력의 신선도 표시로 이어집니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '늦게 도착한 이전 이벤트',
+        description:
+          '가게가 A→B→C로 두 번 이전했는데 B 이벤트가 지연되어 C보다 늦게 도착하면, 도착 순서대로 적용하는 파생 저장소의 최종 주소는 B — 기사 42명이 다시 빈 가게 앞에 섭니다. 좋은 방어: 적용 전 순번 검증으로 과거 이벤트를 걸러 내세요. 도착 순서는 사실이 아니고 순번이 사실이라는 것, 이 미션에서 두 번째로 만나는 진실입니다.',
+      },
+      {
+        title: '파생을 직접 고친 손',
+        description:
+          '"급해서" 운영자가 TM 캐시를 수동으로 덮어쓰면 그 순간은 맞아 보이지만, 다음 이벤트나 재구축이 그 수정을 소리 없이 지우거나 — 더 나쁘게 — 원본과 영영 갈라선 채 살아남습니다. 좋은 방어: 파생 저장소에 외부 쓰기 경로 자체를 만들지 말고, 급한 수정은 원본 갱신(move)으로만 가능하게 강제하세요. 편의 기능이 정합성의 뒷문이 됩니다.',
+      },
+      {
+        title: '역변환으로 원본 갱신',
+        description:
+          '지적 시스템에서 TM 좌표만 받은 신규 입점을 역변환해 위경도 원본으로 넣고, 그 원본을 다시 TM으로 변환하면 — 반올림이 왕복하며 원래 TM과 1m 어긋난 값이 나올 수 있습니다. 갱신할 때마다 좌표가 조금씩 떠내려가는 드리프트의 시작입니다. 좋은 방어: 역방향 쓰기를 금지하고, 원본이 없는 데이터는 "원본 미확보" 상태로 명시해 지도 핀 확정 절차를 태우세요. 화성 궤도선의 교훈은 변환의 방향에도 적용됩니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '단일 진실 출처 구조',
+        description: '쓰기가 원본 한 곳으로 강제되고 파생 직접 쓰기·역방향 쓰기 경로가 없는가. 재구축 경로가 존재하고 검증되는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '이벤트 흐름의 정합성',
+        description: '순번 검증·보류·재동기화가 구현되고 역전/유실/중복 시나리오가 테스트로 증명되는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '도메인 규칙 정확성',
+        description: '두 기대 출력(TM·그리드 값 포함)이 정확히 일치하는가. 변환은 엔진에 위임되고 도메인에 수식이 새지 않는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '지연의 설계',
+        description: '파생 지연 중의 표시 정책이 명시적으로 설계·문서화되었는가. 신선도(반영 순번)를 답할 수 있는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '그리드 주소 규칙 변경 가능성 같은 미확정 사항을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '빈 가게 앞에서 42통의 전화를 받았던 배달 기사 대표 (비개발자, 시스템 불신 보유)',
+      prompt:
+        '기사 대표에게 설명하세요. (1) 치킨집 사건이 왜 났는지 — 주소록 원본은 고쳤는데 벽에 붙은 복사본 두 장을 안 바꾼 사무실에 빗대어, (2) 이제는 복사본이 스스로를 갱신하고, 놓친 갱신은 따라잡고, 의심스러우면 원본에서 통째로 다시 베낀다는 것, (3) 그래도 몇 초의 시차는 있을 수 있는데 그때 화면에 무엇이 뜨는지 — 옛 주소가 아니라 "동기화 중"이라는 정직한 표시라는 것. 기사님들이 다음에 이상한 핀을 보면 무엇을 하면 되는지로 마무리하세요.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '핀과 현관이 일치하는 날들',
+        teaser: '이전 성수기(2월, 9월)가 지나가도 오배달 제보가 없다. 기사 커뮤니티의 "가까움 핀 믿지 마라" 게시글이 더는 갱신되지 않는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '동기화 중이 오래 걸리는 가게',
+        teaser: '불일치는 사라졌다. 다만 재동기화가 밀리는 피크 시간대마다 "동기화 중" 뱃지가 길게 붙고, 그 시간엔 기사들이 습관처럼 가게에 전화를 건다.',
+      },
+      {
+        grade: 'dawn',
+        title: '두 블록 옆의 42통',
+        teaser: '지연 이벤트가 순번 검증 없이 적용된 저녁, 옛 좌표가 최신을 덮어쓴다. 빈 가게 앞의 전화가 재현되고, 이번 사고 채널의 스크린샷에는 여러분의 서비스 이름이 찍혀 있다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 좌표는 아직 측량되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 27 — Stage 2 "인터페이스는 계약" / 항해 규칙 (COLREG) / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's2-colreg-01',
+    stage: 2,
+    stageTitle: '인터페이스는 계약',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '단일 파일',
+    modes: ['developer'],
+    domain: '항해 · 해상충돌예방규칙',
+    domainEmoji: '⛵',
+    title: '바다의 프로토콜 — 누가 피할 것인가',
+    estimatedMinutes: 110,
+    briefing: {
+      title: '규칙이 없던 바다의 충돌들',
+      content: `### 증기선이 가져온 혼돈
+
+바람에 묶여 있던 범선의 시대에는 배들의 항로가 어느 정도 예측 가능했습니다. 그런데 19세기, 바람과 무관하게 어느 방향으로든 달리는 증기선이 등장하자 바다 위 충돌이 급증합니다. 안개 속에서 마주친 두 배가 서로 "상대가 피하겠지" 하며 직진하다 부딪히는 사고가 반복되자, 각국의 관습이던 항법 규칙은 국제 협약으로 성문화되기 시작했고, 오늘날 전 세계 모든 선박이 따르는 **국제해상충돌예방규칙(COLREG, 1972년 협약)**으로 정리됐습니다.
+
+### 상태를 공개하라 — 등화와 형상물
+
+이 규칙의 설계에서 아름다운 부분은 판정 이전에 있습니다. 배들은 밤에는 등화의 색과 배치로, 낮에는 돛대에 올린 형상물로 **자신의 상태를 서로에게 공개합니다** — "나는 조종이 불가능하다", "나는 어로 중이다", "나는 동력선이다". 상대의 내부 사정(엔진이 왜 죽었는지)은 몰라도 됩니다. 공개된 상태만 보고 누구나 같은 판정을 내릴 수 있게 한 것 — 소프트웨어 설계자라면 여기서 익숙한 냄새를 맡을 겁니다. 구현은 숨기고 계약만 공개한다. 등화는 바다의 인터페이스입니다.
+
+### 판정은 프로토콜이다
+
+두 배가 만나면 규칙은 역할을 배정합니다. **피항선(give-way)**은 크고 이르게 피하고, **유지선(stand-on)**은 침로와 속력을 유지합니다 — 둘 다 피하려 들면 서로의 회피가 상쇄되기 때문에, 한쪽의 "가만히 있을 의무"까지 규칙인 것입니다. 마주치면 둘 다 우현으로, 횡단이면 상대를 우현에 둔 쪽이 피하고, 추월선은 언제나 피합니다. 조종 능력이 다른 배들 사이에는 계층이 있어 자유로운 쪽이 부자유한 쪽을 피합니다. 이 판정 체계를 코드의 계약으로 옮기는 것이 이번 미션입니다 — 단, 실제 규칙의 단순화 버전임을 처음부터 분명히 해 둡니다.`,
+    },
+    scenario: `해양 교육 기업이 **항해사 훈련 시뮬레이터의 항법 판정 모듈**을 의뢰했습니다. 훈련생이 만든 조우 상황에서 "누가 피항선이고 누가 유지선인가, 권고 동작은 무엇인가"를 판정해 채점에 쓰는 기능입니다. 교육팀이 못을 박았습니다 — **"이 판정기는 교육용 단순화 모델입니다. 실제 COLREG 전체가 아니라, 아래 규칙 표만 구현하세요. 표에 없는 상황을 아는 척하는 것이 최악입니다."** 기하 계산(방위·침로에서 조우 유형을 알아내는 일)은 시뮬레이터 본체가 하고, 여러분은 조우 유형과 선박 상태를 입력으로 받습니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/marine/rules/Encounter.java',
+        content: `package com.marine.rules;
+
+/**
+ * 조우 상황 입력 (완성된 코드 — 그대로 사용).
+ * type: HEAD_ON(마주침) / CROSSING(횡단) / OVERTAKING(추월)
+ * CROSSING일 때 otherOnStarboardOfA = true면 A가 상대(B)를 자기 우현에 보고 있다.
+ * OVERTAKING일 때 aIsOvertaking = true면 A가 추월하는 쪽이다.
+ */
+public record Encounter(
+        String type,
+        Vessel a,
+        Vessel b,
+        boolean otherOnStarboardOfA,
+        boolean aIsOvertaking
+) {
+
+    /**
+     * 선박 (완성된 코드 — 그대로 사용).
+     * category: NUC(조종불능) / RAM(조종제한) / FISHING(어로 종사) /
+     *           SAILING(범선) / POWER(동력선)
+     * 등화·형상물로 서로에게 공개되는 상태가 바로 이 category다.
+     */
+    public record Vessel(String name, String category) {
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/marine/rules/RightOfWayJudge.java',
+        content: `package com.marine.rules;
+
+/**
+ * 항법 우선권 판정기 (구현 대상).
+ *
+ * 규칙 표(요구사항)의 우선순위가 판정의 전부입니다:
+ *   1) 추월 상황이면 선종과 무관하게 추월선이 피항선 (규칙 13의 정신)
+ *   2) 선종 계층이 다르면 계층이 낮은(자유로운) 쪽이 피항선
+ *   3) 같은 동력선끼리: 마주침 -> 양쪽 모두 우현 변침 / 횡단 -> 상대를 우현에 본 배가 피항선
+ * 이 우선순위가 if의 순서가 아니라 읽을 수 있는 체계로 표현되는 것이 이 미션의 설계 과제입니다.
+ * (판정 결과를 담을 타입과 규칙의 계약은 여러분이 설계합니다.)
+ */
+public class RightOfWayJudge {
+
+    /** 조우 판정. 요구사항의 검증 케이스와 정확히 일치해야 합니다. */
+    public String judge(Encounter encounter) {
+        // TODO 반환 타입 설계부터 여러분의 몫입니다 (String은 자리 표시).
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '이 미션의 규칙 표(단순화 스펙 — 실제 COLREG의 교육용 축약본이며, 그 사실이 판정 결과 문구에도 명시되어야 합니다): ① 추월(OVERTAKING) 상황이면 선종과 무관하게 추월하는 배가 피항선, 추월당하는 배가 유지선. ② 추월이 아닌 상황에서 두 배의 선종 계층이 다르면 계층이 낮은 쪽이 피항선. 계층은 높은 순서로 NUC(조종불능) > RAM(조종제한) > FISHING(어로) > SAILING(범선) > POWER(동력선). ③ 동력선끼리 마주침(HEAD_ON)이면 피항/유지 구분 없이 양쪽 모두 우현 변침. ④ 동력선끼리 횡단(CROSSING)이면 상대를 자기 우현에 보는 배가 피항선, 상대는 유지선(침로·속력 유지).',
+      '검증 케이스 1 (횡단): 동력선 A가 동력선 B를 우현에 봄 → A 피항선(대각도 우현 변침 권고), B 유지선(침로·속력 유지). 검증 케이스 2 (계층): 동력선 A와 어로선 B의 횡단 → 방위와 무관하게 A 피항선 (계층 규칙이 횡단 규칙에 우선).',
+      '검증 케이스 3 (추월의 우선): 범선 A가 동력선 B를 추월 → A 피항선. 계층상 범선이 동력선보다 위지만, 추월 규칙은 계층에 우선합니다 — 이 역전이 정확히 구현되어야 하고, 테스트 이름에 그 사실이 드러나야 합니다. 검증 케이스 4 (마주침): 동력선끼리 HEAD_ON → 결과에 피항/유지 대신 "양측 우현 변침"이 명시.',
+      '판정 결과는 문자열 조립이 아니라 의미 있는 타입(누가 피항선인지, 권고 동작, 적용된 규칙)으로 먼저 만들어지고, 화면 문구는 그 타입에서 파생되어야 합니다. 채점 모듈과 훈련생 화면이 같은 판정 타입을 다른 문구로 소비할 예정입니다.',
+      '규칙의 우선순위(추월 > 계층 > 대등 상황 규칙)가 코드에서 읽히는 체계 — 예컨대 순서를 가진 규칙 목록으로 — 로 표현되어야 합니다. 새 규칙(예: 흘수제약선)이 추가될 때 기존 규칙 코드를 수정하지 않고 목록에 끼워 넣을 수 있어야 합니다.',
+      '교육팀 추가 문의: "시계가 나쁠 때(무중) 규칙도 넣을 수 있나요? 그때는 유지선 개념이 없어진다던데요." (무중 항법은 판정 구조 자체가 다릅니다 — 이번 범위에 넣을지, 시계 제한의 기준을 무엇으로 할지 아직 결정되지 않았습니다)',
+    ],
+    constraints: [
+      'Encounter.java는 완성 코드입니다. 조우 유형과 방위 관계는 입력으로 주어지며, 침로·방위각의 기하 계산은 이 미션의 범위 밖입니다.',
+      '도메인 규칙: 이 판정기는 교육용 단순화 모델입니다. 실제 COLREG에는 여기 없는 규칙(협수로, 통항분리대, 흘수제약선, 무중 항법 등)이 많으며, 그 사실을 코드 주석과 판정 결과 문구 양쪽에 명시하세요. 실제 항해의 판단을 대체하지 않습니다.',
+      '규칙 표 밖의 입력 조합을 그럴듯한 판정으로 때우는 것을 금지합니다 — 모르는 상황은 모른다고 답하는 판정기여야 합니다.',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '물리 세계의 프로토콜(항법 규칙)을 코드의 계약으로 옮기며, "상태 공개 + 공통 규칙 = 분산 협조"라는 인터페이스의 본질 이해',
+      '우선순위가 있는 규칙 체계를 if 순서가 아니라 명시적 구조(순서 있는 규칙 목록)로 표현하는 연습',
+      '판정 결과를 문자열이 아니라 도메인 타입으로 설계해, 여러 소비자(채점·화면)가 같은 진실을 공유하게 하기',
+      '단순화 모델의 경계를 코드와 문구에 정직하게 새기는 습관 — 아는 척하지 않는 시스템이 안전한 시스템',
+    ],
+    hints: [
+      '규칙 하나를 "이 조우에 적용되는가? 적용된다면 판정은?"이라는 두 질문으로 요약해 보세요. 그 두 질문이 규칙 계약(인터페이스)이고, 판정기는 우선순위 순서로 규칙 목록을 훑다 첫 번째로 적용되는 규칙의 답을 받는 구조가 됩니다 — 추월 규칙을 목록 맨 앞에 두면 "계층에 우선"이 코드 구조로 증명됩니다.',
+      '판정 결과 타입에는 최소 세 가지가 필요합니다 — 역할 배정(A/B 중 누가 피항선인지, 혹은 양측 조치), 권고 동작, 그리고 어느 규칙이 적용됐는지. 세 번째가 없으면 훈련생이 "왜?"를 물을 때 시스템이 침묵합니다. 교육용 판정기에서 근거는 결과의 절반입니다.',
+      '마주침의 "양측 우현 변침"은 피항/유지 이분법에 들어가지 않습니다. 역할 배정을 enum으로 설계할 때 GIVE_WAY_A / GIVE_WAY_B 둘만 만들면 이 케이스에서 설계가 부러집니다 — BOTH_ACT 같은 세 번째 값의 필요를 검증 케이스 4가 미리 알려 주고 있습니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '미지의 선종 문자열',
+        description:
+          '시뮬레이터 편집기에서 "FISHING "(공백)이나 신규 "DREDGER" 같은 미등록 선종이 넘어오면, 계층 조회가 조용히 실패해 엉뚱한 기본 판정이 나갈 수 있습니다. 훈련 시뮬레이터의 오판정은 그대로 훈련생의 몸에 새겨집니다. 좋은 방어: 선종을 문자열 비교가 아니라 enum 변환으로 받고, 변환 불가 입력은 판정을 거부하며 "미지의 선종"을 명시하세요.',
+      },
+      {
+        title: '어로선이 어로선을 추월할 때',
+        description:
+          '같은 계층의 두 배가 추월 상황이면 — 계층 규칙만으로 판정하려는 코드는 "동순위, 판정 불가"로 죽거나 임의의 한쪽을 고릅니다. 정답은 규칙 표에 이미 있습니다: 추월 규칙이 계층보다 먼저 적용되므로 추월선이 피항선입니다. 좋은 방어: 우선순위를 코드 구조(규칙 목록의 순서)로 강제하고, "같은 계층 + 추월"을 테스트 케이스로 못박으세요. 규칙의 순서가 곧 스펙입니다.',
+      },
+      {
+        title: '자기 자신과의 조우',
+        description:
+          '편집기 버그로 A와 B가 같은 선박 ID로 들어오는 조우가 만들어질 수 있습니다. 그대로 판정하면 "A는 A를 피하라"는 명령이 훈련 화면에 뜹니다 — 웃긴 출력이지만, 검증 없는 입력 신뢰의 증거로는 웃기지 않습니다. 좋은 방어: 판정 전 입력 무결성(서로 다른 두 선박, 유효한 조우 유형과 플래그 조합)을 확인하고 위반은 명시적으로 거부하세요.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '검증 케이스 4개(횡단, 계층, 추월의 계층 역전, 마주침 양측 조치)가 규칙 표와 정확히 일치하는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '규칙 체계의 표현',
+        description: '우선순위(추월 > 계층 > 대등 규칙)가 if 순서가 아니라 읽고 확장할 수 있는 구조로 표현되었는가. 새 규칙 추가가 목록 등록으로 끝나는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '판정 결과의 타입 설계',
+        description: '역할 배정·권고 동작·적용 규칙이 도메인 타입으로 설계되고, 마주침의 양측 조치가 이분법에 억지로 구겨지지 않았는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '단순화 경계의 정직성',
+        description: '교육용 축약 모델임이 코드와 결과 문구에 명시되고, 규칙 표 밖 입력이 그럴듯한 판정으로 위장되지 않는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '무중 항법의 포함 여부와 기준 같은 미결정 사항을 임의 확정하지 않고 질문했거나 가정을 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '시뮬레이터 교육 과정을 설계하는 전직 항해사 교관 (규칙은 몸으로 알지만 코드는 처음)',
+      prompt:
+        '교관님께 설명하세요. (1) 판정기가 규칙을 어떤 순서로 적용하는지 — 추월이 계층보다 먼저라는 것을 범선이 동력선을 추월하는 케이스로, (2) 등화·형상물이 하는 일과 인터페이스라는 개념이 왜 같은 것인지 — 상대의 기관실 사정은 몰라도 등화만 보면 판정할 수 있다는 그 구조를, (3) 이 판정기가 실제 COLREG의 어디까지를 다루고 어디부터는 "모른다"고 답하는지 — 그 정직함이 교육 도구로서 왜 장점인지. 교관님이 훈련생에게 그대로 옮겨 말할 수 있는 언어로.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '이의 없는 채점',
+        teaser: '훈련생들이 판정에 이의를 제기할 때마다 시스템은 적용 규칙과 근거를 내밀고, 이의는 학습으로 끝난다. 교관은 채점표 검토 시간을 실습 시간으로 돌린다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '교관 재정심의 목록',
+        teaser: '판정은 맞는다. 다만 규칙 표 밖의 상황을 훈련생들이 자꾸 만들어 내고, "판정 불가" 목록을 교관이 매주 수동으로 재정심의하는 절차가 굳어진다.',
+      },
+      {
+        grade: 'dawn',
+        title: '몸에 새겨진 오판정',
+        teaser: '미등록 선종이 기본 판정으로 흘러간 학기, 훈련생 한 기수가 잘못된 우선권 감각을 익힌 채 수료한다. 정정 교육 공문의 참조 란에 판정 모듈 버전이 적힌다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 항로는 아직 개방되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 28 — Stage 4 "레거시 길들이기" / 전세 제도 / 코드 판독
+  // =========================================================================
+  {
+    id: 's4-jeonse-01',
+    stage: 4,
+    stageTitle: '레거시 길들이기',
+    missionType: '코드 판독',
+    difficulty: 'Normal',
+    scope: '단일 파일',
+    modes: ['developer'],
+    domain: '전세 · 경매 배당',
+    domainEmoji: '🏦',
+    title: '도장 하나가 수억을 지킨다 — 배당 계산기 판독',
+    estimatedMinutes: 50,
+    briefing: {
+      title: '전세라는 발명품, 확정일자라는 방패',
+      content: `### 한국에만 있는 제도
+
+전세는 세계적으로 희귀한 제도입니다. 집값의 절반이 넘는 목돈을 집주인에게 맡기고, 월세 없이 살다가, 나갈 때 전액을 돌려받는 구조 — 임차인은 사실상 집주인에게 무이자 대출을 해 주는 채권자입니다. 문제는 그 채권이 수억 원인데, 집이 경매로 넘어가면 은행 근저당 같은 다른 채권자들과 **순서를 다퉈야** 한다는 것입니다.
+
+### 도장 하나의 힘
+
+그 순서표에서 임차인의 자리를 만들어 주는 것이 **확정일자**입니다. 주민센터에서 계약서에 도장 하나를 받는 순간, 임차인은 그 날짜로 담보물권과 나란히 순위를 겨룰 자격을 얻습니다. 여기에 사회적 안전망이 하나 더 있습니다 — 보증금이 일정 기준 이하인 **소액임차인**은 순위와 무관하게 일정액을 가장 먼저 돌려받습니다(최우선변제). 경매 대금은 정해진 순서로 흘러내립니다: 경매비용, 최우선변제, 당해세, 그리고 설정일·확정일자 순위별 배당. 같은 날짜의 채권끼리는 순서가 없으므로 **금액에 비례해 나눕니다(안분배당)**.
+
+### 깡통이 쏟아진 해
+
+2022~2023년, 집값 하락과 함께 보증금이 집값을 넘어서는 "깡통전세"가 쏟아졌습니다. 수만 명의 임차인이 배당표 앞에 섰고, 그때 드러난 사실 — 이 순서 규칙을 정확히 아는 사람이 생각보다 적다는 것. 그리고 규칙을 코드로 옮긴 프로그램이 틀렸을 때, 그 오차는 버그 리포트가 아니라 누군가의 전 재산으로 청구된다는 것. 오늘 여러분 앞에 그런 프로그램이 하나 놓여 있습니다. 실행하지 말고, 읽으세요.`,
+    },
+    scenario: `법무법인 온담의 전산팀이 만든 **경매 배당 계산기**가 다음 주부터 실제 사건 상담에 투입될 예정입니다. 그런데 어제, 수습 변호사가 수기 배당표와 계산기 결과가 다른 사건을 하나 발견했습니다. 파트너 변호사의 지시: **"투입 전에 코드를 처음부터 끝까지 눈으로 검증하세요. 실행 결과 말고, 로직 자체를."** 여러분은 출근길 지하철에서 이 파일을 엽니다. 산출물은 코드 수정이 아니라 판독 보고서(findings.md)입니다 — 현업의 코드 리뷰가 늘 그렇듯이.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/ondam/auction/DividendCalc.java',
+        content: `package com.ondam.auction;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+// ------------------------------------------------------
+//  임의경매 배당 계산기 v0.9  (법무법인 온담 전산팀)
+//  20190402 최초작성 (강주임)
+//  20211105 소액임차인 표 갱신 (2021 시행령 반영)
+//  검증: 수기 배당표와 대조할 것
+// ------------------------------------------------------
+public class DividendCalc {
+
+    /** 배당 참가자 (근저당권자 또는 임차인). */
+    public static class Claim {
+        final String name;
+        final String kind;            // "MORTGAGE"(근저당) / "TENANT"(임차인)
+        final LocalDate rankDate;     // 근저당: 설정일 / 임차인: 확정일자
+        final long deposit;           // 임차인 보증금 (근저당은 0)
+        final long amountRequested;   // 배당요구액
+        long paid = 0;                // 배당 누계
+
+        Claim(String name, String kind, LocalDate rankDate, long deposit, long amountRequested) {
+            this.name = name;
+            this.kind = kind;
+            this.rankDate = rankDate;
+            this.deposit = deposit;
+            this.amountRequested = amountRequested;
+        }
+
+        long remaining() {
+            return amountRequested - paid;
+        }
+    }
+
+    // 소액임차인 기준 (서울, 학습용 기준값)
+    static long smallCapOf(LocalDate d) {
+        if (d.isBefore(LocalDate.of(2021, 5, 11))) {
+            return 100_000_000L;    // 2016 시행령: 보증금 1억 이하
+        }
+        return 150_000_000L;        // 2021 시행령: 보증금 1.5억 이하
+    }
+
+    static long priorityAmountOf(LocalDate d) {
+        if (d.isBefore(LocalDate.of(2021, 5, 11))) {
+            return 34_000_000L;     // 2016 시행령: 최우선변제 3,400만
+        }
+        return 50_000_000L;         // 2021 시행령: 최우선변제 5,000만
+    }
+
+    /**
+     * 배당 실행. salePrice 낙찰가, cost 경매비용, taxDue 당해세,
+     * auctionStart 경매개시결정일, claims 배당 참가자 목록.
+     */
+    public static String distribute(long salePrice, long cost, long taxDue,
+                                    LocalDate auctionStart, List<Claim> claims) {
+        long fund = salePrice - cost;   // 0단계: 경매비용 공제
+        StringBuilder sheet = new StringBuilder();
+        sheet.append("[배당표] 재원 ").append(fund).append("원\n");
+
+        // 1단계: 소액임차인 최우선변제
+        long cap = smallCapOf(auctionStart);
+        long priorityAmt = priorityAmountOf(auctionStart);
+        for (Claim c : claims) {
+            if (c.kind.equals("TENANT") && c.amountRequested <= cap) {
+                long pay = Math.min(priorityAmt, Math.min(c.remaining(), fund));
+                c.paid += pay;
+                fund -= pay;
+                sheet.append("1순위 최우선변제 ").append(c.name).append(" ").append(pay).append("원\n");
+            }
+        }
+
+        // 2단계: 당해세
+        long taxPay = Math.min(taxDue, fund);
+        fund -= taxPay;
+        if (taxPay > 0) {
+            sheet.append("2순위 당해세 ").append(taxPay).append("원\n");
+        }
+
+        // 3단계: 설정일·확정일자 순위 배당
+        List<Claim> ranked = new ArrayList<>(claims);
+        ranked.sort(Comparator.comparing(c -> c.rankDate));
+        for (Claim c : ranked) {
+            if (fund <= 0) {
+                break;
+            }
+            long pay = Math.min(c.remaining(), fund);
+            c.paid += pay;
+            fund -= pay;
+            sheet.append("순위배당(").append(c.rankDate).append(") ")
+                    .append(c.name).append(" ").append(pay).append("원\n");
+        }
+
+        sheet.append("잔여 ").append(fund).append("원 (소유자 귀속)\n");
+        return sheet.toString();
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '산출물은 findings.md 한 편입니다. 발견한 결함마다 {위치(메서드·해당 코드 인용), 증상(어떤 입력에서 무엇이 틀리는가), 원인(도메인 규칙의 어느 부분을 위반했는가), 수정 방향, 심각도(상/중/하)}를 적으세요. 코드는 수정하지 않습니다.',
+      '정답 스펙(배당 규칙, 학습용 단순화): 배당 순서는 ⓪경매비용 공제 → ①소액임차인 최우선변제 → ②당해세 → ③설정일·확정일자 순위별 배당. 소액임차인 판단은 "보증금"이 기준액 이하인지로 하며, 적용할 시행령은 "최선순위 담보물권 설정일" 당시의 것입니다(설정 당시 은행이 예측한 부담을 사후에 늘리지 않기 위한 규칙). ③에서 같은 날짜의 채권끼리는 순서가 없으므로 채권액에 비례해 안분배당합니다.',
+      '검증 사건 A: 낙찰가 3억, 경매비용 1,000만, 당해세 0. 근저당(설정 2016-05-01) 2억, 임차인 갑(보증금 9,000만, 확정일자 2017-01-10, 배당요구 9,000만), 경매개시결정일 2022-03-01. 수기 배당표의 정답: 갑 최우선변제 3,400만 → 근저당 2억 → 갑 순위배당 5,600만, 잔여 0. 계산기의 출력이 이와 다르다면 어디서 갈라지는지 추적하세요.',
+      '검증 사건 B: 같은 날(2020-06-15) 확정일자를 받은 임차인 을(보증금·배당요구 6,000만)과 병(보증금·배당요구 4,000만), 이 순위에 도달한 재원 5,000만. 정답: 을 3,000만, 병 2,000만(6:4 안분). 계산기는 어떻게 배당합니까?',
+      '검증 사건 C: 임차인 정 — 보증금 1.2억, 이미 일부를 회수해 배당요구액은 8,000만. 2016 시행령 기준(보증금 1억 이하)에서 정은 소액임차인입니까? 계산기의 판단과 스펙의 판단을 비교하세요.',
+      '판독 중 확인: 당해세 단계는 코드에 존재하지만 세 검증 사건 모두 당해세가 0원입니다. 0이 아닐 때의 동작을 이번 판독 범위에 넣을지 — 자료를 요청할지, 가정을 명시하고 넘어갈지 — 는 여러분의 판단이며, 그 판단 자체를 findings.md에 남기세요.',
+    ],
+    constraints: [
+      '코드를 실행하지 마세요. 눈으로만. 현업의 코드 리뷰가 그렇듯이.',
+      '산출물은 findings.md뿐입니다 — 수정 diff나 재작성 코드는 범위 밖입니다 (수정은 다음 사람의 미션입니다).',
+      '이 계산기는 학습용 단순화입니다. 실제 배당에는 조세채권 법정기일, 임금채권, 가압류 안분 등 훨씬 많은 규칙이 있음을 findings.md 서두에 한 줄로 밝혀 두세요.',
+      '결함 개수는 사전에 알려 주지 않습니다. "다 찾았다"고 확신할 수 없을 때 무엇을 더 보는지가 판독 실력입니다.',
+    ],
+    learningGoals: [
+      '실행 없이 코드와 스펙을 대조하며 결함을 추적하는 정적 판독 능력 — 검증 시나리오를 손으로 트레이스하는 훈련',
+      '도메인 규칙의 미세한 조건("보증금 기준", "설정일 당시 시행령")이 코드의 어느 한 줄에서 어긋나는지 짚어 내는 눈',
+      '발견을 남에게 전달 가능한 형태(위치·증상·원인·수정 방향·심각도)로 구조화하는 글쓰기',
+      '틀린 계산의 심각도를 도메인의 무게(누구의 돈이 얼마나 어긋나는가)로 판단하는 감각',
+    ],
+    hints: [
+      '검증 사건 A를 연필로 트레이스하세요 — 코드의 각 단계에서 fund가 얼마가 되는지 적어 가며. 수기 배당표(3,400만)와 코드의 결과가 갈라지는 첫 지점에 결함 하나가 있습니다. 그 결함의 원인이 된 인자(auctionStart)가 어디에 또 쓰이는지도 확인하세요.',
+      '1단계 루프의 if 조건을 스펙 문장과 단어 단위로 대조하세요. 스펙은 "보증금이 기준액 이하"라고 말하는데, 코드는 무엇을 비교하고 있습니까? 사건 C가 이 차이를 정확히 겨냥합니다.',
+      '3단계의 sort와 순차 루프는 "다른 날짜"에서는 정답을 냅니다. 같은 날짜 두 건이 들어오면 무슨 일이 벌어지는지 — 사건 B를 리스트 순서를 바꿔 가며 두 번 트레이스해 보세요. 결과가 리스트 순서에 따라 달라진다면, 그것이 증상입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '시행령을 고르는 날짜',
+        description:
+          '가장 찾기 어려운 결함: smallCapOf/priorityAmountOf에 경매개시결정일(auctionStart)이 들어갑니다. 코드만 보면 자연스럽지만, 스펙의 기준일은 "최선순위 담보물권 설정일"입니다. 사건 A에서 이 차이는 최우선변제 3,400만 vs 5,000만 — 1,600만 원이 근저당권자의 몫에서 임차인에게로 잘못 이동합니다. 은행이 2016년에 계산했던 담보 가치가 2021년 시행령으로 소급 침식되는 것 — 실무에서 실제로 다투어지는 지점이라 더 위험한 버그입니다.',
+      },
+      {
+        title: '보증금이 아니라 배당요구액',
+        description:
+          '1단계의 if (c.amountRequested <= cap) — 소액임차인 판단이 보증금(deposit)이 아니라 배당요구액으로 이루어집니다. 사건 C의 정(보증금 1.2억, 배당요구 8,000만)은 스펙상 소액임차인이 아닌데 코드는 소액으로 판정해 최우선변제를 배당합니다. 보증금이 큰 임차인이 일부만 배당요구하면 소액 보호를 받는 셈 — 제도의 취지가 뒤집히는 결함입니다.',
+      },
+      {
+        title: '같은 날짜의 침묵 승자',
+        description:
+          '3단계는 rankDate로 정렬한 뒤 순서대로 전액 배당합니다. 같은 날짜끼리는 정렬이 순서를 보장하지 않으므로 리스트에 먼저 담긴 쪽이 전액을 가져갑니다 — 사건 B에서 정답은 을 3,000만/병 2,000만 안분인데, 코드는 을 5,000만/병 0원(또는 그 반대)을 냅니다. 결과가 입력 순서에 따라 달라지는 비결정성까지 겹친, 조용하지만 소송감인 결함입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '결함 발견율',
+        description: '심어진 결함들을 찾았는가. 찾기 어려운 결함(시행령 기준일)일수록 높은 배점. 스스로 찾은 정당한 추가 지적도 인정.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '원인 설명의 정확성',
+        description: '각 결함이 도메인 규칙의 어느 부분을 어떻게 위반하는지, 검증 사건의 숫자로 증상을 재현해 보였는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '심각도 판단',
+        description: '누구의 돈이 얼마나 어긋나는지를 기준으로 심각도를 매겼는가. 비결정성(입력 순서 의존) 같은 질적 위험을 인식했는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '글의 명료성',
+        description: 'findings.md가 위치·증상·원인·수정 방향의 구조를 갖추고, 수정을 맡을 다음 사람이 바로 착수할 수 있는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '당해세 검증 범위 같은 미결정 사항을 임의로 처리하지 않고 판단과 근거를 명시했는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '전세 계약을 앞두고 확정일자가 뭔지 검색 중인 대학 후배',
+      prompt:
+        '후배에게 설명해 주세요. (1) 전세 보증금이 사실은 "빌려준 돈"이고, 집이 경매로 넘어가면 순서 싸움이 벌어진다는 것, (2) 확정일자 도장 하나와 전입신고가 그 싸움에서 어떤 자리를 만들어 주는지, (3) 소액임차인 최우선변제라는 안전망과 그 한계. 마지막으로 — 이번에 판독한 것 같은 계산기가 틀리면 무슨 일이 생기는지, 그래서 계약 전에 등기부등본에서 무엇을 확인해야 하는지를 후배의 눈높이로. 겁을 주는 것이 아니라 무기를 쥐여 주는 톤으로.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '투입 전에 잡았다',
+        teaser: '세 결함이 상담 투입 전에 수정된다. 어느 배당표도 틀리지 않았고, 그래서 아무 일도 일어나지 않는다 — 이 일의 성과는 언제나 일어나지 않은 사고로만 측정된다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '두 개 반의 발견',
+        teaser: '두 결함은 잡혔다. 다만 시행령 기준일은 "확인 필요"라는 모호한 메모로 남았고, 석 달 뒤 실제 사건에서 그 메모를 다시 꺼내 읽는 사람이 생긴다.',
+      },
+      {
+        grade: 'dawn',
+        title: '배당표 이의신청',
+        teaser: '판독을 통과한 계산기가 낸 배당표에 이의가 제기되고, 법정에서 상대측 대리인이 코드의 if 한 줄을 프로젝터에 띄운다. 그 줄은 여러분이 읽고 지나간 줄이다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 배당표는 아직 확정되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 29 — Stage 9 "동시성의 감각" / 대학 수강신청 / 코드 판독
+  // =========================================================================
+  {
+    id: 's9-sugang-01',
+    stage: 9,
+    stageTitle: '동시성의 감각',
+    missionType: '코드 판독',
+    difficulty: 'Hard',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '대학 수강신청',
+    domainEmoji: '🎓',
+    title: '오전 10시 정각의 코드 — 수강신청 서버 판독',
+    estimatedMinutes: 60,
+    briefing: {
+      title: '이 버그는 로그에 없다',
+      content: `### 0.1초의 대학
+
+매 학기 수강신청 날 오전 10시, 대학 서버에는 수만 명이 같은 초에 몰려듭니다. 인기 강의의 정원은 40명, 지망자는 400명 — 성패는 0.1초에서 갈립니다. 광클이 부족해 매크로가 등장했고, 대학들은 추첨제와 장바구니(관심 과목을 미리 담아 두고 신청은 클릭 한 번으로) 제도로 전쟁의 규칙을 바꿔 왔습니다. 하지만 어떤 제도를 얹어도 마지막 순간에는 같은 문제가 남습니다 — **정원 40명의 마지막 한 자리에, 두 요청이 동시에 도착하면 누가 들어가는가.**
+
+### 재현되지 않는 사고
+
+수강신청 시스템의 버그 리포트는 독특합니다. "정원 40명인데 41명이 등록되어 있습니다", "분명 신청 성공 화면을 봤는데 명단에 없습니다" — 그리고 개발팀이 밤새 돌려 본 테스트에서는 아무 문제가 없습니다. 동시성 버그는 특정 입력이 아니라 **특정 타이밍**에서만 태어나기 때문입니다. 요청 하나씩 처리하면 완벽한 코드가, 두 요청이 특정한 순서로 겹치는 순간에만 무너집니다. 로그에는 각 요청이 저마다 정상이었다고 적혀 있습니다. 사고의 증거는 로그가 아니라 코드의 구조 안에 있습니다.
+
+### 그래서, 읽는 훈련
+
+이번 미션에서는 코드를 실행하지 않습니다. 실행은 이 버그를 잡는 데 도움이 되지 않기 때문입니다 — 천 번 돌려 천 번 통과하는 코드에도 레이스는 삽니다. 대신 두 개의 손가락으로 읽습니다. 한 손가락은 학생 A의 요청을, 다른 손가락은 학생 B의 요청을 짚으며, 두 실행이 어느 줄과 어느 줄 사이에서 엇갈릴 때 무엇이 깨지는지를 추적하는 것. 인터리빙 표(T1/T2 타임라인)는 그 추적의 기록입니다. 동시성을 읽을 줄 아는 눈은, 동시성을 짤 줄 아는 손보다 먼저 옵니다.`,
+    },
+    scenario: `한별대학교 수강신청 시스템의 유지보수 입찰에 참여한 여러분 회사가 **사전 코드 실사**를 맡았습니다. 대학 측이 공개한 증상: "매 학기 정원 초과 등록이 강의당 1~2건, 중복 신청 수십 건, 그리고 대기열 순번이 가끔 뒤바뀐다는 민원. 재현은 한 번도 못 했다." 실사 조건은 명확합니다 — 운영 서버이므로 **실행·부하 테스트 금지, 코드 열람만 허용.** 산출물은 findings.md. 각 결함이 어떤 두 요청의 어떤 겹침에서 터지는지, 인터리빙 표로 증명해야 대학 측 전산팀이 수긍합니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'src/main/java/kr/hanbyul/sugang/Course.java',
+        content: `package kr.hanbyul.sugang;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** 강의. 정원과 수강생 명단, 등록 수 카운터를 함께 든다. */
+public class Course {
+
+    final String courseId;
+    final int capacity;
+    final List<String> students = new ArrayList<>();
+    int enrolledCount = 0;   // 대시보드용 카운터 (명단과 별도 관리)
+
+    public Course(String courseId, int capacity) {
+        this.courseId = courseId;
+        this.capacity = capacity;
+    }
+
+    public int remaining() {
+        return capacity - enrolledCount;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/kr/hanbyul/sugang/EnrollService.java',
+        content: `package kr.hanbyul.sugang;
+
+// ------------------------------------------------------
+//  수강신청 처리 v4.2
+//  20200302 정원검사 추가 (그 학기 41명 사건 이후)
+//  20230828 중복신청 검사 추가 (민원 대응)
+// ------------------------------------------------------
+public class EnrollService {
+
+    /** 신청. 성공 "OK", 정원 초과 "FULL", 중복 "DUP". */
+    public String enroll(Course course, String studentId) {
+        // 중복 신청 검사 (20230828)
+        if (course.students.contains(studentId)) {
+            return "DUP";
+        }
+        // 정원 검사 (20200302)
+        if (course.remaining() > 0) {
+            course.students.add(studentId);
+            course.enrolledCount = course.enrolledCount + 1;
+            return "OK";
+        }
+        return "FULL";
+    }
+
+    /** 취소. 성공 "OK", 명단에 없으면 "NONE". */
+    public String cancel(Course course, String studentId) {
+        if (course.students.remove(studentId)) {
+            course.enrolledCount = course.enrolledCount - 1;
+            return "OK";
+        }
+        return "NONE";
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/kr/hanbyul/sugang/WaitlistManager.java',
+        content: `package kr.hanbyul.sugang;
+
+import java.util.ArrayList;
+import java.util.List;
+
+// ------------------------------------------------------
+//  대기열 관리 v2.0
+//  20240226 순번 발급 동기화 (순번 중복 민원 이후)
+// ------------------------------------------------------
+public class WaitlistManager {
+
+    public static class Entry {
+        final long number;
+        final String studentId;
+
+        Entry(long number, String studentId) {
+            this.number = number;
+            this.studentId = studentId;
+        }
+    }
+
+    private long nextNumber = 1;
+    final List<Entry> waitlist = new ArrayList<>();
+
+    /** 순번 발급 (20240226 동기화 — 이후 순번 중복은 사라졌음). */
+    private synchronized long issueNumber() {
+        long n = nextNumber;
+        nextNumber = nextNumber + 1;
+        return n;
+    }
+
+    /** 대기열 등록. 발급된 순번을 돌려준다. */
+    public long join(String studentId) {
+        long number = issueNumber();
+        Entry entry = new Entry(number, studentId);
+        waitlist.add(entry);
+        return number;
+    }
+
+    /** 결원 발생 시 맨 앞 대기자 승격. */
+    public String promoteFirst() {
+        if (waitlist.isEmpty()) {
+            return null;
+        }
+        Entry first = waitlist.remove(0);
+        return first.studentId;
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '산출물은 findings.md 한 편입니다. 발견한 동시성 결함마다 {위치(파일·메서드·코드 인용), 증상(대학이 공개한 민원과의 연결), 인터리빙 표(T1/T2 두 요청의 실행 순서를 줄 단위로 배치한 타임라인 — 각 시점의 공유 상태 값 포함), 원인, 수정 방향, 심각도}를 적으세요.',
+      '인터리빙 표 형식 예시(요구 형식): | 시점 | T1(학생A) | T2(학생B) | 공유 상태 | 형태로, "정원 1석 남은 강의에 두 요청" 같은 초기 조건을 명시하고, 마지막 행에 깨진 결과(예: 명단 41명)를 적습니다. 표가 없는 지적은 전산팀이 수용하지 않습니다 — 이 미션의 채점도 같습니다.',
+      '대학이 공개한 세 증상 — 정원 초과 등록(학기당 1~2건), 중복 신청(수십 건), 대기열 순번 역전 민원 — 각각을 코드의 구체적 결함과 짝지어 설명해야 합니다. 하나의 증상에 결함이 여럿 얽혀 있을 수도, 코드에는 증상으로 아직 드러나지 않은 결함이 있을 수도 있습니다.',
+      '2024년 2월의 수정("순번 발급 동기화")이 왜 순번 중복은 없앴는데 순번 역전 민원은 못 없앴는지 — 그 수정의 한계를 별도 항목으로 분석하세요. 반쪽 수정이 만드는 거짓 안심이 이 판독의 핵심 교훈입니다.',
+      '심각도는 발생 빈도가 아니라 피해의 질로 매기세요 — 초과 등록 1건과 중복 신청 10건 중 무엇이 더 심각한지, 그 판단의 근거를 적으세요.',
+      '실사 범위 확인: 취소(cancel)와 대기자 승격(promoteFirst)이 어떤 상위 흐름에서 호출되는지는 자료에 없습니다(결원 시 자동 승격인지, 배치인지). 이 정보 없이 판정할 수 있는 결함과 없는 결함을 구분하고, 필요한 추가 자료를 findings.md에 요청 목록으로 남기세요.',
+    ],
+    constraints: [
+      '코드를 실행하지 마세요. 부하 테스트도, main도 금지 — 눈으로만. 현업의 코드 리뷰가 그렇듯이. (그리고 이 버그들은 실행해도 대개 안 보입니다)',
+      '산출물은 findings.md뿐입니다. 수정 코드는 낙찰 이후의 일입니다.',
+      '전제: 이 서비스 객체들은 멀티스레드 서블릿 환경에서 공유됩니다 — 같은 Course, 같은 WaitlistManager 인스턴스에 여러 요청 스레드가 동시에 들어옵니다.',
+      '결함 개수는 알려 주지 않습니다. synchronized가 붙어 있다는 것과 안전하다는 것은 다른 말입니다.',
+    ],
+    learningGoals: [
+      '실행 없이 인터리빙을 머릿속에서 재생하며 레이스 윈도를 특정하는, 동시성 읽기의 정수 훈련',
+      'check-then-act, read-modify-write, 반쪽 동기화라는 3대 패턴을 코드 표면에서 식별하는 눈',
+      '"동기화했다"는 커밋 메시지와 실제 원자성의 경계 — 잠금의 범위가 불변식의 범위와 일치하는지 검사하기',
+      '동시성 결함을 비개발자(전산팀·대학 본부)가 수긍할 수 있는 표와 글로 전달하는 능력',
+    ],
+    hints: [
+      '레이스를 찾는 절차는 기계적입니다: 공유 상태(students, enrolledCount, nextNumber, waitlist)를 모두 적고, 각각을 "읽는 줄"과 "쓰는 줄"을 표시한 뒤, 읽기와 쓰기 사이에 다른 스레드의 같은 코드를 통째로 끼워 넣어 보세요. remaining() 호출과 add() 사이가 첫 번째 후보입니다.',
+      'enrolledCount와 students.size()는 같은 사실의 두 사본입니다 — 취소와 신청이 겹치는 인터리빙에서 두 값이 갈라질 수 있는지 추적해 보세요. 사본이 갈라지면 remaining()은 어느 쪽 진실을 말하고 있습니까?',
+      '2024년 수정은 issueNumber()에만 자물쇠를 채웠습니다. 자물쇠 밖에서 일어나는 일(waitlist.add)의 순서는 누가 보장합니까? 순번 7번을 받은 학생과 8번을 받은 학생 중 누가 먼저 리스트에 담기는지, 두 스레드로 트레이스해 보세요 — promoteFirst()는 순번이 아니라 리스트 순서를 믿습니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '반쪽 동기화 — 순번과 순서의 분리',
+        description:
+          '가장 찾기 어려운 결함: issueNumber()는 synchronized라 순번은 유일하지만, waitlist.add()는 자물쇠 밖에 있습니다. T1이 순번 7을 받고 add 직전에 멈춘 사이 T2가 순번 8을 받아 먼저 add하면, 리스트는 [8번, 7번] 순서가 되고 promoteFirst()는 8번을 먼저 승격시킵니다 — 순번은 완벽한데 순서가 뒤집히는, "동기화 완료" 주석 아래의 결함입니다. 잠금의 범위가 불변식(순번 순 = 리스트 순)의 범위보다 좁았습니다. 덤으로 ArrayList 동시 add 자체의 파손 가능성도 짚었다면 만점입니다.',
+      },
+      {
+        title: '자기 자신과의 중복 — contains와 add 사이',
+        description:
+          '중복 검사 if (!contains) → add는 두 걸음입니다. 같은 학생의 더블클릭으로 두 요청이 동시에 들어오면 둘 다 contains에서 false를 보고 둘 다 add — 중복 검사가 있는데도 중복이 쌓입니다. 2023년의 "중복신청 검사 추가"가 민원을 못 없앤 이유입니다. 검사와 등록이 한 원자 동작이 아니면, 검사는 장식입니다.',
+      },
+      {
+        title: '취소가 흔드는 카운터',
+        description:
+          '신청과 취소가 겹치면 students 리스트와 enrolledCount가 서로 다른 시점의 진실을 갖게 됩니다 — 예: T1(신청)이 add까지 하고 카운터 증가 전에 T2(취소)가 remove와 감소를 끝내면, 명단과 카운터가 어긋난 채 안정화됩니다. remaining()은 카운터를 믿으므로 이후의 모든 정원 판단이 틀린 기준 위에서 이루어집니다 — 초과 등록이 "가끔, 1~2건" 나는 배경입니다. 파생 값(카운터)을 원본(명단)과 별도로 쓰는 순간, 동시성은 그 틈을 반드시 찾아냅니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '결함 발견율',
+        description: '심어진 레이스들을 찾았는가. 찾기 어려운 결함(반쪽 동기화 순번 역전)일수록 높은 배점. 정당한 추가 발견 인정.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '인터리빙 표의 정확성',
+        description: '각 결함의 T1/T2 타임라인이 실제로 그 증상을 만들어 내는가. 초기 조건과 공유 상태의 값 변화가 정확한가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '심각도 판단',
+        description: '피해의 질 기준으로 심각도를 매기고 근거를 댔는가. 2024년 반쪽 수정의 한계를 분석했는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '글의 명료성',
+        description: 'findings.md가 전산팀을 수긍시킬 구조(증상-결함 짝짓기, 표, 추가 자료 요청)를 갖췄는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '자료에 없는 정보(승격 호출 경로)로 판정할 수 없는 부분을 구분하고 요청 목록으로 남겼는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '수강신청 41명 사건 때 학생들에게 사과문을 썼던 대학 전산팀장 (개발 경력 있으나 동시성은 겪어만 봄)',
+      prompt:
+        '전산팀장에게 실사 결과를 브리핑하세요. (1) 왜 이 버그들이 테스트에서 재현되지 않았는지 — 입력의 문제가 아니라 타이밍의 문제라는 것을, 두 사람이 동시에 마지막 한 자리를 클릭하는 장면으로, (2) 2020년과 2023년과 2024년의 수정이 각각 무엇을 고쳤고 무엇을 남겼는지 — 특히 "동기화했는데 왜 또"에 대한 답, (3) 다음 학기 전에 무엇부터 고쳐야 하는지 우선순위와 그 근거. 인터리빙 표 하나를 골라 말로 풀어 설명하는 연습을 겸하세요 — 표를 읽어 주는 것이 아니라, 이야기로 만드는 것입니다.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '재현할 필요가 없어진 버그',
+        teaser: '실사 보고서의 인터리빙 표를 본 전산팀이 "이건 재현이 안 되는 게 아니라 재현할 필요가 없는 거였네요"라고 말한다. 다음 학기 수강신청 날, 정원 40명 강의에는 40명이 있다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '반쪽의 반쪽 수정',
+        teaser: '지적된 결함 중 눈에 띄는 것만 고쳐진다. 다음 학기, 초과 등록은 사라졌는데 대기열 민원은 남았고, 여러분의 보고서 4장이 뒤늦게 회의 테이블에 다시 오른다.',
+      },
+      {
+        grade: 'dawn',
+        title: '41번째 학생',
+        teaser: '표 없이 서술로만 적힌 지적이 "이론적 우려"로 분류되어 반영되지 않는다. 다음 학기 10시 0분 0.3초, 마지막 한 자리에 두 명이 들어오고, 41번째 학생의 캡처가 에브리타임에 오른다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 수강 명단은 아직 확정되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 30 — Stage 6 "구조로 세상 읽기" / 항공 오버부킹 / 설계 리뷰
+  // =========================================================================
+  {
+    id: 's6-overbooking-01',
+    stage: 6,
+    stageTitle: '구조로 세상 읽기',
+    missionType: '설계 리뷰',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '항공 · 오버부킹',
+    domainEmoji: '📋',
+    title: '빈 좌석은 소멸한다 — 오버부킹 정책안 비평',
+    estimatedMinutes: 60,
+    briefing: {
+      title: '105%를 파는 산업',
+      content: `### 소멸하는 재고
+
+항공권은 이상한 상품입니다. 출발 시각이 지나는 순간, 팔리지 않은 좌석의 가치는 0이 됩니다 — 창고에 쌓아 둘 수도, 내일 팔 수도 없는 **소멸하는 재고**. 그런데 표를 산 승객의 일부는 반드시 나타나지 않습니다(노쇼). 그래서 항공사들은 수십 년째 좌석보다 많은 표를 팝니다. 노쇼율이 5%라면 180석에 189장을 파는 식 — 통계적으로는 비행기가 정확히 채워지고, 항공사도 승객도 요금도 이득을 보는 정교한 도박입니다.
+
+### 도박이 어긋나는 날
+
+문제는 통계가 평균이라는 것입니다. 어느 날은 노쇼가 3명뿐이고, 그러면 186명이 나타나 6명이 탈 수 없습니다. 그 6명을 어떻게 내리게 하는가 — 여기서 정책 설계의 수준이 드러납니다. 보상을 걸고 자원자를 모집하는 경매, 자원자가 없을 때의 비자발적 탑승 거부 우선순위, 그리고 그 모든 절차의 한계 설정. 2017년, 한 항공사가 이미 탑승한 승객을 강제로 끌어내리는 영상이 전 세계에 퍼졌습니다. 그 사건 이후 업계는 보상 상한을 대폭 올리고 "탑승 후 하차 요구 금지"를 명문화했습니다 — 정책의 결함은 코드의 결함과 달리, 뉴스로 배포됩니다.
+
+### 설계안을 읽는 일
+
+여러분 앞에 한 항공사의 오버부킹 운영 정책안이 있습니다. 문장은 합리적이고 표는 정갈합니다. 하지만 S6에서 배웠듯, 설계 문서에서 가장 위험한 문장은 틀린 문장이 아니라 아무도 반박하지 않은 문장입니다. 이 정책은 어떤 날, 어떤 공항에서, 누구를 상대로 부러질까요. 코드는 고치지 않습니다 — 이번에도 산출물은 읽기의 결과물입니다.`,
+    },
+    scenario: `중견 항공사 '아라항공'이 오버부킹 운영을 자동화하기 전, 정책안 v0.8의 외부 검토를 의뢰했습니다. 수익관리팀이 6개월간 만든 문서로, 다음 달 경영 승인을 앞두고 있습니다. 의뢰서의 문구: "저희끼리는 이제 결함이 안 보입니다. 터질 곳을 찾아 주세요." 첨부는 정책 문서와 정책을 코드로 옮긴 스케치 두 파일. 산출물은 critique.md입니다 — 그리고 검토 항목에 하나가 명시되어 있습니다: **"오버부킹을 아예 하지 않는 선택지의 비용도 계산해 주십시오. 우리가 무엇을 벌려고 이 위험을 감수하는지, 숫자로 다시 보고 싶습니다."**`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'docs/OVERBOOKING-POLICY.md',
+        content: `# 오버부킹 운영 정책안 (v0.8 — 검토용)
+
+작성: 수익관리팀 (2026-07)
+
+## 1. 판매 한도
+
+전 노선에 좌석 수의 105%까지 판매한다.
+근거: 최근 3년 전사 평균 노쇼율 5.2%. 판매 한도는 분기마다 전사 평균으로 갱신한다.
+
+## 2. 초과 발생 시 절차 (출발 60분 전 확정)
+
+1) 자발적 하차 모집: 게이트에서 보상 금액을 공지하고 자원자를 모집한다.
+   보상은 30만 원 상당 바우처로 하며, **상한 30만 원은 전 노선 공통 고정값**이다.
+   (근거: 작년 자원자 모집 성공률 91%)
+2) 자원자가 부족하면 비자발적 탑승 거부를 시행한다.
+   대상 선정: **체크인 완료 시각의 역순** (늦게 체크인한 승객부터).
+   운임 등급·회원 등급은 형평성 논란이 있어 반영하지 않는다.
+3) 탑승 거부 승객에게는 규정 보상금과 대체 항공편을 제공한다.
+
+## 3. 시스템화 범위
+
+- 노선별 판매 한도 계산은 본 정책의 수식을 그대로 구현한다.
+- 게이트 절차(모집·선정)는 지상직 단말에 안내 화면으로 제공한다.
+
+## 4. 기대 효과
+
+- 연간 공석 손실 42억 원 중 약 31억 원 회수 추정.
+- 초과 발생은 통계적으로 편당 평균 0.4명 수준으로 관리 가능하다.
+  (예시: 180석 항공편에 189석 판매, 평균 노쇼 9.4명)
+
+## 5. 예외
+
+- 특이 상황(연휴, 대규모 행사)의 조정은 지점장 재량으로 한다.
+  (상세 기준은 운영하며 정한다)`,
+      },
+      {
+        path: 'src/main/java/com/ara/policy/OverbookingPolicy.java',
+        content: `package com.ara.policy;
+
+import java.util.Comparator;
+import java.util.List;
+
+/** 정책안 v0.8의 코드 스케치. 정책 문서와 함께 검토 대상이다. */
+public class OverbookingPolicy {
+
+    /** 전사 평균 노쇼율 (분기 갱신, 최근 3년 평균). */
+    static final double COMPANY_NO_SHOW_RATE = 0.052;
+
+    /** 자발적 하차 보상 상한 (전 노선 공통). */
+    static final int VOLUNTEER_CAP_KRW = 300_000;
+
+    /** 노선별 판매 한도 = 좌석 수 × (1 + 전사 평균 노쇼율), 내림. */
+    public int saleLimit(int seats) {
+        return (int) (seats * (1 + COMPANY_NO_SHOW_RATE));
+    }
+
+    /** 탑승객. checkInMillis = 체크인 완료 시각. */
+    public record Passenger(String name, long checkInMillis, boolean hasConnection) {
+    }
+
+    /** 비자발적 탑승 거부 대상 선정: 늦게 체크인한 순서. n명을 고른다. */
+    public List<Passenger> selectDenied(List<Passenger> checkedIn, int n) {
+        return checkedIn.stream()
+                .sorted(Comparator.comparingLong(Passenger::checkInMillis).reversed())
+                .limit(n)
+                .toList();
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '산출물은 critique.md 한 편입니다. 결함마다 {근거 인용(정책 문서의 문장 또는 코드), 터지는 시나리오(언제, 어떤 항공편에서, 어떤 사건으로), 대안 1개 이상, 우선순위(승인 전 수정 / 운영하며 개선)}를 갖추세요.',
+      '결함을 3개 이상 찾으세요. "나쁘다"가 아니라 "터진다"로 쓰세요 — 예컨대 어떤 정책 값이 어떤 날짜·노선 조건과 만나면 몇 명이 어떤 상황에 놓이는지까지.',
+      '검산 기준(문서 4장의 산수 검증 포함): 180석 × 105% = 189석 판매. 평균 노쇼율 5.2%라면 기대 노쇼는 9.8명이지 9.4명이 아닙니다 — 문서의 예시 숫자가 자기 수식과 맞는지부터 검산하고, 노쇼가 3명에 그친 날 몇 명이 초과되는지(189 − 3 = 186 출현, 6명 초과) 시나리오에 활용하세요.',
+      '의뢰서 명시 항목: "오버부킹을 하지 않는 선택지"의 비용 분석을 별도 절로 포함하세요. 문서가 주장하는 회수액(31억)과, 오버부킹이 만드는 위험(보상금, 이탈, 브랜드)을 같은 표 위에 올려 비교하는 구조면 충분합니다 — 정밀한 숫자보다 비교의 프레임이 채점 대상입니다.',
+      '정책과 코드 스케치의 불일치 여부도 검토 대상입니다. 문서가 말하는 것과 코드가 하는 것이 다른 지점이 있다면 그것 자체가 결함입니다.',
+      '경영진 참고사항: "국토부의 탑승 거부 보상 고시가 내년 개정 예정이라고 합니다." (개정안의 상한 숫자는 아직 아무도 모릅니다 — 이 불확실성을 정책안이 어떻게 다뤄야 하는지도 검토 범위입니다)',
+    ],
+    constraints: [
+      '설계 리뷰 미션입니다 — 코드 수정과 대체 정책안 전체 작성은 범위 밖입니다. 산출물은 critique.md 하나입니다.',
+      '모든 지적에는 근거 인용과 사고 시나리오가 붙어야 합니다. 시나리오 없는 지적은 점괘입니다.',
+      '2017년 사건을 인용할 때는 구조(고정 상한 + 강제 절차의 조합이 만든 실패)로 다루세요 — 특정 인물·항공사를 조롱하는 서술은 리뷰의 신뢰를 깎습니다.',
+      '결함의 개수보다 치명도 판단이 평가됩니다. "승인 전 수정"과 "운영하며 개선"의 구분이 곧 실력입니다.',
+    ],
+    learningGoals: [
+      '정책 문서를 비판적으로 읽기 — 평균이 숨기는 분산, 고정값이 무너지는 극단 상황을 찾아내는 눈',
+      '수익 구조(소멸 재고의 경제학)와 운영 리스크를 한 표에서 비교하는 트레이드오프 프레이밍',
+      '문서와 코드 스케치 사이의 정합성 검토 — 정책이 구현으로 번역될 때 새는 것 찾기',
+      '"하지 않는 선택지"를 진지한 옵션으로 계산하는 습관 — 모든 정책은 기회비용과 겨룬다',
+    ],
+    hints: [
+      '고정값을 만나면 "이 값이 부족해지는 날"을 상상하세요. 보상 30만 원의 모집 성공률 91%는 평시의 숫자입니다 — 연휴 마지막 날 마지막 항공편, 전원이 내일 출근하는 189명 앞에서도 30만 원에 자원자가 나올까요? 자원자가 0명이면 절차는 어디로 흘러갑니까? 2017년의 구조가 정확히 그 흐름이었습니다.',
+      '선정 기준(체크인 역순)에 걸리는 사람이 누구인지 프로필을 그려 보세요 — 늦게 체크인하는 승객에는 환승 연결편에서 방금 내린 사람이 섞여 있습니다. hasConnection 필드가 코드에 있는데 선정 로직 어디에도 쓰이지 않는다는 것, 그 침묵이 말하는 바를 읽으세요.',
+      '전사 평균이라는 말을 노선 두 개로 쪼개 보세요 — 노쇼율 12%의 김포-제주 셔틀과 1%의 인천-프랑크푸르트 장거리에 같은 105%를 적용하면 각각 무슨 일이 벌어집니까? 평균은 두 노선 모두에게 틀린 답을 줄 수 있습니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '30만 원의 침묵 — 고정 보상 상한',
+        description:
+          '보상 상한 30만 원 고정은 평시엔 작동하지만, 성수기 만석 항공편에서는 자원자가 0명이 되어 절차가 곧장 비자발적 거부로 넘어갑니다. 2017년 사건의 구조적 원인이 정확히 이것이었고, 그 후 업계가 상한을 대폭 올리고 경매식(금액을 올려 가며 모집)으로 바꾼 이유입니다. 좋은 비평: 상한을 상황 연동(만석도·대체편 소요시간)으로 풀거나 경매 상한을 크게 열고, "자원자 0명일 때"의 절차를 별도로 설계하라는 대안까지.',
+      },
+      {
+        title: '환승객을 모르는 선정 기준',
+        description:
+          '체크인 역순 선정은 공평해 보이지만, 늦은 체크인의 상당수는 연결편 지연으로 방금 도착한 환승객입니다. 이들을 내리면 뒤 여정 전체가 무너져 보상 비용과 분쟁이 몇 배가 됩니다 — 코드의 hasConnection이 선정에 쓰이지 않는 것이 증거입니다. 좋은 비평: 선정 기준에 여정 영향도(환승, 최종편 여부)를 반영하고, "형평성 논란" 때문에 뺀 운임·회원 등급과 여정 영향도는 다른 성격의 변수임을 구분하는 것.',
+      },
+      {
+        title: '전사 평균이라는 뭉개진 숫자',
+        description:
+          '판매 한도에 전 노선 평균 노쇼율(5.2%)을 쓰면, 노쇼가 잦은 단거리 셔틀에서는 좌석을 놀리고(수익 손실) 노쇼가 드문 장거리·성수기에서는 초과가 속출합니다(보상 폭발). 평균은 분산을 숨깁니다 — 문서 4장의 예시 숫자(9.4명)가 자기 수식(5.2% × 189 ≈ 9.8명)과도 안 맞는 것은 이 문서가 숫자를 검산하지 않았다는 신호이기도 합니다. 좋은 비평: 노선·요일·시즌별 노쇼율 분리와, 예측이 빗나갔을 때의 안전 마진 설계까지.',
+      },
+    ],
+    rubric: [
+      {
+        name: '결함 발견 (치명도 가중)',
+        description: '심어진 결함(고정 상한, 환승 무시, 전사 평균)을 찾았는가. 문서 내 산수 불일치 등 추가 발견 인정.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '근거와 시나리오의 구체성',
+        description: '각 지적이 문서·코드 인용과 "어느 날 어느 항공편에서 터지는지" 시나리오를 갖췄는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '대안의 실행가능성',
+        description: '대안이 운영 현실 위에서 실행 가능한가. 오버부킹 중단 옵션의 비용 비교 프레임이 포함되었는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '글의 명료성과 우선순위',
+        description: '승인 전 수정 / 운영하며 개선의 구분이 분명하고, 읽는 경영진이 다음 행동을 알 수 있는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '보상 고시 개정 같은 불확실성을 정책이 어떻게 흡수해야 하는지 다뤘는가. 지점장 재량("운영하며 정한다")의 위험을 짚었는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '정책안을 6개월 만든 수익관리팀장 (다음 달 경영 승인이 걸려 있는 사람)',
+      prompt:
+        '수익관리팀장에게 검토 결과를 전하는 글을 쓰세요. (1) 정책안이 잘 잡은 것(소멸 재고의 회수라는 문제 설정, 자발적 모집 우선 원칙)을 먼저 구체적으로 인정하고, (2) 가장 치명적인 결함 하나를 "당신의 실수"가 아니라 "어느 연휴의 마지막 항공편에서 일어날 사건"으로 서술하고, (3) 수정이 승인 일정을 늦추는 것이 아니라 승인 이후의 뉴스를 막는 일임을 보여 주세요. 목표는 채택입니다 — 6개월의 노력을 존중하지 않는 리뷰는 기술적으로 옳아도 서랍에 들어갑니다.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: 'v1.0의 각주',
+        teaser: '정책안 v1.0에 "외부 검토 반영"이라는 각주가 붙어 승인된다. 이듬해 추석 연휴, 만석 항공편의 게이트에서 보상 경매가 조용히 작동하고, 뉴스에는 아무것도 나오지 않는다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '지점장 재량의 계절',
+        teaser: '핵심 지적은 반영됐지만 "운영하며 정한다"는 5장은 그대로 남는다. 연휴마다 공항 지점장들의 단체방이 뜨거워지고, 그 대화록이 다음 개정판의 요구사항이 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '게이트 앞의 카메라',
+        teaser: '자원자 0명의 밤, 체크인 역순으로 호명된 환승객이 항의하는 영상이 퍼진다. 회수하려던 31억 옆에 위기관리 비용이 나란히 계상되고, 검토 보고서의 해당 페이지가 회의에서 소환된다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 탑승권은 아직 발권되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 31 — Stage 3 "의존성 역전" / 영화 오마주 (마션) / 도메인 로직 구현
+  // =========================================================================
+  {
+    id: 's3-martian-01',
+    stage: 3,
+    stageTitle: '의존성 역전',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '영화 오마주',
+    domainEmoji: '🎬',
+    title: '39분씩 어긋나는 달력 — 화성 기지 생존 계획기',
+    estimatedMinutes: 140,
+    briefing: {
+      title: '솔(sol)과 지구일은 같은 하루가 아니다',
+      content: `### 화성의 하루는 24시간 39분
+
+화성의 하루(솔, sol)는 지구의 하루보다 약 39분 깁니다. 사소해 보이는 이 차이는 무섭게 누적됩니다 — 40솔이면 지구보다 하루가 밀리고, 400솔이면 열흘 넘게 어긋납니다. 실제 화성 탐사 로버 운영팀들은 이 때문에 한동안 "화성 시간"으로 출퇴근하며 매일 39분씩 늦게 자는 생활을 했습니다. 지구의 관제와 화성의 현장이 서로 다른 달력 위에 사는 것 — 화성 계획의 모든 계산은 이 어긋남 위에서 이루어집니다.
+
+### 감자는 진지한 과학이다
+
+어느 영화 덕분에 유명해진 화성 감자 재배는 농담이 아닙니다. 감자는 단위 면적당 칼로리 생산이 매우 높은 작물이라, 실제로 국제감자센터와 NASA가 화성 유사 토양·환경에서 재배 실험을 진행해 왔습니다. 밀폐 기지의 생존 계산은 결국 셈입니다 — 남은 식량의 칼로리, 재배 면적이 만들어 낼 칼로리, 그리고 물이 허락하는 재배 면적. 낭만은 없고 산수만 있는데, 그 산수가 틀리면 사람이 죽습니다.
+
+### 시간을 주입하라
+
+이 계산기의 적은 궤도역학이 아니라 달력입니다. 구조선 도착일은 지구 기준으로 통보되는데 기지의 소비와 수확은 솔 단위로 흐르고, 그 사이에는 1.0275라는 환산율이 삽니다(이 미션의 기준값). 지구일과 솔을 섞어 쓰는 순간 열흘이 증발하는 계산기 — S3에서 배운 원칙이 그대로 옵니다. 계산 로직은 "지금이 몇 솔인지"를 스스로 알아서는 안 됩니다. 시간은 밖에서 주입되고, 단위는 타입이 지키고, 테스트는 어느 행성에서 돌려도 같은 답을 내야 합니다. 우주에서 시스템 시계를 읽는 코드보다 위험한 것은 별로 없습니다.`,
+    },
+    scenario: `국제 화성 기지 시뮬레이션 프로젝트의 **생존 계획기** 모듈을 맡았습니다. 사고 시나리오: 대원 1명이 기지에 고립됐고, 구조선 도착일은 지구 기준 날짜로 통보됩니다. 계획기는 남은 식량·재배 능력·물 제약으로 **생존 가능 솔 수**와 **구조일까지 버티기 위한 일일 배급량**을 계산합니다. 기지 물자 데이터는 관제 시스템의 스토어 엔진이 제공합니다. 프로젝트 리드의 요구: "계산 결과는 지구의 어느 관제실에서 언제 돌려도 같아야 합니다. 그리고 솔과 지구일이 코드 안에서 절대 섞이지 않게 해 주세요 — 저번 시뮬레이션에서 그것 때문에 가상 대원을 열흘 굶겼습니다."`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/mars/ops/HabStore.java',
+        content: `package com.mars.ops;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * 기지 물자 스토어 (관제 시스템 소유 — 엔진입니다. 수정/재구현 금지, 그대로 사용).
+ * 물자 항목을 키-값으로 보관한다. 값의 단위는 키 이름이 말해 준다.
+ */
+public class HabStore {
+
+    private final Map<String, Double> items = new HashMap<>();
+
+    public HabStore() {
+        items.put("foodKcal", 300_000.0);      // 비축 식량 (kcal)
+        items.put("waterLiters", 3_600.0);     // 재배 가용 물 (L)
+        items.put("rescueEarthDays", 411.0);   // 구조선 도착까지 (지구일)
+    }
+
+    public double get(String key) {
+        Double v = items.get(key);
+        return v == null ? -1 : v;
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/mars/App.java',
+        content: `package com.mars;
+
+import com.mars.ops.HabStore;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ * 구현이 끝나면 아래 주석의 기대 출력과 정확히 일치해야 합니다.
+ */
+public class App {
+
+    public static void main(String[] args) {
+        HabStore store = new HabStore();
+
+        // TODO(학습자): 여러분이 설계한 경계 뒤에 스토어를 두고,
+        //               SurvivalPlanner로 생존 계획을 계산해 출력하세요.
+        // SurvivalPlanner planner = ...;
+        // System.out.println(planner.plan());
+
+        // ===== 기대 출력 =====
+        // [생존 계획] 대원 1명, 기본 배급 1,500kcal/솔
+        // 재배 면적: 90.0㎡ (물 3,600L / 40L per ㎡)
+        // 수확 예정: 90솔차 +180,000kcal
+        // 총 가용 열량: 480,000kcal
+        // 기본 배급 생존 한계: 320솔
+        // 구조선 도착: 400솔 (지구일 411일)
+        // 판정: 기본 배급으로는 80솔 부족 — 배급 1,200kcal/솔로 감축 시 도달 가능
+    }
+}`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/mars/domain/SurvivalPlanner.java',
+        content: `package com.mars.domain;
+
+/**
+ * 생존 계획기 (구현 대상).
+ *
+ * 세 가지가 여러분의 설계 몫입니다.
+ * 1) 솔과 지구일이 코드에서 섞이지 않게 — 두 단위를 구분하는 타입 또는 명명 규약을
+ *    정하고, 환산이 한 곳에서만 일어나게 하세요.
+ * 2) 스토어(HabStore)에 어디까지 의존할 것인가 — 키 문자열과 -1 규약이
+ *    계산 로직에 새어 들지 않게. 계산의 단위 테스트는 스토어 없이 돌아야 합니다.
+ * 3) 계산이 실행 시점과 무관하게 — 시스템 시계를 읽는 코드는 이 모듈에 없습니다.
+ * (경계용 인터페이스는 일부러 제공하지 않았습니다.)
+ */
+public class SurvivalPlanner {
+
+    // TODO 생성자에서 무엇을 주입받을지 설계하세요.
+
+    /** 생존 계획 요약. App.java의 기대 출력 형식과 일치해야 합니다. */
+    public String plan() {
+        // TODO 구현
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '계산 규칙(이 미션의 기준값): 대원 1명의 기본 배급은 1,500kcal/솔. 재배 면적 = 가용 물 ÷ 40L/㎡. 감자 수확은 재배 개시 후 90솔차에 1회이며 수확량은 1㎡당 2.5kg, 감자 1kg = 800kcal. 총 가용 열량 = 비축 식량 + 수확 열량. 솔↔지구일 환산율은 1솔 = 1.0275지구일입니다.',
+      '검증 수치(전부 정확히 일치해야 합니다): 물 3,600L → 재배 면적 90.0㎡ → 수확 90×2.5×800 = 180,000kcal. 총 가용 열량 300,000 + 180,000 = 480,000kcal → 기본 배급 생존 한계 480,000 ÷ 1,500 = 320솔. 구조선 도착 지구일 411일 = 411 ÷ 1.0275 = 400솔. 판정: 80솔 부족, 도달에 필요한 배급 = 480,000 ÷ 400 = 1,200kcal/솔.',
+      '타임라인 검증: 총합 계산은 수확이 제때 도착할 때만 유효합니다. 비축 식량이 수확일(90솔) 전에 소진되는 입력에서는 "수확 이전 소진"을 감지해 총합이 아니라 실제 아사 시점을 답해야 합니다. 검증: 비축 90,000kcal(기본 배급 60솔치)이면 생존 한계는 320솔이 아니라 60솔입니다.',
+      '솔과 지구일의 구분: 두 단위가 코드에서 타입 또는 일관된 명명(예: sols/earthDays)으로 구분되고, 환산은 한 곳에서만 일어나야 합니다. 환산율(1.0275)이 코드 여기저기에 숫자로 흩어져 있으면 감점입니다.',
+      '스토어 경계: HabStore의 키 문자열과 -1(없음) 규약은 어댑터에서 검증·번역하고, 계산 로직의 단위 테스트는 스토어 없이 순수 입력만으로 돌아야 합니다. 계산은 실행 시점·실행 장비의 시간대와 무관해야 합니다(시스템 시계 호출 금지).',
+      '관제팀 추가 요청: "산소 제약도 곧 넣고 싶습니다." (산소 소비·생산 모델은 아직 과학팀 검토 전이라 수치가 없습니다)',
+    ],
+    constraints: [
+      'HabStore.java와 App.java는 엔진 코드입니다. 수정·재구현 금지, 그대로 사용하세요.',
+      '도메인 규칙: 이 미션의 수치(환산율 1.0275, 40L/㎡, 800kcal/kg 등)는 학습용 기준값입니다. 실제 화성 환경·궤도역학과 다름을 코드 주석에 밝히세요. 구조선 도착일은 입력값이며 궤도 계산은 범위 밖입니다.',
+      '열량·물·면적 계산에 명시된 규칙 외의 임의 반올림을 금지합니다. 솔 수 환산은 정수 내림으로 통일합니다(411 ÷ 1.0275 = 400.0 → 400솔).',
+      '외부 라이브러리 없이 순수 Java 17로 작성합니다.',
+    ],
+    learningGoals: [
+      '단위가 다른 두 시간(솔/지구일)을 타입과 단일 환산 지점으로 격리하는 설계 — 단위 혼동은 코드가 아니라 구조로 막는다',
+      '시간·데이터 소스를 주입받아 실행 환경과 무관한 계산 로직 만들기 (S3 축의 심화)',
+      '총합 계산과 타임라인 계산의 차이 — 자원이 "언제" 도착하는지가 "얼마나"만큼 중요한 도메인 감각',
+      '엔진의 느슨한 규약(키 문자열, -1)을 경계에서 걸러 도메인을 깨끗하게 유지하는 습관',
+    ],
+    hints: [
+      '솔과 지구일을 둘 다 double로 들고 다니는 순간, 컴파일러는 여러분을 지켜 줄 수 없습니다. record Sols(double value)와 record EarthDays(double value) 같은 얇은 타입 두 개, 그리고 둘 사이를 오가는 변환 함수 하나 — 이 셋이면 "열흘 굶긴 버그"는 컴파일 에러가 됩니다.',
+      '생존 한계 계산을 "총량 나눗셈"으로 시작하되, 그 전에 타임라인 체크 한 줄을 두세요: 비축 ÷ 배급 < 수확 솔이면 수확은 도착하지 않은 자원입니다. 자원 이벤트(0솔차 비축, 90솔차 수확)를 시간순으로 접으며 잔고가 바닥나는 시점을 찾는 구조로 만들면, 수확이 여러 번으로 늘어나는 확장도 공짜가 됩니다.',
+      '어댑터는 HabStore의 세 키를 읽어 검증(양수인지, -1 아닌지)한 뒤 도메인 입력 객체(예: MissionSupplies)로 번역해 넘기세요. 계산기가 받는 것이 Map이나 스토어가 아니라 완성된 값 객체라면, 테스트는 그 객체를 만들어 넣는 세 줄로 끝납니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '지구일이 솔 자리에 앉는 날',
+        description:
+          '구조선 도착 411을 환산 없이 솔로 쓰면 생존 판정이 11솔만큼 낙관적으로 어긋납니다 — 이 미션 수치에서는 "400솔까지 버티면 되는데 411솔을 목표로 잡아" 배급을 과하게 줄이는 반대 방향 사고도 가능합니다. 어느 쪽이든 원인은 같습니다: 숫자에 단위가 없어서. 좋은 방어: 단위를 타입으로 강제하고, 환산이 한 곳에서만 일어나는지를 테스트로 확인하세요. 단위 혼동은 화성에서 실제 탐사선을 잃게 한 사고 유형입니다.',
+      },
+      {
+        title: '죽은 뒤에 도착한 수확',
+        description:
+          '총 가용 열량 ÷ 배급이라는 총합 계산은 비축이 수확일까지 버텨 줄 때만 참입니다. 비축 90,000kcal이면 60솔에 식량이 끝나는데 수확은 90솔에 옵니다 — 총합식 계산기는 "180솔 생존 가능"이라 답하고, 그 답은 죽은 대원 앞으로 배달됩니다. 좋은 방어: 자원 도착 이벤트를 시간순으로 접는 타임라인 계산과, "수확 이전 소진" 경계를 콕 집는 테스트.',
+      },
+      {
+        title: '스토어의 -1',
+        description:
+          'HabStore.get()은 없는 키에 -1을 돌려줍니다. 오타("watersLiters")나 누락된 항목이 -1로 흘러들면 재배 면적이 음수가 되고, 수확이 음수 열량이 되어 생존 한계가 소리 없이 줄어듭니다 — 그럴듯한 숫자라 아무도 의심하지 않습니다. 좋은 방어: 어댑터에서 -1과 음수·0을 명시적으로 거부하고 "물자 데이터 누락"으로 실패하세요. 우주에서 조용한 기본값은 조용한 사고입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '도메인 규칙 정확성',
+        description: '기대 출력의 모든 수치(90.0㎡, 180,000, 480,000, 320솔, 400솔, 1,200kcal)와 타임라인 검증(60솔)이 정확히 일치하는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '단위의 격리',
+        description: '솔/지구일이 타입 또는 일관 규약으로 구분되고 환산이 단일 지점에서 일어나는가. 환산율이 상수 한 곳에 사는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '경계 설계',
+        description: '스토어의 키·-1 규약이 어댑터에서 검증·번역되어 도메인에 새지 않는가. 계산이 실행 시점과 무관한가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '계산 로직의 단위 테스트가 스토어 없이 도는가. 타임라인 경계(수확 이전 소진)와 단위 환산이 다뤄졌는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '산소 제약처럼 수치 없는 미래 요구를 임의 구현하지 않고 질문했거나 확장 지점만 남겼는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '시뮬레이션 프로젝트에 새로 합류한 기획자 (우주는 좋아하지만 단위 얘기는 처음)',
+      prompt:
+        '기획자에게 설명해 주세요. (1) 솔과 지구일이 왜 다른지, 39분이 400솔 뒤에 열흘이 되는 누적의 무서움을, (2) 지난 시뮬레이션에서 가상 대원이 열흘 굶은 사고가 코드의 어떤 실수였고, 새 설계에서는 왜 같은 실수가 컴파일조차 되지 않는지 — 단위가 붙은 타입을 "라벨이 붙은 용기"에 비유해서, (3) 계산기가 "총량이 충분한가"만이 아니라 "제때 도착하는가"까지 보는 이유를 월급날 전에 잔고가 바닥나는 직장인의 달력으로. 마지막으로 산소 제약이 왜 이번에 안 들어갔는지를 한 문장으로.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '어느 관제실에서나 같은 답',
+        teaser: '서울과 휴스턴과 파리의 관제실이 같은 계획을 본다. 시뮬레이션 가상 대원은 1,200kcal의 400솔을 버텼고, 회고 문서의 "단위 사고" 항목은 이번 분기 0건이다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '환산율을 찾는 사람들',
+        teaser: '계산은 맞는다. 다만 1.0275가 코드 세 곳에 살아서, 환산 규칙이 바뀔지 모른다는 소문이 돌 때마다 세 곳을 찾아다니는 grep이 관제 절차가 된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '열흘의 오차, 두 번째',
+        teaser: '지구일 411이 솔로 읽힌 채 시뮬레이션이 돌고, 가상 대원의 배급이 열흘치 어긋난다. 회고 회의에서 누군가 말한다 — "저번이랑 같은 사고네요." 같은 사고가 두 번이면 그것은 사고가 아니라 구조다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 교신 기록은 아직 수신되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 32 — Stage 8 "실패를 설계하다" / 결제 장애 / 배역극
+  // =========================================================================
+  {
+    id: 's8-roleplay-01',
+    stage: 8,
+    stageTitle: '실패를 설계하다',
+    missionType: '배역극',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '결제 · 장애 커뮤니케이션',
+    domainEmoji: '💳',
+    title: '같은 사고, 세 개의 의자 — 이중청구의 밤',
+    estimatedMinutes: 90,
+    briefing: {
+      title: '장애는 복구되고, 문장은 남는다',
+      content: `### 기술이 끝난 곳에서 시작되는 일
+
+장애 대응에는 두 개의 전반전이 있습니다. 하나는 시스템을 되돌리는 일 — 재시도를 끄고, 배치를 돌리고, 그래프가 가라앉는 것을 지켜보는 일. 그리고 그것이 끝나는 순간 후반전이 시작됩니다. **누구에게, 무엇을, 어떤 언어로 말할 것인가.** 복구된 시스템은 조용하지만, 이중청구를 발견한 고객의 카드 명세서는 조용하지 않습니다.
+
+### 세 개의 의자
+
+같은 사고를 두고 세 사람이 글을 씁니다. CS 상담원은 화가 난 고객에게 — 기술 용어는 한 단어도 없이, 사과와 현황과 다음 절차를. CTO는 경영진에게 — 분 단위 타임라인과 근본 원인과 재발 방지책을, 책임 소재의 정치가 흐르는 회의실을 향해. 홍보 담당자는 기자에게 — 인정할 것과 방어할 것의 선을 한 문장 안에서 긋습니다. **세 글은 완전히 다르지만, 사실은 하나여야 합니다.** 홍보문과 CTO 보고서가 서로 다른 원인을 말하는 순간, 장애는 사고에서 스캔들이 됩니다.
+
+### 자료가 전부다
+
+이번 미션에서 여러분은 코드를 한 줄도 짜지 않습니다. 대신 세 개의 의자에 차례로 앉습니다. 주어지는 것은 장애 타임라인, 로그 발췌, 슬랙 대화 — 현장에서 실제로 남는 기록들입니다. 좋은 장애 글쓰기의 첫 규칙은 유려함이 아니라 **자료와의 정합**입니다. 자료에 있는 것을 빠뜨리면 은폐가 되고, 자료에 없는 것을 쓰면 창작이 됩니다. 그리고 자료는, 늘 그렇듯, 어딘가 서로 어긋나 있습니다. 그 어긋남을 어떻게 다루는지까지가 글쓰기입니다.`,
+    },
+    scenario: `커머스 플랫폼 '다올몰'에서 어젯밤 결제 이중청구 장애가 났습니다. PG 응답 지연에 재시도 로직이 겹치며 고객 카드에 같은 금액이 두 번 찍힌 사고 — 복구는 끝났고, 이제 글의 시간입니다. 아침 9시까지 세 편이 필요합니다: 이중청구를 겪은 고객에게 보낼 **CS 안내문**, 10시 경영 회의에 올라갈 **CTO 사후 보고**, 그리고 취재 문의에 대응할 **기자 브리핑문**. 여러분은 세 자리를 오가며 씁니다. 자료는 타임라인·로그·슬랙 발췌가 전부이고, 그 바깥의 사실을 지어내면 안 됩니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'incident/타임라인.md',
+        content: `# 장애 타임라인 — 2026-05-14 (내부 공유용 v2)
+
+- 20:00 PG사 응답 지연 시작 (평균 1.2초 → 최대 28초)
+- 20:04 결제 타임아웃 급증. 재시도 로직이 타임아웃 건을 신규 요청으로 재전송하기 시작
+- 20:11 CS 첫 문의 접수 ("카드에 같은 금액이 두 번 결제됨")
+- 20:23 결제팀 장애 인지, 대응 채널 #incident-0514 개설
+- 20:37 재시도 기능 긴급 비활성화 — 이중청구 신규 유입 차단
+- 20:41 PG사 응답 정상화 공지
+- 21:30 영향 범위 집계 시작
+- 22:15 집계 확정: 이중청구 1,742건 / 68,340,000원
+- 22:40 자동 취소 배치 실행 완료
+- 23:55 상황 종료 선언, 사후 분석은 익일 진행`,
+      },
+      {
+        path: 'incident/로그-발췌.log',
+        content: `2026-05-14 20:04:11 WARN  pay.PaymentService  PG timeout, retrying with new txRef (attempt 2)
+2026-05-14 20:04:11 WARN  pay.PaymentService  PG timeout, retrying with new txRef (attempt 3)
+2026-05-14 20:37:02 INFO  pay.FeatureFlag     retry.enabled=false (by oncall)
+2026-05-14 22:15:48 INFO  batch.Recon         duplicate charges confirmed: 1,742 cases / 68,340,000 KRW
+2026-05-14 22:40:19 INFO  batch.AutoCancel    auto-cancel finished: 1,689 success
+2026-05-14 22:40:19 WARN  batch.AutoCancel    cancel FAILED: 53 cases -> moved to manual queue (PG "5005/4004" mixed)
+2026-05-14 22:41:03 INFO  batch.AutoCancel    manual queue owner: settlement team, ETA unknown`,
+      },
+      {
+        path: 'incident/슬랙-발췌.md',
+        content: `# #incident-0514 발췌 (시간순)
+
+- [20:24] 김선임(결제): 타임아웃 나면 새 참조번호로 재시도하는 로직이 있어요. 이게 지금 이중결제를 만드는 것 같습니다
+- [20:36] 온콜: 재시도 플래그 끕니다
+- [21:02] 박팀장(결제): 대충 봤을 때 이중청구 1,500건 정도로 보임. 집계 나오면 갱신
+- [22:20] 정대리(정산): 집계 확정 공유드립니다. 1,742건 / 6,834만 원
+- [22:45] 박팀장(결제): 자동취소 돌았고, 대부분 처리됨
+- [23:10] 이변호사(법무): 고객 안내문 관련 — 보상 정책이 아직 확정 전입니다. 확정 전에는 "전액 보상", "당사 과실" 표현을 쓰지 말아 주세요. 환불(이중청구분 취소)과 보상(추가 배상)은 다른 말입니다
+- [23:20] 홍보팀: 내일 아침 언론 문의 들어올 수 있습니다. 브리핑 문구 초안 부탁드립니다
+- [23:40] CTO: 아침까지 세 편 부탁합니다. CS 안내문, 경영진 보고, 기자 브리핑. 숫자는 하나로 맞춥시다`,
+      },
+    ],
+    requirements: [
+      '제출물은 글 세 편입니다: cs-reply.md(이중청구 고객에게 보내는 안내문), cto-report.md(경영진 사후 보고), press-briefing.md(기자 브리핑문). 세 편 모두 제공된 자료(타임라인·로그·슬랙)와 모순되는 사실이 하나도 없어야 합니다.',
+      'cs-reply.md: 화가 난 고객이 읽습니다. 사과 → 무슨 일이 있었는지(기술 용어 0개 — PG, 타임아웃, 재시도, 배치 금지) → 지금 상태와 다음 절차 → 문의 창구. 자동 취소가 완료되지 않은 고객이 존재한다는 사실을 어떻게 다룰지가 이 글의 시험대입니다.',
+      'cto-report.md: 경영진이 읽습니다. 분 단위 타임라인 요약, 근본 원인(직접 원인과 구조적 원인의 구분 — PG 지연은 방아쇠일 뿐, 재시도 설계가 화약이었다는 층위), 재발 방지책(단기/구조), 그리고 미결 사항. 숫자는 자료의 최종 확정치를 쓰고 출처(로그 시각)를 병기하세요.',
+      'press-briefing.md: 기자가 읽고 기사를 씁니다. 인정할 것(장애 발생, 영향 규모, 조치 완료 상태)과 단정하지 않을 것(귀책·보상 범위 등 확정 전 사안)의 선을 긋되, 거짓이나 축소는 안 됩니다. 슬랙의 법무 가이드가 이 글의 경계선입니다.',
+      '세 글의 일관성: 세 편이 말하는 발생 시각, 원인의 층위, 영향 규모, 조치 상태가 서로 어긋나면 안 됩니다. 표현과 상세도는 청자마다 달라야 하지만, 사실의 뼈대는 하나입니다.',
+      '보상 정책이 확정 전입니다(법무 슬랙 참조). 각 글에서 환불과 보상을 어떻게 구분해 언급할지 — 특히 CS 안내문에서 무엇을 약속하고 무엇을 약속하지 않을지 — 는 여러분의 판단이며, 판단의 근거를 제출물 말미에 메모로 남기세요.',
+    ],
+    constraints: [
+      '코드 작성 없음 — 제출물은 글 세 편과 판단 메모뿐입니다.',
+      '자료에 없는 사실(고객 수 추가 추정, 가공의 보상액, 임의의 재발 방지 완료 선언)을 지어내지 마세요. 자료 밖 사실이 필요하면 "확인 필요"로 표시하는 것까지가 정직입니다.',
+      '세 글은 각각 완결된 한 편이어야 합니다 — 서로를 참조("보고서 참조")하며 빈칸을 떠넘기지 마세요. 읽는 사람은 한 편만 받습니다.',
+      '고객과 기자를 상대로 한 문서에서 내부 인명·채널명을 노출하지 마세요.',
+    ],
+    learningGoals: [
+      '같은 사실이 청자에 따라 완전히 다른 글이 되는 경험 — 정보의 층위(사실/해석/약속)를 분리하는 훈련',
+      '장애 보고의 원인 층위 구분 — 방아쇠(외부 지연)와 화약(자체 설계)을 나누어 책임의 정치를 사실로 통과하는 법',
+      '자료 정합성 규율 — 기록과 어긋나는 문장, 기록에 없는 문장을 스스로 걸러 내는 습관',
+      '법무·홍보·CS의 제약(확정 전 표현 금지, 인정과 방어의 선)을 글쓰기의 설계 조건으로 다루기',
+    ],
+    hints: [
+      '쓰기 전에 세 글이 공유할 "사실 시트"를 먼저 만드세요 — 발생 시각, 원인 한 줄, 확정 숫자, 조치 상태, 미결 사항. 이 시트에서 세 글이 출발하면 일관성은 공짜가 됩니다. 시트에 넣을 숫자를 고를 때, 슬랙과 로그가 서로 다른 말을 하고 있지 않은지 시각을 대조해 보세요.',
+      '로그는 끝까지 읽으세요. 요약 문서(타임라인)와 원자료(로그)가 다른 말을 할 때 진실은 대개 원자료 쪽에 있습니다 — 그리고 "대부분 처리됨"이라는 슬랙의 낙관과 로그의 WARN 줄 사이의 거리가, CS 안내문에서 가장 조심해야 할 지점입니다.',
+      'CS 안내문에서 기술 용어를 지우는 요령: 시스템의 행동이 아니라 고객의 경험을 주어로 쓰세요. "재시도 로직이 중복 요청을 생성"이 아니라 "결제가 두 번 청구된 것을 확인했습니다"로. 원인의 상세는 고객의 질문이 아닙니다 — 고객의 질문은 "내 돈은 언제 돌아오나"입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '로그 속의 53건',
+        description:
+          '타임라인은 "자동 취소 배치 실행 완료"라 적었지만, 로그에는 53건 취소 실패 → 수동 큐 이관(처리 시점 미정)이 남아 있습니다. 이를 놓치고 "전원 환불 완료"라 쓰면 세 글 모두 거짓이 됩니다 — 특히 CS 안내문을 받은 53명의 고객은 환불이 안 된 채 "완료" 안내를 읽게 됩니다. 자료 정합의 핵심 함정: 요약본이 아니라 원자료가 진실입니다.',
+      },
+      {
+        title: '1,500이라는 유령 숫자',
+        description:
+          '슬랙 21:02의 "1,500건 정도"는 집계 전 어림값이고, 22:15 로그와 22:20 슬랙에서 1,742건으로 확정됐습니다. 시간순을 확인하지 않고 눈에 먼저 띈 숫자를 쓰면 세 글의 숫자가 갈라지고, 브리핑 숫자와 내부 보고 숫자가 다른 순간 기자의 다음 질문은 장애가 아니라 축소 의혹이 됩니다. 숫자에는 반드시 출처 시각을 붙이는 습관이 방어책입니다.',
+      },
+      {
+        title: '법무가 멈춰 세운 두 단어',
+        description:
+          '법무는 보상 정책 확정 전 "전액 보상"과 "당사 과실" 표현 금지를 요청했고, 환불과 보상이 다른 말임을 짚었습니다. 사과의 진정성을 높이고 싶은 유혹에 CS 안내문이나 브리핑에 이 표현을 쓰면, 확정되지 않은 법적 약속이 문서로 남습니다. 좋은 글은 표현을 피하면서도 성의를 잃지 않습니다 — "이중청구분은 전건 취소 처리 중이며(환불), 추가 보상 방안은 확정되는 대로 안내드립니다"처럼 두 개념을 분리해 쓰는 것이 정답 방향입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '사실 정확성',
+        description: '세 글의 모든 사실 진술이 자료와 정합하는가. 53건 미완료, 확정 숫자(1,742건), 시각들이 정확히 반영되었는가.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '청자 적합성',
+        description: '각 글이 자기 청자의 언어로 쓰였는가 — CS문의 기술 용어 0개, CTO 보고의 원인 층위, 브리핑의 인정/유보 구분.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '세 글의 일관성',
+        description: '발생 시각·원인·규모·조치 상태가 세 글에서 하나인가. 상세도의 차이가 사실의 차이로 번지지 않았는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '명료성',
+        description: '각 글이 완결적이고, 읽는 사람이 다음 행동(고객: 기다림/문의, 경영진: 의사결정, 기자: 인용)을 할 수 있는가.',
+        weight: 10,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '보상 정책 미확정을 임의로 확정하지 않고, 환불/보상 구분과 언급 수위의 판단 근거를 메모로 남겼는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '입사 첫 주에 #incident-0514 채널을 숨죽이며 지켜본 신입 개발자',
+      prompt:
+        '신입에게 설명해 주세요. (1) 같은 사고를 두고 왜 세 편의 글이 필요한지 — 청자마다 필요한 정보와 감당할 언어가 다르다는 것을, 어젯밤 세 글의 같은 대목(취소 53건 미완료)이 세 글에서 각각 어떻게 표현됐는지로, (2) 그래도 절대 달라지면 안 되는 것 — 사실의 뼈대 — 은 무엇이고 그것이 갈라지면 무슨 일이 생기는지, (3) 개발자가 장애 중에 남기는 로그 한 줄이 다음 날 아침 세 편의 글을 어떻게 좌우하는지. 마지막은 신입이 오늘 배워 갈 한 문장으로 — 기록이 곧 글쓰기의 원료라는 것.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '기사 제목이 심심한 아침',
+        teaser: '기사는 "일시 오류, 전건 환불 절차 진행"이라는 건조한 제목으로 나가고, 53건의 수동 처리는 이틀 만에 조용히 끝난다. CS 재문의율이 평소보다 낮다 — 안내문이 질문을 먼저 답했기 때문이다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '정정 공지 한 번',
+        teaser: '글 세 편은 무사히 나갔다. 다만 CS 안내문의 "전건 환불 완료"가 53건과 부딪혀 이틀 뒤 정정 공지가 한 번 나가고, 그 정정문이 원래 안내문보다 오래 기억된다.',
+      },
+      {
+        grade: 'dawn',
+        title: '축소 의혹이라는 두 번째 기사',
+        teaser: '브리핑의 "1,500여 건"과 내부 보고서의 1,742건이 국정감사 자료 요구에서 나란히 공개된다. 두 번째 기사의 주제는 장애가 아니라 숫자의 차이이고, 그 기사에는 반론 기회가 없다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 원고는 아직 송고되지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // Mission 33 — Stage 6 "구조로 세상 읽기" / 항공 전산 마비 / 배역극
+  // =========================================================================
+  {
+    id: 's6-roleplay-02',
+    stage: 6,
+    stageTitle: '구조로 세상 읽기',
+    missionType: '배역극',
+    difficulty: 'Hard',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '항공 · 전산 마비',
+    domainEmoji: '✈️',
+    title: '결항 57편의 아침 — 항공사 마비의 세 가지 언어',
+    estimatedMinutes: 100,
+    briefing: {
+      title: '시스템이 멈추면 비행기가 멈춘다',
+      content: `### 예약 시스템은 항공사의 심장이다
+
+현대 항공사는 전산 위에 떠 있습니다. 예약·발권·좌석·승무원 배정·기재 운영이 하나의 전산 신경망으로 얽혀 있어서, 이 신경망이 멈추면 멀쩡한 비행기와 멀쩡한 승무원이 있어도 비행기는 뜨지 못합니다. 2016년 한 대형 항공사는 데이터센터 전원 설비 이상으로 시스템이 다운되며 사흘간 2천 편 이상을 결항했고, 손실은 수천억 원대로 보도됐습니다. 2022년 겨울에는 다른 항공사가 폭설 속에서 승무원 스케줄링 시스템의 한계에 부딪혀 만 육천 편 이상을 결항했습니다 — 눈이 그친 뒤에도 시스템이 승무원이 어디 있는지 몰라 회복하지 못한, "장애의 크기는 기술 결함이 아니라 구조가 정한다"는 것을 보여 준 사건이었습니다.
+
+### 구조를 읽는 글쓰기
+
+S6의 질문은 언제나 같습니다 — 이 시스템의 세계관은 무엇인가. 장애 사후 글쓰기는 그 질문의 실전입니다. 전원 절체 실패는 방아쇠일 뿐, 결항 57편을 만든 것은 단일 데이터센터 의존이라는 구조, 수기 절차가 준비되지 않은 지점, 복구 순서의 병목입니다. CTO 보고서가 방아쇠만 말하면 같은 사고는 다시 옵니다. 반대로 기자 브리핑이 구조의 치부까지 전부 말하면, 회사는 다음 문장을 잃습니다. 무엇을 어느 깊이까지 말할 것인가 — 청자마다 다른 그 선을 긋는 일이 이번 미션입니다.
+
+### 그리고, 절제
+
+이 도메인에서 유머는 쉬지 않습니다. 결항 한 편의 뒤에는 결혼식과 장례식과 면접에 못 간 사람들이 있습니다. 세 편의 글 모두, 시스템을 설명하되 사람을 잊지 않는 언어여야 합니다.`,
+    },
+    scenario: `가상 항공사 '한올항공'의 예약·운항 전산이 오늘 새벽 마비됐습니다. 전원 이중화 절체 실패로 시스템이 다운됐고, 부분 복구 후에도 승무원 배정 모듈이 오후까지 불능이었습니다. 최종 집계: 결항 57편, 지연 163편, 영향 승객 9,412명. 밤사이 시스템은 복구됐고, 이제 아침 8시 — 세 편의 글이 필요합니다. 결항 승객에게 보낼 **CS 안내문**, 이사회에 올릴 **CTO 사후 보고**, 오전 10시 **기자 브리핑문**. 자료는 타임라인·시스템 로그·대책회의 슬랙 발췌. 자료 밖의 사실을 만들지 마세요 — 이 업계에서 문서는 조사 기관에 제출됩니다.`,
+    providedFiles: [],
+    legacyFiles: [
+      {
+        path: 'incident/타임라인.md',
+        content: `# 운항 중단 타임라인 — 2026-01-19 (대책본부 정리본 v3)
+
+- 06:12 본사 데이터센터 전원 이중화 절체 실패 → 예약·발권·운항 시스템 전면 다운
+- 06:30 전 공항 카운터 수기 발권 전환 지시 (일부 지점 수기 절차 미숙지로 대기열 급증)
+- 07:05 예약·발권 시스템 부분 복구
+- 07:05~ 승무원 배정 모듈 미복구 지속 (재기동 후 대기 큐 적체)
+- 08:40 첫 결항 결정 — 승무원 위치·휴식시간 검증 불가로 편성 확정 실패
+- 11:00 대책회의 1차: 중간 집계 결항 42편, 지연 118편
+- 13:20 승무원 배정 모듈 복구
+- 14:30 최종 집계: 결항 57편, 지연 163편, 영향 승객 9,412명
+- 16:00 잔여 운항 정상화, 대책본부 야간 체제 전환
+- 익일 07:00 전 시스템 정상 운영 확인`,
+      },
+      {
+        path: 'incident/시스템-로그-발췌.log',
+        content: `2026-01-19 05:58:41 ALARM facility.UPS       battery health CRITICAL (bank B) — recurring since 2025-10, ticket FAC-2210 status: OPEN(93 days)
+2026-01-19 06:12:03 FATAL facility.Power     transfer switch failed, load not picked up by bank B
+2026-01-19 06:12:07 FATAL core.Reservation   datastore connection lost — service DOWN
+2026-01-19 07:05:22 INFO  core.Reservation   service RESTORED (partial: crew-assignment still down)
+2026-01-19 08:39:50 ERROR ops.CrewAssign     duty-time validation impossible: crew position data stale (last sync 06:11)
+2026-01-19 13:20:37 INFO  ops.CrewAssign     queue drained, service RESTORED
+2026-01-19 14:30:12 INFO  ops.Report         final: cancelled 57 / delayed 163 / pax affected 9,412`,
+      },
+      {
+        path: 'incident/대책회의-슬랙-발췌.md',
+        content: `# #war-room-0119 발췌 (시간순)
+
+- [06:40] 운영본부: 수기 발권 전환했는데 김포·제주 카운터가 절차를 몰라 대기가 길어지고 있음. 마지막 수기 훈련이 3년 전
+- [09:10] 운항: 승무원들 위치는 아는데 시스템이 몰라서 편성을 못 짭니다. 전화로 확인한 걸 수기 입력할 방법이 없어요
+- [11:05] 임원A: 언론 브리핑은 "결항 40여 편 수준"으로 갑시다. 최종 숫자 나오기 전이니
+- [11:20] 홍보팀 초안: "기록적 한파에 따른 불가피한 운항 차질" — 검토 부탁드립니다
+- [11:35] 시설팀: 정확히 하면 오늘 한파는 절체 실패와 무관합니다. 전원 설비 문제이고, UPS 배터리 경보는 작년부터 티켓 올라가 있었어요
+- [14:35] 대책본부: 최종 집계 공유 — 결항 57 / 지연 163 / 영향 승객 9,412
+- [15:00] 법무: 보상 관련 — 국내 소비자분쟁해결기준 적용 검토 중입니다. 확정 전에 "전액 보상" 확약과 "불가항력" 주장 둘 다 문서에 쓰지 마세요. 불가항력 주장은 원인 조사와 모순될 수 있습니다
+- [15:10] CTO: 내일 아침까지 세 편 준비합니다. CS 안내문, 이사회 보고, 기자 브리핑. 사실관계는 로그 기준으로`,
+      },
+    ],
+    requirements: [
+      '제출물은 글 세 편입니다: cs-reply.md(결항·지연 승객 안내문), cto-report.md(이사회 사후 보고), press-briefing.md(기자 브리핑문). 세 편 모두 자료(타임라인·로그·슬랙)와 모순되는 사실이 없어야 하며, 숫자는 최종 집계(14:30 로그)를 출처와 함께 씁니다.',
+      'cs-reply.md: 결항으로 하루를 잃은 승객이 읽습니다. 기술 용어 없이(전산 장애 정도는 허용, UPS·절체·모듈 금지) 사과 → 무슨 일이 있었는지 → 재예약·환불 절차 → 보상 관련 현재 상태(확정 전임을 정직하게). 항공에서 결항 안내문의 어조는 사과문이 아니라 여정을 잃은 사람에 대한 예의입니다.',
+      'cto-report.md: 이사회가 읽습니다. 타임라인 요약, 원인의 세 층위 — 방아쇠(절체 실패), 예고(방치된 설비 경보), 구조(수기 절차 부재·승무원 위치 데이터의 단일 의존·복구 순서 병목) — 를 구분해 서술하고, 층위별 재발 방지책과 비용 함의, 미결 사항을 적으세요. 듣기 싫은 사실을 뺀 보고서는 이 미션에서 실패입니다.',
+      'press-briefing.md: 기자가 읽습니다. 인정할 것(장애 사실, 규모, 승객 불편)과 확정 전 유보할 것(보상 범위, 최종 원인 조사)을 구분하되, 자료와 모순되는 원인 서술 — 특히 시설팀이 부인한 프레임 — 은 쓰는 순간 나중에 더 큰 기사가 됩니다. 임원의 숫자 지시와 로그의 숫자가 다를 때 무엇을 따를지도 여러분의 선택이고, 그 선택은 채점 대상입니다.',
+      '세 글의 일관성: 원인의 서술 깊이는 글마다 달라도 되지만, 서로 모순되면 안 됩니다. 브리핑이 날씨를 말하고 보고서가 전원을 말하면, 두 문서가 함께 공개되는 날 그것이 기사 제목이 됩니다.',
+      '보상 기준(소비자분쟁해결기준 적용 여부)이 확정 전입니다. 세 글 각각에서 보상을 어느 수위로 언급할지 판단하고, 판단 근거 메모를 제출물 말미에 남기세요.',
+    ],
+    constraints: [
+      '코드 작성 없음 — 제출물은 글 세 편과 판단 메모뿐입니다.',
+      '자료 밖의 사실 창작 금지. 필요한데 자료에 없는 정보(예: 정확한 보상액, 설비 교체 일정)는 "확인 중"으로 표기하세요.',
+      '이 도메인에서 유머는 금지 구역입니다. 세 편 모두에서.',
+      '승객·직원 개인을 특정하거나 탓하는 서술 금지 — 구조를 지적하되 사람을 겨냥하지 않습니다. 수기 절차를 몰랐던 카운터 직원은 이 사고의 원인이 아니라 피해자에 가깝습니다.',
+    ],
+    learningGoals: [
+      '장애 원인을 방아쇠·예고·구조의 세 층위로 분해하고, 청자별로 서술 깊이를 조절하되 사실은 하나로 유지하는 훈련',
+      '조직의 압력(축소 지시, 편리한 프레임)과 기록(로그) 사이에서 문서 작성자가 서는 자리 경험하기',
+      '방치된 경보(93일 열린 티켓)라는 가장 아픈 사실을 보고서에 담는 용기와, 브리핑에서 그것을 다루는 기술의 차이',
+      '항공이라는 무거운 도메인에서 시스템을 설명하되 사람을 잊지 않는 언어 감각',
+    ],
+    hints: [
+      '세 글의 공통 "사실 시트"를 만들 때, 이번에는 숫자만이 아니라 원인 문장도 시트에 넣으세요 — "전원 절체 실패(06:12), 사전 경보 존재(05:58, 93일 미조치), 한파는 무관(시설팀 확인)". 이 세 줄이 시트에 있으면 홍보팀 초안의 프레임을 그대로 받아쓸 수 없게 됩니다.',
+      '로그의 첫 줄이 이 사건에서 가장 비싼 한 줄입니다 — ticket FAC-2210, OPEN 93일. CTO 보고서에 이것을 넣는 방법은 하나가 아닙니다: 개인의 태만으로 쓰면 마녀사냥이 되고, 설비 경보가 우선순위를 얻지 못하는 구조(티켓이 93일 열려 있어도 아무도 에스컬레이션하지 않는 체계)로 쓰면 재발 방지책이 나옵니다.',
+      '임원의 "40여 편" 지시와 로그의 57편 사이에서 고민된다면, 이 문서들의 수명을 생각하세요 — 브리핑문은 오늘 나가지만, 로그와 보고서는 조사 기관과 국정감사까지 갑니다. 숫자가 갈라진 문서 두 장이 나란히 놓이는 날을 기준으로 오늘의 선택을 하세요. 축소를 거절하는 문장도 예의 바르게 쓸 수 있습니다 — "최종 집계 기준으로 통일하겠습니다"면 충분합니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '93일 동안 열려 있던 티켓',
+        description:
+          '로그 맨 첫 줄 — 사고 14분 전의 UPS 경보가 아니라, 그 경보가 작년 10월부터 티켓으로 존재했고 93일째 미조치였다는 사실이 이 사건의 심장입니다. 세 글 어디에도 이 사실의 그림자가 없다면(보고서에서는 명시, 브리핑에서는 최소한 "설비 관리 체계 점검"으로) 그것은 은폐이고, 조사 기관이 로그를 받는 순간 문서 작성자의 신뢰가 함께 무너집니다. 가장 아픈 사실을 다루는 방식이 이 미션의 최고 배점 구간입니다.',
+      },
+      {
+        title: '40여 편이라는 지시',
+        description:
+          '임원의 "40여 편으로 갑시다"는 11:05의 중간 집계(42편)에 기댄 축소 지시이고, 14:30에 57편이 확정됐습니다. 지시를 따르면 브리핑과 내부 보고의 숫자가 갈라지고 — 항공 사고 조사와 국정감사 자료 제출이 일상인 업계에서 그 차이는 반드시 발견됩니다. 낡은 숫자를 쓰는 것과 축소 지시를 따르는 것은 결과가 같아도 죄질이 다르며, 둘 다 정답이 아닙니다.',
+      },
+      {
+        title: '한파라는 편리한 프레임',
+        description:
+          '홍보팀 초안의 "기록적 한파에 따른 불가피한 운항 차질"은 시설팀이 명시적으로 부인한 인과입니다(한파는 절체 실패와 무관). 게다가 법무는 "불가항력" 주장이 원인 조사와 모순될 수 있다고 경고했습니다. 이 프레임을 받아쓰면 사실 왜곡 + 법적 자충수의 이중 결함이 됩니다. 방어적 서술이 필요하다면 날씨가 아니라 "복구 과정"의 사실(수기 전환, 순차 복구)에서 찾는 것이 정직한 기술입니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '사실 정확성',
+        description: '세 글이 자료와 정합하는가 — 최종 숫자(57/163/9,412), 원인 인과(한파 무관), 93일 티켓의 반영 여부.',
+        weight: 30,
+        visibleToLearner: true,
+      },
+      {
+        name: '청자 적합성',
+        description: '승객문의 언어와 예의, 이사회 보고의 세 층위 원인 분석, 브리핑의 인정/유보 선 긋기가 각각 성립하는가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '세 글의 일관성',
+        description: '원인·숫자·조치 상태가 세 글에서 모순 없는가. 서술 깊이의 차이가 사실의 차이로 번지지 않았는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '압력 아래의 판단',
+        description: '축소 지시와 편리한 프레임을 어떻게 다뤘는가 — 거절했다면 그 방식이, 수용했다면 그 결과 인식이 서술되었는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '모호한 요구사항 확인',
+        description: '보상 기준 미확정을 임의 확정하지 않고 세 글의 언급 수위와 근거를 메모로 남겼는가.',
+        weight: 10,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '이 항공사에 방금 합류한 신임 CIO (전산은 알지만 항공 운영은 처음)',
+      prompt:
+        '신임 CIO에게 이 사건을 브리핑하세요. (1) 왜 전원 장애 하나가 결항 57편이 됐는지 — 방아쇠와 구조를 구분해서, 특히 "시스템이 승무원의 위치를 모르면 멀쩡한 승무원도 없는 사람"이라는 데이터 의존의 구조를, (2) 2016년과 2022년의 실제 사건들이 이 사건과 어떻게 같은 모양인지 — 업계가 이미 두 번 배운 교훈이라는 것, (3) 재발 방지 투자의 우선순위 — 전원 설비, 수기 절차 훈련, 승무원 위치 데이터 이중화 중 무엇이 먼저이고 왜인지. 기술 투자를 예산 언어로 번역하는 것까지가 CIO 브리핑입니다.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '조사 기관에 낼 수 있는 문서',
+        teaser: '브리핑 숫자와 보고서 숫자가 같고, 93일 티켓은 보고서의 재발 방지 1번 항목이 된다. 석 달 뒤 조사 기관 제출 자료를 준비하며 누군가 말한다 — "고칠 게 없네요, 그대로 내면 됩니다."',
+      },
+      {
+        grade: 'hotfix',
+        title: '추가 설명자료 배포',
+        teaser: '세 글은 무사히 나갔지만 브리핑의 원인 서술이 모호해 후속 질의가 쏟아지고, 이틀에 걸쳐 추가 설명자료가 두 번 배포된다. 처음부터 한 번에 말했으면 하나로 끝났을 분량이다.',
+      },
+      {
+        grade: 'dawn',
+        title: '로그가 공개된 날',
+        teaser: '한파 프레임의 브리핑이 나가고 3주 뒤, 조사 과정에서 05:58 로그와 시설팀 슬랙이 공개된다. 기사 제목은 "알고도 방치"였고, 그 아래 두 번째 제목은 "축소 브리핑 의혹"이다. 장애는 복구됐지만 문서는 복구되지 않는다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말의 브리핑룸은 아직 열리지 않았습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+];
+
+const sampleReviews = {
+  's1-wine-01': {
+    overall: 66,
+    summary:
+      '책임을 나누려는 방향은 정확했고 페어링 규칙 분리는 특히 좋았습니다. 다만 데이터와 점수 계산이 아직 한 클래스에 붙어 있고, 병렬 배열이 그대로 남아 있어 "타입으로 도메인을 말한다"는 단계까지는 가지 못했습니다. 동작 보존 검증을 수동 실행에 의존한 점, 모호한 예산 규칙을 질문 없이 임의 확정한 점이 감점 요인입니다.',
+    items: [
+      {
+        rubricName: '책임 분리',
+        score: 20,
+        evidence:
+          'class PairingRule { int bonus(String food, String grape) { ... } } / class ResultFormatter { String format(...) }',
+        feedback:
+          '페어링 규칙과 결과 포맷팅을 별도 클래스로 뽑아낸 것은 정확한 판단입니다. 다만 WineRecommender 안에 여전히 입력 파싱, 와인 배열, 점수 계산, 할인 로직이 함께 살고 있습니다. 특히 할인은 요구사항에서 "명절마다 바뀐다"고 명시된 부분인데 recommend() 하단에 그대로 남아 있어, 다음 수정 요청이 오면 또 이 클래스를 열어야 합니다.',
+      },
+      {
+        rubricName: '도메인 개념의 타입화',
+        score: 9,
+        evidence: 'String[] names = {...}; int[] bodies = {...}; // 배열은 유지하고 접근 메서드만 추가',
+        feedback:
+          '병렬 배열이 private으로 숨겨지긴 했지만 여전히 5개 배열이 인덱스로 동기화되어 있습니다. Wine이라는 레코드(record Wine(String name, String grape, int body, int sweetness, int price))를 도입하면 배열 하나가 어긋나는 사고 자체가 불가능해지고, DB 전환 요구사항에도 자연스럽게 대비됩니다. 입력값 다섯 개도 TastePreference로 묶을 수 있었습니다.',
+      },
+      {
+        rubricName: '동작 보존',
+        score: 17,
+        evidence: 'public static void main(String[] args) { System.out.println(new WineRecommender().recommend("바디=5;...")); }',
+        feedback:
+          '리팩토링 전후 결과를 main으로 직접 비교한 흔적이 보이고, 실제로 제출 코드의 출력은 원본과 일치했습니다. 다만 케이스가 3개뿐이고 수동 비교입니다. 예산 경계(budget+10000 정확히), 페어링 미매칭 음식, VIP 고가 쿠폰 경계(80000원) 같은 갈림길마다 케이스를 두고 JUnit으로 고정했다면 만점이었습니다.',
+      },
+      {
+        rubricName: '가독성과 네이밍',
+        score: 11,
+        evidence: 'private static final int BODY_EXACT_SCORE = 30; ... if (prices[i] <= budget + 10000)',
+        feedback:
+          '점수 가중치를 상수로 올린 것은 좋습니다. 그런데 가장 위험한 매직 넘버인 10000(예산 초과 허용폭)과 80000(쿠폰 기준가)이 조건식 안에 그대로 남았습니다. 숫자에 이름을 붙이는 기준은 "크기"가 아니라 "업무적 의미의 무게"입니다. BUDGET_TOLERANCE 같은 이름이 붙는 순간 영업팀과 대화할 수 있는 코드가 됩니다.',
+      },
+      {
+        rubricName: '모호한 요구사항 확인',
+        score: 9,
+        evidence: '// 예산 초과 허용은 기존과 동일하게 1만원으로 유지',
+        feedback:
+          '"조금 초과"의 정의가 없다는 사실을 주석으로 인지한 점은 평가합니다. 하지만 요구사항에 "협의된 문서가 없다"고까지 적혀 있었으니, 이는 개발자가 확정할 값이 아니라 영업팀에 되물어야 할 값입니다. 실무에서는 "기존 코드가 1만원이므로 유지하되, 정책 확정 필요"라고 질문 목록에 올리는 것까지가 한 세트입니다.',
+      },
+    ],
+    nextSteps: [
+      'Wine을 record로 도입하고 병렬 배열을 List<Wine>으로 교체해 보세요. 그 순간 점수 계산 코드가 얼마나 읽기 좋아지는지 확인해 보세요.',
+      '할인 로직을 DiscountPolicy로 분리하고, "GOLD 10%, VIP 15%+쿠폰"을 정책 객체의 문제로 만들어 보세요.',
+      '경계값 5개(예산 정확히 일치, +10000 정확히, 페어링 없음, 80000원 정확히, 알 수 없는 등급)를 JUnit 테스트로 고정한 뒤 다시 한 번 구조를 바꿔 보세요. 테스트가 있을 때 리팩토링의 심리적 비용이 어떻게 달라지는지 느끼는 것이 이번 스테이지의 숨은 목표입니다.',
+    ],
+    followUpQuestions: [
+      '와인 데이터가 DB로 옮겨진다면, 지금 구조에서 정확히 어떤 클래스의 어떤 줄이 바뀌나요? 하나도 안 바뀐다고 말할 수 있는 구조로 만들려면 무엇이 더 필요한가요?',
+      'PairingRule을 분리하셨는데, 만약 "특정 와인 상품 단위의 페어링 예외"가 생긴다면 지금 설계에서 어디가 부러질까요?',
+      '점수 계산 클래스와 할인 클래스 중 하나만 인터페이스로 승격해야 한다면 어느 쪽을 고르시겠어요? 그 판단 기준은 무엇인가요?',
+    ],
+    hiddenCases: [
+      {
+        title: '예산 0원 손님',
+        passed: true,
+        note: '파싱 직후 예산이 0 이하이면 IllegalArgumentException을 던지는 검증이 있어 통과했습니다. 잘못된 입력이 그럴듯한 추천 결과로 둔갑하는 경로를 입구에서 끊은 정확한 방어입니다.',
+      },
+      {
+        title: 'G0LD 회원의 침묵',
+        passed: false,
+        note: 'grade.equals("GOLD") 문자열 비교가 그대로 남아 "G0LD"는 에러 없이 무할인 처리됐습니다. 등급을 enum으로 변환하고 변환 실패를 명시적으로 다뤘다면 막혔을 케이스입니다.',
+        warStory: '실서비스에서도 쿠폰·등급 코드 오타가 소리 없이 무할인으로 흘러, 개발팀보다 CS팀이 먼저 장애를 발견하는 사례가 반복됩니다.',
+      },
+      {
+        title: '메뉴에 없는 음식',
+        passed: false,
+        note: 'switch의 default가 여전히 무음 통과라 "굴전"은 페어링 0점인 채 왜곡된 추천이 나갑니다. 지원 음식 목록을 한 곳에서 관리하고 "페어링 미반영"을 결과에 명시했어야 합니다.',
+      },
+    ],
+    scenario: `**배포 +3일.** 아무 일도 일어나지 않는다. 모니터링 그래프는 평평하고, 당신은 병렬 배열을 그대로 둔 것을 거의 잊는다. 평온은 언제나 관찰의 부재와 구분되지 않는다.
+
+**배포 +11일.** 총무팀 김 과장이 모바일에서 등급을 입력하다 "G0LD"를 찍는다. 시스템은 에러 없이, 로그 한 줄 없이 정가 88,000원을 안내한다. 김 과장은 "골드 혜택 별거 없네"라고 중얼거리며 조용히 창을 닫는다. 항의하는 사용자는 코드를 고칠 기회를 주지만, 말없이 떠나는 사용자는 분기 지표로만 돌아온다. 그날 당신의 대시보드는 여전히 평화로웠다.
+
+**배포 +34일. 설 연휴 D-14.** 운영팀 메일이 도착한다. "떡국이랑 갈비찜 페어링 추가해 주세요." 당신은 PairingRule을 열고 두 줄을 넣는다. 10분, 커밋 하나, 다른 파일은 손대지 않았다. 분리해 둔 사람에게만 허락되는 종류의 오후. 당신은 처음으로 리팩토링이 미래에 보낸 선물이었다는 걸 실감한다.
+
+**배포 +35일.** 여운이 가시기 전에 두 번째 메일. "VIP 위에 VVIP 등급 신설합니다. 할인율 20%." 당신은 recommend() 하단으로 스크롤한다. 그 할인 블록, 그대로 있다. else if를 하나 더 붙인 diff에 리뷰어가 남긴 코멘트는 한 단어였다. "또요?"
+
+**배포 +36일.** 퇴근길, 당신은 메모장에 클래스 이름 하나를 적는다. DiscountPolicy. 바뀌는 것에게 제 방을 내어 주는 법 — 다음 미션에서 배우게 될 이야기다.`,
+    ending: { grade: 'hotfix', title: '명절마다 열리는 파일' },
+  },
+};
+
+const sampleExplainFeedback = {
+  's1-wine-01': {
+    transcript:
+      '제가 만든 추천 시스템은 소믈리에님이 손님 응대하시는 거랑 비슷하게 나눠져 있어요. 먼저 손님 취향을 듣는 부분이 있고, 와인 리스트가 따로 있고, 점수를 매기는 부분이 있습니다. 점수는 바디랑 당도가 맞으면 올라가고 예산 넘으면 깎여요. 그리고 인터페이스라는 걸 써서 페어링 규칙을 분리했기 때문에 규칙이 바뀌어도 괜찮습니다. 그래서 명절에 페어링을 바꾸고 싶으시면 그 파일만 고치면 돼요. 할인은 등급별로 퍼센트가 다른데 그것도 따로 있어서 괜찮고요. 결론적으로 전체 구조가 깔끔해져서 유지보수가 쉬워졌습니다.',
+    feedback: {
+      structure:
+        '도입(비유 선언) → 구성 요소 나열 → 결론의 뼈대는 갖췄습니다. 하지만 청자의 관심사인 "내가 규칙을 바꾸고 싶을 때 무슨 일이 벌어지는가"가 다섯 번째 문장에야 나옵니다. 비개발자 대상 설명은 상대의 용건(페어링 규칙 변경)을 첫 문장에 놓고, 구조 설명을 그 근거로 붙이는 역순 구성이 훨씬 강합니다.',
+      clarity:
+        '두 군데 논리 비약이 있습니다. (1) "인터페이스라는 걸 써서 ~ 바뀌어도 괜찮습니다"는 수단과 효과 사이 연결 고리(규칙이 교체 가능한 부품이 됐다는 것)를 건너뛰었고, 인터페이스라는 용어를 풀지 않고 지나갔습니다. (2) "그래서 깔끔해져서 유지보수가 쉬워졌습니다"는 앞 문장들과 인과가 닿지 않는 상투적 마무리입니다. "괜찮다", "깔끔하다" 같은 뭉뚱그린 표현 대신 "어디를, 몇 군데, 누가 고치는가"로 말하면 비약이 사라집니다.',
+      analogy:
+        '"소믈리에 응대와 비슷하다"고 선언만 하고 실제 대응을 한 번도 짝지어 주지 않았습니다. 비유는 선언이 아니라 매핑입니다. 취향 청취=주문 파싱, 셀러(와인 저장고)=와인 목록, 머릿속 궁합 노트=페어링 규칙처럼 1:1로 짚어야 청자가 비유를 타고 구조까지 도달합니다. 특히 청자가 소믈리에 출신이므로 이 비유는 조금만 다듬으면 최고의 무기가 됩니다.',
+      improved:
+        '"기획자님이 제일 자주 하실 일이 명절 페어링 규칙 바꾸기라고 들었어요. 결론부터 말씀드리면, 이제 그 작업은 \'궁합 노트\' 파일 하나만 고치면 끝납니다. 왜 그런지 설명드릴게요. 소믈리에님이 손님을 응대할 때 취향을 듣고, 셀러의 리스트를 떠올리고, 머릿속 궁합 노트로 후보를 추리고, 마지막에 가격을 안내하시잖아요. 코드도 똑같이 네 부분으로 나눴습니다. 취향을 알아듣는 부분, 와인 리스트, 궁합 노트, 가격·할인 계산기요. 예전에는 이 네 가지가 한 페이지에 뒤섞여 있어서 궁합 하나 바꾸려다 가격 계산을 건드리는 사고가 날 수 있었는데, 지금은 서로 \'주고받는 것\'만 약속되어 있고 내용물은 독립적입니다. 그래서 설 연휴에 \'떡국엔 샤르도네\'를 추가하고 싶으시면, 궁합 노트에 한 줄 적는 일이고, 나머지 세 부분은 열어 볼 필요도 없습니다."',
+    },
+  },
+};
+
+const sampleReputation = {
+  's1-wine-01': {
+    level: '3년차 중상',
+    summary:
+      '요구사항의 빈틈을 스스로 찾아내 예시까지 들어 확인하는 습관이 자리 잡혀 있습니다. 다만 질문이 "계산 규칙"에는 향하고 "정책의 확장 가능성"에는 향하지 않아, 설계에 영향을 주는 모호함을 골라내는 감각은 아직 한 단계 남아 있습니다. 질문의 개수가 아니라 방향이 다음 성장 포인트입니다.',
+    strengths: [
+      '예산 초과 허용 여부를 두 차례 되물으면서 "예산 60,000원에 61,000원 와인은 후보인가요?"라는 경계값 예시를 직접 만들어 질문했습니다. 답을 받는 사람이 예/아니오로만 답해도 규칙이 확정되는, 비용이 낮고 정보량이 큰 질문 방식입니다.',
+      '질문 후 답변을 기다리는 동안 해당 부분 구현을 뒤로 미루고 다른 책임 분리를 먼저 진행하는 등, 되묻기가 작업 중단으로 이어지지 않게 순서를 조정했습니다.',
+    ],
+    improvements: [
+      '회원 등급(GOLD/VIP) 할인 정책은 "명절마다 바뀐다"고 명시된 확장 후보였는데, 새 등급이 생길 가능성을 확인하지 않고 현재 두 등급 기준으로 구조를 임의 확정했습니다. 질문을 많이 하는 것은 감점이 아니지만, 설계가 갈리는 지점의 모호함을 지나치는 것은 감점입니다.',
+      '질문이 모두 계산 규칙(얼마, 몇 %)에 집중되어 있습니다. "이 규칙은 앞으로 누가, 얼마나 자주 바꾸나요?" 같은 변경 주체·빈도를 묻는 질문이 더해지면 구조 설계의 근거가 훨씬 단단해집니다.',
+      '확인받은 내용(예산 초과 허용폭)을 코드 주석에만 남겼습니다. 합의된 규칙은 테스트 이름이나 상수 문서화로 남겨야 다음 사람에게 전달됩니다.',
+    ],
+  },
+};
+
+export default {
+  missions,
+  sampleReviews,
+  sampleExplainFeedback,
+  sampleReputation,
+};

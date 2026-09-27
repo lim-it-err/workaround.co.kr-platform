@@ -1,0 +1,1066 @@
+[
+  {
+    "id": "375-dark",
+    "flight": [
+      {
+        "text": "총, 균, 쇠\n독서 카드 · 3분\n→",
+        "width": 343,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "총, 균, 쇠",
+            "x": 18,
+            "right": 264.234375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 272.234375,
+            "right": 337.71875
+          },
+          {
+            "text": "→",
+            "x": 345.71875,
+            "right": 357
+          }
+        ],
+        "left": 16,
+        "right": 359
+      },
+      {
+        "text": "생각에 관한 생각\n독서 카드 · 3분\n→",
+        "width": 343,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "생각에 관한 생각",
+            "x": 18,
+            "right": 264.234375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 272.234375,
+            "right": 337.71875
+          },
+          {
+            "text": "→",
+            "x": 345.71875,
+            "right": 357
+          }
+        ],
+        "left": 16,
+        "right": 359
+      },
+      {
+        "text": "블랙 스완\n독서 카드 · 3분\n→",
+        "width": 343,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "블랙 스완",
+            "x": 18,
+            "right": 264.234375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 272.234375,
+            "right": 337.71875
+          },
+          {
+            "text": "→",
+            "x": 345.71875,
+            "right": 357
+          }
+        ],
+        "left": 16,
+        "right": 359
+      }
+    ],
+    "steps": [
+      {
+        "text": "01\nUI / docs 정리",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "01",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "UI / docs 정리",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      },
+      {
+        "text": "02\n티켓 acceptance 확인",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "02",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "티켓 acceptance 확인",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      },
+      {
+        "text": "03\ntests / CI 확인",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "03",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "tests / CI 확인",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      },
+      {
+        "text": "04\nPR 정리",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "04",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "PR 정리",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      },
+      {
+        "text": "05\ntag / release",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "05",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "tag / release",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      }
+    ],
+    "title": "안티프래질",
+    "destination": "안티프래질",
+    "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-antifragile-01",
+    "ctaBox": {
+      "x": 37,
+      "y": -53.5625,
+      "width": 322,
+      "height": 44
+    },
+    "flightOverflow": 0,
+    "runtimeOverflow": 0,
+    "errors": []
+  },
+  {
+    "id": "375-light",
+    "flight": [
+      {
+        "text": "총, 균, 쇠\n독서 카드 · 3분\n→",
+        "width": 343,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "총, 균, 쇠",
+            "x": 18,
+            "right": 264.234375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 272.234375,
+            "right": 337.71875
+          },
+          {
+            "text": "→",
+            "x": 345.71875,
+            "right": 357
+          }
+        ],
+        "left": 16,
+        "right": 359
+      },
+      {
+        "text": "생각에 관한 생각\n독서 카드 · 3분\n→",
+        "width": 343,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "생각에 관한 생각",
+            "x": 18,
+            "right": 264.234375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 272.234375,
+            "right": 337.71875
+          },
+          {
+            "text": "→",
+            "x": 345.71875,
+            "right": 357
+          }
+        ],
+        "left": 16,
+        "right": 359
+      },
+      {
+        "text": "블랙 스완\n독서 카드 · 3분\n→",
+        "width": 343,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "블랙 스완",
+            "x": 18,
+            "right": 264.234375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 272.234375,
+            "right": 337.71875
+          },
+          {
+            "text": "→",
+            "x": 345.71875,
+            "right": 357
+          }
+        ],
+        "left": 16,
+        "right": 359
+      }
+    ],
+    "steps": [
+      {
+        "text": "01\nUI / docs 정리",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "01",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "UI / docs 정리",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      },
+      {
+        "text": "02\n티켓 acceptance 확인",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "02",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "티켓 acceptance 확인",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      },
+      {
+        "text": "03\ntests / CI 확인",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "03",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "tests / CI 확인",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      },
+      {
+        "text": "04\nPR 정리",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "04",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "PR 정리",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      },
+      {
+        "text": "05\ntag / release",
+        "width": 321,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "05",
+            "x": 27,
+            "right": 57.234375
+          },
+          {
+            "text": "tag / release",
+            "x": 67.234375,
+            "right": 344
+          }
+        ],
+        "left": 25,
+        "right": 346
+      }
+    ],
+    "title": "안티프래질",
+    "destination": "안티프래질",
+    "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-antifragile-01",
+    "ctaBox": {
+      "x": 37,
+      "y": -53.5625,
+      "width": 322,
+      "height": 44
+    },
+    "flightOverflow": 0,
+    "runtimeOverflow": 0,
+    "errors": []
+  },
+  {
+    "id": "1440-dark",
+    "flight": [
+      {
+        "text": "총, 균, 쇠\n독서 카드 · 3분\n→",
+        "width": 760,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "총, 균, 쇠",
+            "x": 342,
+            "right": 983.359375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 995.359375,
+            "right": 1074.71875
+          },
+          {
+            "text": "→",
+            "x": 1086.71875,
+            "right": 1098
+          }
+        ],
+        "left": 340,
+        "right": 1100
+      },
+      {
+        "text": "생각에 관한 생각\n독서 카드 · 3분\n→",
+        "width": 760,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "생각에 관한 생각",
+            "x": 342,
+            "right": 983.359375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 995.359375,
+            "right": 1074.71875
+          },
+          {
+            "text": "→",
+            "x": 1086.71875,
+            "right": 1098
+          }
+        ],
+        "left": 340,
+        "right": 1100
+      },
+      {
+        "text": "블랙 스완\n독서 카드 · 3분\n→",
+        "width": 760,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "블랙 스완",
+            "x": 342,
+            "right": 983.359375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 995.359375,
+            "right": 1074.71875
+          },
+          {
+            "text": "→",
+            "x": 1086.71875,
+            "right": 1098
+          }
+        ],
+        "left": 340,
+        "right": 1100
+      }
+    ],
+    "steps": [
+      {
+        "text": "01\nUI / docs 정리",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "01",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "UI / docs 정리",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      },
+      {
+        "text": "02\n티켓 acceptance 확인",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "02",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "티켓 acceptance 확인",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      },
+      {
+        "text": "03\ntests / CI 확인",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "03",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "tests / CI 확인",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      },
+      {
+        "text": "04\nPR 정리",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "04",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "PR 정리",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      },
+      {
+        "text": "05\ntag / release",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "05",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "tag / release",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      }
+    ],
+    "title": "안티프래질",
+    "destination": "안티프래질",
+    "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-antifragile-01",
+    "ctaBox": {
+      "x": 375,
+      "y": 63.203125,
+      "width": 170,
+      "height": 44
+    },
+    "flightOverflow": 0,
+    "runtimeOverflow": 0,
+    "errors": []
+  },
+  {
+    "id": "1440-light",
+    "flight": [
+      {
+        "text": "총, 균, 쇠\n독서 카드 · 3분\n→",
+        "width": 760,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "총, 균, 쇠",
+            "x": 342,
+            "right": 983.359375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 995.359375,
+            "right": 1074.71875
+          },
+          {
+            "text": "→",
+            "x": 1086.71875,
+            "right": 1098
+          }
+        ],
+        "left": 340,
+        "right": 1100
+      },
+      {
+        "text": "생각에 관한 생각\n독서 카드 · 3분\n→",
+        "width": 760,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "생각에 관한 생각",
+            "x": 342,
+            "right": 983.359375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 995.359375,
+            "right": 1074.71875
+          },
+          {
+            "text": "→",
+            "x": 1086.71875,
+            "right": 1098
+          }
+        ],
+        "left": 340,
+        "right": 1100
+      },
+      {
+        "text": "블랙 스완\n독서 카드 · 3분\n→",
+        "width": 760,
+        "height": 52,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "블랙 스완",
+            "x": 342,
+            "right": 983.359375
+          },
+          {
+            "text": "독서 카드 · 3분",
+            "x": 995.359375,
+            "right": 1074.71875
+          },
+          {
+            "text": "→",
+            "x": 1086.71875,
+            "right": 1098
+          }
+        ],
+        "left": 340,
+        "right": 1100
+      }
+    ],
+    "steps": [
+      {
+        "text": "01\nUI / docs 정리",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "01",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "UI / docs 정리",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      },
+      {
+        "text": "02\n티켓 acceptance 확인",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "02",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "티켓 acceptance 확인",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      },
+      {
+        "text": "03\ntests / CI 확인",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "03",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "tests / CI 확인",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      },
+      {
+        "text": "04\nPR 정리",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "04",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "PR 정리",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      },
+      {
+        "text": "05\ntag / release",
+        "width": 373,
+        "height": 44,
+        "background": "rgba(0, 0, 0, 0)",
+        "image": "none",
+        "radius": "0px",
+        "borders": [
+          "0px",
+          "0px",
+          "1px",
+          "0px"
+        ],
+        "titleClipped": false,
+        "parts": [
+          {
+            "text": "05",
+            "x": 727,
+            "right": 757.234375
+          },
+          {
+            "text": "tag / release",
+            "x": 767.234375,
+            "right": 1096
+          }
+        ],
+        "left": 725,
+        "right": 1098
+      }
+    ],
+    "title": "안티프래질",
+    "destination": "안티프래질",
+    "href": "/workaround.co.kr-platform/advisor/games/practice/reading/read-antifragile-01",
+    "ctaBox": {
+      "x": 375,
+      "y": 63.203125,
+      "width": 170,
+      "height": 44
+    },
+    "flightOverflow": 0,
+    "runtimeOverflow": 0,
+    "errors": []
+  }
+]

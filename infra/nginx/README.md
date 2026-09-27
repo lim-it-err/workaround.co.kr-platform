@@ -1,5 +1,8 @@
 # Nginx
 
-Placeholder for future Nginx reverse proxy configuration.
+향후 리버스 프록시 구성을 위한 자리다.
 
-Nginx should stay infrastructure-focused and should not duplicate application routing policy that belongs in the Spring Gateway.
+- Nginx 는 인프라 계층에만 머문다.
+- 애플리케이션 라우팅 정책은 Spring 게이트웨이와 중복 정의하지 않는다.
+- `v0.2.0` 의 `http://localhost:7000` 통합 진입점을 만들더라도 정책 소유권은 게이트웨이에 둔다.
+- 첫 공개 사이트(`TKT-014`) 기준 reverse proxy 기본값은 Caddy 이며, Nginx 는 수동 TLS 운영이나 기존 서버 정책이 있을 때의 보조 선택지로 둔다.

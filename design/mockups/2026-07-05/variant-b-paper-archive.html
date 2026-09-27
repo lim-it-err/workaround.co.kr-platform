@@ -1,0 +1,1419 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시안 B · 종이 아카이브 — workaround UX 목업</title>
+<style>
+/* ============================================================
+   시안 B · 종이 아카이브 (Paper Archive)
+   - 블로그 우선. 기록 보관함/잡지 무드 + 지하철 사인 액센트.
+   - 라이트 기본(따뜻한 종이), 다크는 "야간 서고" 짝 설계.
+   - 노선 배지는 메타데이터 칩(도서 스탬프)으로 물러난다.
+   ============================================================ */
+
+:root {
+  --font-sans: "Pretendard Variable", Pretendard, "Noto Sans KR", "Malgun Gothic",
+               "Apple SD Gothic Neo", "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Batang", "Nanum Myeongjo", "Noto Serif KR", Georgia, "Times New Roman", serif;
+  --font-mono: "Cascadia Code", Consolas, "SF Mono", "Roboto Mono", monospace;
+  --page-w: 1080px;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+
+/* ---------- 테마 토큰 ---------- */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F6F1E7;
+  --bg-2: #EFE8DA;
+  --panel: #FFFDF8;
+  --panel-2: #FAF5EB;
+  --panel-soft: rgba(42, 38, 32, 0.045);
+  --rule: #E2D8C4;
+  --rule-strong: #C9BCA1;
+  --ink: #23201A;
+  --ink-2: #57503F;
+  --muted: #8B8170;
+  --accent: #29486B;          /* 잉크 블루 */
+  --accent-2: #8E2C4F;        /* 아카이브 버건디 (Line B) */
+  --mark: rgba(233, 185, 43, 0.42);  /* 형광 유도선 */
+  --shadow: 0 1px 0 rgba(42, 38, 32, 0.05), 0 14px 30px rgba(72, 60, 38, 0.09);
+  --head-bg: rgba(246, 241, 231, 0.9);
+
+  --lb-c: #8E2C4F; --le-c: #0090C8; --lt-c: #C07F10; --lw-c: #009344; --lr-c: #0052A4;
+  --lb-t: #8E2C4F; --le-t: #00679B; --lt-t: #8F5E0B; --lw-t: #00703A; --lr-t: #0052A4;
+
+  --flap-frame: #2A2620;
+  --flap-well: #211D17;
+  --flap-tile-top: linear-gradient(180deg, #F4ECDB 0%, #EBE1CB 80%, #E2D6BC 100%);
+  --flap-tile-bottom: linear-gradient(180deg, #E8DDC6 0%, #F0E6D2 40%, #E3D8BF 100%);
+  --flap-ink: #2A241A;
+  --flap-seam: rgba(42, 38, 32, 0.35);
+  --flap-label: #CDBFA3;
+  --flap-label-sub: #8B7F67;
+
+  --code-bg: #26221B;
+  --code-ink: #EDE4CF;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #191610;
+  --bg-2: #14110C;
+  --panel: #201C14;
+  --panel-2: #262117;
+  --panel-soft: rgba(237, 230, 212, 0.05);
+  --rule: #3A3325;
+  --rule-strong: #55492F;
+  --ink: #EDE6D4;
+  --ink-2: #C3B99F;
+  --muted: #8F8468;
+  --accent: #7FA3CC;
+  --accent-2: #C86E8E;
+  --mark: rgba(233, 185, 43, 0.22);
+  --shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  --head-bg: rgba(25, 22, 16, 0.9);
+
+  --lb-c: #C86E8E; --le-c: #4FB3DF; --lt-c: #D9A54A; --lw-c: #4CB878; --lr-c: #6E93D6;
+  --lb-t: #D98BA6; --le-t: #7CC8EA; --lt-t: #E2B96E; --lw-t: #77C99A; --lr-t: #93AFE0;
+
+  --flap-frame: #0F0D09;
+  --flap-well: #0B0A07;
+  --flap-tile-top: linear-gradient(180deg, #332C1E 0%, #2A2417 80%, #241E13 100%);
+  --flap-tile-bottom: linear-gradient(180deg, #292216 0%, #2E2718 40%, #221C11 100%);
+  --flap-ink: #F0E6CC;
+  --flap-seam: rgba(0, 0, 0, 0.65);
+  --flap-label: #B9AB8A;
+  --flap-label-sub: #776C52;
+
+  --code-bg: #100E09;
+  --code-ink: #E3D9C0;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background:
+    repeating-linear-gradient(0deg, rgba(42, 38, 32, 0.014) 0 1px, transparent 1px 3px),
+    var(--bg);
+  color: var(--ink);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button { font: inherit; cursor: pointer; }
+a { color: inherit; }
+.num { font-variant-numeric: tabular-nums; }
+.hl { background: linear-gradient(transparent 60%, var(--mark) 60%); }
+
+/* ---------- 상단 고정 헤더 ---------- */
+.mock-head {
+  position: sticky; top: 0; z-index: 60;
+  background: var(--head-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+.mock-head-in {
+  max-width: var(--page-w); margin: 0 auto;
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 18px;
+}
+.mock-id { display: flex; align-items: center; gap: 12px; }
+.mock-badge {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: grid; place-items: center;
+  background: var(--accent-2); color: #FBF6EC;
+  font-weight: 900; font-family: var(--font-serif); font-size: 1.1rem;
+  flex: 0 0 auto;
+}
+.mock-id strong { display: block; font-size: 0.95rem; white-space: nowrap; }
+.mock-id small { display: block; color: var(--muted); font-size: 0.72rem; white-space: nowrap; }
+.mock-nav { margin-left: auto; display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.mock-nav::-webkit-scrollbar { display: none; }
+.mock-nav a {
+  padding: 7px 12px; border-radius: 6px;
+  font-size: 0.82rem; color: var(--ink-2); text-decoration: none; white-space: nowrap;
+}
+.mock-nav a:hover { background: var(--panel-soft); color: var(--ink); }
+.theme-toggle {
+  flex: 0 0 auto; padding: 8px 14px;
+  border-radius: 6px; border: 1px solid var(--rule-strong);
+  background: var(--panel); color: var(--ink);
+  font-size: 0.82rem; font-weight: 600;
+}
+.theme-toggle:hover { border-color: var(--accent-2); }
+
+/* ---------- 공통 섹션 골격 ---------- */
+main { max-width: var(--page-w); margin: 0 auto; padding: 0 24px 80px; }
+.sec { padding: 76px 0 12px; scroll-margin-top: 84px; }
+.sec + .sec { border-top: 1px solid var(--rule); margin-top: 60px; }
+.sec-head { margin-bottom: 34px; }
+.sec-no {
+  display: inline-block; margin-bottom: 12px;
+  font-family: var(--font-serif); font-size: 0.85rem; color: var(--accent-2);
+  border: 1px solid var(--accent-2); border-radius: 3px;
+  padding: 2px 10px; letter-spacing: 0.2em;
+}
+.eyebrow {
+  margin: 0 0 6px; font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted);
+}
+.sec-head h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-serif); font-weight: 700;
+  font-size: clamp(1.6rem, 3.2vw, 2.3rem); letter-spacing: -0.01em;
+}
+.sec-note { margin: 0; max-width: 60ch; color: var(--ink-2); font-size: 0.94rem; }
+
+/* ---------- 버튼 ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px; border-radius: 8px;
+  border: 1px solid transparent;
+  font-weight: 700; font-size: 0.88rem; text-decoration: none;
+  transition: transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-ink { background: var(--accent-2); color: #FBF6EC; }
+.btn-ink:hover { filter: brightness(1.08); }
+.btn-ghost { background: transparent; border-color: var(--rule-strong); color: var(--ink); }
+.btn-ghost:hover { border-color: var(--accent-2); color: var(--accent-2); }
+
+/* ---------- 노선 칩(도서 스탬프) / 상태 스탬프 ---------- */
+.linechip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 3px 10px 3px 4px; border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+  background: var(--panel);
+  font-size: 0.74rem; font-weight: 700; color: var(--ink-2);
+  white-space: nowrap;
+}
+.linechip i {
+  font-style: normal; width: 20px; height: 20px; border-radius: 50%;
+  display: inline-grid; place-items: center;
+  color: #FFFDF8; font-size: 0.66rem; font-weight: 900;
+}
+.linechip.lb i { background: var(--lb-c); } .linechip.le i { background: var(--le-c); }
+.linechip.lt i { background: var(--lt-c); } .linechip.lw i { background: var(--lw-c); }
+.linechip.lr i { background: var(--lr-c); }
+
+.stamp {
+  display: inline-block; padding: 2px 10px;
+  border: 1.5px solid currentColor; border-radius: 3px;
+  font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em;
+  transform: rotate(-1deg);
+}
+.stamp-pub { color: var(--lw-t); }
+.stamp-draft { color: var(--muted); }
+.stamp-arch { color: var(--lt-t); }
+
+/* ============================================================
+   1. 스플래시 — 레터프레스 플랩 보드
+   ============================================================ */
+.splash-stage {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--rule);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  padding: clamp(26px, 4vw, 48px);
+}
+.splash-top { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
+.seal {
+  width: 62px; height: 62px; border-radius: 50%;
+  border: 2px solid var(--accent-2);
+  box-shadow: inset 0 0 0 4px var(--panel), inset 0 0 0 5.5px var(--accent-2);
+  display: grid; place-items: center;
+  color: var(--accent-2); font-family: var(--font-serif);
+  font-weight: 700; font-size: 0.95rem; letter-spacing: 0.05em;
+  transform: rotate(-4deg);
+  flex: 0 0 auto;
+}
+.splash-title h1 {
+  margin: 0; font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 4.2vw, 2.7rem); letter-spacing: 0.01em; font-weight: 700;
+}
+.splash-title p { margin: 4px 0 0; color: var(--ink-2); font-size: 0.92rem; }
+.splash-issue {
+  margin-left: auto; text-align: right; color: var(--muted); font-size: 0.8rem;
+  border-left: 1px solid var(--rule); padding-left: 18px;
+}
+.splash-issue strong { display: block; color: var(--ink); font-family: var(--font-serif); font-size: 1.05rem; }
+
+/* --- 플랩 보드 (레터프레스) --- */
+.flap-viewport { overflow-x: auto; padding-bottom: 4px; }
+.flap-board {
+  --fch: clamp(48px, 5.8vw, 68px);
+  --fcw: clamp(34px, 4.4vw, 50px);
+  --fgap: 5px;
+  --fr: 6px;
+  display: grid; gap: 13px;
+  width: max-content; min-width: 100%;
+  padding: clamp(16px, 2.6vw, 28px);
+  border-radius: 14px;
+  background: var(--flap-frame);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+.flap-row { display: grid; grid-template-columns: 100px 1fr; gap: 16px; align-items: center; }
+.flap-label { display: grid; gap: 1px; }
+.flap-label b { font-family: var(--font-serif); font-size: 1rem; letter-spacing: 0.14em; color: var(--flap-label); }
+.flap-label i { font-style: normal; font-size: 0.6rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--flap-label-sub); }
+.flap-cells { display: flex; gap: var(--fgap); }
+
+.fc {
+  position: relative; width: var(--fcw); height: var(--fch);
+  perspective: calc(var(--fch) * 4.4);
+  flex: 0 0 auto;
+}
+.fc::after {
+  content: ""; position: absolute; left: 1px; right: 1px;
+  top: calc(50% - 1px); height: 2px;
+  background: var(--flap-seam); z-index: 6;
+}
+.fh {
+  position: absolute; left: 0; right: 0; height: 50%;
+  overflow: hidden;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.fh b {
+  position: absolute; left: 0; right: 0; height: var(--fch);
+  display: grid; place-items: center;
+  font-family: var(--font-serif);
+  font-weight: 700; font-size: calc(var(--fch) * 0.56);
+  color: var(--flap-ink);
+  font-variant-numeric: tabular-nums;
+}
+.ft {
+  top: 0; border-radius: var(--fr) var(--fr) 2px 2px; transform-origin: 50% 100%;
+  background: var(--flap-tile-top);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.fb {
+  bottom: 0; border-radius: 2px 2px var(--fr) var(--fr); transform-origin: 50% 0%;
+  background: var(--flap-tile-bottom);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+}
+:root[data-theme="dark"] .ft { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07); }
+.ft b { top: 0; }
+.fb b { bottom: 0; }
+.tf, .bf { display: none; z-index: 4; will-change: transform; }
+.bf { z-index: 3; }
+
+.fc.run .tf {
+  display: block;
+  animation: waTop calc(var(--dur, 90ms) * 0.55) cubic-bezier(0.52, 0, 0.86, 0.4) forwards;
+}
+.fc.run .bf {
+  display: block;
+  transform: rotateX(89.8deg);
+  animation: waBottom calc(var(--dur, 90ms) * 0.6) cubic-bezier(0.15, 0.66, 0.24, 1) forwards;
+  animation-delay: calc(var(--dur, 90ms) * 0.38);
+}
+.fc.run.settle .bf {
+  animation-name: waBottomSettle;
+  animation-duration: calc(var(--dur, 90ms) * 0.78);
+  animation-timing-function: cubic-bezier(0.32, 0.4, 0.36, 1);
+}
+@keyframes waTop {
+  from { transform: rotateX(0deg); filter: brightness(1); }
+  to   { transform: rotateX(-89.8deg); filter: brightness(0.55); }
+}
+@keyframes waBottom {
+  from { transform: rotateX(89.8deg); filter: brightness(0.62); }
+  to   { transform: rotateX(0deg); filter: brightness(1); }
+}
+@keyframes waBottomSettle {
+  0%   { transform: rotateX(89.8deg); filter: brightness(0.62); }
+  55%  { transform: rotateX(0deg); filter: brightness(1.04); }
+  72%  { transform: rotateX(10.5deg); }
+  86%  { transform: rotateX(-2.5deg); }
+  100% { transform: rotateX(0deg); filter: brightness(1); }
+}
+
+.splash-caption {
+  margin-top: 18px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-size: 0.85rem; color: var(--ink-2);
+}
+.splash-caption::before { content: "※"; color: var(--accent-2); }
+.splash-foot { margin-top: 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.splash-foot .hint { color: var(--muted); font-size: 0.8rem; }
+.splash-foot .clock { margin-left: auto; color: var(--muted); font-size: 0.85rem; }
+
+/* ============================================================
+   2. 환승 홀 — 표지와 목차
+   ============================================================ */
+.wayfinding {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 11px 4px; margin-bottom: 30px;
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule-strong);
+  font-size: 0.84rem; color: var(--ink-2);
+}
+.wayfinding .here { font-weight: 800; color: var(--ink); }
+.wayfinding .here::before { content: "▸ "; color: var(--accent-2); }
+.wayfinding .sep { color: var(--rule-strong); }
+
+.cover {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+.cover-main { padding: clamp(28px, 4vw, 48px); position: relative; }
+.cover-issue {
+  display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em;
+  margin-bottom: 20px;
+}
+.cover-issue .linechip { transform: none; }
+.cover-main h3 {
+  margin: 0 0 14px;
+  font-family: var(--font-serif); font-weight: 700;
+  font-size: clamp(1.7rem, 3.6vw, 2.5rem); line-height: 1.28; letter-spacing: -0.005em;
+}
+.cover-main > p { margin: 0 0 26px; color: var(--ink-2); max-width: 44ch; font-size: 0.96rem; }
+.cover-stats {
+  display: flex; gap: 26px; flex-wrap: wrap; margin-bottom: 28px;
+  padding-top: 18px; border-top: 1px dotted var(--rule-strong);
+}
+.cover-stats article span { display: block; font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+.cover-stats article strong { font-family: var(--font-serif); font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+.cover-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.cover-toc {
+  border-left: 1px solid var(--rule);
+  background: var(--panel-2);
+  padding: clamp(24px, 3vw, 34px);
+  display: flex; flex-direction: column;
+}
+.cover-toc h4 {
+  margin: 0 0 14px; font-family: var(--font-serif);
+  font-size: 1.02rem; letter-spacing: 0.08em;
+}
+.toc-row {
+  display: flex; align-items: baseline; gap: 0;
+  padding: 10px 0; text-decoration: none;
+  font-size: 0.9rem;
+}
+.toc-row + .toc-row { border-top: 1px solid var(--rule); }
+.toc-row .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toc-row:hover .t { color: var(--accent-2); }
+.toc-row .leader { flex: 1; border-bottom: 1px dotted var(--rule-strong); margin: 0 10px; transform: translateY(-4px); min-width: 24px; }
+.toc-row .d { color: var(--muted); font-size: 0.78rem; font-variant-numeric: tabular-nums; flex: 0 0 auto; }
+.cover-toc .more { margin-top: auto; padding-top: 16px; font-size: 0.82rem; color: var(--accent); text-decoration: none; }
+.cover-toc .more:hover { text-decoration: underline; }
+
+/* 부록: 실험 노선 */
+.appendix-head { display: flex; align-items: baseline; gap: 12px; margin: 0 0 4px; }
+.appendix-head h3 { margin: 0; font-family: var(--font-serif); font-size: 1.15rem; }
+.appendix-head span { font-size: 0.78rem; color: var(--muted); }
+.appendix { border-top: 2px solid var(--ink); }
+.appx-row {
+  display: grid; grid-template-columns: 130px 1fr auto auto; gap: 18px; align-items: center;
+  padding: 16px 4px;
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.appx-row:hover { background: var(--panel-soft); }
+.appx-row .names strong { display: block; font-size: 0.98rem; }
+.appx-row .names small { color: var(--muted); font-size: 0.78rem; }
+.appx-row .st { font-size: 0.78rem; color: var(--ink-2); white-space: nowrap; }
+.appx-row .go { font-size: 0.84rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+.appx-row:hover .go { text-decoration: underline; }
+.junction-note { margin: 22px 0 0; font-size: 0.8rem; color: var(--muted); }
+.junction-note::before { content: "일러두기 — "; font-weight: 700; color: var(--ink-2); }
+
+/* ============================================================
+   3. 블로그 — 아카이브 목록 + 글 상세
+   ============================================================ */
+.archive-list { border-top: 2px solid var(--ink); margin-bottom: 70px; }
+.archive-item {
+  display: grid; gap: 8px;
+  padding: 26px 4px;
+  border-bottom: 1px solid var(--rule);
+}
+.archive-item h4 {
+  margin: 0; font-family: var(--font-serif); font-weight: 700;
+  font-size: 1.3rem; letter-spacing: -0.005em; line-height: 1.4;
+}
+.archive-item h4 a { text-decoration: none; }
+.archive-item h4 a:hover { color: var(--accent-2); text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+.archive-item .summary { margin: 0; color: var(--ink-2); font-size: 0.94rem; max-width: 70ch; }
+.archive-meta {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  font-size: 0.78rem; color: var(--muted); margin-top: 2px;
+}
+.archive-meta time { font-variant-numeric: tabular-nums; }
+.tag { color: var(--accent); }
+.tag::before { content: "#"; opacity: 0.6; }
+.archive-legend {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  padding: 16px 4px; font-size: 0.78rem; color: var(--muted);
+}
+
+/* 글 상세 */
+.post-detail { max-width: 700px; margin: 0 auto; }
+.post-kicker {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 18px;
+  font-size: 0.78rem; color: var(--muted);
+}
+.post-detail h1 {
+  margin: 0 0 16px;
+  font-family: var(--font-serif); font-weight: 700;
+  font-size: clamp(1.7rem, 3.8vw, 2.4rem); line-height: 1.32; letter-spacing: -0.005em;
+}
+.post-lead {
+  margin: 0 0 20px; font-size: 1.08rem; line-height: 1.8; color: var(--ink-2);
+  font-family: var(--font-serif);
+}
+.post-meta-line {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  padding: 12px 0; margin-bottom: 34px;
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.post-body {
+  font-family: var(--font-serif);
+  font-size: 1.04rem; line-height: 1.95; color: var(--ink);
+}
+.post-body p { margin: 0 0 1.3em; }
+.post-body h2 {
+  margin: 2.4em 0 0.8em; font-size: 1.42rem; font-weight: 700; letter-spacing: -0.005em;
+}
+.post-body h2::before { content: ""; display: block; width: 34px; height: 3px; background: var(--accent-2); margin-bottom: 14px; }
+.post-body h3 { margin: 2em 0 0.7em; font-size: 1.14rem; }
+.post-body ul { margin: 0 0 1.3em; padding-left: 1.4em; }
+.post-body li { margin-bottom: 0.45em; }
+.post-body li::marker { color: var(--accent-2); }
+.post-body code {
+  font-family: var(--font-mono); font-size: 0.82em;
+  background: var(--panel-soft); border: 1px solid var(--rule);
+  padding: 1px 6px; border-radius: 5px;
+}
+.post-body pre {
+  font-family: var(--font-mono);
+  background: var(--code-bg); color: var(--code-ink);
+  border-radius: 8px;
+  padding: 18px 22px; overflow-x: auto;
+  margin: 0 0 1.4em;
+  box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+.post-body pre code { background: none; border: 0; padding: 0; font-size: 0.82rem; line-height: 1.75; color: inherit; }
+.post-body blockquote {
+  margin: 0 0 1.4em; padding: 4px 0 4px 22px;
+  border-left: 3px solid var(--accent-2);
+  color: var(--ink-2); font-style: italic;
+}
+.post-body blockquote p { margin: 0; }
+.post-foot-nav {
+  display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+  margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--rule-strong);
+}
+
+/* ============================================================
+   4. 엘리베이터 승강장 샘플 (종이 위 사인 액센트)
+   ============================================================ */
+.station-sign {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.station-sign .band { height: 6px; background: var(--le-c); }
+.station-sign-in {
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 22px 28px;
+}
+.station-code {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 3px solid var(--le-c);
+  display: grid; place-items: center;
+  color: var(--le-t); font-weight: 900; font-size: 0.82rem;
+  flex: 0 0 auto;
+}
+.station-name h3 { margin: 0; font-family: var(--font-serif); font-size: 1.5rem; }
+.station-name small { display: block; font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); }
+.station-side { margin-left: auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 0.8rem; color: var(--ink-2); }
+.station-sub {
+  padding: 11px 28px;
+  border-top: 1px solid var(--rule);
+  background: var(--panel-2);
+  font-size: 0.8rem; color: var(--muted);
+  display: flex; gap: 14px; flex-wrap: wrap;
+}
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 22px; }
+.stat-tile {
+  border: 1px solid var(--rule); border-radius: var(--radius);
+  background: var(--panel); padding: 14px 16px;
+}
+.stat-tile span { display: block; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.stat-tile strong { font-family: var(--font-serif); font-size: 1.55rem; font-variant-numeric: tabular-nums; }
+.stat-tile small { color: var(--muted); font-size: 0.72rem; }
+.platform-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.panel {
+  border: 1px solid var(--rule); border-radius: var(--radius);
+  background: var(--panel); padding: 22px 24px;
+}
+.panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+.panel-head h4 { margin: 0; font-family: var(--font-serif); font-size: 1.05rem; }
+.panel-head span { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; }
+.car-row {
+  display: grid; grid-template-columns: 44px 1fr 84px; gap: 14px; align-items: center;
+  padding: 12px 0; border-bottom: 1px dotted var(--rule-strong);
+}
+.car-row:last-child { border-bottom: 0; }
+.car-id {
+  width: 40px; height: 40px; border-radius: 8px;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--le-c); color: var(--le-t);
+  font-weight: 800; font-size: 0.84rem;
+}
+.car-mid strong { font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+.car-mid small { display: block; color: var(--muted); font-size: 0.75rem; }
+.load-track {
+  height: 7px; border-radius: 4px; overflow: hidden;
+  background: var(--panel-soft); border: 1px solid var(--rule);
+  margin-top: 6px;
+}
+.load-track i { display: block; height: 100%; background: var(--le-c); }
+.car-pax { text-align: right; font-variant-numeric: tabular-nums; font-size: 0.85rem; color: var(--ink-2); }
+.preset-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.chip-btn {
+  padding: 8px 16px; border-radius: 999px;
+  border: 1px solid var(--rule-strong); background: transparent; color: var(--ink-2);
+  font-size: 0.84rem; font-weight: 600;
+}
+.chip-btn.active { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.slider-block { margin-bottom: 18px; }
+.slider-block label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--ink-2); margin-bottom: 8px; }
+input[type="range"] {
+  width: 100%; appearance: none; -webkit-appearance: none;
+  height: 5px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent) 0 62%, var(--rule) 62%);
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); border: 3px solid var(--panel);
+  box-shadow: 0 0 0 1px var(--rule-strong);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent); border: 3px solid var(--panel);
+}
+.queue-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.skeleton-note { margin-top: 14px; font-size: 0.76rem; color: var(--muted); }
+
+/* ============================================================
+   5. 모바일 미리보기
+   ============================================================ */
+.mobile-wrap { display: flex; gap: 36px; align-items: flex-start; flex-wrap: wrap; }
+.phone {
+  width: 390px; max-width: 100%;
+  border-radius: 36px;
+  border: 1px solid var(--rule-strong);
+  background: var(--bg-2);
+  padding: 12px;
+  box-shadow: var(--shadow);
+  flex: 0 0 auto;
+}
+.phone-notch { width: 110px; height: 8px; border-radius: 4px; background: var(--rule-strong); margin: 2px auto 10px; }
+.phone-screen {
+  border-radius: 24px; border: 1px solid var(--rule);
+  background: var(--bg);
+  height: 700px; overflow-y: auto;
+  display: flex; flex-direction: column;
+  scrollbar-width: thin;
+}
+.m-status {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 16px;
+  background: var(--head-bg);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.76rem; color: var(--ink-2);
+}
+.m-status .here { font-weight: 800; color: var(--ink); }
+.m-status .here::before { content: "▸ "; color: var(--accent-2); }
+.m-body { padding: 18px 16px; display: grid; gap: 18px; }
+.m-cover {
+  border: 1px solid var(--rule); border-radius: 14px;
+  background: var(--panel); box-shadow: var(--shadow);
+  padding: 20px; display: grid; gap: 10px;
+}
+.m-cover .issue { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.m-cover h4 { margin: 0; font-family: var(--font-serif); font-size: 1.3rem; line-height: 1.35; }
+.m-cover p { margin: 0; font-size: 0.82rem; color: var(--ink-2); }
+.m-toc { border-top: 1px solid var(--rule); padding-top: 6px; }
+.m-toc a { display: flex; align-items: baseline; padding: 8px 0; font-size: 0.82rem; text-decoration: none; }
+.m-toc a + a { border-top: 1px dotted var(--rule); }
+.m-toc .t { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-toc .leader { flex: 1; border-bottom: 1px dotted var(--rule-strong); margin: 0 8px; transform: translateY(-3px); min-width: 16px; }
+.m-toc .d { color: var(--muted); font-size: 0.72rem; font-variant-numeric: tabular-nums; }
+.m-appx { display: grid; }
+.m-appx header { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); padding: 0 2px 8px; }
+.m-appx .rows { border-top: 2px solid var(--ink); }
+.m-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 2px;
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none;
+}
+.m-row .names { flex: 1; min-width: 0; }
+.m-row .names strong { display: block; font-size: 0.9rem; }
+.m-row .names small { color: var(--muted); font-size: 0.72rem; }
+.m-row .chev { color: var(--muted); }
+.m-quick {
+  position: sticky; bottom: 0; margin-top: auto;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--head-bg);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--rule-strong);
+}
+.m-quick a { padding: 13px 6px; text-align: center; font-size: 0.74rem; font-weight: 700; color: var(--muted); text-decoration: none; }
+.m-quick a.on { color: var(--accent-2); }
+.mobile-notes { flex: 1; min-width: 260px; display: grid; gap: 0; align-content: start; border-top: 2px solid var(--ink); }
+.mobile-notes article { padding: 16px 4px; border-bottom: 1px solid var(--rule); }
+.mobile-notes strong { display: block; margin-bottom: 4px; font-size: 0.92rem; font-family: var(--font-serif); }
+.mobile-notes p { margin: 0; font-size: 0.84rem; color: var(--ink-2); }
+.mobile-notes .idx { color: var(--accent-2); margin-right: 8px; font-variant-numeric: tabular-nums; }
+
+/* ---------- 푸터 ---------- */
+.mock-foot {
+  max-width: var(--page-w); margin: 0 auto;
+  padding: 26px 24px 60px;
+  border-top: 1px solid var(--rule);
+  color: var(--muted); font-size: 0.78rem;
+  display: flex; gap: 16px; flex-wrap: wrap;
+}
+
+/* ---------- 반응형 ---------- */
+@media (max-width: 960px) {
+  .cover { grid-template-columns: 1fr; }
+  .cover-toc { border-left: 0; border-top: 1px solid var(--rule); }
+  .platform-grid { grid-template-columns: 1fr; }
+  .stat-row { grid-template-columns: repeat(2, 1fr); }
+  .appx-row { grid-template-columns: 110px 1fr auto; }
+  .appx-row .st { display: none; }
+}
+@media (max-width: 620px) {
+  .mock-head-in { padding: 10px 14px; gap: 10px; }
+  .mock-nav { display: none; }
+  main { padding: 0 14px 60px; }
+  .flap-row { grid-template-columns: 68px 1fr; gap: 8px; }
+  .appx-row { grid-template-columns: 1fr auto; }
+  .appx-row .linechip { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .btn, .appx-row { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="mock-head">
+  <div class="mock-head-in">
+    <div class="mock-id">
+      <span class="mock-badge">B</span>
+      <div>
+        <strong>시안 B · 종이 아카이브</strong>
+        <small>UX 전면 재작업 목업 · 2026-07-05</small>
+      </div>
+    </div>
+    <nav class="mock-nav">
+      <a href="#splash">스플래시</a>
+      <a href="#junction">환승 홀</a>
+      <a href="#blog">블로그</a>
+      <a href="#platform">승강장</a>
+      <a href="#mobile">모바일</a>
+    </nav>
+    <button type="button" class="theme-toggle" id="themeToggle">다크 모드로 보기</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ 1. 스플래시 ============ -->
+  <section id="splash" class="sec">
+    <div class="sec-head">
+      <span class="sec-no">제 1 장</span>
+      <p class="eyebrow">Splash</p>
+      <h2>레터프레스 행선판</h2>
+      <p class="sec-note">
+        같은 스플릿 플랩 기계 구조를 종이와 잉크 재질로 옮겼습니다. 크림색 판 위에 명조 활자가 넘어가고,
+        마지막 장은 반동과 함께 자리 잡습니다. 다크 모드에서는 야간 서고의 호두나무 판으로 바뀝니다.
+      </p>
+    </div>
+
+    <div class="splash-stage">
+      <div class="splash-top">
+        <span class="seal">기록</span>
+        <div class="splash-title">
+          <h1>workaround 기록 보관함</h1>
+          <p>개인 블로그가 본선, 시뮬레이터는 부록인 작업실 포털</p>
+        </div>
+        <div class="splash-issue">
+          <strong>제 3 호</strong>
+          2026년 7월 발행
+        </div>
+      </div>
+
+      <div class="flap-viewport">
+        <div class="flap-board" id="flapBoard" data-cells="10">
+          <div class="flap-row" data-value="기록 보관함">
+            <div class="flap-label"><b>표제</b><i>Title</i></div>
+            <div class="flap-cells"></div>
+          </div>
+          <div class="flap-row" data-value="공개 아카이브">
+            <div class="flap-label"><b>다음</b><i>Next</i></div>
+            <div class="flap-cells"></div>
+          </div>
+          <div class="flap-row" data-value="오늘도 한 편">
+            <div class="flap-label"><b>안내</b><i>Note</i></div>
+            <div class="flap-cells"></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="splash-caption">
+        이 보관함은 <span class="hl">개발 일지, 실험 기록, 회고</span>를 담습니다. 실제 포털에서는 10초 후 환승 홀로 자동 이동합니다.
+      </p>
+
+      <div class="splash-foot">
+        <button type="button" class="btn btn-ink" data-replay>다시 재생</button>
+        <button type="button" class="btn btn-ghost">바로 환승 홀로 →</button>
+        <span class="hint">플랩은 페이지를 열 때 자동으로 한 번 재생됩니다.</span>
+        <span class="clock num" id="clock">00:00:00</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. 환승 홀 ============ -->
+  <section id="junction" class="sec">
+    <div class="sec-head">
+      <span class="sec-no">제 2 장</span>
+      <p class="eyebrow">Main Junction</p>
+      <h2>환승 홀 — 표지와 목차</h2>
+      <p class="sec-note">
+        환승 홀이 잡지의 표지이자 목차가 됩니다. 블로그가 표지 기사(본선)이고,
+        시뮬레이터 노선은 부록 색인으로 정렬됩니다. 노선 배지는 도서 스탬프 같은 메타데이터 칩으로 물러납니다.
+      </p>
+    </div>
+
+    <div class="wayfinding">
+      <span class="here">지금 위치 · 환승 홀</span>
+      <span class="sep">/</span>
+      <span>열람 가능</span>
+      <span class="linechip lb"><i>B</i>블로그</span>
+      <span class="linechip le"><i>E</i>엘리베이터</span>
+      <span class="linechip lt"><i>T</i>택시</span>
+      <span class="linechip lw"><i>W</i>운영</span>
+      <span class="linechip lr"><i>R</i>런타임</span>
+      <span class="sep">/</span>
+      <span>게이트 정상</span>
+    </div>
+
+    <article class="cover">
+      <div class="cover-main">
+        <div class="cover-issue">
+          <span class="linechip lb"><i>B</i>Line B · 본선</span>
+          <span>workaround 기록 보관함 · 제 3 호 · 2026년 7월</span>
+        </div>
+        <h3>쓰다 보니 포털이 되었다<br>— 기록이 이 역의 본선입니다</h3>
+        <p>
+          개발하며 남긴 글, 시뮬레이터 실험 일지, 회고를 공개 아카이브로 정리합니다.
+          이 포털에 들어온 사람이 처음 만나는 것은 조작판이 아니라 글이어야 합니다.
+        </p>
+        <div class="cover-stats">
+          <article><span>공개</span><strong>5편</strong></article>
+          <article><span>초안</span><strong>2편</strong></article>
+          <article><span>최근 발행</span><strong>7월 4일</strong></article>
+        </div>
+        <div class="cover-ctas">
+          <a href="#blog" class="btn btn-ink">아카이브 들어가기 →</a>
+          <a href="#blog" class="btn btn-ghost">Writing Studio</a>
+        </div>
+      </div>
+      <aside class="cover-toc">
+        <h4>목차 — 최근 발행</h4>
+        <a class="toc-row" href="#blog">
+          <span class="t">택시 배차 시뮬레이터, 보상 함수 첫 설계</span>
+          <span class="leader"></span>
+          <span class="d">07-04</span>
+        </a>
+        <a class="toc-row" href="#blog">
+          <span class="t">스플릿 플랩 보드를 CSS 트랜스폼으로 다시 만들기</span>
+          <span class="leader"></span>
+          <span class="d">07-02</span>
+        </a>
+        <a class="toc-row" href="#blog">
+          <span class="t">엘리베이터 시뮬레이터, 워프 버그를 잡기까지</span>
+          <span class="leader"></span>
+          <span class="d">06-27</span>
+        </a>
+        <a class="toc-row" href="#blog">
+          <span class="t">Work Manager, 티켓 보드를 직접 만들며 배운 것</span>
+          <span class="leader"></span>
+          <span class="d">06-22</span>
+        </a>
+        <a class="more" href="#blog">공개 아카이브 전체 보기 →</a>
+      </aside>
+    </article>
+
+    <div class="appendix-head">
+      <h3>부록 — 실험 노선</h3>
+      <span>Appendix · 시뮬레이터와 운영 도구는 부록 색인으로 정렬</span>
+    </div>
+    <div class="appendix">
+      <a class="appx-row" href="#platform">
+        <span class="linechip le"><i>E</i>Line E</span>
+        <span class="names"><strong>엘리베이터 승강장</strong><small>23층 수직 시뮬레이터 · 승객 단위 수요와 연속 운행</small></span>
+        <span class="st">실시간 운행</span>
+        <span class="go">입장 →</span>
+      </a>
+      <a class="appx-row" href="#platform">
+        <span class="linechip lt"><i>T</i>Line T</span>
+        <span class="names"><strong>택시 구역</strong><small>9구역 도시 호출·배차·보상 루프 실험</small></span>
+        <span class="st">코어 가동</span>
+        <span class="go">입장 →</span>
+      </a>
+      <a class="appx-row" href="#platform">
+        <span class="linechip lw"><i>W</i>Line W</span>
+        <span class="names"><strong>운영 보드</strong><small>티켓 흐름과 명령 게이트 · 조회 공개, 실행은 게이트 뒤</small></span>
+        <span class="st">조회 공개</span>
+        <span class="go">열기 →</span>
+      </a>
+      <a class="appx-row" href="#platform">
+        <span class="linechip lr"><i>R</i>Line R</span>
+        <span class="names"><strong>런타임 보드</strong><small>노드 가용성 · 오프로드 규칙 · 저하 정책 요약</small></span>
+        <span class="st">정상</span>
+        <span class="go">보기 →</span>
+      </a>
+    </div>
+    <p class="junction-note">환승 홀은 표지와 목차만 맡습니다. 실제 조작은 각 승강장 페이지에서만 열립니다.</p>
+  </section>
+
+  <!-- ============ 3. 블로그 ============ -->
+  <section id="blog" class="sec">
+    <div class="sec-head">
+      <span class="sec-no">제 3 장</span>
+      <p class="eyebrow">Line B / Public Archive</p>
+      <h2>공개 아카이브</h2>
+      <p class="sec-note">
+        카드 상자를 걷어내고 서지 목록의 리듬으로 정렬했습니다.
+        정보 순서는 제목 → 요약 → 발행일 → 태그 → 상태 스탬프. 하나의 항목이 조용히 넓게 숨 쉽니다.
+      </p>
+    </div>
+
+    <div class="archive-list">
+      <article class="archive-item">
+        <h4><a href="#post-detail">택시 배차 시뮬레이터, 보상 함수 첫 설계</a></h4>
+        <p class="summary">9구역 도시에서 가까운 유휴 차량을 먼저 보내는 규칙과, 차량 추가 페널티의 균형을 잡는 실험 기록. 점수가 아니라 대기 시간을 먼저 봤다.</p>
+        <div class="archive-meta">
+          <time class="num">2026-07-04</time>
+          <span class="tag">시뮬레이터</span><span class="tag">강화학습</span>
+          <span class="stamp stamp-pub">공개</span>
+        </div>
+      </article>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">스플릿 플랩 보드를 CSS 트랜스폼으로 다시 만들기</a></h4>
+        <p class="summary">rotateX 반쪽 플랩과 열 단위 시차만으로 기계식 행선판의 손맛을 재현한 과정. 이징 곡선을 고르며 배운 것들.</p>
+        <div class="archive-meta">
+          <time class="num">2026-07-02</time>
+          <span class="tag">css</span><span class="tag">애니메이션</span><span class="tag">프런트엔드</span>
+          <span class="stamp stamp-pub">공개</span>
+        </div>
+      </article>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">엘리베이터 시뮬레이터, 워프 버그를 잡기까지</a></h4>
+        <p class="summary">같은 틱 안에서 car 가 세 층을 건너뛰던 문제를 보간 렌더링으로 풀었다. 시뮬레이션 틱과 화면 프레임은 서로 다른 시간이다.</p>
+        <div class="archive-meta">
+          <time class="num">2026-06-27</time>
+          <span class="tag">시뮬레이터</span><span class="tag">디버깅</span>
+          <span class="stamp stamp-pub">공개</span>
+        </div>
+      </article>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">Work Manager, 티켓 보드를 직접 만들며 배운 것</a></h4>
+        <p class="summary">Backlog 에서 Ready 로 넘기는 손맛, worker 가 가져가는 순간의 규칙. 작은 운영 도구에도 계약이 필요하다.</p>
+        <div class="archive-meta">
+          <time class="num">2026-06-22</time>
+          <span class="tag">운영</span><span class="tag">도구</span>
+          <span class="stamp stamp-pub">공개</span>
+        </div>
+      </article>
+
+      <article class="archive-item">
+        <h4><a href="#post-detail">개인 포털을 지하철 노선도로 설계한 이유</a></h4>
+        <p class="summary">기능이 늘어날 때마다 화면이 무거워졌다. 환승 홀과 승강장으로 책임을 나누자 비로소 길이 보이기 시작했다.</p>
+        <div class="archive-meta">
+          <time class="num">2026-06-15</time>
+          <span class="tag">설계</span><span class="tag">회고</span>
+          <span class="stamp stamp-pub">공개</span>
+        </div>
+      </article>
+
+      <div class="archive-legend">
+        <span>상태 스탬프 체계 —</span>
+        <span class="stamp stamp-pub">공개</span>
+        <span class="stamp stamp-draft">초안</span>
+        <span class="stamp stamp-arch">보관</span>
+        <span>공개 아카이브에는 「공개」만 노출됩니다. 초안·보관은 Writing Studio 안에서만 관리합니다.</span>
+      </div>
+    </div>
+
+    <article class="post-detail" id="post-detail">
+      <div class="post-kicker">
+        <span class="linechip lb"><i>B</i>Line B · 글 상세</span>
+        <span class="stamp stamp-pub">공개</span>
+      </div>
+      <h1>스플릿 플랩 보드를 CSS 트랜스폼으로 다시 만들기</h1>
+      <p class="post-lead">
+        페이드 인은 플랩이 아니다. 위 반쪽이 떨어지고 아래 반쪽이 받아내는 두 장의 판,
+        그 사이의 시차가 기계식 행선판의 전부라는 걸 다시 만들면서 알았다.
+      </p>
+      <div class="post-meta-line">
+        <span>2026-07-02 발행</span>
+        <span>2026-07-03 수정</span>
+        <span>읽기 6분</span>
+        <span>#css · #애니메이션 · #프런트엔드</span>
+      </div>
+
+      <div class="post-body">
+        <p>
+          처음 구현한 스플래시 보드는 타일이 한 번에 회전하며 나타나는 등장 연출이었다.
+          멀리서 보면 그럴듯했지만, 어느 순간부터 눈에 걸리기 시작했다. 실제 행선판은 글자가
+          「나타나는」 것이 아니라 「넘어가는」 것이기 때문이다.
+        </p>
+
+        <h2>반쪽 플랩의 구조</h2>
+        <p>
+          한 글자 셀은 네 장의 반쪽 판으로 구성된다. 고정된 위·아래 판 두 장, 그리고 회전하는
+          플랩 두 장. 위 플랩은 현재 글자를 안고 아래로 떨어지고, 아래 플랩은 다음 글자를 안고
+          올라와 정착한다.
+        </p>
+        <ul>
+          <li>위 고정판 — 다음 글자의 윗부분을 미리 보여준다</li>
+          <li>아래 고정판 — 현재 글자의 아랫부분을 유지한다</li>
+          <li>위 플랩 — 현재 글자를 안고 <code>rotateX(0 → -90deg)</code> 로 낙하</li>
+          <li>아래 플랩 — 다음 글자를 안고 <code>rotateX(90deg → 0)</code> 으로 착지</li>
+        </ul>
+
+        <pre><code>.flap.run .top    { animation: drop 90ms cubic-bezier(.52,0,.86,.4) forwards; }
+.flap.run .bottom { animation: land 120ms cubic-bezier(.15,.66,.24,1) forwards;
+                    animation-delay: 38ms; }
+
+@keyframes land {
+  0%   { transform: rotateX(90deg); }
+  55%  { transform: rotateX(0); }
+  72%  { transform: rotateX(10.5deg); }  /* 기계식 반동 */
+  100% { transform: rotateX(0); }
+}</code></pre>
+
+        <blockquote>
+          <p>애니메이션의 품질은 곡선이 아니라 멈추는 순간에서 결정된다. 판이 「탁」 하고 정착하는 반동 한 번이 전체 인상을 바꾼다.</p>
+        </blockquote>
+
+        <h3>시차와 리듬</h3>
+        <p>
+          모든 셀이 같은 박자로 넘어가면 오히려 디지털처럼 보인다. 열마다 <code>col * 55ms</code> 의
+          출발 시차를 주고, 셀마다 넘기는 중간 글자 수를 3~9장 사이에서 다르게 잡았다.
+          목적 글자에 먼저 도착한 셀이 멈춰 있는 동안 옆 셀이 계속 넘어가는 풍경이 만들어진다.
+        </p>
+
+        <h2>남은 일</h2>
+        <p>
+          모션 감소 설정을 켠 사용자에게는 회전 없이 결과만 보여주고, 저사양 기기에서 플랩 수를
+          줄이는 옵션을 검토 중이다. 다음 글에서는 이 보드를 실제 스플래시 전환과 연결한 기록을 남긴다.
+        </p>
+      </div>
+
+      <footer class="post-foot-nav">
+        <a class="btn btn-ghost" href="#blog">← 이전 글</a>
+        <a class="btn btn-ink" href="#blog">아카이브로</a>
+        <a class="btn btn-ghost" href="#blog">다음 글 →</a>
+      </footer>
+    </article>
+  </section>
+
+  <!-- ============ 4. 엘리베이터 승강장 ============ -->
+  <section id="platform" class="sec">
+    <div class="sec-head">
+      <span class="sec-no">제 4 장</span>
+      <p class="eyebrow">Line E / Elevator Station</p>
+      <h2>승강장 페이지 상속 샘플</h2>
+      <p class="sec-note">
+        종이 무드 안에서도 기능 페이지는 사인 액센트(노선색 띠, 역 코드)를 유지합니다.
+        헤더는 역명판, 본문은 서류철 위의 계기판처럼 정렬합니다.
+      </p>
+    </div>
+
+    <div class="station-sign">
+      <div class="band"></div>
+      <div class="station-sign-in">
+        <span class="station-code">E01</span>
+        <div class="station-name">
+          <h3>엘리베이터 승강장</h3>
+          <small>Elevator Station</small>
+        </div>
+        <div class="station-side">
+          <span class="stamp stamp-pub" style="transform:none">실시간 운행</span>
+          <a class="btn btn-ghost" href="#junction" style="padding:7px 12px; font-size:0.78rem;">환승 홀로 나가기</a>
+        </div>
+      </div>
+      <div class="station-sub">
+        <span>← 환승 홀</span>
+        <span>현재 역 · 엘리베이터 승강장</span>
+        <span>택시 구역 →</span>
+        <span style="margin-left:auto">23층 · car 4대 · 정원 20명</span>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-tile"><span>대기 승객</span><strong class="num">14</strong> <small>명</small></div>
+      <div class="stat-tile"><span>탑승 중</span><strong class="num">23</strong> <small>명</small></div>
+      <div class="stat-tile"><span>운행 car</span><strong class="num">4</strong> <small>대</small></div>
+      <div class="stat-tile"><span>평균 대기</span><strong class="num">18</strong> <small>초</small></div>
+    </div>
+
+    <div class="platform-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <h4>운행 현황</h4>
+          <span>Shaft Status</span>
+        </div>
+        <div class="car-row">
+          <span class="car-id">E1</span>
+          <div class="car-mid">
+            <strong>▲ 12.42F</strong>
+            <small>상행 · 다음 정차 15F</small>
+            <div class="load-track"><i style="width:45%"></i></div>
+          </div>
+          <span class="car-pax num">9 / 20</span>
+        </div>
+        <div class="car-row">
+          <span class="car-id">E2</span>
+          <div class="car-mid">
+            <strong>▼ 7.08F</strong>
+            <small>하행 · 다음 정차 3F</small>
+            <div class="load-track"><i style="width:70%"></i></div>
+          </div>
+          <span class="car-pax num">14 / 20</span>
+        </div>
+        <div class="car-row">
+          <span class="car-id">E3</span>
+          <div class="car-mid">
+            <strong>▲ 20.85F</strong>
+            <small>상행 · 다음 정차 23F</small>
+            <div class="load-track"><i style="width:15%"></i></div>
+          </div>
+          <span class="car-pax num">3 / 20</span>
+        </div>
+        <div class="car-row">
+          <span class="car-id">E4</span>
+          <div class="car-mid">
+            <strong>■ 1.00F</strong>
+            <small>대기 · 로비 정차</small>
+            <div class="load-track"><i style="width:0%"></i></div>
+          </div>
+          <span class="car-pax num">0 / 20</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h4>수요 조작</h4>
+          <span>Demand Control</span>
+        </div>
+        <div class="preset-row">
+          <button type="button" class="chip-btn">한산</button>
+          <button type="button" class="chip-btn active">보통</button>
+          <button type="button" class="chip-btn">혼잡</button>
+        </div>
+        <div class="slider-block">
+          <label><span>수요 강도</span><span class="num">62</span></label>
+          <input type="range" min="0" max="100" value="62" aria-label="수요 강도">
+        </div>
+        <div class="slider-block">
+          <label><span>car 수</span><span class="num">4대</span></label>
+          <input type="range" min="2" max="6" value="4" aria-label="car 수" style="background: linear-gradient(90deg, var(--accent) 0 50%, var(--rule) 50%);">
+        </div>
+        <div class="queue-btns">
+          <button type="button" class="btn btn-ink">상행 1명 추가</button>
+          <button type="button" class="btn btn-ghost">하행 1명 추가</button>
+          <button type="button" class="btn btn-ghost">리셋</button>
+        </div>
+        <p class="skeleton-note">이 패널은 레이아웃 상속 확인용 스켈레톤입니다. 실제 수치·조작은 구현 단계에서 연결합니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. 모바일 미리보기 ============ -->
+  <section id="mobile" class="sec">
+    <div class="sec-head">
+      <span class="sec-no">제 5 장</span>
+      <p class="eyebrow">Mobile Restack</p>
+      <h2>모바일 재배치</h2>
+      <p class="sec-note">
+        모바일에서 표지는 문고판 판형으로 다시 짭니다. 상태 한 줄 → 표지 카드 → 부록 색인 → 하단 빠른 환승 순서.
+        축소가 아니라 판형 전환입니다.
+      </p>
+    </div>
+
+    <div class="mobile-wrap">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="m-status">
+            <span class="here">환승 홀</span>
+            <span>·</span>
+            <span>게이트 정상</span>
+            <span style="margin-left:auto" class="num">21:04</span>
+          </div>
+          <div class="m-body">
+            <article class="m-cover">
+              <span class="issue"><span class="linechip lb"><i>B</i>본선</span> 기록 보관함 · 제 3 호</span>
+              <h4>쓰다 보니 포털이 되었다</h4>
+              <p>공개 5편 · 초안 2편 · 최근 발행 7월 4일</p>
+              <div class="m-toc">
+                <a href="#blog"><span class="t">택시 배차, 보상 함수 첫 설계</span><span class="leader"></span><span class="d">07-04</span></a>
+                <a href="#blog"><span class="t">스플릿 플랩 보드 다시 만들기</span><span class="leader"></span><span class="d">07-02</span></a>
+                <a href="#blog"><span class="t">워프 버그를 잡기까지</span><span class="leader"></span><span class="d">06-27</span></a>
+              </div>
+              <a class="btn btn-ink" href="#blog" style="justify-content:center">아카이브 들어가기 →</a>
+            </article>
+
+            <div class="m-appx">
+              <header>부록 — 실험 노선</header>
+              <div class="rows">
+                <a class="m-row" href="#platform">
+                  <span class="linechip le"><i>E</i></span>
+                  <span class="names"><strong>엘리베이터 승강장</strong><small>실시간 운행 · 대기 14명</small></span>
+                  <span class="chev">›</span>
+                </a>
+                <a class="m-row" href="#platform">
+                  <span class="linechip lt"><i>T</i></span>
+                  <span class="names"><strong>택시 구역</strong><small>코어 가동 · 요청 3건</small></span>
+                  <span class="chev">›</span>
+                </a>
+                <a class="m-row" href="#platform">
+                  <span class="linechip lw"><i>W</i></span>
+                  <span class="names"><strong>운영 보드</strong><small>조회 공개 · Ready 2건</small></span>
+                  <span class="chev">›</span>
+                </a>
+                <a class="m-row" href="#platform">
+                  <span class="linechip lr"><i>R</i></span>
+                  <span class="names"><strong>런타임 보드</strong><small>정상 · 노드 2개</small></span>
+                  <span class="chev">›</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <nav class="m-quick">
+            <a class="on" href="#junction">환승 홀</a>
+            <a href="#blog">아카이브</a>
+            <a href="#platform">승강장</a>
+          </nav>
+        </div>
+      </div>
+
+      <div class="mobile-notes">
+        <article>
+          <strong><span class="idx">1.</span>상태 한 줄</strong>
+          <p>현재 위치와 게이트 상태를 상단 고정 스트립으로 요약합니다. 서지 정보처럼 얇고 조용하게.</p>
+        </article>
+        <article>
+          <strong><span class="idx">2.</span>표지는 문고판으로</strong>
+          <p>데스크톱의 표지+목차 2단 구성이 모바일에서는 문고판 한 권(표지 카드 + 접힌 목차)으로 재조판됩니다.</p>
+        </article>
+        <article>
+          <strong><span class="idx">3.</span>부록은 색인으로</strong>
+          <p>실험 노선 4종은 카드가 아니라 색인 행으로 접힙니다. 스탬프 칩과 한 줄 상태만 남깁니다.</p>
+        </article>
+        <article>
+          <strong><span class="idx">4.</span>하단 빠른 환승</strong>
+          <p>엄지 범위 하단 바에 환승 홀 · 아카이브 · 승강장 세 목적지만 둡니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="mock-foot">
+  <span>design/mockups/2026-07-05/variant-b-paper-archive.html</span>
+  <span>검토 방법 — 상단 토글로 라이트/다크 확인 · 스플래시 「다시 재생」으로 플랩 반복 확인 · 창 폭을 줄여 재조판 확인</span>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- 테마 토글 ---------- */
+  var root = document.documentElement;
+  var toggle = document.getElementById("themeToggle");
+  function syncToggleLabel() {
+    toggle.textContent = root.dataset.theme === "dark" ? "라이트 모드로 보기" : "다크 모드로 보기";
+  }
+  toggle.addEventListener("click", function () {
+    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+    syncToggleLabel();
+  });
+  syncToggleLabel();
+
+  /* ---------- 시계 ---------- */
+  var clockEl = document.getElementById("clock");
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function tick() {
+    var d = new Date();
+    clockEl.textContent = pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  /* ---------- 스플릿 플랩 엔진 ----------
+     시안 A 와 같은 기계 구조. 종이 재질에 맞게 낙하 음영을 얕게 조정. */
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var LATIN = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  var DIGIT = " 0123456789";
+  var HANGUL = " 가나다라마바사아자차카타파하개내대래배새애재체초코토포호구두루무부수우주추후기니디리미비시이지치키티피히기록보관함아카이브";
+
+  function charsetFor(ch) {
+    if (/[0-9]/.test(ch)) return DIGIT;
+    if (/[가-힣]/.test(ch)) return HANGUL;
+    return LATIN;
+  }
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function Cell(col) {
+    var el = document.createElement("span");
+    el.className = "fc";
+    el.innerHTML =
+      '<span class="fh ft st"><b></b></span>' +
+      '<span class="fh fb sb"><b></b></span>' +
+      '<span class="fh ft tf"><b></b></span>' +
+      '<span class="fh fb bf"><b></b></span>';
+    this.el = el;
+    this.col = col;
+    this.curr = " ";
+    var bs = el.querySelectorAll("b");
+    this.gTopStatic = bs[0];
+    this.gBottomStatic = bs[1];
+    this.gTopFlap = bs[2];
+    this.gBottomFlap = bs[3];
+    this.bf = el.querySelector(".bf");
+    this.gen = 0;
+  }
+  Cell.prototype.show = function (ch) {
+    this.curr = ch;
+    var d = ch === " " ? "" : ch;
+    this.gTopStatic.textContent = d;
+    this.gBottomStatic.textContent = d;
+  };
+  Cell.prototype.flip = function (next, dur, settle) {
+    var self = this;
+    return new Promise(function (resolve) {
+      if (next === self.curr) { resolve(); return; }
+      var cd = self.curr === " " ? "" : self.curr;
+      var nd = next === " " ? "" : next;
+      self.gTopStatic.textContent = nd;
+      self.gBottomStatic.textContent = cd;
+      self.gTopFlap.textContent = cd;
+      self.gBottomFlap.textContent = nd;
+      self.el.style.setProperty("--dur", dur.toFixed(0) + "ms");
+      self.el.classList.remove("run", "settle");
+      void self.el.offsetWidth;
+      if (settle) self.el.classList.add("settle");
+      self.el.classList.add("run");
+      var done = false;
+      function finish() {
+        if (done) return;
+        done = true;
+        self.bf.removeEventListener("animationend", onEnd);
+        self.el.classList.remove("run", "settle");
+        self.show(next);
+        resolve();
+      }
+      function onEnd(e) { if (e.target === self.bf) finish(); }
+      self.bf.addEventListener("animationend", onEnd);
+      setTimeout(finish, dur * 2.6 + 140);
+    });
+  };
+
+  function buildBoard(boardEl) {
+    var cellCount = parseInt(boardEl.getAttribute("data-cells"), 10) || 10;
+    var rows = [];
+    boardEl.querySelectorAll(".flap-row").forEach(function (rowEl) {
+      var value = rowEl.getAttribute("data-value") || "";
+      var holder = rowEl.querySelector(".flap-cells");
+      var cells = [];
+      for (var i = 0; i < cellCount; i++) {
+        var c = new Cell(i);
+        holder.appendChild(c.el);
+        cells.push(c);
+      }
+      rows.push({ value: value, cells: cells });
+    });
+    return { el: boardEl, rows: rows, gen: 0 };
+  }
+
+  function playBoard(board) {
+    board.gen += 1;
+    var gen = board.gen;
+    board.rows.forEach(function (row, r) {
+      row.cells.forEach(function (cell, i) {
+        cell.gen = gen;
+        var target = row.value.charAt(i) || " ";
+        if (REDUCED) { cell.show(target); return; }
+        var delay = 340 + r * 190 + i * 62 + rand(0, 40);   /* 종이판: 조금 느긋한 시차 */
+        var step = 92 + rand(-8, 14);
+        setTimeout(function () {
+          if (cell.gen !== gen) return;
+          var set = charsetFor(target);
+          var spins = target === " "
+            ? (Math.random() < 0.3 ? 1 : 0)
+            : 3 + (i % 3) + Math.floor(Math.random() * 3);
+          var seq = [];
+          for (var k = 0; k < spins; k++) {
+            seq.push(set.charAt(1 + Math.floor(Math.random() * (set.length - 1))));
+          }
+          seq.push(target);
+          var p = Promise.resolve();
+          seq.forEach(function (ch, idx) {
+            p = p.then(function () {
+              if (cell.gen !== gen) return;
+              var last = idx === seq.length - 1;
+              return cell.flip(ch, last ? 360 : step, last);
+            });
+          });
+        }, delay);
+      });
+    });
+  }
+
+  var board = buildBoard(document.getElementById("flapBoard"));
+  document.querySelectorAll("[data-replay]").forEach(function (btn) {
+    btn.addEventListener("click", function () { playBoard(board); });
+  });
+  window.addEventListener("load", function () { playBoard(board); });
+})();
+</script>
+</body>
+</html>

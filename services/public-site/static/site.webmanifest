@@ -1,0 +1,9 @@
+{
+  "name": "workaround.co.kr",
+  "short_name": "workaround",
+  "display": "standalone",
+  "start_url": "/",
+  "background_color": "#f2ede1",
+  "theme_color": "#0f5b4f",
+  "description": "workaround.co.kr 공개 소개 페이지"
+}

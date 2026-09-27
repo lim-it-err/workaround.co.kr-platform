@@ -1,0 +1,47 @@
+# Node / frontend generated files
+frontend/node_modules/
+frontend/dist/
+*.voyage-backup.json
+
+# Local toolchain / runtime caches
+tools/downloads/
+tools/runtime/
+tools/local-node/
+
+# Java / Python generated files
+gateway/target/
+services/**/__pycache__/
+*.pyc
+
+# Local preview runtime artifacts
+tmp/
+.codex-preview/
+
+# Local Codex verification artifacts
+.codex-vite-7000.log
+.codex-vite-7000.err.log
+.codex-vite-7000.pid
+.codex-gateway-8080.log
+.codex-gateway-8080.err.log
+.codex-gateway-8080.pid
+.codex-elevator-8003.log
+.codex-elevator-8003.err.log
+.codex-elevator-8003.pid
+
+# Gateway runtime data (work manager file store)
+gateway/data/
+
+# Public ingress secrets / local deployment values
+infra/public-site/.env.public-site
+infra/public-site/secrets/
+
+# Codex worker worktrees
+.worktrees/
+
+# ETS2 ADAS PoC — 로컬 산출물·개인 설정 (services/ets2-adas)
+services/ets2-adas/bin/
+services/ets2-adas/vendor/
+services/ets2-adas/backups/
+services/ets2-adas/runtime/
+services/ets2-adas/.build/
+services/ets2-adas/.env

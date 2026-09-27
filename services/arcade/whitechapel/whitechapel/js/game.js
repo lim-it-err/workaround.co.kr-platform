@@ -1,0 +1,349 @@
+// 게임 규칙 엔진 — 플레이어는 경찰(순찰대 5), AI는 잭.
+//
+// 한 밤(night)의 구조:
+//   1) 잭이 살인 후보지 중 한 곳에서 살인 (위치 공개)
+//   2) 잭 이동(비공개, 이동 종류만 공개) → 경찰 턴(순찰대별 최대 2칸 이동 + 수색/체포 1회) 반복
+//   3) 잭이 은신처에 도착하면 밤 종료. 15번째 이동까지 못 돌아가면 새벽에 검거(경찰 승)
+//   4) 4번의 밤을 모두 버티면 잭 승리
+//
+// 잭의 특수 이동(선언은 공개, 목적지는 비공개):
+//   - 마차(총 3회): 한 턴에 지점 2칸 이동, 경찰이 선 교차점도 통과 가능
+//   - 골목(총 2회): 같은 블록에 접한 다른 지점으로 순간 이동
+
+import { decideJackMove, chooseHideout, chooseMurderSite, pickPersona } from './ai.js';
+
+export const MOVES_PER_NIGHT = 15;
+export const NIGHTS = 4;
+
+export const DIFFICULTY = {
+  easy: { key: 'easy', name: '쉬움', maxDepth: 1, noise: 35, dangerMul: 0.5, sonnet: false },
+  medium: { key: 'medium', name: '보통', maxDepth: 3, noise: 6, dangerMul: 1, sonnet: false },
+  // 어려움: LLM 없이 강하게 —
+  //  깊이 4 탐색 + 밤마다 무작위 성향(페르소나) + 경찰의 실제 지식(추정 위치)을 반영한
+  //  상대 모델 + 상위 수 무작위 혼합(패턴 읽기 방지)
+  hard: {
+    key: 'hard', name: '어려움', maxDepth: 4, noise: 0, sonnet: false,
+    personas: true, beliefModel: true, mixedTopK: true,
+  },
+  nightmare: { key: 'nightmare', name: '악몽 (Sonnet)', maxDepth: 0, noise: 0, sonnet: true },
+};
+
+export class Game {
+  constructor(board, difficultyKey) {
+    this.board = board;
+    this.diff = DIFFICULTY[difficultyKey];
+    this.patrols = board.policeStarts.map((c, i) => ({
+      id: i, crossing: c, stepsLeft: 0, acted: true,
+    }));
+    this.fullPatrols = this.patrols;
+    this.night = 0;
+    // 맵 확장 + 스윕 수색 규칙에 맞춘 특수 이동 수량 (마차 4, 골목 3)
+    this.jack = { hideout: null, pos: null, path: [], movesUsed: 0, coaches: 4, alleys: 3 };
+    this.usedMurderSites = [];
+    this.cluesPos = new Set(); // 이번 밤: 단서 발견된 지점
+    this.cluesNeg = new Set(); // 이번 밤: 수색했지만 흔적 없던 지점
+    this.negHistory = []; // {circle, atMove} — 추정 위치 계산용
+    this.arrestFails = []; // {circle, atMove}
+    this.declared = []; // 이번 밤 잭 이동 종류 목록: 'move'|'coach'|'alley'
+    this.allPaths = []; // 밤별 잭 이동 경로(게임 종료 시 공개)
+    this.events = []; // 리뷰(기보) 내보내기용 구조화 이벤트
+    this.log = [];
+    // setup|chooseHideout|chooseMurder|jack|police|nightEnd|gameOver
+    this.phase = 'setup';
+    this.winner = null; // 'police'|'jack'
+    this.lastJackDecl = null;
+    this.jackMode = 'ai'; // 'ai' | 'manual' (잭 플레이 모드)
+  }
+
+  addLog(msg, cls = '') {
+    this.log.push({ msg, cls, night: this.night });
+  }
+
+  startGame() {
+    if (this.jackMode === 'manual') {
+      // 잭 플레이 모드에서는 난이도가 곧 투입 순찰대 규모다 (스윕 수색이 강력하므로)
+      const squads = { easy: 2, medium: 3, hard: 5 }[this.diff.key] ?? 5;
+      this.patrols = this.fullPatrols.slice(0, squads);
+      this.phase = 'chooseHideout';
+      this.addLog('당신이 잭입니다. 은신처로 쓸 지점을 선택하세요 (살인 후보지와 그 인접은 불가).', 'jack');
+      return;
+    }
+    this.jack.hideout = chooseHideout(this);
+    this.addLog('잭이 은신처를 정했습니다. 위치는 게임이 끝날 때까지 비밀입니다.', 'jack');
+    this.startNight();
+  }
+
+  // 잭 플레이 모드: 은신처 직접 선택
+  hideoutSelectable(circleId) {
+    const murderSet = new Set(this.board.murderSites);
+    if (murderSet.has(circleId)) return false;
+    return !this.board.circleAdj[circleId].some((e) => murderSet.has(e.to));
+  }
+
+  setHideout(circleId) {
+    if (this.phase !== 'chooseHideout' || !this.hideoutSelectable(circleId)) return false;
+    this.jack.hideout = circleId;
+    this.addLog(`은신처를 ${this.board.circles[circleId].num}번 지점으로 정했습니다. 경찰에게는 비밀입니다.`, 'jack');
+    this.startNight();
+    return true;
+  }
+
+  startNight() {
+    this.night++;
+    if (this.jackMode === 'manual') {
+      this.phase = 'chooseMurder';
+      this.addLog(`${this.night}번째 밤 — 범행 장소(붉은 지점)를 선택하세요.`, 'jack');
+      return;
+    }
+    this.beginNight(chooseMurderSite(this));
+  }
+
+  // 잭 플레이 모드: 살인 지점 직접 선택
+  setMurderSite(circleId) {
+    if (this.phase !== 'chooseMurder') return false;
+    if (!this.board.murderSites.includes(circleId) || this.usedMurderSites.includes(circleId)) return false;
+    this.beginNight(circleId);
+    return true;
+  }
+
+  beginNight(site) {
+    this.usedMurderSites.push(site);
+    this.jack.pos = site;
+    this.jack.path = [site];
+    this.jack.movesUsed = 0;
+    this.declared = [];
+    this.cluesPos.clear();
+    this.cluesNeg.clear();
+    this.negHistory = [];
+    this.arrestFails = [];
+    this.persona = this.diff.personas ? pickPersona() : null;
+    this.phase = 'jack';
+    this.events.push({ t: 'night', night: this.night, site });
+    this.addLog(`${this.night}번째 밤 — ${this.board.circles[site].num}번 지점에서 살인이 일어났습니다!`, 'murder');
+  }
+
+  // 잭의 합법 이동 후보 (AI에서도 사용)
+  legalJackMoves(pos = this.jack.pos, coaches = this.jack.coaches, alleys = this.jack.alleys, patrols = this.patrols) {
+    const occupied = new Set(patrols.map((p) => p.crossing));
+    const out = [];
+    for (const { to, via } of this.board.circleAdj[pos]) {
+      if (!occupied.has(via)) out.push({ type: 'move', to, mid: null });
+    }
+    if (coaches > 0) {
+      const seen = new Set();
+      for (const { to: m } of this.board.circleAdj[pos]) {
+        for (const { to } of this.board.circleAdj[m]) {
+          if (to === pos || seen.has(to)) continue;
+          seen.add(to);
+          out.push({ type: 'coach', to, mid: m });
+        }
+      }
+    }
+    if (alleys > 0) {
+      for (const to of this.board.alleyMates[pos]) {
+        out.push({ type: 'alley', to, mid: null });
+      }
+    }
+    return out;
+  }
+
+  // 잭 플레이 모드: 플레이어가 고른 수를 적용 (없는 수면 거부)
+  async playJackMove(to, type) {
+    if (this.phase !== 'jack' || this.jackMode !== 'manual') return false;
+    const move = this.legalJackMoves().find((m) => m.to === to && m.type === type);
+    if (!move) return false;
+    return this.applyJackMove(move);
+  }
+
+  async jackTurn() {
+    const move = await decideJackMove(this);
+    return this.applyJackMove(move);
+  }
+
+  applyJackMove(move) {
+    if (!move) {
+      this.winner = 'police';
+      this.phase = 'gameOver';
+      this.allPaths.push([...this.jack.path]);
+      this.events.push({ t: 'end', winner: 'police', reason: 'trapped', night: this.night });
+      this.addLog('잭이 순찰대에 포위되어 움직이지 못했습니다. 검거 성공!', 'win');
+      return false;
+    }
+    this.events.push({
+      t: 'jack', night: this.night, moveNo: this.jack.movesUsed + 1,
+      kind: move.type, from: this.jack.pos, mid: move.mid, to: move.to,
+    });
+    if (move.type === 'coach') {
+      this.jack.coaches--;
+      this.jack.path.push(move.mid, move.to);
+      this.addLog(`잭이 마차를 탔습니다. (이동 ${this.jack.movesUsed + 1}/${MOVES_PER_NIGHT}, 남은 마차 ${this.jack.coaches})`, 'jack');
+    } else if (move.type === 'alley') {
+      this.jack.alleys--;
+      this.jack.path.push(move.to);
+      this.addLog(`잭이 골목으로 사라졌습니다. (이동 ${this.jack.movesUsed + 1}/${MOVES_PER_NIGHT}, 남은 골목 ${this.jack.alleys})`, 'jack');
+    } else {
+      this.jack.path.push(move.to);
+      this.addLog(`잭이 이동했습니다. (이동 ${this.jack.movesUsed + 1}/${MOVES_PER_NIGHT})`, 'jack');
+    }
+    this.jack.pos = move.to;
+    this.jack.movesUsed++;
+    this.declared.push(move.type);
+    this.lastJackDecl = move.type;
+
+    if (this.jack.pos === this.jack.hideout) {
+      this.endNight();
+      return true;
+    }
+    if (this.jack.movesUsed >= MOVES_PER_NIGHT) {
+      this.winner = 'police';
+      this.phase = 'gameOver';
+      this.allPaths.push([...this.jack.path]);
+      this.events.push({ t: 'end', winner: 'police', reason: 'dawn', night: this.night });
+      this.addLog('동이 텄습니다. 은신처로 돌아가지 못한 잭이 검거되었습니다!', 'win');
+      return true;
+    }
+    this.phase = 'police';
+    for (const p of this.patrols) { p.stepsLeft = 2; p.acted = false; }
+    return true;
+  }
+
+  endNight() {
+    this.allPaths.push([...this.jack.path]);
+    this.events.push({ t: 'nightEnd', night: this.night, moves: this.jack.movesUsed });
+    if (this.night >= NIGHTS) {
+      this.winner = 'jack';
+      this.phase = 'gameOver';
+      this.events.push({ t: 'end', winner: 'jack', reason: 'survived', night: this.night });
+      this.addLog('잭이 마지막 밤에도 은신처로 사라졌습니다. 잭의 승리...', 'lose');
+    } else {
+      this.phase = 'nightEnd';
+      this.addLog(`잭이 은신처에 도착했습니다. ${this.night}번째 밤이 끝났습니다.`, 'night');
+    }
+  }
+
+  // 순찰대 이동: stepsLeft 이내로 도달 가능한 교차점 집합
+  patrolReachable(patrol) {
+    const occupied = new Set(this.patrols.filter((p) => p.id !== patrol.id).map((p) => p.crossing));
+    const dist = new Map([[patrol.crossing, 0]]);
+    const q = [patrol.crossing];
+    const out = new Set();
+    for (let qi = 0; qi < q.length; qi++) {
+      const u = q[qi];
+      const d = dist.get(u);
+      if (d >= patrol.stepsLeft) continue;
+      for (const v of this.board.crossingAdj[u]) {
+        if (!dist.has(v)) {
+          dist.set(v, d + 1);
+          q.push(v);
+          if (!occupied.has(v)) out.add(v);
+        }
+      }
+    }
+    return out;
+  }
+
+  movePatrol(patrolId, targetCrossing) {
+    const p = this.patrols[patrolId];
+    // 순서 규칙: 이동 → 행동. 이미 수색/체포한 순찰대는 이 턴에 더 움직일 수 없다.
+    if (this.phase !== 'police' || p.acted || !this.patrolReachable(p).has(targetCrossing)) return false;
+    this.events.push({
+      t: 'pmove', night: this.night, moveNo: this.jack.movesUsed,
+      pid: p.id, from: p.crossing, to: targetCrossing,
+    });
+    p.crossing = targetCrossing;
+    p.stepsLeft = 0;
+    return true;
+  }
+
+  patrolAdjacentCircles(patrol) {
+    return this.board.circlesAt[patrol.crossing];
+  }
+
+  // 수색: 원작처럼 인접 지점을 번호 순서로 차례차례 확인하고, 단서가 나오면 멈춘다.
+  // 체포: 지정한 인접 지점 1곳을 덮친다.
+  policeAction(patrolId, kind, circleId = null) {
+    const p = this.patrols[patrolId];
+    if (this.phase !== 'police' || p.acted) return false;
+    if (kind === 'search') {
+      const adj = [...this.patrolAdjacentCircles(p)]
+        .sort((a, b) => this.board.circles[a].num - this.board.circles[b].num);
+      if (adj.length === 0) return false;
+      p.acted = true;
+      p.stepsLeft = 0; // 이동 → 행동 순서: 행동하면 이동 기회 소멸
+      const results = [];
+      let hit = null;
+      for (const c of adj) {
+        const found = this.jack.path.includes(c);
+        results.push({ circle: c, found });
+        if (found) {
+          this.cluesPos.add(c);
+          hit = c;
+          break;
+        }
+        this.cluesNeg.add(c);
+        this.negHistory.push({ circle: c, atMove: this.jack.movesUsed });
+      }
+      this.events.push({ t: 'search', night: this.night, moveNo: this.jack.movesUsed, pid: p.id, results });
+      if (hit !== null) {
+        this.addLog(`순찰대 ${p.id + 1}이(가) 주변을 수색하다 ${this.board.circles[hit].num}번 지점에서 단서를 발견했습니다!`, 'clue');
+      } else {
+        this.addLog(`순찰대 ${p.id + 1}이(가) 주변 ${results.length}곳을 수색했지만 흔적이 없습니다.`, '');
+      }
+      return true;
+    }
+    if (!this.patrolAdjacentCircles(p).includes(circleId)) return false;
+    p.acted = true;
+    p.stepsLeft = 0;
+    const num = this.board.circles[circleId].num;
+    if (kind === 'arrest') {
+      const success = this.jack.pos === circleId;
+      this.events.push({ t: 'arrest', night: this.night, moveNo: this.jack.movesUsed, pid: p.id, circle: circleId, success });
+      if (success) {
+        this.winner = 'police';
+        this.phase = 'gameOver';
+        this.allPaths.push([...this.jack.path]);
+        this.events.push({ t: 'end', winner: 'police', reason: 'arrest', night: this.night });
+        this.addLog(`순찰대 ${p.id + 1}이(가) ${num}번 지점에서 잭을 체포했습니다! 승리!`, 'win');
+      } else {
+        this.arrestFails.push({ circle: circleId, atMove: this.jack.movesUsed });
+        this.addLog(`순찰대 ${p.id + 1}이(가) ${num}번 지점을 덮쳤지만 아무도 없습니다.`, '');
+      }
+    }
+    return true;
+  }
+
+  endPoliceTurn() {
+    if (this.phase !== 'police') return;
+    this.phase = 'jack';
+  }
+
+  // 잭의 가능한 현재 위치(근사) — 이번 밤의 공개 정보만으로 계산.
+  // 선언된 이동 종류, 실패한 체포, 흔적 없던 수색을 반영. 경찰의 통행 차단은 무시(상위집합).
+  computeBelief() {
+    if (this.night === 0 || this.jack.path.length === 0) return new Set();
+    let layer = new Set([this.jack.path[0]]);
+    for (let t = 1; t <= this.jack.movesUsed; t++) {
+      const decl = this.declared[t - 1];
+      const next = new Set();
+      for (const pos of layer) {
+        if (decl === 'move') {
+          for (const { to } of this.board.circleAdj[pos]) next.add(to);
+        } else if (decl === 'coach') {
+          for (const { to: m } of this.board.circleAdj[pos]) {
+            for (const { to } of this.board.circleAdj[m]) if (to !== pos) next.add(to);
+          }
+        } else if (decl === 'alley') {
+          for (const to of this.board.alleyMates[pos]) next.add(to);
+        }
+      }
+      for (const { circle, atMove } of this.negHistory) {
+        if (atMove >= t) next.delete(circle);
+      }
+      for (const { circle, atMove } of this.arrestFails) {
+        if (atMove === t) next.delete(circle);
+      }
+      layer = next;
+    }
+    return layer;
+  }
+}

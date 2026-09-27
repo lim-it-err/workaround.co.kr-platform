@@ -1,0 +1,197 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>톤 전면 재검토 — 목업</title>
+<style>
+  :root{
+    --bg:#0D131C; --bg2:#111721; --panel:#1A212D; --hair:rgba(255,255,255,.09); --hair2:rgba(255,255,255,.16);
+    --tx:#F3F6FB; --tx2:#AEB8C8; --mut:#7C8AA0;
+    --v:#55738F; --b:#E14D78; --w:#35C275; --r:#5B8DEF; --a:#7C89F0; --safety:#F3C544;
+    --page:#0A0F16; --note:#8FA0B5;
+  }
+  :root[data-theme='light']{ --page:#EDEFF3; --note:#5B6B80; }
+  @media (prefers-color-scheme: light){ :root:not([data-theme='dark']){ --page:#EDEFF3; --note:#5B6B80; } }
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--page);color:var(--tx);
+    font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;line-height:1.6;padding:40px 16px 80px}
+  .wrap{max-width:680px;margin:0 auto}
+  .mono{font-family:"SF Mono","Cascadia Code",Consolas,monospace}
+
+  /* ---- 피치 문서 크롬 ---- */
+  header.pitch{margin-bottom:36px;color:var(--note)}
+  header.pitch h1{color:var(--tx);font-size:1.55rem;font-weight:800;letter-spacing:-.01em;text-wrap:balance;margin:6px 0 10px}
+  :root[data-theme='light'] header.pitch h1, :root[data-theme='light'] .rule-list b{color:#16202E}
+  @media (prefers-color-scheme: light){ :root:not([data-theme='dark']) header.pitch h1, :root:not([data-theme='dark']) .rule-list b{color:#16202E} }
+  header.pitch .tag{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase}
+  header.pitch p{font-size:.92rem;max-width:56ch}
+  .note{color:var(--note);font-size:.8rem;margin:14px 2px 40px;max-width:60ch}
+  .note b{color:inherit;font-weight:700}
+  h2.sec{color:var(--note);font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;margin:48px 2px 14px;font-weight:700}
+
+  .rule-list{list-style:none;padding:0;margin:0 0 8px;color:var(--note)}
+  .rule-list li{padding:10px 2px;border-top:1px solid rgba(127,140,160,.25);font-size:.9rem}
+  .rule-list b{color:var(--tx);font-weight:700}
+
+  /* ---- 진단 스키마 ---- */
+  .diag{display:flex;gap:20px;align-items:stretch;margin:6px 0 8px}
+  .diag .col{flex:1;min-width:0}
+  .diag .cap{color:var(--note);font-size:.72rem;margin-bottom:8px}
+  .boxes{display:grid;gap:5px}
+  .boxes i{display:block;height:16px;border-radius:5px;background:rgba(127,140,160,.28)}
+  .after-sk{display:grid;gap:5px}
+  .after-sk .hero{height:44px;border-left:3px solid var(--safety);background:linear-gradient(90deg,rgba(243,197,68,.16),transparent 70%)}
+  .after-sk .ln{height:10px;border-bottom:1px solid rgba(127,140,160,.35)}
+  .after-sk .btn{height:16px;width:38%;border-radius:6px;background:rgba(243,197,68,.55);margin-top:6px}
+
+  /* ---- 폰 목업 ---- */
+  .phone{width:min(390px,100%);margin:0 auto;background:var(--bg);border:1px solid var(--hair2);
+    border-radius:26px;overflow:hidden;box-shadow:0 24px 60px rgba(2,6,12,.5)}
+  .topbar{display:flex;align-items:center;gap:9px;padding:11px 16px;border-bottom:1px solid var(--hair);background:var(--bg2)}
+  .topbar .chip{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.68rem;font-weight:800;color:#0D131C}
+  .topbar .t{font-size:.86rem;font-weight:700;letter-spacing:-.01em}
+  .topbar .clock{margin-left:auto;color:var(--mut);font-size:.7rem}
+  .scr{padding:20px 20px 26px}
+
+  .eyebrow{font-size:.68rem;letter-spacing:.18em;color:var(--mut);text-transform:uppercase}
+  .scr h3{font-size:1.5rem;font-weight:800;letter-spacing:-.015em;line-height:1.25;margin:4px 0 2px;text-wrap:balance}
+  .sub{color:var(--tx2);font-size:.8rem}
+  .vrule{height:3px;width:44px;border-radius:2px;background:var(--v);margin:14px 0 18px}
+
+  .hero-card{border-left:3px solid var(--safety);padding:2px 0 2px 14px;margin:0 0 22px}
+  .hero-card .k{font-size:.68rem;letter-spacing:.14em;color:var(--safety);text-transform:uppercase;font-weight:700}
+  .hero-card .v{font-size:1.02rem;font-weight:700;line-height:1.45;margin:4px 0 2px}
+  .hero-card .m{color:var(--mut);font-size:.76rem}
+
+  .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-top:1px solid var(--hair)}
+  .row:last-of-type{border-bottom:1px solid var(--hair)}
+  .row .l{font-size:.88rem;color:var(--tx2)}
+  .row .val{font-size:.88rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .row .val small{color:var(--mut);font-weight:400;margin-left:6px}
+  .row.more .l{color:var(--tx)}
+  .row .go{color:var(--mut);font-weight:400}
+
+  .actions{display:flex;gap:10px;margin-top:20px}
+  .btn-p{flex:1;text-align:center;background:var(--safety);color:#201A05;font-weight:800;font-size:.88rem;
+    padding:12px;border-radius:12px}
+  .btn-g{flex:1;text-align:center;border:1px solid var(--hair2);color:var(--tx2);font-size:.88rem;padding:12px;border-radius:12px}
+
+  /* 환승 홀 시각표 */
+  .tt-row{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:center;padding:13px 0;border-top:1px solid var(--hair)}
+  .tt-row:last-child{border-bottom:1px solid var(--hair)}
+  .tt-row .bullet{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.62rem;font-weight:800;color:#0D131C}
+  .tt-row .nm{font-size:.92rem;font-weight:700;line-height:1.3}
+  .tt-row .nm small{display:block;color:var(--mut);font-weight:400;font-size:.72rem}
+  .tt-row .st{font-size:.72rem;color:var(--tx2);text-align:right}
+  .tt-row.dim .nm,.tt-row.dim .st{color:var(--mut)}
+  .mapph{border:1px dashed var(--hair2);border-radius:14px;color:var(--mut);font-size:.74rem;
+    display:grid;place-items:center;height:120px;margin:16px 0 6px;text-align:center;line-height:1.5}
+  .figcap{color:var(--note);font-size:.78rem;margin:14px auto 0;max-width:390px}
+  .figcap b{color:inherit}
+</style>
+
+<div class="wrap">
+  <header class="pitch">
+    <div class="tag mono">DESIGN PITCH · 2026-09-09 · 구현과 완전 분리된 목업</div>
+    <h1>네모를 걷어낸다 — 화면은 대시보드가 아니라 인쇄된 시각표</h1>
+    <p>지금 화면이 난해한 이유는 색이나 그림이 아니라, <b>모든 정보가 같은 크기·같은 무게의 라운드 박스</b>로 쌓여 있어서입니다. 무엇이 주인공인지 박스가 말해주지 않으니, 전부 읽어야 전부를 압니다.</p>
+  </header>
+
+  <h2 class="sec">진단 → 제안</h2>
+  <div class="diag">
+    <div class="col">
+      <div class="cap">지금 — 같은 무게의 박스 스택</div>
+      <div class="boxes">
+        <i></i><i></i><i style="height:34px"></i><i></i><i style="height:34px"></i><i></i><i></i><i style="height:34px"></i><i></i>
+      </div>
+    </div>
+    <div class="col">
+      <div class="cap">제안 — 주인공 1 + 시각표 행 + 버튼만 박스</div>
+      <div class="after-sk">
+        <div class="hero"></div>
+        <div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div><div class="ln"></div>
+        <div class="btn"></div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="rule-list">
+    <li><b>① 박스는 조작부에만.</b> 버튼·입력·토글만 면(面)을 가진다. 읽는 콘텐츠는 타이포와 hairline 구분선으로 흐른다.</li>
+    <li><b>② 화면당 주인공 1.</b> 지금 가장 중요한 것 하나만 크게(왼쪽 컬러 룰). 나머지는 한 줄 행으로 내려간다.</li>
+    <li><b>③ 노선색은 면이 아니라 선.</b> 배경 채우기·타일 대신 3px 룰과 글자 포인트로만 쓴다.</li>
+    <li><b>④ 영어 eyebrow 제거.</b> BEFORE BOARDING 같은 섹션 간판을 없애고, 행 자체가 자기 이름을 말한다.</li>
+  </ul>
+
+  <h2 class="sec">목업 A — 여행 준비 화면 (지금 매일 쓰는 화면)</h2>
+  <div class="phone">
+    <div class="topbar">
+      <span class="chip" style="background:var(--v)">V</span>
+      <span class="t">여행 준비</span>
+      <span class="clock mono">DAY 2 · 오후 9:14</span>
+    </div>
+    <div class="scr">
+      <div class="eyebrow">중부유럽 순환선 · 9/8 – 9/18</div>
+      <h3>프라하 → 프라하, 9박 11일</h3>
+      <div class="vrule"></div>
+
+      <div class="hero-card">
+        <div class="k">다음 할 일</div>
+        <div class="v">렌터카 반납 시각 정책 확인 — 유예형이면 16:30↔18:00 예약으로</div>
+        <div class="m">출발 체크 4 / 11 완료 · 나머지는 아래에</div>
+      </div>
+
+      <div class="row"><span class="l">일정</span><span class="val">11일 · 9박<small>도시 9</small></span></div>
+      <div class="row"><span class="l">예산</span><span class="val">856만원<small>상한 950</small></span></div>
+      <div class="row"><span class="l">항공</span><span class="val">OZ545 · 직항<small>9/8 10:45</small></span></div>
+      <div class="row more"><span class="l">출발 체크리스트 7건 남음</span><span class="go">→</span></div>
+      <div class="row more"><span class="l">왜 이 노선인가 · 예산 4단계 · 숙소 후보</span><span class="go">→</span></div>
+
+      <div class="actions">
+        <div class="btn-p">오늘의 운행 안내</div>
+        <div class="btn-g">여행 기록</div>
+      </div>
+    </div>
+  </div>
+  <p class="figcap"><b>바뀐 것:</b> 통계 타일 6개·섹션 간판 5개가 사라지고, "다음 할 일" 하나가 주인공이 됐습니다. 일정·예산·항공은 시각표 행 — 자세한 건 행을 눌러 들어갑니다. 면을 가진 건 하단 버튼 2개뿐.</p>
+
+  <h2 class="sec">목업 B — 환승 홀 (노선도 아래 목록)</h2>
+  <div class="phone">
+    <div class="topbar">
+      <span class="chip" style="background:var(--safety)">W</span>
+      <span class="t">workaround central</span>
+      <span class="clock mono">오후 9:14</span>
+    </div>
+    <div class="scr">
+      <div class="mapph">노선도는 그대로 둔다 —<br>바뀌는 건 이 아래 목록이다</div>
+
+      <div class="tt-row">
+        <span class="bullet" style="background:var(--b)">B</span>
+        <span class="nm">블로그 본선<small>공개 아카이브 → 글 상세 → Writing Studio</small></span>
+        <span class="st">정상 운행</span>
+      </div>
+      <div class="tt-row">
+        <span class="bullet" style="background:var(--v)">V</span>
+        <span class="nm">여행 노선<small>중부유럽 순환선 · DAY 2</small></span>
+        <span class="st">운행 중</span>
+      </div>
+      <div class="tt-row">
+        <span class="bullet" style="background:var(--w)">W</span>
+        <span class="nm">Work Manager<small>보호 구역</small></span>
+        <span class="st">정상 운행</span>
+      </div>
+      <div class="tt-row dim">
+        <span class="bullet" style="background:var(--a);opacity:.65">A</span>
+        <span class="nm">Developer Advisor<small>연결 준비 중</small></span>
+        <span class="st">개통 예정</span>
+      </div>
+      <div class="tt-row dim">
+        <span class="bullet" style="background:var(--r);opacity:.65">S</span>
+        <span class="nm">미스터리 트레인<small>심야 임시 운행</small></span>
+        <span class="st">—</span>
+      </div>
+    </div>
+  </div>
+  <p class="figcap"><b>바뀐 것:</b> 노선 카드 그리드 → 시각표 행. 노선색은 원형 배지 하나로 줄고, 상태는 오른쪽 정렬 한 마디. 준비 중 노선은 흐리게 — 박스 수 0.</p>
+
+  <h2 class="sec">적용 방식</h2>
+  <p class="note" style="margin-top:0">이 페이지는 <b>구현과 무관한 가짜 HTML</b>입니다(앱 코드·포트와 완전 분리, 실제 색 토큰만 차용). 승인해주시면 이 원칙 4개를 <b>톤 스펙 + 화면별 티켓</b>으로 쪼개 codex-1에 순차 투하합니다 — 여행 화면부터. 반려·수정 지시는 채팅으로 주시면 목업을 고쳐 다시 올립니다.</p>
+</div>

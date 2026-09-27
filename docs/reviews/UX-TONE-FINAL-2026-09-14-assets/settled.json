@@ -1,0 +1,72 @@
+[
+  {
+    "w": 375,
+    "theme": "dark",
+    "courseBack": "← 비엔나 1900 코스",
+    "href": "/workaround.co.kr-platform/advisor/courses/vienna-1900",
+    "returnURL": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/courses/vienna-1900"
+  },
+  {
+    "w": 375,
+    "theme": "dark",
+    "title": "정리하는 뇌",
+    "ctahref": "/workaround.co.kr-platform/advisor/games",
+    "after": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/learn#practice",
+    "linkedCard": 0
+  },
+  {
+    "w": 375,
+    "theme": "light",
+    "courseBack": "← 비엔나 1900 코스",
+    "href": "/workaround.co.kr-platform/advisor/courses/vienna-1900",
+    "returnURL": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/courses/vienna-1900"
+  },
+  {
+    "w": 375,
+    "theme": "light",
+    "title": "정리하는 뇌",
+    "ctahref": "/workaround.co.kr-platform/advisor/games",
+    "after": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/learn#practice",
+    "linkedCard": 0
+  },
+  {
+    "w": 1440,
+    "theme": "dark",
+    "courseBack": "← 비엔나 1900 코스",
+    "href": "/workaround.co.kr-platform/advisor/courses/vienna-1900",
+    "returnURL": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/courses/vienna-1900"
+  },
+  {
+    "w": 1440,
+    "theme": "dark",
+    "title": "정리하는 뇌",
+    "ctahref": "/workaround.co.kr-platform/advisor/games",
+    "after": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/learn#practice",
+    "linkedCard": 0
+  },
+  {
+    "w": 1440,
+    "theme": "dark",
+    "desktopDraftRestored": true
+  },
+  {
+    "w": 1440,
+    "theme": "light",
+    "courseBack": "← 비엔나 1900 코스",
+    "href": "/workaround.co.kr-platform/advisor/courses/vienna-1900",
+    "returnURL": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/courses/vienna-1900"
+  },
+  {
+    "w": 1440,
+    "theme": "light",
+    "title": "정리하는 뇌",
+    "ctahref": "/workaround.co.kr-platform/advisor/games",
+    "after": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/learn#practice",
+    "linkedCard": 0
+  },
+  {
+    "w": 1440,
+    "theme": "light",
+    "desktopDraftRestored": true
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-09-14T00:29:45.965Z",
+  "scope": "TKT-102 home mockup r14 only; not TKT-111 application",
+  "build": "Node 24.19.0 / Vite 6.4.3 / 48 modules / Pages base",
+  "sourceSha256": "1d4a0cbaf6855a622ff4cf3717f417d5e392d264c21b7a9ddf5839a36a137bea",
+  "liveSha256": "1d4a0cbaf6855a622ff4cf3717f417d5e392d264c21b7a9ddf5839a36a137bea",
+  "distSha256": "1d4a0cbaf6855a622ff4cf3717f417d5e392d264c21b7a9ddf5839a36a137bea",
+  "sourceMatchesLive": true,
+  "sourceMatchesDist": true,
+  "splashUnchangedSinceR13": true,
+  "combinations": 6,
+  "finalCheckedAt": "2026-09-14T00:30:25.727Z",
+  "finalSourceUnchanged": true
+}

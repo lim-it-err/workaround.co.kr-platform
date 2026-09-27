@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ETS2 Driving Lab</title><link rel="stylesheet" href="styles.css"></head>
+<body><main>
+ <header><div><p class="eyebrow">ETS2 / DRIVING LAB</p><h1>주행 보조 실험실 <span>PoC 02</span></h1></div><div class="local"><span class="dot"></span> 로컬에서 계속 실행</div></header>
+ <nav aria-label="실험 모드"><button id="live-tab" class="tab active" aria-pressed="true">01 실제 ETS2</button><button id="sim-tab" class="tab" aria-pressed="false">02 시뮬레이션</button></nav>
+ <div class="statusline"><span id="connection" class="badge">게임 연결 대기</span><p id="status" aria-live="polite">로컬 연결 프로그램을 실행한 뒤 ETS2를 켜세요.</p></div>
+ <section class="metrics" aria-label="주행 정보">
+  <div><label>내 트럭</label><strong id="speed">—</strong><small>km/h</small></div>
+  <div><label id="metric2-label">설정 크루즈</label><strong id="cruise">—</strong><small id="metric2-unit">km/h</small></div>
+  <div><label id="metric3-label">차선 변경 변위</label><strong id="offset">—</strong><small>m</small></div>
+  <div><label id="metric4-label">목적지까지</label><strong id="distance">—</strong><small id="metric4-unit">km</small></div>
+ </section>
+ <section id="watch-panel" class="watch-panel" aria-label="게임 화면과 연속 감시">
+  <div class="section-head"><h2>ETS2 실시간 화면</h2><span id="capture-status">창 캡처 연결 중 · 1초 간격</span></div>
+  <div class="watch-grid"><div class="screen"><img id="game-frame" alt="ETS2 창의 최신 화면" hidden><p id="screen-empty">ETS2 화면을 기다리고 있습니다.</p></div>
+   <div class="watch-info"><span class="badge connected">종료 시간 없음</span><p id="uptime" class="hint">서버 실행 시간 —</p>
+    <h2>정체 감지</h2><p class="timer"><strong id="stuck-seconds">0</strong><span> / 120초</span></p><progress id="stuck-progress" max="120" value="0" aria-label="정체 지속 시간"></progress>
+    <p id="watch-status" aria-live="polite">주행 데이터 대기</p><p class="hint">1km/h 미만이 2분 연속 유지되면 이동·수리를 요청합니다. 메뉴·일시정지·연결 끊김은 시간을 초기화합니다.</p>
+    <div class="buttons"><button id="monitor-start" class="primary">감시 시작</button><button id="monitor-stop">감시 중단</button></div>
+    <p id="recovery-status" class="hint"></p><button id="recovery-now" class="wide">견인 서비스 입력 시험</button><p class="hint compact">브라우저를 닫아도 계속 실행됩니다. F8 또는 제어 중단으로 감시·복구를 멈춥니다. 자동 출발·경로 주행은 아직 구현되지 않았습니다.</p>
+   </div>
+  </div>
+ </section>
+ <div class="workspace"><section class="visual">
+  <div class="section-head"><h2 id="view-title">내 트럭 궤적</h2><span id="view-caption">실제 데이터 · 차선/주변 차량 인식 없음</span></div>
+  <canvas id="road" width="920" height="590" aria-label="트럭 위치와 주행 궤적">트럭 위치 및 차선 변경 궤적</canvas>
+  <div class="legend"><span><i class="truck-mark"></i>내 트럭</span><span id="legend-path"><i class="path-mark"></i>이동 궤적</span><span id="time">0.0 s</span></div>
+ </section><aside>
+  <section id="live-controls">
+   <h2>실제 게임 제어</h2><p class="hint">게임 내장 차선 유지·ACC를 사용합니다. PoC가 앞차를 직접 인식하는 것은 아닙니다.</p>
+   <div class="buttons"><button id="arm" class="primary">명령 준비</button><button id="stop" class="danger">커스텀 제어 중단</button></div>
+   <div class="buttons"><button id="cruise-btn">ACC 설정 / 해제</button><button id="minus">−5 km/h</button><button id="plus">+5 km/h</button></div>
+   <button id="lane-toggle" class="wide">게임 차선유지 보조 켜기 / 끄기</button>
+   <p class="hint compact">ACC는 현재 속도로 설정합니다. 내장 ACC 해제는 브레이크 또는 ACC 버튼을 사용하세요.</p>
+   <hr><h2>차선 변경 <span class="tag">직선 구간 실험</span></h2>
+   <label class="check"><input id="clear-road" type="checkbox">옆 차로 앞뒤가 비어 있는 직선 구간입니다.</label>
+   <label class="check"><input id="lane-off" type="checkbox">게임 내 차선유지 보조를 껐습니다.</label>
+   <label class="field">차로 폭 <select id="lane-width"><option value="3.6">3.6 m</option><option value="3.5">3.5 m</option><option value="3.75">3.75 m</option></select></label>
+   <div class="buttons"><button id="live-left">← 왼쪽 변경</button><button id="live-right">오른쪽 변경 →</button></div>
+   <p class="hint">30–110 km/h · 약 7초 궤적. 주변 차량 자동 판단 없음. 완료 후 게임 차선유지 보조를 다시 켜세요. <b>F8</b>은 커스텀 조향 중단입니다.</p>
+  </section>
+  <section id="sim-controls" hidden>
+   <h2>반복 가능한 주행 시험</h2>
+   <label class="field">상황<select id="scenario"><option value="follow">느린 앞차 추종</option><option value="keep">차선 중심 복귀</option><option value="clear">차선 변경 · 옆 차로 비어 있음</option><option value="rear">차선 변경 · 빠른 뒤 차량</option><option value="exit">출구 접근 · 추월 차로 진입 제한</option></select></label>
+   <label class="field">목표 속도 <span id="target-value">90 km/h</span><input id="target-speed" type="range" min="60" max="110" step="5" value="90"></label>
+   <div class="buttons"><button id="play" class="primary">시작</button><button id="reset">초기화</button><button id="fast">1×</button></div>
+   <div class="buttons"><button id="sim-left">← 왼쪽 변경</button><button id="sim-right">오른쪽 변경 →</button></div>
+   <p class="hint">차선 유지·앞차 간격 제어·앞뒤 간격 검사. 출구 시나리오의 경로 값은 시험용 입력입니다.</p>
+   <hr><h2>판단</h2><p id="decision" class="decision">앞차와의 간격에 따라 감속합니다.</p><p id="gap-detail" class="hint"></p>
+  </section>
+  <hr><div class="section-head"><h2>실험 기록</h2><button id="export" class="small">JSON 저장</button></div><ol id="events" class="events"><li>아직 기록이 없습니다.</li></ol>
+ </aside></div>
+ <footer><span>ETS2 게임 전용 실험 · 실차용 제어 시스템 아님</span><span id="footer-mode">LIVE ADAPTER / SCS SDK</span></footer>
+</main><script src="controller.js"></script><script src="app.js"></script></body></html>

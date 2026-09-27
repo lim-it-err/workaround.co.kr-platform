@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-09-14T01:52:43.786Z",
+  "scope": "TKT-102 simhub.html tone r2; review round r15, not mockup version r15",
+  "sourceSha256": "d74fa61f21f973905a672fafa4ac26907fcb0daa982aec506fd9aacf7830f0d4",
+  "currentSame": true,
+  "distSame": true,
+  "previousSource": "git b3abb44:frontend/public/mockups/simhub.html",
+  "cssUnchanged": true,
+  "build": "Node24.19.0 / Vite6.4.3 / 48 modules / Pages base",
+  "r1Buttons": 4,
+  "r2Buttons": 2
+}

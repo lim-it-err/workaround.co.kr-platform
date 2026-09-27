@@ -1,0 +1,26 @@
+{
+  "checkedAtUTC": "2026-09-14T20:05:11.125670+00:00",
+  "sourceCount": 134,
+  "changedSinceSnapshot": [],
+  "viewportWidths": [
+    375,
+    1440
+  ],
+  "viewportHeight": 900,
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "primaryBase": "http://127.0.0.1:4199/workaround.co.kr-platform/",
+  "advisorBase": "http://127.0.0.1:4199/workaround.co.kr-platform/advisor/",
+  "supplementalRootBase": "http://127.0.0.1:4200/",
+  "pngCount": 232,
+  "primaryExcludedScreenNames": [
+    "simhub",
+    "elevator",
+    "taxi",
+    "work",
+    "runtime"
+  ],
+  "note": "These unprefixed captures show the static-mode home fallback, not the named screen. Use root-* for supplemental layout observations. home-* initial captures may be mid-fade; use home-ready or home-viewport. Source snapshots preserve reviewed lines; scripts have task-local absolute paths and require path adaptation for rerun."
+}
