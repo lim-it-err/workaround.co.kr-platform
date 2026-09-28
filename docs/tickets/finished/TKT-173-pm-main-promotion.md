@@ -22,3 +22,4 @@
 ## 리뷰 기록
 - 없음.
 - 2026-09-28 PM: 절차 1~2·4(문서·트리거) 완료 — `main` = `e9bb529`(동기화 `3618f45` + 문서), `git diff main codex/v0.6.0-line` 0. 작업 브랜치 `codex/v0.8.0-live`(=`1fda3ee`) push·공유 워킹트리 전환. 남은 것: PO `git push origin main`, GitHub 기본 브랜치 `main`, Pages 환경 정책에서 `codex/v0.6.0-line` 제거.
+- 2026-09-28 PM: PO `push origin main`(328e8f8..e9bb529) → CI success(gateway-test·frontend-build) · Pages run 36363077976 success · 라이브 `deployment.json` SHA `e9bb529`. GitHub 기본 브랜치는 이미 `main`. **완료.** 잔여(선택): Pages 환경 정책에서 `codex/v0.6.0-line` 제거(PO 설정, 동결 브랜치라 실해 없음).
