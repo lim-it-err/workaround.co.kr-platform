@@ -72,7 +72,8 @@
   },
   "end_source_differences": [
     "frontend/src/components/Pantry.vue",
-    "frontend/src/components/Pantry.e2e.mjs"
+    "frontend/src/components/Pantry.e2e.mjs",
+    "frontend/src/data/voyages/east-europe-2026.js"
   ],
   "public_sha256": {
     "frontend/public/ets2-sim/index.html": "28a29f55155d5bc05942c16455620a3a22e3d3288343d2beef4d5deff2c047f1",

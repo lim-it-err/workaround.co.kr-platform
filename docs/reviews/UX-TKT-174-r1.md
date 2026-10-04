@@ -1,11 +1,11 @@
-﻿문서 상태: 수정중
+﻿문서 상태: 작성완료
 
 # TKT-174 UX 검수 r1 — 유로트럭 개발자
 
 - **디자이너 초안: [블로커] 1 · [중요] 3 · [제안] 1. 판정은 PM.**
 - 2026-10-05 KST, codex-8. 기준 TKT-174, `design/ets2-live-spec.md` v2 B·D, `services/ets2-adas/API.md`, 톤 원칙 1~6 및 조작부 경계. 새 목업 없이 실화면 검수.
 - `codex/v0.8.0-live` 격리 사본 `/private/tmp/codex8-174-1jn9m_ff`. root 개발용·Pages 정적용 각각 build 55 modules. 375×812·1440×900 × 다크/라이트, Chromium, Asia/Seoul. 실제 게임 대신 검수 전용 loopback 스텁(48174)과 합성 단색 프레임 사용. **실제 게임·장비에 명령을 보내지 않았다.**
-- [소스 SHA](UX-TKT-174-r1-assets/source-sha.json), [개발 모드 측정](UX-TKT-174-r1-assets/metrics.json), [공개본 측정](UX-TKT-174-r1-assets/public-metrics.json), [슬라이더 보충](UX-TKT-174-r1-assets/slider-metrics.json), 스크린샷 39장. 테스트 중 Pantry.vue·Pantry.e2e.mjs만 외부 수정됐으며 TKT-174 화면·CSS는 동일했다.
+- [소스 SHA](UX-TKT-174-r1-assets/source-sha.json), [개발 모드 측정](UX-TKT-174-r1-assets/metrics.json), [공개본 측정](UX-TKT-174-r1-assets/public-metrics.json), [슬라이더 보충](UX-TKT-174-r1-assets/slider-metrics.json), 스크린샷 39장. 검수 중 Pantry.vue·Pantry.e2e.mjs와 여행 데이터 east-europe-2026.js가 외부 수정됐으며 TKT-174 화면·CSS는 동일했다.
 
 ## [블로커] B1 — 읽기 전용 이벤트까지 채워진 카드로 돌아왔다
 

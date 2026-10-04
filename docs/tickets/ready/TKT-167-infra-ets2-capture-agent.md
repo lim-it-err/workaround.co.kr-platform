@@ -13,7 +13,7 @@ PO 제공 PoC 를 `services/ets2-adas/` 에 편입했다(PM, 개인정보 치환
 4. `mods/` 는 그대로 보존.
 
 ## 추가 범위 (2026-10-05, D-028 개정) — `.100` 배포·운용 스크립트 `services/ets2-adas/deploy/`
-- `sync.sh`(맥 → `.100`: `rsync -e "ssh -p 6445"` 로 `services/ets2-adas/` 를 `C:\\ets2-adas\\` 에 동기화, `.env`·`vendor`·`bin` 제외 규칙), `remote.sh`(`ssh -p 6445 <user>@192.168.123.100 "<명령>"` 래퍼, 접속 정보는 `~/.ssh/config` 의 `Host ets2-100` 별칭 — 사용자명·키는 커밋 금지).
+- `sync.sh`(맥 → `.100`: `rsync -e ssh`(`Host ets2-100`, 윈도우 호스트 OpenSSH) 로 `services/ets2-adas/` 를 `C:\\ets2-adas\\` 에 동기화, `.env`·`vendor`·`bin` 제외 규칙), `remote.sh`(`ssh ets2-100 "<명령>"` 래퍼 — 6445 는 리눅스 컨테이너라 쓰지 않음, 접속 정보는 `~/.ssh/config` 의 `Host ets2-100` 별칭 — 사용자명·키는 커밋 금지).
 - `register-tasks.ps1`(한 번, `.100` 에서): 작업 스케줄러에 `ETS2-PoC-Start`(대화형 사용자 세션, `START.cmd`)·`ETS2-Publisher`·`ETS2-Stop` 등록. `start`/`stop`/`health`(`curl 127.0.0.1:8765/api/state`)/`logs`(`runtime/events.ndjson` tail) 하위 명령은 `remote.sh` 로 `schtasks /Run` 호출.
 - 완료 조건 5: 맥에서 `deploy/sync.sh && deploy/remote.sh start && deploy/remote.sh health` 한 흐름으로 PoC 가 **대화형 세션**에서 뜨고 `api/state.connected` 가 참이 되는 로그를 `docs/qa/env100/` 에.
 
