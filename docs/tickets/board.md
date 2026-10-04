@@ -38,11 +38,11 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-170` `P1` `pantry` `ready` `[FE]` 자취 밥상 `/pantry` — 오늘의 한 상·대안·장보기·스탬프, P선 개통 (PO 09-27)
-- `TKT-168` `P1` `ets2` `ready` `[FE]` 유로트럭 뷰어 `/ets2` — 프레임 폴링·주행 정보 행·정지 상태 (v2)
-- `TKT-174` `P1` `ets2` `ready` `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — 감시/복구·게임 제어·차선 변경·시뮬레이터 (보호 구역)
+- `TKT-178` `P1` `tone` `ready` `[FE]` 스플래시 플랩 속도 상향 — 첫 방문 5초·재방문 2.5초 (PO 10-05)
+- `TKT-179` `P1` `tone` `ready` `[FE]` 홈 노선도 실험선 수직 지선 — 유로트럭·개발자 소역 (PO 10-05)
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + R2 퍼블리셔 (v2, codex-2)
 - `TKT-172` `P2` `voyage` `ready` `[FE]` 여행 결산 화면 (settlement 데이터 표시)
+- `TKT-177` `P2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
 - `TKT-176` `P2` `tone` `ready` `[FE]` E2E 시간대 고정 timezoneId (PO 09-28 승인)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
@@ -59,6 +59,8 @@
 
 ## Started
 
+- `TKT-170` `P1` `pantry` `started` `[FE]` 자취 밥상 — **r1 반려**(다른 상 보기 뒤 한 상=대안 중복) 재작업
+- `TKT-174` `P1` `ets2` `started` `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — 감시/복구·게임 제어·차선 변경·시뮬레이터 (보호 구역)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
@@ -66,8 +68,10 @@
 ## Need Review
 
 
+
 ## Finished
 
+- `TKT-168` `[FE]` 유로트럭 뷰어 `/ets2`·S 소역 — r1 통과 (2026-10-05, 커밋은 174 묶음 조건부)
 - `TKT-173` `[PM]` `main` 승격 — 역사 보존 병합 `3618f45`(트리 = v0.7.0)·문서·Pages 트리거 정리, 작업 브랜치 `codex/v0.8.0-live` (2026-09-28, main push 는 PO)
 - `TKT-166` `[PM]` 유로트럭 관제 구조 결정·스펙 `design/ets2-live-spec.md` (2026-09-27)
 - `TKT-169` `[PM]` 자취 밥상 스펙·콘텐츠(요리 25·세트 13·페어링) `design/pantry-spec.md` (2026-09-27)
