@@ -211,3 +211,10 @@
 ## D-002 개정 (2026-09-28) — 트렁크 = `main` (D-027 시행)
 
 - `main` 을 트렁크 v0.7.0 트리로 역사 보존 병합(`3618f45`, 트리 = `b1f4959` = 태그 `v0.7.0`). 이후 **트렁크 = `main`**, Pages 배포 트리거 = `main` 단일. `codex/v0.6.0-line`·`codex/v0.7.0-tone` 은 동결(참조·감사용, push 금지). v0.8.0 작업 브랜치 = **`codex/v0.8.0-live`**(main 에서 분기), 배치 병합은 U-38 대로 PM 게이트 후 `main` 에 `--no-ff`.
+
+## D-028 유로트럭 = 원격 레인(codex-7, `.100` Windows) · **제안됨** (PO 2026-10-05 "유로트럭은 혹시 chatgpt에 위임할까? chatgpt를 상대 서버에 연결 시킬 수 있어/윈도우에")
+
+- 제안: 유로트럭 PoC·퍼블리셔·플러그인 빌드·핸들/FFB 검증·2단계 스트리밍 송출(OBS/MediaMTX)은 **게임이 있는 `.100` 에서 도는 Codex(codex-7)** 가 맡는다. 맥의 codex-1(화면)·codex-2(인프라) 와는 **디렉터리 경계**(`services/ets2-adas/**` vs 나머지)로 나눈다. 지침은 저장소 안 `services/ets2-adas/AGENTS.md`(Codex 가 자동으로 읽음), 인박스는 `docs/inbox/codex-7-ets2.md`(저장소 안 — 루트 `inbox/` 는 `.100` 에서 안 보임).
+- 원격 레인 예외(U-39): 다른 기계라 워킹트리를 공유할 수 없으므로 codex-7 은 **전용 브랜치 `codex/ets2-win` 에 커밋·push 허용**. PM 이 need_review 판정 뒤 작업 브랜치에 병합한다. `main`·`codex/v0.8.0-live` push 는 금지.
+- 통신: 사이트 ↔ `.100` 은 데이터 계약으로만 — 뷰어는 R2(`latest.jpg`·`meta.json`), 개발자 페이지는 PoC API(`API.md`). 2단계 스트리밍은 ①Cloudflare Tunnel 뒤 MediaMTX WHEP/HLS(D-011 정석, 085 선행) 또는 ②**Cloudflare Stream Live**(OBS → WHIP 수신 → 사이트는 플레이어만 임베드, 집 서버 노출 0, 유료 소액) 중 PO 선택.
+- 재분배: TKT-167·171 → codex-7. codex-2 는 177(딥링크 200)·159·078·160·115·092.

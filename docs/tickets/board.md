@@ -42,7 +42,7 @@
 - `TKT-181` `P2` `research` `ready` `[조사]` 자취 밥상 카피 재료 수집 — codex-4
 - `TKT-178` `P1` `tone` `ready` `[FE]` 스플래시 플랩 속도 상향 — 첫 방문 5초·재방문 2.5초 (PO 10-05)
 - `TKT-179` `P1` `tone` `ready` `[FE]` 홈 노선도 실험선 수직 지선 — 유로트럭·개발자 소역 (PO 10-05)
-- `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + R2 퍼블리셔 (v2, codex-2)
+- `TKT-167` `P1` `ets2` `ready` `[ETS2-WIN]` 유로트럭 PoC 편입 마감 + R2 퍼블리셔 — codex-7(.100 Windows, D-028 제안)
 - `TKT-172` `P2` `voyage` `ready` `[FE]` 여행 결산 화면 (settlement 데이터 표시)
 - `TKT-177` `P2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
 - `TKT-176` `P2` `tone` `ready` `[FE]` E2E 시간대 고정 timezoneId (PO 09-28 승인)
@@ -62,13 +62,13 @@
 ## Started
 
 - `TKT-170` `P1` `pantry` `started` `[FE]` 자취 밥상 — **r1 반려**(다른 상 보기 뒤 한 상=대안 중복) 재작업
-- `TKT-174` `P1` `ets2` `started` `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — 감시/복구·게임 제어·차선 변경·시뮬레이터 (보호 구역)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
 
+- `TKT-174` `P1` `ets2` `need_review` `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — PoC 3 API·감시/복구·게임 제어·정적 시뮬레이터
 
 
 ## Finished
