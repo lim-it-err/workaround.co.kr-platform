@@ -1,0 +1,1966 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "errors": [],
+    "initial": {
+      "connection": "연결됨 · 25Hz · 일시정지 아님",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 293,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 321
+        }
+      ]
+    },
+    "armed": {
+      "connection": "연결됨 · 25Hz · 일시정지 아님",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 293,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 321
+        }
+      ]
+    },
+    "disconnected": {
+      "connection": "PoC 연결됨 · 게임 연결 대기",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 293,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 321
+        }
+      ]
+    },
+    "dialog": {
+      "labelledby": null,
+      "ariaLabel": null,
+      "text": "견인 서비스 입력을 시험할까요?\n\n게임이 연결되고 속도가 1 km/h 미만인지 다시 확인하세요. 실제 입력 어댑터가 구성된 경우 견인·수리 메뉴를 조작할 수 있습니다.\n\n취소\n시험 요청",
+      "focused": "취소"
+    },
+    "recoveryPosts": 0,
+    "simulator": {
+      "overflow": 0,
+      "controls": [
+        {
+          "tag": "SELECT",
+          "text": "느린 앞차 추종차선 중심 복귀차선 변경 · 옆 차로 비어 있음차선 변경 · 빠른 뒤 차량출구 접근 · 추월 차로 진입 제한",
+          "height": 40,
+          "width": 249
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "height": 16,
+          "width": 245
+        },
+        {
+          "tag": "BUTTON",
+          "text": "시작",
+          "height": 41.25,
+          "width": 76.328125
+        },
+        {
+          "tag": "BUTTON",
+          "text": "초기화",
+          "height": 41.25,
+          "width": 76.34375
+        },
+        {
+          "tag": "BUTTON",
+          "text": "1×",
+          "height": 41.25,
+          "width": 76.328125
+        },
+        {
+          "tag": "BUTTON",
+          "text": "← 왼쪽 변경",
+          "height": 41.25,
+          "width": 119.5
+        },
+        {
+          "tag": "BUTTON",
+          "text": "오른쪽 변경 →",
+          "height": 41.25,
+          "width": 119.5
+        }
+      ]
+    },
+    "rejection": {
+      "text": "검증용 거절: 명령 준비가 만료되었습니다.",
+      "rect": {
+        "x": 25,
+        "y": 1920.625,
+        "width": 321,
+        "height": 39.96875,
+        "top": 1920.625,
+        "right": 346,
+        "bottom": 1960.59375,
+        "left": 25
+      },
+      "viewport": 812,
+      "scrollY": 0
+    },
+    "serverLost": {
+      "connection": "PoC 서버 없음 — 127.0.0.1:48174",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 293,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 321
+        }
+      ],
+      "message": "검증용 거절: 명령 준비가 만료되었습니다."
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "errors": [],
+    "initial": {
+      "connection": "연결됨 · 25Hz · 일시정지 아님",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 293,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 321
+        }
+      ]
+    },
+    "armed": {
+      "connection": "연결됨 · 25Hz · 일시정지 아님",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 293,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 321
+        }
+      ]
+    },
+    "disconnected": {
+      "connection": "PoC 연결됨 · 게임 연결 대기",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 293,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 321
+        }
+      ]
+    },
+    "dialog": {
+      "labelledby": null,
+      "ariaLabel": null,
+      "text": "견인 서비스 입력을 시험할까요?\n\n게임이 연결되고 속도가 1 km/h 미만인지 다시 확인하세요. 실제 입력 어댑터가 구성된 경우 견인·수리 메뉴를 조작할 수 있습니다.\n\n취소\n시험 요청",
+      "focused": "취소"
+    },
+    "recoveryPosts": 0,
+    "simulator": {
+      "overflow": 0,
+      "controls": [
+        {
+          "tag": "SELECT",
+          "text": "느린 앞차 추종차선 중심 복귀차선 변경 · 옆 차로 비어 있음차선 변경 · 빠른 뒤 차량출구 접근 · 추월 차로 진입 제한",
+          "height": 40,
+          "width": 249
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "height": 16,
+          "width": 245
+        },
+        {
+          "tag": "BUTTON",
+          "text": "시작",
+          "height": 41.25,
+          "width": 76.328125
+        },
+        {
+          "tag": "BUTTON",
+          "text": "초기화",
+          "height": 41.25,
+          "width": 76.34375
+        },
+        {
+          "tag": "BUTTON",
+          "text": "1×",
+          "height": 41.25,
+          "width": 76.328125
+        },
+        {
+          "tag": "BUTTON",
+          "text": "← 왼쪽 변경",
+          "height": 41.25,
+          "width": 119.5
+        },
+        {
+          "tag": "BUTTON",
+          "text": "오른쪽 변경 →",
+          "height": 41.25,
+          "width": 119.5
+        }
+      ]
+    },
+    "rejection": {
+      "text": "검증용 거절: 명령 준비가 만료되었습니다.",
+      "rect": {
+        "x": 25,
+        "y": 1920.625,
+        "width": 321,
+        "height": 39.96875,
+        "top": 1920.625,
+        "right": 346,
+        "bottom": 1960.59375,
+        "left": 25
+      },
+      "viewport": 812,
+      "scrollY": 0
+    },
+    "serverLost": {
+      "connection": "PoC 서버 없음 — 127.0.0.1:48174",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 293,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 142.5,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 293
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 142.5,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 321
+        }
+      ],
+      "message": "검증용 거절: 명령 준비가 만료되었습니다."
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "errors": [],
+    "initial": {
+      "connection": "연결됨 · 25Hz · 일시정지 아님",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 136.390625,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 102.1875,
+          "disabled": true
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 75.578125,
+          "disabled": true
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 73.46875,
+          "disabled": true
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 96.9375,
+          "disabled": true
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 111.1875,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 64.140625,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 1120
+        }
+      ]
+    },
+    "armed": {
+      "connection": "연결됨 · 25Hz · 일시정지 아님",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 136.390625,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 102.1875,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 75.578125,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 73.46875,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 96.9375,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 111.1875,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 64.140625,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 1120
+        }
+      ]
+    },
+    "disconnected": {
+      "connection": "PoC 연결됨 · 게임 연결 대기",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 136.390625,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 102.1875,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 75.578125,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 73.46875,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 96.9375,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 111.1875,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 64.140625,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 1120
+        }
+      ]
+    },
+    "dialog": {
+      "labelledby": null,
+      "ariaLabel": null,
+      "text": "견인 서비스 입력을 시험할까요?\n\n게임이 연결되고 속도가 1 km/h 미만인지 다시 확인하세요. 실제 입력 어댑터가 구성된 경우 견인·수리 메뉴를 조작할 수 있습니다.\n\n취소\n시험 요청",
+      "focused": "취소"
+    },
+    "recoveryPosts": 0,
+    "simulator": {
+      "overflow": 0,
+      "controls": [
+        {
+          "tag": "SELECT",
+          "text": "느린 앞차 추종차선 중심 복귀차선 변경 · 옆 차로 비어 있음차선 변경 · 빠른 뒤 차량출구 접근 · 추월 차로 진입 제한",
+          "height": 40,
+          "width": 286
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "height": 16,
+          "width": 282
+        },
+        {
+          "tag": "BUTTON",
+          "text": "시작",
+          "height": 41.25,
+          "width": 88.65625
+        },
+        {
+          "tag": "BUTTON",
+          "text": "초기화",
+          "height": 41.25,
+          "width": 88.671875
+        },
+        {
+          "tag": "BUTTON",
+          "text": "1×",
+          "height": 41.25,
+          "width": 88.671875
+        },
+        {
+          "tag": "BUTTON",
+          "text": "← 왼쪽 변경",
+          "height": 41.25,
+          "width": 138
+        },
+        {
+          "tag": "BUTTON",
+          "text": "오른쪽 변경 →",
+          "height": 41.25,
+          "width": 138
+        }
+      ]
+    },
+    "rejection": {
+      "text": "검증용 거절: 명령 준비가 만료되었습니다.",
+      "rect": {
+        "x": 158,
+        "y": 1651.21875,
+        "width": 1120,
+        "height": 39.96875,
+        "top": 1651.21875,
+        "right": 1278,
+        "bottom": 1691.1875,
+        "left": 158
+      },
+      "viewport": 900,
+      "scrollY": 0
+    },
+    "serverLost": {
+      "connection": "PoC 서버 없음 — 127.0.0.1:48174",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 136.390625,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 102.1875,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 75.578125,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 73.46875,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 96.9375,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 111.1875,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 64.140625,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 1120
+        }
+      ],
+      "message": "검증용 거절: 명령 준비가 만료되었습니다."
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "errors": [],
+    "initial": {
+      "connection": "연결됨 · 25Hz · 일시정지 아님",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 136.390625,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 102.1875,
+          "disabled": true
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 75.578125,
+          "disabled": true
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 73.46875,
+          "disabled": true
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 96.9375,
+          "disabled": true
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 111.1875,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 64.140625,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 1120
+        }
+      ]
+    },
+    "armed": {
+      "connection": "연결됨 · 25Hz · 일시정지 아님",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 136.390625,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 102.1875,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 75.578125,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 73.46875,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 96.9375,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 111.1875,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 64.140625,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 1120
+        }
+      ]
+    },
+    "disconnected": {
+      "connection": "PoC 연결됨 · 게임 연결 대기",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 136.390625,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 102.1875,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 75.578125,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 73.46875,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 96.9375,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 111.1875,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 64.140625,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 1120
+        }
+      ]
+    },
+    "dialog": {
+      "labelledby": null,
+      "ariaLabel": null,
+      "text": "견인 서비스 입력을 시험할까요?\n\n게임이 연결되고 속도가 1 km/h 미만인지 다시 확인하세요. 실제 입력 어댑터가 구성된 경우 견인·수리 메뉴를 조작할 수 있습니다.\n\n취소\n시험 요청",
+      "focused": "취소"
+    },
+    "recoveryPosts": 0,
+    "simulator": {
+      "overflow": 0,
+      "controls": [
+        {
+          "tag": "SELECT",
+          "text": "느린 앞차 추종차선 중심 복귀차선 변경 · 옆 차로 비어 있음차선 변경 · 빠른 뒤 차량출구 접근 · 추월 차로 진입 제한",
+          "height": 40,
+          "width": 286
+        },
+        {
+          "tag": "INPUT",
+          "text": "",
+          "height": 16,
+          "width": 282
+        },
+        {
+          "tag": "BUTTON",
+          "text": "시작",
+          "height": 41.25,
+          "width": 88.65625
+        },
+        {
+          "tag": "BUTTON",
+          "text": "초기화",
+          "height": 41.25,
+          "width": 88.671875
+        },
+        {
+          "tag": "BUTTON",
+          "text": "1×",
+          "height": 41.25,
+          "width": 88.671875
+        },
+        {
+          "tag": "BUTTON",
+          "text": "← 왼쪽 변경",
+          "height": 41.25,
+          "width": 138
+        },
+        {
+          "tag": "BUTTON",
+          "text": "오른쪽 변경 →",
+          "height": 41.25,
+          "width": 138
+        }
+      ]
+    },
+    "rejection": {
+      "text": "검증용 거절: 명령 준비가 만료되었습니다.",
+      "rect": {
+        "x": 158,
+        "y": 1651.21875,
+        "width": 1120,
+        "height": 39.96875,
+        "top": 1651.21875,
+        "right": 1278,
+        "bottom": 1691.1875,
+        "left": 158
+      },
+      "viewport": 900,
+      "scrollY": 0
+    },
+    "serverLost": {
+      "connection": "PoC 서버 없음 — 127.0.0.1:48174",
+      "overflow": [
+        [
+          "html",
+          0
+        ],
+        [
+          "body",
+          0
+        ],
+        [
+          ".page-scroller",
+          0
+        ],
+        [
+          ".ets2-dev-page",
+          0
+        ]
+      ],
+      "controls": [
+        {
+          "text": "감시 시작",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": false
+        },
+        {
+          "text": "감시 중단",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "견인 서비스 입력 시험",
+          "height": 40,
+          "width": 136.390625,
+          "disabled": true
+        },
+        {
+          "text": "명령 준비",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "ACC 설정/해제",
+          "height": 40,
+          "width": 102.1875,
+          "disabled": false
+        },
+        {
+          "text": "−5 km/h",
+          "height": 40,
+          "width": 75.578125,
+          "disabled": false
+        },
+        {
+          "text": "+5 km/h",
+          "height": 40,
+          "width": 73.46875,
+          "disabled": false
+        },
+        {
+          "text": "차선유지 토글",
+          "height": 40,
+          "width": 96.9375,
+          "disabled": false
+        },
+        {
+          "text": "커스텀 제어 중단",
+          "height": 40,
+          "width": 111.1875,
+          "disabled": false
+        },
+        {
+          "text": "빈 도로 확인",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "내장 차선유지 껐음",
+          "height": 40,
+          "width": 732.59375
+        },
+        {
+          "text": "← 왼쪽",
+          "height": 40,
+          "width": 64.140625,
+          "disabled": true
+        },
+        {
+          "text": "오른쪽 →",
+          "height": 40,
+          "width": 75.0625,
+          "disabled": true
+        },
+        {
+          "text": "02 시뮬레이션 정적 · 게임 명령 없음",
+          "height": 49.046875,
+          "width": 1120
+        }
+      ],
+      "message": "검증용 거절: 명령 준비가 만료되었습니다."
+    }
+  }
+]

@@ -425,7 +425,7 @@ export const EAST_EUROPE_2026 = defineVoyage({
         {
           label: '아시아나 프라하 체크인',
           url: 'https://flyasiana.com/C/US/KO/travel/airport?airportCd=PRG',
-          note: 'T1 1층 카운터는 출발 3시간 전부터 50분 전까지 운영하며 셀프 체크인 키오스크는 지원하지 않습니다. OZ546 출발은 e-ticket 확인 전까지 데이터의 18:50을 유지합니다.',
+          note: 'T1 1층 카운터는 출발 3시간 전부터 50분 전까지 운영하며 셀프 체크인 키오스크는 지원하지 않습니다. OZ546 출발 18:50 기준 카운터 운영 15:50~18:00.',
           checkedAt: '2026-09-15'
         }
       ]

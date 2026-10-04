@@ -2,7 +2,7 @@
 
 # TKT-170 `[FE]` 자취 밥상 페이지 `/pantry` — 오늘의 한 상·대안 2·장보기·스탬프, 취향선 P 개통
 
-- 상태: started (2026-10-05, PM r1 반려 → 재작업)· **P1** · 담당: codex-1 · 의존: TKT-169 finished(콘텐츠 있음). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.** 스펙 `design/pantry-spec.md` §3·§5. 콘텐츠 3파일(`frontend/src/data/pantry/*`) 불가침 — 구조 문제는 [구체화 질문]으로.
+- 상태: need_review (2026-10-05, r2 재작업 완료)· **P1** · 담당: codex-1 · 의존: TKT-169 finished(콘텐츠 있음). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.** 스펙 `design/pantry-spec.md` §3·§5. 콘텐츠 3파일(`frontend/src/data/pantry/*`) 불가침 — 구조 문제는 [구체화 질문]으로.
 - scope: `frontend/src/components/Pantry.vue`(신규), `frontend/src/App.vue`, `frontend/src/data/lines.js`(P 역 개통: `page: 'pantry'`, `access`·`upcoming` 제거, 홈 목록 행 `자취 밥상 · 오늘의 한 상: <제목>`), `frontend/src/staticRouting.js`(`/pantry`), `frontend/src/styles.css`, `frontend/src/components/Pantry.e2e.mjs`, `JunctionMap.e2e.mjs`·`junction.test.mjs`(P 개통).
 
 ## 완료 조건
@@ -22,3 +22,8 @@
 
 ## PM 반려 (2026-10-05, r1) — `docs/reviews/REV-TKT-170-r1.md`
 - [블로커] B1 `다른 상 보기` 뒤 한 상이 대안 행과 같은 세트 → `pickPantrySets(…, { offset })` 로 세 자리 재계산, E2E 단언 추가. 그 외 통과.
+
+## r2 재작업 기록 (2026-10-05)
+- `다른 상 보기`의 주인공·10분 대안·야식 대안을 동일한 `pickPantrySets(dateKey, { offset, ... })` 결과에서 함께 갱신하도록 바꿨다. 대안 직접 선택 시에도 선택한 주인공을 제외한 묶음으로 두 대안을 다시 계산한다.
+- Pantry E2E에 첫 추천과 `다른 상 보기` 1·2·3회 각각 세 칸의 제목이 모두 다른지 단언을 추가해 r1 재현을 회귀로 고정했다.
+- 검증: Pages-base build 55 modules, Pantry E2E 4/4, Junction E2E 4/4, unit 25/25, static routing, `git diff --check` 통과. 레이아웃·스타일 변경 없음. 콘텐츠 3파일은 이 티켓에서 변경하지 않았다.

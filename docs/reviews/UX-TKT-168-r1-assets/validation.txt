@@ -1,0 +1,6 @@
+Pages-base isolated build: PASS, Vite 6.4.3, 55 modules
+Initial Ets2Live E2E: 3/4; public stop selector matched developer stop too
+Latest developer E2E selector /^유로트럭$/: 4/4 PASS, duration 10440.410042ms
+Supplemental UX replay: 4 viewport/theme combinations complete, 24 captures, pageerror 0
+Initial E2E captures: 3; total PNG 27
+Servers and Chromium closed by test teardown

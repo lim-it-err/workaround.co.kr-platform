@@ -1,8 +1,8 @@
-문서 상태: 작성완료
+문서 상태: 수정중
 
 # TKT-178 `[FE]` 스플래시 플랩 속도 상향 — 첫 방문 10초 → 5초, 플랩 스텝 단축
 
-- 상태: ready · **P1** · 담당: codex-1 · 의존: TKT-147 finished. 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.**
+- 상태: started (2026-10-05, codex-1) · **P1** · 담당: codex-1 · 의존: TKT-147 finished. 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.**
 - 근거: PO 2026-10-05 "초반에 애니메이션이 너무 길어. flap 속도 올려줘."
 - scope: `frontend/src/App.vue`(상수 `SPLASH_DURATION_MS`·`SPLASH_RETURN_*`·플랩 `delayMs`/`stepDurationMs`/시퀀스 길이), `frontend/src/styles.css`(플랩 전환 시간이 CSS 에 있으면), `frontend/src/splashTone.e2e.mjs`(시각 기대값), `frontend/public/mockups/splash.html` 은 무변경.
 

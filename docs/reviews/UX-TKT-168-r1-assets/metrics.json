@@ -1,0 +1,1408 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "errors": [],
+    "live": {
+      "text": "유로트럭 관제\n\n2초 전 · 1280×720\n\n2초 전 · 1280×720\n\n속도\n82 km/h\n크루즈\n80 km/h\n제한\n90 km/h\n목적지\n14.2 km\n감시\n감시 중 · 정지 0초\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "disconnected": {
+      "text": "유로트럭 관제\n\n8초 전 · 1280×720\n\n2초 전 · 1280×720\n\n속도\n—\n크루즈\n—\n제한\n—\n목적지\n—\n감시\n—\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "frames": {
+      "count": 478,
+      "blank": 0,
+      "sequences": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "lost": {
+      "text": "유로트럭 관제\n\n관제 신호 없음\n\n관제 신호 없음\n\n속도\n82 km/h\n크루즈\n80 km/h\n제한\n90 km/h\n목적지\n14.2 km\n감시\n감시 중 · 정지 0초\n관제 신호 없음\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "alert": "관제 신호 없음",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "recovered": {
+      "text": "유로트럭 관제\n\n11초 전 · 1280×720\n\n11초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "stale": {
+      "text": "유로트럭 관제\n\n132초 전 · 1280×720\n\n132초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n마지막 화면 · 2분 전\n읽기 전용\n자동 확인 · 10초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "10000",
+      "alert": "마지막 화면 · 2분 전",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "old": {
+      "text": "유로트럭 관제\n\n314초 전 · 1280×720\n\n314초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n마지막 화면 · 5분 전\n읽기 전용\n자동 확인 · 30초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "30000",
+      "alert": "마지막 화면 · 5분 전",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "errors": [],
+    "live": {
+      "text": "유로트럭 관제\n\n2초 전 · 1280×720\n\n2초 전 · 1280×720\n\n속도\n82 km/h\n크루즈\n80 km/h\n제한\n90 km/h\n목적지\n14.2 km\n감시\n감시 중 · 정지 0초\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "disconnected": {
+      "text": "유로트럭 관제\n\n8초 전 · 1280×720\n\n2초 전 · 1280×720\n\n속도\n—\n크루즈\n—\n제한\n—\n목적지\n—\n감시\n—\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "frames": {
+      "count": 481,
+      "blank": 0,
+      "sequences": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "lost": {
+      "text": "유로트럭 관제\n\n관제 신호 없음\n\n관제 신호 없음\n\n속도\n82 km/h\n크루즈\n80 km/h\n제한\n90 km/h\n목적지\n14.2 km\n감시\n감시 중 · 정지 0초\n관제 신호 없음\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "alert": "관제 신호 없음",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "recovered": {
+      "text": "유로트럭 관제\n\n11초 전 · 1280×720\n\n11초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "stale": {
+      "text": "유로트럭 관제\n\n132초 전 · 1280×720\n\n132초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n마지막 화면 · 2분 전\n읽기 전용\n자동 확인 · 10초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "10000",
+      "alert": "마지막 화면 · 2분 전",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    },
+    "old": {
+      "text": "유로트럭 관제\n\n314초 전 · 1280×720\n\n314초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n마지막 화면 · 5분 전\n읽기 전용\n자동 확인 · 30초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 25,
+        "y": 330.421875,
+        "width": 321,
+        "height": 180.5625,
+        "top": 330.421875,
+        "right": 346,
+        "bottom": 510.984375,
+        "left": 25
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "30000",
+      "alert": "마지막 화면 · 5분 전",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        },
+        {
+          "text": "노선도",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "아카이브",
+          "width": 107,
+          "height": 48
+        },
+        {
+          "text": "승강장",
+          "width": 107,
+          "height": 48
+        }
+      ]
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "errors": [],
+    "live": {
+      "text": "유로트럭 관제\n\n2초 전 · 1280×720\n\n2초 전 · 1280×720\n\n속도\n82 km/h\n크루즈\n80 km/h\n제한\n90 km/h\n목적지\n14.2 km\n감시\n감시 중 · 정지 0초\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        }
+      ]
+    },
+    "disconnected": {
+      "text": "유로트럭 관제\n\n8초 전 · 1280×720\n\n2초 전 · 1280×720\n\n속도\n—\n크루즈\n—\n제한\n—\n목적지\n—\n감시\n—\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        }
+      ]
+    },
+    "frames": {
+      "count": 483,
+      "blank": 0,
+      "sequences": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "lost": {
+      "text": "유로트럭 관제\n\n관제 신호 없음\n\n관제 신호 없음\n\n속도\n82 km/h\n크루즈\n80 km/h\n제한\n90 km/h\n목적지\n14.2 km\n감시\n감시 중 · 정지 0초\n관제 신호 없음\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "alert": "관제 신호 없음",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        }
+      ]
+    },
+    "recovered": {
+      "text": "유로트럭 관제\n\n11초 전 · 1280×720\n\n11초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        }
+      ]
+    },
+    "stale": {
+      "text": "유로트럭 관제\n\n132초 전 · 1280×720\n\n132초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n마지막 화면 · 2분 전\n읽기 전용\n자동 확인 · 10초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "10000",
+      "alert": "마지막 화면 · 2분 전",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        }
+      ]
+    },
+    "old": {
+      "text": "유로트럭 관제\n\n314초 전 · 1280×720\n\n314초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n마지막 화면 · 5분 전\n읽기 전용\n자동 확인 · 30초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "30000",
+      "alert": "마지막 화면 · 5분 전",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☀",
+          "width": 42.3125,
+          "height": 40
+        }
+      ]
+    },
+    "homeStops": [
+      "유로트럭",
+      "유로트럭 개발자"
+    ],
+    "exactPublicStop": 1,
+    "directReload": true
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "errors": [],
+    "live": {
+      "text": "유로트럭 관제\n\n2초 전 · 1280×720\n\n2초 전 · 1280×720\n\n속도\n82 km/h\n크루즈\n80 km/h\n제한\n90 km/h\n목적지\n14.2 km\n감시\n감시 중 · 정지 0초\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        }
+      ]
+    },
+    "disconnected": {
+      "text": "유로트럭 관제\n\n8초 전 · 1280×720\n\n2초 전 · 1280×720\n\n속도\n—\n크루즈\n—\n제한\n—\n목적지\n—\n감시\n—\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        }
+      ]
+    },
+    "frames": {
+      "count": 481,
+      "blank": 0,
+      "sequences": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "lost": {
+      "text": "유로트럭 관제\n\n관제 신호 없음\n\n관제 신호 없음\n\n속도\n82 km/h\n크루즈\n80 km/h\n제한\n90 km/h\n목적지\n14.2 km\n감시\n감시 중 · 정지 0초\n관제 신호 없음\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "alert": "관제 신호 없음",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        }
+      ]
+    },
+    "recovered": {
+      "text": "유로트럭 관제\n\n11초 전 · 1280×720\n\n11초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n읽기 전용\n자동 확인 · 2초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "2000",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        }
+      ]
+    },
+    "stale": {
+      "text": "유로트럭 관제\n\n132초 전 · 1280×720\n\n132초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n마지막 화면 · 2분 전\n읽기 전용\n자동 확인 · 10초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "10000",
+      "alert": "마지막 화면 · 2분 전",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        }
+      ]
+    },
+    "old": {
+      "text": "유로트럭 관제\n\n314초 전 · 1280×720\n\n314초 전 · 1280×720\n\n속도\n76 km/h\n크루즈\n80 km/h\n제한\n80 km/h\n목적지\n11.8 km\n감시\n감시 중 · 정지 1초\n마지막 화면 · 5분 전\n읽기 전용\n자동 확인 · 30초",
+      "overflow": [
+        {
+          "s": "html",
+          "overflow": 0
+        },
+        {
+          "s": "body",
+          "overflow": 0
+        },
+        {
+          "s": ".page-scroller",
+          "overflow": 0
+        },
+        {
+          "s": ".ets2-live-page",
+          "overflow": 0
+        }
+      ],
+      "frame": {
+        "x": 238,
+        "y": 274.6875,
+        "width": 960,
+        "height": 540,
+        "top": 274.6875,
+        "right": 1198,
+        "bottom": 814.6875,
+        "left": 238
+      },
+      "image": {
+        "complete": true,
+        "width": 267
+      },
+      "poll": "30000",
+      "alert": "마지막 화면 · 5분 전",
+      "controls": [
+        {
+          "text": "환승 홀",
+          "width": 66.6875,
+          "height": 40
+        },
+        {
+          "text": "☾",
+          "width": 41.046875,
+          "height": 40
+        }
+      ]
+    }
+  }
+]
