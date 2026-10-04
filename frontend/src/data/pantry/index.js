@@ -3,6 +3,21 @@ import { PANTRY_SETS, findSet } from './sets.js'
 
 export { PANTRY_DISHES, PANTRY_SETS, findDish, findSet }
 
+// 태그 묶음 — 칩 행(TKT-180). 세트 tags 에 실제로 쓰인 것만 노출한다.
+export const PANTRY_TAG_GROUPS = [
+  { id: 'ingredient', label: '재료', tags: ['계란', '김치', '두부', '라면', '돼지고기', '삼겹살', '닭', '고등어', '회', '스팸', '소면', '콩나물', '순두부', '감자', '채소'] },
+  { id: 'situation', label: '상황', tags: ['10분', '15분', '야식', '해장', '손님', '주말', '평일', '월급날', '비오는날', '더운날', '가을', '다이어트', '냉장고털이', '편의점', '한잔', '집밥'] },
+  { id: 'drink', label: '술', tags: ['맥주', '소주', '막걸리', '하이볼', '와인', '사케', '무알코올'] },
+]
+export function pantryTags() {
+  const used = new Set(PANTRY_SETS.flatMap((set) => set.tags || []))
+  return PANTRY_TAG_GROUPS.map((group) => ({ ...group, tags: group.tags.filter((tag) => used.has(tag)) })).filter((group) => group.tags.length)
+}
+export function filterSetsByTags(sets, selected = []) {
+  if (!selected.length) return sets
+  return sets.filter((set) => selected.every((tag) => (set.tags || []).includes(tag)))
+}
+
 // 날짜 시드 — 같은 날에는 같은 추천 (design/pantry-spec.md §2)
 function seedFromKey(key) {
   let h = 2166136261

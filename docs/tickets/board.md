@@ -38,6 +38,8 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
+- `TKT-180` `P1` `pantry` `ready` `[FE]` 자취 밥상 태그 칩 확장(재료·상황·술)·quip 표시 (PO 10-05)
+- `TKT-181` `P2` `research` `ready` `[조사]` 자취 밥상 카피 재료 수집 — codex-4
 - `TKT-178` `P1` `tone` `ready` `[FE]` 스플래시 플랩 속도 상향 — 첫 방문 5초·재방문 2.5초 (PO 10-05)
 - `TKT-179` `P1` `tone` `ready` `[FE]` 홈 노선도 실험선 수직 지선 — 유로트럭·개발자 소역 (PO 10-05)
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + R2 퍼블리셔 (v2, codex-2)
