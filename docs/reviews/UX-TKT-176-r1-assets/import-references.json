@@ -1,0 +1,18 @@
+[
+  "frontend/src/staticRouting.e2e.mjs",
+  "frontend/src/splashTone.e2e.mjs",
+  "frontend/src/components/SimTone.e2e.mjs",
+  "frontend/src/components/BlogTone.e2e.mjs",
+  "frontend/src/components/ToneTools.e2e.mjs",
+  "frontend/src/components/Ets2Dev.e2e.mjs",
+  "frontend/src/components/VoyageAdvisorTransfer.e2e.mjs",
+  "frontend/src/components/WritingStudio.e2e.mjs",
+  "frontend/src/components/Pantry.e2e.mjs",
+  "frontend/src/components/VoyageSettlement.e2e.mjs",
+  "frontend/src/components/Ets2Live.e2e.mjs",
+  "frontend/src/components/VoyageCollection.e2e.mjs",
+  "frontend/src/components/JunctionMap.e2e.mjs",
+  "frontend/src/components/VoyageRouteMap.e2e.mjs",
+  "frontend/src/components/VoyageReplay.e2e.mjs",
+  "frontend/src/sim/taxiDispatch.e2e.mjs"
+]

@@ -1,0 +1,246 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "originalEnd": {
+      "settlement": 0,
+      "lastElement": "route-layout"
+    },
+    "arrived": {
+      "viewportTop": -25.359375,
+      "background": "rgba(0, 0, 0, 0)",
+      "buttons": 0,
+      "categoryRows": [
+        {
+          "label": "식비 — 외식·장보기·팁",
+          "value": "85.7만원"
+        },
+        {
+          "label": "교통 — 주차·시내교통·비네트",
+          "value": "11.9만원"
+        },
+        {
+          "label": "입장료·액티비티 (확인분)",
+          "value": "11.4만원"
+        },
+        {
+          "label": "주유",
+          "value": "6.2만원"
+        },
+        {
+          "label": "통신 — 이심 + 유심",
+          "value": "6.7만원"
+        },
+        {
+          "label": "카페",
+          "value": "2.7만원"
+        },
+        {
+          "label": "디저트",
+          "value": "2.5만원"
+        }
+      ],
+      "regionRows": [
+        {
+          "label": "체코 — Day 1·2·3·9",
+          "value": "41.0만원"
+        },
+        {
+          "label": "오스트리아 — Day 4·5·6",
+          "value": "44.7만원"
+        },
+        {
+          "label": "헝가리 — Day 7·8·9(일부)",
+          "value": "41.4만원"
+        }
+      ],
+      "sum": [
+        "650.0만원",
+        "127.1만원"
+      ]
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "originalEnd": {
+      "settlement": 0,
+      "lastElement": "route-layout"
+    },
+    "arrived": {
+      "viewportTop": -25.359375,
+      "background": "rgba(0, 0, 0, 0)",
+      "buttons": 0,
+      "categoryRows": [
+        {
+          "label": "식비 — 외식·장보기·팁",
+          "value": "85.7만원"
+        },
+        {
+          "label": "교통 — 주차·시내교통·비네트",
+          "value": "11.9만원"
+        },
+        {
+          "label": "입장료·액티비티 (확인분)",
+          "value": "11.4만원"
+        },
+        {
+          "label": "주유",
+          "value": "6.2만원"
+        },
+        {
+          "label": "통신 — 이심 + 유심",
+          "value": "6.7만원"
+        },
+        {
+          "label": "카페",
+          "value": "2.7만원"
+        },
+        {
+          "label": "디저트",
+          "value": "2.5만원"
+        }
+      ],
+      "regionRows": [
+        {
+          "label": "체코 — Day 1·2·3·9",
+          "value": "41.0만원"
+        },
+        {
+          "label": "오스트리아 — Day 4·5·6",
+          "value": "44.7만원"
+        },
+        {
+          "label": "헝가리 — Day 7·8·9(일부)",
+          "value": "41.4만원"
+        }
+      ],
+      "sum": [
+        "650.0만원",
+        "127.1만원"
+      ]
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "originalEnd": {
+      "settlement": 0,
+      "lastElement": "route-layout"
+    },
+    "arrived": {
+      "viewportTop": 75.65625,
+      "background": "rgba(0, 0, 0, 0)",
+      "buttons": 0,
+      "categoryRows": [
+        {
+          "label": "식비 — 외식·장보기·팁",
+          "value": "85.7만원"
+        },
+        {
+          "label": "교통 — 주차·시내교통·비네트",
+          "value": "11.9만원"
+        },
+        {
+          "label": "입장료·액티비티 (확인분)",
+          "value": "11.4만원"
+        },
+        {
+          "label": "주유",
+          "value": "6.2만원"
+        },
+        {
+          "label": "통신 — 이심 + 유심",
+          "value": "6.7만원"
+        },
+        {
+          "label": "카페",
+          "value": "2.7만원"
+        },
+        {
+          "label": "디저트",
+          "value": "2.5만원"
+        }
+      ],
+      "regionRows": [
+        {
+          "label": "체코 — Day 1·2·3·9",
+          "value": "41.0만원"
+        },
+        {
+          "label": "오스트리아 — Day 4·5·6",
+          "value": "44.7만원"
+        },
+        {
+          "label": "헝가리 — Day 7·8·9(일부)",
+          "value": "41.4만원"
+        }
+      ],
+      "sum": [
+        "650.0만원",
+        "127.1만원"
+      ]
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "originalEnd": {
+      "settlement": 0,
+      "lastElement": "route-layout"
+    },
+    "arrived": {
+      "viewportTop": 75.65625,
+      "background": "rgba(0, 0, 0, 0)",
+      "buttons": 0,
+      "categoryRows": [
+        {
+          "label": "식비 — 외식·장보기·팁",
+          "value": "85.7만원"
+        },
+        {
+          "label": "교통 — 주차·시내교통·비네트",
+          "value": "11.9만원"
+        },
+        {
+          "label": "입장료·액티비티 (확인분)",
+          "value": "11.4만원"
+        },
+        {
+          "label": "주유",
+          "value": "6.2만원"
+        },
+        {
+          "label": "통신 — 이심 + 유심",
+          "value": "6.7만원"
+        },
+        {
+          "label": "카페",
+          "value": "2.7만원"
+        },
+        {
+          "label": "디저트",
+          "value": "2.5만원"
+        }
+      ],
+      "regionRows": [
+        {
+          "label": "체코 — Day 1·2·3·9",
+          "value": "41.0만원"
+        },
+        {
+          "label": "오스트리아 — Day 4·5·6",
+          "value": "44.7만원"
+        },
+        {
+          "label": "헝가리 — Day 7·8·9(일부)",
+          "value": "41.4만원"
+        }
+      ],
+      "sum": [
+        "650.0만원",
+        "127.1만원"
+      ]
+    }
+  }
+]

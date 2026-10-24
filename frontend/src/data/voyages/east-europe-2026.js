@@ -10,7 +10,7 @@ export const EAST_EUROPE_2026 = defineVoyage({
   summary: '프라하에서 시작해 여덟 도시를 잇는 순환 여행',
   subtitle: '프라하 → 체스키크룸로프 → 할슈타트 → 잘츠부르크 → 바하우 → 비엔나 → 부다페스트 → 브르노 → 프라하',
   period: { start: '2026-09-08', end: '2026-09-18', nights: 9, days: 11 },
-  status: 'boarding', // planned | boarding(여행 중) | arrived(종료·기록)
+  status: 'boarding', // planned | boarding(여행 중) | arrived(종료·기록) — 종료 판정은 날짜(routeGauges)로, 'arrived' 전환은 E2E 픽스처 분리 뒤(TKT-172 r2 메모)
   cities: [
     { id: 'prague', name: '프라하', lat: 50.0755, lon: 14.4378 },
     { id: 'cesky-krumlov', name: '체스키크룸로프', lat: 48.8127, lon: 14.3175 },

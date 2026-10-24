@@ -1,0 +1,3730 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "errors": [],
+    "states": {
+      "initial": {
+        "text": "저장 중…",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(243, 197, 68)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": ""
+      },
+      "saving": {
+        "text": "저장 중…",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(243, 197, 68)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 상태를 확인하는 검수 전용 문장입니다."
+      },
+      "saved": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 62,
+        "color": "rgb(174, 184, 200)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 상태를 확인하는 검수 전용 문장입니다."
+      },
+      "error": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(224, 106, 122)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "error-help": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(224, 106, 122)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "backup-blocked": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(224, 106, 122)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업\n\n저장 실패를 해결한 뒤 다시 시도해 주세요.",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "recovered": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 62,
+        "color": "rgb(174, 184, 200)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 복구 확인."
+      },
+      "backup-success": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 62,
+        "color": "rgb(174, 184, 200)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업\n\n백업 파일을 내려받았습니다.",
+        "body": "저장 복구 확인."
+      }
+    },
+    "downloadCount": 1,
+    "blockedDownloadCount": 0,
+    "focusAfterEscape": "저장 안내와 백업",
+    "backupFilename": "workaround-writing-backup-2026-10-04.json",
+    "backupError": null
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "errors": [],
+    "states": {
+      "initial": {
+        "text": "저장 중…",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(137, 95, 0)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": ""
+      },
+      "saving": {
+        "text": "저장 중…",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(137, 95, 0)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 상태를 확인하는 검수 전용 문장입니다."
+      },
+      "saved": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 62,
+        "color": "rgb(69, 83, 106)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 상태를 확인하는 검수 전용 문장입니다."
+      },
+      "error": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(194, 69, 87)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "error-help": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(194, 69, 87)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "backup-blocked": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 61,
+        "color": "rgb(194, 69, 87)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업\n\n저장 실패를 해결한 뒤 다시 시도해 주세요.",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "recovered": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 62,
+        "color": "rgb(69, 83, 106)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 복구 확인."
+      },
+      "backup-success": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 88.0625,
+          "y": 127.9375,
+          "width": 60.75,
+          "height": 17.390625,
+          "top": 127.9375,
+          "right": 148.8125,
+          "bottom": 145.328125,
+          "left": 88.0625
+        },
+        "statusClient": 61,
+        "statusScroll": 62,
+        "color": "rgb(69, 83, 106)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 25,
+          "y": 105,
+          "width": 321,
+          "height": 64.265625,
+          "top": 105,
+          "right": 346,
+          "bottom": 169.265625,
+          "left": 25
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 25,
+              "y": 116.625,
+              "width": 59.0625,
+              "height": 40,
+              "top": 116.625,
+              "right": 84.0625,
+              "bottom": 156.625,
+              "left": 25
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 152.8125,
+              "y": 116.625,
+              "width": 61.1875,
+              "height": 40,
+              "top": 116.625,
+              "right": 214,
+              "bottom": 156.625,
+              "left": 152.8125
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 218,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 258,
+              "bottom": 156.625,
+              "left": 218
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 262,
+              "y": 116.625,
+              "width": 40,
+              "height": 40,
+              "top": 116.625,
+              "right": 302,
+              "bottom": 156.625,
+              "left": 262
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 306,
+              "y": 115,
+              "width": 40,
+              "height": 43.265625,
+              "top": 115,
+              "right": 346,
+              "bottom": 158.265625,
+              "left": 306
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업\n\n백업 파일을 내려받았습니다.",
+        "body": "저장 복구 확인."
+      }
+    },
+    "downloadCount": 1,
+    "blockedDownloadCount": 0,
+    "focusAfterEscape": "저장 안내와 백업",
+    "backupFilename": "workaround-writing-backup-2026-10-04.json",
+    "backupError": null
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "errors": [],
+    "states": {
+      "initial": {
+        "text": "저장 중…",
+        "statusRect": {
+          "x": 1163.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1163.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(243, 197, 68)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": ""
+      },
+      "saving": {
+        "text": "저장 중…",
+        "statusRect": {
+          "x": 1163.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1163.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(243, 197, 68)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 상태를 확인하는 검수 전용 문장입니다."
+      },
+      "saved": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 1144.203125,
+          "y": 142.640625,
+          "width": 66.203125,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1144.203125
+        },
+        "statusClient": 66,
+        "statusScroll": 66,
+        "color": "rgb(174, 184, 200)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 상태를 확인하는 검수 전용 문장입니다."
+      },
+      "error": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 1163.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1163.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(224, 106, 122)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "error-help": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 1161.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1208.40625,
+          "bottom": 162.609375,
+          "left": 1161.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(224, 106, 122)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1216.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1289.46875,
+              "bottom": 172.625,
+              "left": 1216.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1297.46875,
+              "y": 132.625,
+              "width": 49.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1297.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "backup-blocked": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 1161.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1208.40625,
+          "bottom": 162.609375,
+          "left": 1161.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(224, 106, 122)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1216.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1289.46875,
+              "bottom": 172.625,
+              "left": 1216.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1297.46875,
+              "y": 132.625,
+              "width": 49.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1297.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업\n\n저장 실패를 해결한 뒤 다시 시도해 주세요.",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "recovered": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 1144.203125,
+          "y": 142.640625,
+          "width": 66.203125,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1144.203125
+        },
+        "statusClient": 66,
+        "statusScroll": 66,
+        "color": "rgb(174, 184, 200)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 복구 확인."
+      },
+      "backup-success": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 1142.203125,
+          "y": 142.640625,
+          "width": 66.203125,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1208.40625,
+          "bottom": 162.609375,
+          "left": 1142.203125
+        },
+        "statusClient": 66,
+        "statusScroll": 66,
+        "color": "rgb(174, 184, 200)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1216.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1289.46875,
+              "bottom": 172.625,
+              "left": 1216.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1297.46875,
+              "y": 132.625,
+              "width": 49.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1297.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업\n\n백업 파일을 내려받았습니다.",
+        "body": "저장 복구 확인."
+      }
+    },
+    "downloadCount": 1,
+    "blockedDownloadCount": 0,
+    "focusAfterEscape": "저장 안내와 백업",
+    "backupFilename": "workaround-writing-backup-2026-10-04.json",
+    "backupError": null
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "errors": [],
+    "states": {
+      "initial": {
+        "text": "저장 중…",
+        "statusRect": {
+          "x": 1163.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1163.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(137, 95, 0)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": ""
+      },
+      "saving": {
+        "text": "저장 중…",
+        "statusRect": {
+          "x": 1163.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1163.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(137, 95, 0)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 상태를 확인하는 검수 전용 문장입니다."
+      },
+      "saved": {
+        "text": "저장됨 01:04",
+        "statusRect": {
+          "x": 1144.203125,
+          "y": 142.640625,
+          "width": 66.203125,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1144.203125
+        },
+        "statusClient": 66,
+        "statusScroll": 66,
+        "color": "rgb(69, 83, 106)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 상태를 확인하는 검수 전용 문장입니다."
+      },
+      "error": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 1163.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1163.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(194, 69, 87)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "error-help": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 1161.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1208.40625,
+          "bottom": 162.609375,
+          "left": 1161.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(194, 69, 87)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1216.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1289.46875,
+              "bottom": 172.625,
+              "left": 1216.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1297.46875,
+              "y": 132.625,
+              "width": 49.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1297.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "backup-blocked": {
+        "text": "저장 실패",
+        "statusRect": {
+          "x": 1161.9375,
+          "y": 142.640625,
+          "width": 46.46875,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1208.40625,
+          "bottom": 162.609375,
+          "left": 1161.9375
+        },
+        "statusClient": 46,
+        "statusScroll": 46,
+        "color": "rgb(194, 69, 87)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1216.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1289.46875,
+              "bottom": 172.625,
+              "left": 1216.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1297.46875,
+              "y": 132.625,
+              "width": 49.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1297.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업\n\n저장 실패를 해결한 뒤 다시 시도해 주세요.",
+        "body": "저장에 실패해도 이 문장은 편집기에 남아 있어야 합니다."
+      },
+      "recovered": {
+        "text": "저장됨 01:05",
+        "statusRect": {
+          "x": 1144.90625,
+          "y": 142.640625,
+          "width": 65.5,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1210.40625,
+          "bottom": 162.609375,
+          "left": 1144.90625
+        },
+        "statusClient": 66,
+        "statusScroll": 66,
+        "color": "rgb(69, 83, 106)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1218.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1291.46875,
+              "bottom": 172.625,
+              "left": 1218.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1299.46875,
+              "y": 132.625,
+              "width": 47.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1299.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "×",
+        "body": "저장 복구 확인."
+      },
+      "backup-success": {
+        "text": "저장됨 01:05",
+        "statusRect": {
+          "x": 1142.90625,
+          "y": 142.640625,
+          "width": 65.5,
+          "height": 19.96875,
+          "top": 142.640625,
+          "right": 1208.40625,
+          "bottom": 162.609375,
+          "left": 1142.90625
+        },
+        "statusClient": 66,
+        "statusScroll": 66,
+        "color": "rgb(69, 83, 106)",
+        "ellipsis": "ellipsis",
+        "minWidth": "0px",
+        "bar": {
+          "x": 41,
+          "y": 121,
+          "width": 1354,
+          "height": 64.265625,
+          "top": 121,
+          "right": 1395,
+          "bottom": 185.265625,
+          "left": 41
+        },
+        "buttons": [
+          {
+            "name": "블로그",
+            "rect": {
+              "x": 41,
+              "y": 132.625,
+              "width": 74.46875,
+              "height": 40,
+              "top": 132.625,
+              "right": 115.46875,
+              "bottom": 172.625,
+              "left": 41
+            }
+          },
+          {
+            "name": "미리보기",
+            "rect": {
+              "x": 1216.40625,
+              "y": 132.625,
+              "width": 73.0625,
+              "height": 40,
+              "top": 132.625,
+              "right": 1289.46875,
+              "bottom": 172.625,
+              "left": 1216.40625
+            }
+          },
+          {
+            "name": "발행",
+            "rect": {
+              "x": 1297.46875,
+              "y": 132.625,
+              "width": 49.53125,
+              "height": 40,
+              "top": 132.625,
+              "right": 1347,
+              "bottom": 172.625,
+              "left": 1297.46875
+            }
+          },
+          {
+            "name": "글 도구",
+            "rect": {
+              "x": 0,
+              "y": 0,
+              "width": 0,
+              "height": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0,
+              "left": 0
+            }
+          },
+          {
+            "name": "글 메뉴",
+            "rect": {
+              "x": 1355,
+              "y": 131,
+              "width": 40,
+              "height": 43.265625,
+              "top": 131,
+              "right": 1395,
+              "bottom": 174.265625,
+              "left": 1355
+            }
+          }
+        ],
+        "overflow": [
+          {
+            "s": "html",
+            "px": 0
+          },
+          {
+            "s": "body",
+            "px": 0
+          },
+          {
+            "s": ".page-scroller",
+            "px": 0
+          },
+          {
+            "s": ".writing-room",
+            "px": 0
+          }
+        ],
+        "dialog": "저장 안내\n×\n\n브라우저 데이터를 지우거나 시크릿 모드를 사용하면 기록이 사라질 수 있으며, 다른 기기에서는 이어지지 않습니다.\n\n내 기록 백업\n\n백업 파일을 내려받았습니다.",
+        "body": "저장 복구 확인."
+      }
+    },
+    "downloadCount": 1,
+    "blockedDownloadCount": 0,
+    "focusAfterEscape": "저장 안내와 백업",
+    "backupFilename": "workaround-writing-backup-2026-10-04.json",
+    "backupError": null
+  }
+]

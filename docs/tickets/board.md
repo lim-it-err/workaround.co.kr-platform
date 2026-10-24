@@ -39,12 +39,9 @@
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
 - `TKT-180` `P1` `pantry` `ready` `[FE]` 자취 밥상 태그 칩 확장(재료·상황·술)·quip 표시 (PO 10-05)
-- `TKT-181` `P2` `research` `ready` `[조사]` 자취 밥상 카피 재료 수집 — codex-4
-- `TKT-179` `P1` `tone` `ready` `[FE]` 홈 노선도 실험선 수직 지선 — 유로트럭·개발자 소역 (PO 10-05)
+- `TKT-183` `P3` `tone` `ready` `[FE]` 글쓰기 저장 실패 중 백업 동선 (UX-164 I1)
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
-- `TKT-172` `P2` `voyage` `ready` `[FE]` 여행 결산 화면 (settlement 데이터 표시)
 - `TKT-177` `P2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
-- `TKT-176` `P2` `tone` `ready` `[FE]` E2E 시간대 고정 timezoneId (PO 09-28 승인)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 - `TKT-159` `P1` `infra` `ready` `[INFRA]` 메인 E2E 통합 러너 `npm run e2e:all` (AS-R009 권고)
@@ -60,19 +57,25 @@
 
 ## Started
 
-- `TKT-178` `P1` `tone` `started` `[FE]` 스플래시 플랩 속도 상향 — 첫 방문 5초·재방문 2.5초
+- `TKT-174` `P1` `ets2` `started` `[FE]` 유로트럭 개발자 — **r1 반려**(읽기 영역 면·실패 안내·연결 끊김 비활성·range·샘플 표시·E2E 자급)
+- `TKT-182` `P1` `tone` `started` `[FE]` 문 닫힘 애니메이션 — **r1 반려**(목업 스크립트 0·마지막 문구 0.7초, 총 5.5초)
+- `TKT-179` `P1` `tone` `started` `[FE]` 실험선 수직 지선 — **r1 반려**(라벨 왼쪽·소역 히트 원 r≥20)
+- `TKT-170` `P1` `pantry` `started` `[FE]` 자취 밥상 — **r2 반려**(대안 선택 시 칩 유지·빠른 대안 라벨)
+- `TKT-172` `P2` `voyage` `started` `[FE]` 여행 결산 — **r1 반려**(노출 조건 날짜상 종료 포함)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
 - `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
 
-- `TKT-170` `P1` `pantry` `need_review` `[FE]` 자취 밥상 — r2 추천 3칸 동시 재계산·3회 중복 회귀 보강
-- `TKT-174` `P1` `ets2` `need_review` `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — PoC 3 API·감시/복구·게임 제어·정적 시뮬레이터
 
 
 ## Finished
 
+- `TKT-176` `[FE]` E2E 시간대 고정 timezoneId — r1 통과 (2026-10-24, 묶음 커밋 대기)
+- `TKT-178` `[FE]` 스플래시 플랩 속도 5초/2.5초 — r1 통과 (2026-10-24, 182 r2 묶음)
+- `TKT-181` `[조사]` 자취 밥상 카피 재료·태그 후보 — codex-4 보고서 (2026-10-05, 태그 7종 반영)
+- `TKT-181` `[조사]` 자취 밥상 카피 재료·태그 후보 10 — codex-4 보고서 `reports/2026-10-05-pantry-copy-material.md` (2026-10-05, 태그 7종 콘텐츠 반영)
 - `TKT-168` `[FE]` 유로트럭 뷰어 `/ets2`·S 소역 — r1 통과 (2026-10-05, 커밋은 174 묶음 조건부)
 - `TKT-173` `[PM]` `main` 승격 — 역사 보존 병합 `3618f45`(트리 = v0.7.0)·문서·Pages 트리거 정리, 작업 브랜치 `codex/v0.8.0-live` (2026-09-28, main push 는 PO)
 - `TKT-166` `[PM]` 유로트럭 관제 구조 결정·스펙 `design/ets2-live-spec.md` (2026-09-27)

@@ -1,0 +1,462 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "visit": "first",
+    "errors": [],
+    "screenshots": [
+      "375-dark-first-flipping.png",
+      "375-dark-first-settled-1.png",
+      "375-dark-first-settled-2.png",
+      "375-dark-first-settled-3.png",
+      "375-dark-first-door-opening.png",
+      "375-dark-first-home.png"
+    ],
+    "geometry": {
+      "buttons": [
+        {
+          "text": "다시 재생",
+          "rect": {
+            "x": 256.359375,
+            "y": 729.1875,
+            "width": 97.390625,
+            "height": 53.8125,
+            "top": 729.1875,
+            "right": 353.75,
+            "bottom": 783,
+            "left": 256.359375
+          }
+        }
+      ],
+      "panelBackground": "rgba(0, 0, 0, 0)",
+      "ticker": "에스컬레이터 방향 다수결로 정하는 중…"
+    },
+    "timing": {
+      "start": 40.39999997615814,
+      "leave": 4523.400000095367,
+      "detach": 4523.400000095367,
+      "phases": [
+        {
+          "phrase": "WORKING AROUND",
+          "start": 0,
+          "settled": 784.9000000953674,
+          "end": 1659.9000000953674,
+          "readingMs": 875
+        },
+        {
+          "phrase": "MIND THE GAP",
+          "start": 1659.9000000953674,
+          "settled": 2420.4000000953674,
+          "end": 3319.4000000953674,
+          "readingMs": 899
+        },
+        {
+          "phrase": "DOORS OPENING",
+          "start": 3319.4000000953674,
+          "settled": 4142.600000023842,
+          "end": 4523.400000095367,
+          "readingMs": 380.8000000715256
+        }
+      ],
+      "maxOverflow": 0
+    }
+  },
+  {
+    "width": 375,
+    "theme": "dark",
+    "visit": "return",
+    "errors": [],
+    "screenshots": [
+      "375-dark-return-flipping.png",
+      "375-dark-return-settled-1.png",
+      "375-dark-return-door-opening.png",
+      "375-dark-return-home.png"
+    ],
+    "geometry": {
+      "buttons": [
+        {
+          "text": "다시 재생",
+          "rect": {
+            "x": 256.359375,
+            "y": 729.1875,
+            "width": 97.390625,
+            "height": 53.8125,
+            "top": 729.1875,
+            "right": 353.75,
+            "bottom": 783,
+            "left": 256.359375
+          }
+        }
+      ],
+      "panelBackground": "rgba(0, 0, 0, 0)",
+      "ticker": "출구 번호에 서열 매기는 중…"
+    },
+    "timing": {
+      "start": 35.699999928474426,
+      "leave": 2022.8000000715256,
+      "detach": 2022.8000000715256,
+      "phases": [
+        {
+          "phrase": "WORKING AROUND",
+          "start": 0,
+          "settled": null,
+          "end": 6.200000047683716,
+          "readingMs": null
+        },
+        {
+          "phrase": "DOORS OPENING",
+          "start": 6.200000047683716,
+          "settled": 651.3000000715256,
+          "end": 2022.8000000715256,
+          "readingMs": 1371.5
+        }
+      ],
+      "maxOverflow": 0
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "visit": "first",
+    "errors": [],
+    "screenshots": [
+      "375-light-first-flipping.png",
+      "375-light-first-settled-1.png",
+      "375-light-first-settled-2.png",
+      "375-light-first-settled-3.png",
+      "375-light-first-door-opening.png",
+      "375-light-first-home.png"
+    ],
+    "geometry": {
+      "buttons": [
+        {
+          "text": "다시 재생",
+          "rect": {
+            "x": 256.359375,
+            "y": 729.1875,
+            "width": 97.390625,
+            "height": 53.8125,
+            "top": 729.1875,
+            "right": 353.75,
+            "bottom": 783,
+            "left": 256.359375
+          }
+        }
+      ],
+      "panelBackground": "rgba(0, 0, 0, 0)",
+      "ticker": "에스컬레이터 방향 다수결로 정하는 중…"
+    },
+    "timing": {
+      "start": 35.40000009536743,
+      "leave": 4511.5,
+      "detach": 4511.5,
+      "phases": [
+        {
+          "phrase": "WORKING AROUND",
+          "start": 0,
+          "settled": 784,
+          "end": 1659,
+          "readingMs": 875
+        },
+        {
+          "phrase": "MIND THE GAP",
+          "start": 1659,
+          "settled": 2467.7999999523163,
+          "end": 3311.2999999523163,
+          "readingMs": 843.5
+        },
+        {
+          "phrase": "DOORS OPENING",
+          "start": 3311.2999999523163,
+          "settled": 4051.2999999523163,
+          "end": 4511.5,
+          "readingMs": 460.2000000476837
+        }
+      ],
+      "maxOverflow": 0
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "visit": "return",
+    "errors": [],
+    "screenshots": [
+      "375-light-return-flipping.png",
+      "375-light-return-settled-1.png",
+      "375-light-return-door-opening.png",
+      "375-light-return-home.png"
+    ],
+    "geometry": {
+      "buttons": [
+        {
+          "text": "다시 재생",
+          "rect": {
+            "x": 256.359375,
+            "y": 729.1875,
+            "width": 97.390625,
+            "height": 53.8125,
+            "top": 729.1875,
+            "right": 353.75,
+            "bottom": 783,
+            "left": 256.359375
+          }
+        }
+      ],
+      "panelBackground": "rgba(0, 0, 0, 0)",
+      "ticker": "출구 번호에 서열 매기는 중…"
+    },
+    "timing": {
+      "start": 36.5,
+      "leave": 2011,
+      "detach": 2011,
+      "phases": [
+        {
+          "phrase": "WORKING AROUND",
+          "start": 0,
+          "settled": null,
+          "end": 6.100000023841858,
+          "readingMs": null
+        },
+        {
+          "phrase": "DOORS OPENING",
+          "start": 6.100000023841858,
+          "settled": 638.6000000238419,
+          "end": 2011,
+          "readingMs": 1372.3999999761581
+        }
+      ],
+      "maxOverflow": 0
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "visit": "first",
+    "errors": [],
+    "screenshots": [
+      "1440-dark-first-flipping.png",
+      "1440-dark-first-settled-1.png",
+      "1440-dark-first-settled-2.png",
+      "1440-dark-first-settled-3.png",
+      "1440-dark-first-door-opening.png",
+      "1440-dark-first-home.png"
+    ],
+    "geometry": {
+      "buttons": [
+        {
+          "text": "다시 재생",
+          "rect": {
+            "x": 1289.609375,
+            "y": 803.1875,
+            "width": 97.390625,
+            "height": 53.8125,
+            "top": 803.1875,
+            "right": 1387,
+            "bottom": 857,
+            "left": 1289.609375
+          }
+        }
+      ],
+      "panelBackground": "rgba(0, 0, 0, 0)",
+      "ticker": "에스컬레이터 방향 다수결로 정하는 중…"
+    },
+    "timing": {
+      "start": 35.5,
+      "leave": 4519.600000023842,
+      "detach": 4519.600000023842,
+      "phases": [
+        {
+          "phrase": "WORKING AROUND",
+          "start": 0,
+          "settled": 785.3999999761581,
+          "end": 1659.7000000476837,
+          "readingMs": 874.3000000715256
+        },
+        {
+          "phrase": "MIND THE GAP",
+          "start": 1659.7000000476837,
+          "settled": 2426.399999976158,
+          "end": 3309.899999976158,
+          "readingMs": 883.5
+        },
+        {
+          "phrase": "DOORS OPENING",
+          "start": 3309.899999976158,
+          "settled": 4117.600000023842,
+          "end": 4519.600000023842,
+          "readingMs": 402
+        }
+      ],
+      "maxOverflow": 0
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "visit": "return",
+    "errors": [],
+    "screenshots": [
+      "1440-dark-return-flipping.png",
+      "1440-dark-return-settled-1.png",
+      "1440-dark-return-door-opening.png",
+      "1440-dark-return-home.png"
+    ],
+    "geometry": {
+      "buttons": [
+        {
+          "text": "다시 재생",
+          "rect": {
+            "x": 1289.609375,
+            "y": 803.1875,
+            "width": 97.390625,
+            "height": 53.8125,
+            "top": 803.1875,
+            "right": 1387,
+            "bottom": 857,
+            "left": 1289.609375
+          }
+        }
+      ],
+      "panelBackground": "rgba(0, 0, 0, 0)",
+      "ticker": "출구 번호에 서열 매기는 중…"
+    },
+    "timing": {
+      "start": 35.800000071525574,
+      "leave": 2006.2999999523163,
+      "detach": 2006.2999999523163,
+      "phases": [
+        {
+          "phrase": "WORKING AROUND",
+          "start": 0,
+          "settled": null,
+          "end": 6.100000023841858,
+          "readingMs": null
+        },
+        {
+          "phrase": "DOORS OPENING",
+          "start": 6.100000023841858,
+          "settled": 638.2999999523163,
+          "end": 2006.2999999523163,
+          "readingMs": 1368
+        }
+      ],
+      "maxOverflow": 0
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "visit": "first",
+    "errors": [],
+    "screenshots": [
+      "1440-light-first-flipping.png",
+      "1440-light-first-settled-1.png",
+      "1440-light-first-settled-2.png",
+      "1440-light-first-settled-3.png",
+      "1440-light-first-door-opening.png",
+      "1440-light-first-home.png"
+    ],
+    "geometry": {
+      "buttons": [
+        {
+          "text": "다시 재생",
+          "rect": {
+            "x": 1289.609375,
+            "y": 803.1875,
+            "width": 97.390625,
+            "height": 53.8125,
+            "top": 803.1875,
+            "right": 1387,
+            "bottom": 857,
+            "left": 1289.609375
+          }
+        }
+      ],
+      "panelBackground": "rgba(0, 0, 0, 0)",
+      "ticker": "에스컬레이터 방향 다수결로 정하는 중…"
+    },
+    "timing": {
+      "start": 35.10000002384186,
+      "leave": 4512.399999976158,
+      "detach": 4512.399999976158,
+      "phases": [
+        {
+          "phrase": "WORKING AROUND",
+          "start": 0,
+          "settled": 872,
+          "end": 1656.0999999046326,
+          "readingMs": 784.0999999046326
+        },
+        {
+          "phrase": "MIND THE GAP",
+          "start": 1656.0999999046326,
+          "settled": 2389,
+          "end": 3308.0999999046326,
+          "readingMs": 919.0999999046326
+        },
+        {
+          "phrase": "DOORS OPENING",
+          "start": 3308.0999999046326,
+          "settled": 4056.6999999284744,
+          "end": 4512.399999976158,
+          "readingMs": 455.7000000476837
+        }
+      ],
+      "maxOverflow": 0
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "visit": "return",
+    "errors": [],
+    "screenshots": [
+      "1440-light-return-flipping.png",
+      "1440-light-return-settled-1.png",
+      "1440-light-return-door-opening.png",
+      "1440-light-return-home.png"
+    ],
+    "geometry": {
+      "buttons": [
+        {
+          "text": "다시 재생",
+          "rect": {
+            "x": 1289.609375,
+            "y": 803.1875,
+            "width": 97.390625,
+            "height": 53.8125,
+            "top": 803.1875,
+            "right": 1387,
+            "bottom": 857,
+            "left": 1289.609375
+          }
+        }
+      ],
+      "panelBackground": "rgba(0, 0, 0, 0)",
+      "ticker": "출구 번호에 서열 매기는 중…"
+    },
+    "timing": {
+      "start": 36.5,
+      "leave": 2011,
+      "detach": 2011,
+      "phases": [
+        {
+          "phrase": "WORKING AROUND",
+          "start": 0,
+          "settled": null,
+          "end": 6.100000023841858,
+          "readingMs": null
+        },
+        {
+          "phrase": "DOORS OPENING",
+          "start": 6.100000023841858,
+          "settled": 638.1000000238419,
+          "end": 2011,
+          "readingMs": 1372.8999999761581
+        }
+      ],
+      "maxOverflow": 0
+    }
+  }
+]
