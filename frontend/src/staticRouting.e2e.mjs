@@ -200,3 +200,48 @@ for (const scenario of [
     }
   })
 }
+
+test('TKT-177: 공개 경로가 HTTP 200 을 돌려준다 (index.html 복제)', async t => {
+  const page = await setup(t, { width: 1440, height: 900, theme: 'dark' })
+
+  // Main platform paths (excluding protected/offline routes)
+  const mainPaths = [
+    '/sim',
+    '/elevator',
+    '/taxi',
+    '/voyage',
+    '/pantry',
+    '/ets2',
+    '/work'
+  ]
+
+  // Advisor paths
+  const advisorPaths = [
+    '/today',
+    '/learn',
+    '/history',
+    '/courses'
+  ]
+
+  // Verify main paths return 200
+  for (const path of mainPaths) {
+    const response = await page.goto(`${base}${path.slice(1)}`)
+    assert.equal(response.status(), 200, `${path} should return HTTP 200`)
+  }
+
+  // Verify Advisor paths return 200
+  for (const path of advisorPaths) {
+    const response = await page.goto(`${base}advisor${path}`)
+    assert.equal(response.status(), 200, `/advisor${path} should return HTTP 200`)
+  }
+
+  // Verify protected paths are still blocked (return 404 → 404.html redirect)
+  const blockedPath = `${base}runtime`
+  const runtimeResponse = await page.goto(blockedPath)
+  // 404.html serves at 200 status but we're at /, so runtime redirect works as intended
+  assert.equal(new URL(page.url()).pathname, publicBase, 'runtime should redirect to root')
+
+  // Verify offline paths still 404 (blog, studio)
+  await page.goto(`${base}blog`)
+  assert.equal(new URL(page.url()).pathname, publicBase, '/blog should redirect to root (offline)')
+})
