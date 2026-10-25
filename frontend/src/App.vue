@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import StationHeader from './components/StationHeader.vue'
 import JunctionMap from './components/JunctionMap.vue'
+import WorkNotes from './components/WorkNotes.vue'
 import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import VoyageView from './components/VoyageView.vue'
@@ -10,7 +11,7 @@ import Pantry from './components/Pantry.vue'
 import Ets2Live from './components/Ets2Live.vue'
 import Ets2Dev from './components/Ets2Dev.vue'
 import { SiteLoopSymbol } from './components/tone/index.js'
-import { LINES } from './data/lines.js'
+import { BLOG_LINE_OPEN, LINES } from './data/lines.js'
 import { pickSplashTicker } from './data/splashTicker.js'
 import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
 import { VOYAGE } from './data/voyage.js'
@@ -31,7 +32,7 @@ import {
 
 const SPLASH_DURATION_MS = 5500
 const SPLASH_PHRASE_INTERVAL_MS = 1660
-const SPLASH_TICKER_INTERVAL_MS = 1300
+const SPLASH_TICKER_INTERVAL_MS = 1500
 const SPLASH_RETURN_DURATION_MS = 2500
 const SPLASH_RETURN_SETTLE_LIMIT_MS = 1600
 const SPLASH_RETURN_READING_MS = 1000
@@ -51,6 +52,14 @@ const ETS2_DEV_TEST_API = typeof window !== 'undefined'
 const isStaticMode = !ETS2_DEV_TEST_API && (import.meta.env.VITE_STATIC_MODE === 'true' || APP_BASE_PATH !== '/')
 const STATIC_UNAVAILABLE_PAGES = new Set(STATIC_UNAVAILABLE_LIVE_PAGES)
 const STATIC_DIRECT_PREVIEW_PAGES = new Set(['ets2Dev'])
+// 블로그 본선(D-031): lines.js 의 BLOG_LINE_OPEN 이 꺼져 있으면 이 화면들은 환승 홀로 돌려보낸다.
+const BLOG_LINE_PAGES = new Set(['bloghub', 'blogArchive', 'blogPost', 'writingStudio'])
+const BLOG_CLOSED_MESSAGE = '블로그 노선은 운행을 멈췄습니다'
+const BLOG_CLOSED_NOTICE_MS = 2500
+let pendingBlogClosedNotice = false // 첫 진입이 막힌 블로그 주소였으면 마운트 뒤 안내를 한 번 띄운다
+function isBlogClosedPage(pageName) {
+  return !BLOG_LINE_OPEN && BLOG_LINE_PAGES.has(pageName)
+}
 const LIVE_PAGES = [
   'junction',
   'simhub',
@@ -303,6 +312,7 @@ const studioSavePhase = ref('saved')
 const writingBackupMessage = ref('')
 const staticModeMessage = ref('')
 const staticSimNotice = ref(null)
+const blogClosedNotice = ref('')
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
 const doorTransition = ref({
@@ -1253,6 +1263,7 @@ let portalRefreshTimer
 let elevatorRefreshTimer
 let taxiSimulationTimer
 let staticSimNoticeTimer
+let blogClosedNoticeTimer
 let workManagerExpiryTimer
 let studioAutosaveTimer
 let studioSavedSnapshot = ''
@@ -1680,6 +1691,10 @@ onMounted(async () => {
     scheduleSplashTransition()
   } else if (!isTestRoute.value) {
     syncLiveLocation({ replace: true })
+    if (pendingBlogClosedNotice) {
+      pendingBlogClosedNotice = false
+      showBlogClosedNotice()
+    }
   } else {
     syncTestLocation()
   }
@@ -1710,6 +1725,7 @@ onBeforeUnmount(() => {
   window.clearInterval(elevatorRefreshTimer)
   window.clearInterval(taxiSimulationTimer)
   window.clearTimeout(staticSimNoticeTimer)
+  window.clearTimeout(blogClosedNoticeTimer)
   window.clearTimeout(workManagerExpiryTimer)
   window.clearTimeout(studioAutosaveTimer)
   window.removeEventListener('beforeunload', handleStudioBeforeUnload)
@@ -2423,6 +2439,15 @@ function showEts2DevStaticNotice(event) {
   staticSimNotice.value.message = '개발자 페이지 · 로컬 전용'
 }
 
+// D-031: 내려간 블로그 주소로 들어오면 환승 홀에서 한 줄만 알린다(접근 토스트 패턴 재사용).
+function showBlogClosedNotice() {
+  blogClosedNotice.value = BLOG_CLOSED_MESSAGE
+  window.clearTimeout(blogClosedNoticeTimer)
+  blogClosedNoticeTimer = window.setTimeout(() => {
+    blogClosedNotice.value = ''
+  }, BLOG_CLOSED_NOTICE_MS)
+}
+
 function openSimCard(card, event) {
   if (isStaticMode && card.staticAccess === 'server') {
     showEts2DevStaticNotice(event)
@@ -2436,6 +2461,13 @@ function openSimCard(card, event) {
 }
 
 function openPage(nextPage) {
+  if (isBlogClosedPage(nextPage)) {
+    showBlogClosedNotice()
+    if (page.value === 'junction') {
+      return
+    }
+    nextPage = 'junction'
+  }
   if (isStaticMode && STATIC_UNAVAILABLE_PAGES.has(nextPage)) {
     staticModeMessage.value = '정적 공개본에서는 사용할 수 없음'
     if (page.value !== 'junction') {
@@ -3294,6 +3326,10 @@ function readInitialPage() {
   const mode = readTestRouteMode()
   if (mode === 'live') {
     const route = readLiveRoute(window.location.pathname, APP_BASE_PATH)
+    if (route && isBlogClosedPage(route.page)) {
+      pendingBlogClosedNotice = true
+      return 'junction'
+    }
     if (route && isStaticMode && STATIC_UNAVAILABLE_PAGES.has(route.page) && !STATIC_DIRECT_PREVIEW_PAGES.has(route.page)) {
       return 'junction'
     }
@@ -3309,7 +3345,8 @@ function readInitialBlogSlug() {
   if (typeof window === 'undefined' || readTestRouteMode() !== 'live') {
     return ''
   }
-  return readLiveRoute(window.location.pathname, APP_BASE_PATH)?.slug || ''
+  const route = readLiveRoute(window.location.pathname, APP_BASE_PATH)
+  return route && !isBlogClosedPage(route.page) ? route.slug || '' : ''
 }
 
 function readTestViewParam() {
@@ -3337,7 +3374,7 @@ function normalizeVersionedTestView(view) {
 }
 
 function normalizeLivePage(view) {
-  return LIVE_PAGES.includes(view) ? view : 'junction'
+  return LIVE_PAGES.includes(view) && !isBlogClosedPage(view) ? view : 'junction'
 }
 
 function syncTestLocation() {
@@ -3406,7 +3443,11 @@ function handleLocationPopState(event) {
     page.value = normalizeTestView(readTestViewParam())
   } else {
     const liveRoute = readLiveRoute(window.location.pathname, APP_BASE_PATH)
-    if (liveRoute) {
+    if (liveRoute && isBlogClosedPage(liveRoute.page)) {
+      page.value = 'junction'
+      syncLiveLocation({ replace: true })
+      showBlogClosedNotice()
+    } else if (liveRoute) {
       activeBlogSlug.value = liveRoute.slug
       page.value = isStaticMode && STATIC_UNAVAILABLE_PAGES.has(liveRoute.page) && !STATIC_DIRECT_PREVIEW_PAGES.has(liveRoute.page)
         ? 'junction'
@@ -4103,6 +4144,16 @@ function persistStudioPostId(postId) {
             />
 
             <p v-if="staticModeMessage" class="junction-note static-mode-note" role="status">{{ staticModeMessage }}</p>
+
+            <p
+              v-if="blogClosedNotice"
+              class="junction-access-toast"
+              :style="{ '--toast-x': '50%', '--toast-y': 'calc(100vh - 84px)' }"
+              data-blog-closed-notice
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >{{ blogClosedNotice }}</p>
           </section>
 
           <section v-else-if="page === 'simhub'" class="feature-shell tone-page tone-sim-page line-s">
@@ -4576,13 +4627,17 @@ function persistStudioPostId(postId) {
           />
 
           <section v-else-if="page === 'work'" class="feature-shell tone-page tone-work-page line-w">
+            <WorkNotes />
+            <!-- D-033: 정적 공개본엔 백엔드가 없어 실행 영역을 접는다(API 요청 0). 라이브에서는 기존 영역이 비밀번호 게이트와 함께 그대로. -->
+            <p v-if="isStaticMode" class="work-ops-collapsed">집 PC 연결 시 사용</p>
+            <template v-else>
             <div class="tone-page-intro">
               <section class="tone-page-hero line-w">
                 <div class="tone-hero-topline">
                   <small>지금 볼 것</small>
                   <span>보호 구역</span>
                 </div>
-                <h1>검토 대기 {{ workToneRows[0].count }}건</h1>
+                <h2>검토 대기 {{ workToneRows[0].count }}건</h2>
                 <p>결정이 필요한 작업만 앞에 둡니다.</p>
               </section>
 
@@ -4973,6 +5028,7 @@ function persistStudioPostId(postId) {
               </aside>
               </section>
             </details>
+            </template>
           </section>
 
           <section v-else class="feature-shell tone-page tone-runtime-page line-r">
@@ -5038,9 +5094,15 @@ function persistStudioPostId(postId) {
             </details>
           </section>
 
-          <nav v-if="!isTestRoute" class="mobile-quick-nav" aria-label="빠른 환승">
+          <nav
+            v-if="!isTestRoute"
+            class="mobile-quick-nav"
+            :style="BLOG_LINE_OPEN ? undefined : { gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }"
+            aria-label="빠른 환승"
+          >
             <button type="button" :class="{ active: page === 'junction' }" @click="openPage('junction')">노선도</button>
             <button
+              v-if="BLOG_LINE_OPEN"
               type="button"
               :class="{ active: ['bloghub', 'blogArchive', 'blogPost', 'writingStudio'].includes(page) }"
               @click="openBlogArchive"

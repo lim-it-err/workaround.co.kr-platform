@@ -2,6 +2,28 @@
 
 작은 개인용 서비스를 모아 운영하고, 티켓 기반 자동화와 워커 실행 흐름을 붙일 수 있도록 설계한 개인 플랫폼 모노레포다.
 
+## 지금 어디에 배포돼 있나
+
+공개본은 **GitHub Pages** 에 있다. `main` 에 반영되면 자동 배포된다(Cloudflare 이전 전까지의 임시 공개본, D-011).
+
+- 주소: <https://lim-it-err.github.io/workaround.co.kr-platform/>
+- 배포 확인: <https://lim-it-err.github.io/workaround.co.kr-platform/deployment.json> — 배포된 커밋 SHA·빌드 시각
+
+| 화면 | 경로 | 비고 |
+|---|---|---|
+| 스플래시 → 환승 홀 | [`/`](https://lim-it-err.github.io/workaround.co.kr-platform/) | 노선도에서 모든 화면으로 |
+| 여행 노선 | [`/voyage`](https://lim-it-err.github.io/workaround.co.kr-platform/voyage) | 중부유럽 2026 기록·결산 |
+| 자취 밥상 | [`/pantry`](https://lim-it-err.github.io/workaround.co.kr-platform/pantry) | 오늘의 한 상·술 페어링 |
+| 미스터리 트레인 | [`/sim`](https://lim-it-err.github.io/workaround.co.kr-platform/sim) | 격납고 — 엘리베이터 `/elevator`·심야 택시 `/taxi` |
+| 유로트럭 뷰어 | [`/ets2`](https://lim-it-err.github.io/workaround.co.kr-platform/ets2) | 지금은 샘플 화면(R2 연결 전) |
+| 운영 노트 | [`/work`](https://lim-it-err.github.io/workaround.co.kr-platform/work) | 개발·운영 구조 공개(D-033), 명령 실행은 보호 |
+| Developer Advisor | [`/advisor/`](https://lim-it-err.github.io/workaround.co.kr-platform/advisor/) | 별도 앱 |
+| 유로트럭 개발자 | `/ets2/dev` | 보호 구역 — 공개본에서는 잠김 |
+| Runtime Board | `/runtime` | 보호 구역 — 공개본에서는 잠김 |
+| 블로그·글쓰기 | `/blog`·`/studio` | 운행 중단(D-031) — 환승 홀로 돌아감 |
+
+- 깊은 주소는 Pages 가 HTTP 404 를 돌려준 뒤 `404.html` 셸이 앱을 띄우는 방식이라, 화면은 정상으로 열린다(서버 200 은 TKT-177).
+
 ## 목표
 
 이 저장소의 기본 구조는 다음과 같다.
@@ -12,7 +34,7 @@
 - 워커는 티켓을 구독하고 작업을 수행한다.
 - Ollama는 외부 RTX5070 노드에서 내려갈 수 있는 런타임으로 취급한다.
 
-PM 은 Claude(Fable) 세션이고, 구현은 그 세션 안의 Claude Sonnet/Haiku 서브에이전트, Codex(GPT-5.6 Sol) 는 감사·UX 검수·조사를 맡는다(D-029). 어디서 무엇이 도는지는 아래 "개발 구조" 절.
+PM 은 Claude(Opus 5.5) 세션이고, 구현은 그 세션 안의 Claude Sonnet/Haiku 서브에이전트, Codex 는 `codex-9` 하나(GPT-6.1 Sol)가 UX 검수·릴리스 감사·조사를 맡는다(D-029·D-030). 어디서 무엇이 도는지는 아래 "개발 구조" 절.
 
 ## 저장소 구조
 
@@ -56,9 +78,9 @@ Spring은 무거운 비즈니스 로직을 쌓는 곳이 아니라, 게이트웨
 ```mermaid
 flowchart LR
   subgraph MAC["맥북 — 집·카페 어디서나 (코드는 여기서만 고친다)"]
-    PM["PM 세션 · Claude Fable<br/>티켓 발행·판정·커밋"]
+    PM["PM 세션 · Claude Opus 5.5<br/>티켓 발행·판정·커밋"]
     DEV["dev 서브에이전트 · Claude Sonnet/Haiku<br/>티켓 구현 (PM 세션 안)"]
-    CDX["Codex · GPT-5.6 Sol<br/>릴리스 감사·UX 검수·조사"]
+    CDX["codex-9 · GPT-6.1 Sol<br/>UX 검수·릴리스 감사·조사"]
     WT["단일 워킹트리<br/>작업 브랜치 codex/v0.8.0-live"]
     PM -- "티켓 디스패치" --> DEV
     DEV --> WT
@@ -86,7 +108,7 @@ flowchart LR
 
 ### 세 실행 장소
 
-- **맥북** — 개발·판정·커밋이 전부 여기서 일어난다. 워킹트리는 하나(`codex/v0.8.0-live`)이고, PM 세션(Claude Fable)이 티켓을 내고 판정·커밋하며, 구현은 PM 세션이 띄우는 dev 서브에이전트(Claude Sonnet 기본, 단순 건 Haiku)가 티켓 단위로 한다. Codex(GPT-5.6 Sol)는 코드를 고치지 않고 릴리스 감사·UX 검수·조사 보고만 한다. 역할표는 [AGENTS.md](AGENTS.md). 카페에서는 인터넷만 있으면 GitHub·공개본·Cloudflare 작업이 되고, `.100` 은 LAN 밖이라 SSH 가 Tailscale 을 거쳐야 한다. 네트워크가 없을 때는 아래 "비행기에서" 절.
+- **맥북** — 개발·판정·커밋이 전부 여기서 일어난다. 워킹트리는 하나(`codex/v0.8.0-live`)이고, PM 세션(Claude Opus 5.5)이 티켓을 내고 판정·커밋하며, 구현은 PM 세션이 띄우는 dev 서브에이전트(Claude Sonnet 기본, 단순 건 Haiku)가 티켓 단위로 한다. Codex 는 `codex-9` 하나(GPT-6.1 Sol)로, 코드를 고치지 않고 UX 실화면 검수·릴리스 감사·조사 보고만 한다. 역할표는 [AGENTS.md](AGENTS.md). 카페에서는 인터넷만 있으면 GitHub·공개본·Cloudflare 작업이 되고, `.100` 은 LAN 밖이라 SSH 가 Tailscale 을 거쳐야 한다. 네트워크가 없을 때는 아래 "비행기에서" 절.
 - **`.100` (Windows · RTX 5070)** — 유로트럭 2(ETS2)와 자율주행 PoC(`services/ets2-adas/`)가 돈다. 코드는 두지 않는다: 맥에서 SSH 로 동기화·기동·중지·로그 수집을 하는 **배포 대상**이다(D-028). 화면 캡처·게임 입력은 로그온 세션이 필요해 작업 스케줄러 태스크로 띄운다. PoC 는 2초마다 캡처를 R2 로 밀어 올리기만 하고(아웃바운드), 외부에서 들어오는 포트는 없다. Ollama 는 gateway 뒤 내부망에만 있다.
 - **Cloudflare (목표 호스팅, `workaround.co.kr`)** — 정적 프런트는 Pages, 동적 `/api/*` 는 Tunnel 로 집 서버 gateway 에 연결, 유로트럭 프레임은 R2 공개 버킷, 실시간 스트리밍이 필요해지면 Stream Live 또는 Tunnel 뒤 MediaMTX(2단계). 집 회선이 죽어도 정적 콘텐츠는 살아 있다. 전환 티켓은 TKT-085(도메인·Tunnel)·TKT-167(R2 퍼블리셔). **지금은 GitHub Pages 가 임시 공개본**이다(아래 절).
 
@@ -119,8 +141,8 @@ dev 서브에이전트 구현 → need_review → PM 판정(빌드·단위·E2E�
 - 트렁크는 `main`(2026-09-28 승격, v0.7.0). `main`에 반영되면 `.github/workflows/deploy-github-pages.yml`이 `frontend`와 Advisor를 Pages base로 빌드해 자동 배포한다.
 - 수동 배포는 GitHub의 **Actions → Deploy GitHub Pages → Run workflow**에서 `main`을 선택한다.
 - Line V는 첫 화면의 `Line V / Voyage`에서 준비·일일 안내·도시 기록으로 들어간다.
-- Blog 글쓰기는 `Blog District → Writing Studio`에서 시작한다.
-- 여행 메모와 블로그 초안은 현재 같은 브라우저의 `localStorage`에만 남는다. 다른 기기와 동기화되지 않고 브라우저 데이터 삭제 시 복구되지 않는다.
+- 블로그 본선(공개 아카이브·글 상세·Writing Studio)은 **운행 중단**이다(D-031, 2026-10-25). 코드는 보존하고 홈·주소에서만 내렸다.
+- 여행 메모는 현재 같은 브라우저의 `localStorage`에만 남는다. 다른 기기와 동기화되지 않고 브라우저 데이터 삭제 시 복구되지 않는다.
 - Pages 배포 SHA와 빌드 시각은 배포 산출물의 `deployment.json`과 Actions 실행 요약에서 확인한다.
 
 ## 비행기에서(오프라인) 홈페이지 켜기
@@ -147,11 +169,11 @@ npm --prefix frontend run preview -- --base=/workaround.co.kr-platform/ --port 4
 
 브라우저에서 <http://localhost:4180/workaround.co.kr-platform/> 을 연다. 끌 때는 터미널에서 `Ctrl+C`.
 
-- 환승 홀·여행(`/voyage`)·블로그·글쓰기(`/studio`)·미스터리 트레인(`/sim`, 심야 택시)은 직접 주소와 새로고침 모두 동작한다.
+- 환승 홀·여행(`/voyage`)·자취 밥상(`/pantry`)·미스터리 트레인(`/sim`, 심야 택시)은 직접 주소와 새로고침 모두 동작한다. 블로그·글쓰기는 운행 중단(D-031).
 - Developer Advisor 는 <http://localhost:4180/workaround.co.kr-platform/advisor/> 로 들어간다. 이 방식에서는 Advisor 안쪽 주소(`/advisor/today` 등)에서 **새로고침하면 메인 홈이 뜬다** — 다시 `/advisor/` 로 들어가면 된다(공개본은 `404.html` 이 처리하지만 `vite preview` 는 그렇지 않다). 새로고침이 자유로워야 하면 Advisor 만 따로 띄운다: `npm --prefix services/advisor/frontend run dev` → <http://localhost:5173>.
 - 이 빌드는 공개본과 같은 **정적 모드**다(base 경로가 `/` 가 아니면 정적 모드). Work·Runtime·엘리베이터는 흐림 + `준비 중` 으로 보이는 것이 정상이다.
-- 가장 빠른 대안(여행·블로그·글쓰기만, Advisor 제외): `VITE_STATIC_MODE=true npm --prefix frontend run dev` → <http://localhost:7000>. 빌드 없이 바로 뜬다.
-- 기내에서 적은 여행 메모·블로그 초안은 **그 브라우저의 `localStorage` 에만** 남는다. 착륙 후 `내 기록 백업`(여행)·`저장 안내와 백업`(글쓰기)으로 JSON 을 내려받아 둔다. 데이터 파일 반영 절차는 [`docs/voyage-record-import.md`](docs/voyage-record-import.md).
+- 가장 빠른 대안(여행 등 메인 화면만, Advisor 제외): `VITE_STATIC_MODE=true npm --prefix frontend run dev` → <http://localhost:7000>. 빌드 없이 바로 뜬다.
+- 기내에서 적은 여행 메모는 **그 브라우저의 `localStorage` 에만** 남는다. 착륙 후 `내 기록 백업`(여행)으로 JSON 을 내려받아 둔다. 데이터 파일 반영 절차는 [`docs/voyage-record-import.md`](docs/voyage-record-import.md).
 
 ## 테스트 / 커버리지
 

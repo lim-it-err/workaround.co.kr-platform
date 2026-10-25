@@ -14,7 +14,7 @@ const LIVE_PAGE_PATHS = {
   runtime: '/runtime'
 }
 
-export const STATIC_UNAVAILABLE_LIVE_PAGES = Object.freeze(['work', 'runtime', 'ops', 'signals', 'ets2Dev'])
+export const STATIC_UNAVAILABLE_LIVE_PAGES = Object.freeze(['runtime', 'ops', 'signals', 'ets2Dev'])
 
 export function isStaticPageUnavailable(page) {
   return STATIC_UNAVAILABLE_LIVE_PAGES.includes(page)

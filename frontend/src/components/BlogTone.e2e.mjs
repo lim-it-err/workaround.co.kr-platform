@@ -1,11 +1,17 @@
 import assert from 'node:assert/strict'
-import { after, before, test } from 'node:test'
+import { after, before, test as nodeTest } from 'node:test'
 import { createRequire } from 'node:module'
 import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from '../e2eContext.mjs'
+import { BLOG_LINE_OPEN } from '../data/lines.js'
+
+// D-031 블로그 운행 중단: 홈·주소에서 블로그/스튜디오가 내려가 있는 동안 이 스위트는 skip 한다(테스트 코드는 보존).
+// 복귀는 data/lines.js 의 BLOG_LINE_OPEN 을 true 로 바꾸면 자동으로 다시 돈다.
+const SKIP_REASON = BLOG_LINE_OPEN ? false : 'D-031 블로그 운행 중단'
+const test = (name, fn) => nodeTest(name, { skip: SKIP_REASON }, fn)
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -78,6 +84,7 @@ let browser
 let server
 
 before(async () => {
+  if (SKIP_REASON) return
   if (!base) {
     server = createServer(serveStaticBuild)
     await new Promise((resolve, reject) => {
@@ -90,6 +97,7 @@ before(async () => {
 })
 
 after(async () => {
+  if (SKIP_REASON) return
   await browser?.close()
   if (server) await new Promise(resolve => server.close(resolve))
 })

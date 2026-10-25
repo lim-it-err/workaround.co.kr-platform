@@ -145,11 +145,13 @@ for (const scenario of [
       })
     }
 
-    for (const protectedPath of ['work', 'runtime']) {
-      await page.goto(`${base}${protectedPath}`)
-      await page.locator('.junction-overview').waitFor()
-      assert.equal(new URL(page.url()).pathname, publicBase)
-    }
+    // TKT-195·D-033: work 는 정적 공개본에서도 운영 노트로 열린다. runtime 만 환승 홀로 돌려보낸다.
+    await page.goto(`${base}work`)
+    await page.locator('.work-notes').waitFor()
+    assert.equal(new URL(page.url()).pathname, `${publicBase}work`)
+    await page.goto(`${base}runtime`)
+    await page.locator('.junction-overview').waitFor()
+    assert.equal(new URL(page.url()).pathname, publicBase)
 
     assert.equal(await page.locator('.junction-sublinks').filter({ has: page.getByText('격납고', { exact: true }) }).locator(':scope > *').count(), 6)
     assert.equal(await page.locator('.junction-sublinks').getByRole('button', { name: '유로트럭', exact: true }).count(), 1)

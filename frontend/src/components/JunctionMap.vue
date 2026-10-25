@@ -9,6 +9,10 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['open'])
+// 정류장 수는 노선 정의에서 센다 — 블로그 본선이 내려가면(D-031) 여덟 → 일곱.
+const COUNT_WORDS = ['영', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열']
+const stationCount = JUNCTION_LINES.reduce((total, line) => total + line.stations.length, 0)
+const stationCountLabel = COUNT_WORDS[stationCount] ?? String(stationCount)
 const accessToast = ref(null)
 let accessToastTimer
 
@@ -90,7 +94,7 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
         class="junction-map"
         viewBox="0 0 720 720"
         role="img"
-        aria-label="환승 홀에서 기록선, 실험선, 기지선으로 이어지는 여덟 정류장"
+        :aria-label="`환승 홀에서 기록선, 실험선, 기지선으로 이어지는 ${stationCountLabel} 정류장`"
       >
         <g
           v-for="line in JUNCTION_LINES"

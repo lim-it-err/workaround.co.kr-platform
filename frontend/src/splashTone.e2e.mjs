@@ -16,7 +16,7 @@ const distRoot = fileURLToPath(new URL('../dist/', import.meta.url))
 const testClockTime = new Date('2026-09-15T12:00:00.000Z')
 const firstVisitDurationMs = 5500
 const phraseIntervalMs = 1660
-const tickerIntervalMs = 1300
+const tickerIntervalMs = 1500
 const returnVisitDurationMs = 2500
 const returnVisitSettleLimitMs = 1600
 const returnVisitMaximumMs = 2800
@@ -155,9 +155,9 @@ function assertTickerInPool(ticker, label) {
   assert.ok(SPLASH_TICKER_POOL.includes(ticker), `${label}: 티커 "${ticker}" 는 풀(39개)에 있어야 한다`)
 }
 
-// 한 방문의 티커 관측 기록 검증: 풀 포함 · 서로 다른 티커 ≥minDistinct · 연속 동일 0 · 방문 안 중복 0 · 1.3초 간격.
-// 같은 문구가 연속으로 뽑히면 DOM 이 바뀌지 않아 기록에 남지 않으므로, "연속 동일 0" 은 간격이 정확히 1.3초씩인지로도 확인한다.
-function assertTickerRotation(log, label, { minCount = 4, maxCount = 5, minDistinct = 3 } = {}) {
+// 한 방문의 티커 관측 기록 검증: 풀 포함 · 서로 다른 티커 ≥minDistinct · 연속 동일 0 · 방문 안 중복 0 · 1.5초 간격.
+// 같은 문구가 연속으로 뽑히면 DOM 이 바뀌지 않아 기록에 남지 않으므로, "연속 동일 0" 은 간격이 정확히 1.5초씩인지로도 확인한다.
+function assertTickerRotation(log, label, { minCount = 4, maxCount = 4, minDistinct = 3 } = {}) {
   const texts = log.map(entry => entry.text)
   assert.ok(
     log.length >= minCount && log.length <= maxCount,
@@ -373,7 +373,7 @@ test('375px: 반쪽 플랩 세 문구와 티커를 읽힌 뒤 5.5초에 전환�
   assert.equal(
     await page.locator('.splash-ticker-strip').getAttribute('aria-live'),
     'off',
-    '1.3초마다 바뀌는 티커를 스크린리더가 매번 읽지 않도록 aria-live=off'
+    '1.5초마다 바뀌는 티커를 스크린리더가 매번 읽지 않도록 aria-live=off'
   )
   assert.ok(first.runningCells > 0, 'the retained half-panel engine is flipping')
   const firstSettledAtMs = 150 + await waitForPhraseToSettle(page, 'WORKING AROUND', 1000)
@@ -640,13 +640,13 @@ test('1440px light reduced motion: static first phrase, loop symbol and zero ove
   assert.equal(state.runningCells, 0)
   assert.equal(state.overflow, 0)
   assert.equal(await page.locator('.site-loop-symbol').count(), 1)
-  // 티커 텍스트 교체는 모션이 아니므로 reduced-motion 에서도 1.3초마다 계속되고, 플랩은 정적 표시를 유지한다.
+  // 티커 텍스트 교체는 모션이 아니므로 reduced-motion 에서도 1.5초마다 계속되고, 플랩은 정적 표시를 유지한다.
   await page.clock.runFor(tickerIntervalMs * 3)
   const rotated = await snapshot(page)
   assert.equal(rotated.phrase, 'WORKING AROUND')
   assert.equal(rotated.renderedPhrase, 'WORKING AROUND')
   assert.equal(rotated.runningCells, 0)
-  assertTickerRotation(await tickerLog(page), '1440 라이트 reduced-motion 3.9초', { minCount: 4, maxCount: 4 })
+  assertTickerRotation(await tickerLog(page), '1440 라이트 reduced-motion 4.5초', { minCount: 4, maxCount: 4 })
   assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), 'light')
   assert.deepEqual(await splashPanelSurface(page), {
     backgroundColor: 'rgba(0, 0, 0, 0)',

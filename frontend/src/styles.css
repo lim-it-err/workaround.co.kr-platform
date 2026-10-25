@@ -4127,13 +4127,15 @@ a.junction-route-row:focus-visible {
 }
 
 .tone-page-hero h1,
+.tone-work-page .tone-page-hero h2,
 .tone-page-hero p,
 .tone-service-row h2,
 .tone-service-row p {
   margin: 0;
 }
 
-.tone-page-hero h1 {
+.tone-page-hero h1,
+.tone-work-page .tone-page-hero h2 {
   margin: 3px 0 7px;
   font-size: clamp(2rem, 6vw, 2.35rem);
   line-height: 1.2;
@@ -5177,6 +5179,11 @@ a.junction-route-row:focus-visible {
   -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
 }
 
+.pantry-filter-primary > .pantry-filters:focus-within {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
 .pantry-filters,
 .pantry-filter-list {
   display: flex;
@@ -5982,5 +5989,144 @@ button.station-prev:hover {
     grid-column: 1 / -1;
     justify-self: start;
     text-align: left;
+  }
+}
+
+/* 운영 노트 — Work Manager 첫 화면 (TKT-195). 면 없음, W 노선색은 왼쪽 선과 확정 배지에만. */
+.work-notes {
+  width: min(100%, 960px);
+  margin: 24px auto 8px;
+  min-width: 0;
+}
+
+.work-notes-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 0 0 14px 18px;
+  border-left: 3px solid var(--accent, var(--line-strong));
+}
+
+.work-notes-head h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 2.35rem);
+  line-height: 1.2;
+  letter-spacing: -0.04em;
+}
+
+.work-notes-head small {
+  color: var(--muted);
+}
+
+.work-note {
+  padding: 20px 0 22px 18px;
+  border-top: 1px solid var(--line);
+  min-width: 0;
+}
+
+.work-note-titleline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.work-note-titleline h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+.work-note-badge {
+  padding: 1px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.work-note-badge.is-confirmed {
+  border-color: var(--line-w);
+  color: var(--line-w-text);
+}
+
+.work-note-badge.is-todo {
+  border-color: var(--warning, var(--line-strong));
+  color: var(--text-1);
+}
+
+.work-note-lead {
+  margin: 8px 0 0;
+  color: var(--text-1);
+  line-height: 1.6;
+}
+
+.work-note-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 0;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.88rem;
+}
+
+.work-note-flow li {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  color: var(--text-1);
+}
+
+.work-note-flow li + li::before {
+  content: '→';
+  margin: 0 8px;
+  color: var(--line-w-text);
+}
+
+.work-note-points {
+  margin: 10px 0 0;
+  padding-left: 1.1em;
+  color: var(--text-2, var(--muted));
+  line-height: 1.65;
+}
+
+.work-note-points li + li {
+  margin-top: 4px;
+}
+
+.work-ops-collapsed {
+  width: min(100%, 960px);
+  margin: 0 auto;
+  padding: 16px 0 16px 18px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .work-note-flow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .work-note-flow li + li::before {
+    content: '↓';
+    display: block;
+    margin: 0;
+    width: 1.2em;
+  }
+
+  .work-note-flow li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
   }
 }

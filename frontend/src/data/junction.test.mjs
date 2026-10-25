@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { JUNCTION, JUNCTION_LINES, LINES } from './lines.js'
+import { BLOG_LINE_OPEN, JUNCTION, JUNCTION_LINES, LINES } from './lines.js'
 
 function parseSegment(path) {
   const values = path.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? []
@@ -16,11 +16,25 @@ function pointLineDistance(point, segment) {
     + segment.end.x * segment.start.y - segment.end.y * segment.start.x) / Math.hypot(dx, dy)
 }
 
-test('환승 홀은 세 노선과 여덟 정류장을 단일 구조로 제공한다', () => {
+test('환승 홀은 세 노선과 정류장을 단일 구조로 제공한다 (블로그 본선 스위치 D-031)', () => {
   assert.deepEqual(JUNCTION_LINES.map((line) => line.nameKo), ['기록선', '실험선', '기지선'])
-  assert.equal(LINES.length, 8)
-  assert.deepEqual(LINES.map((line) => line.code), ['B', 'V', 'A', 'S', 'D', 'P', 'W', 'R'])
+  // 열림: B V A S D P W R (여덟) / 닫힘(D-031): V A S D P W R (일곱)
+  const expected = BLOG_LINE_OPEN
+    ? ['B', 'V', 'A', 'S', 'D', 'P', 'W', 'R']
+    : ['V', 'A', 'S', 'D', 'P', 'W', 'R']
+  assert.equal(LINES.length, expected.length)
+  assert.deepEqual(LINES.map((line) => line.code), expected)
   assert.deepEqual(LINES.filter((line) => line.upcoming).map((line) => line.code), ['D'])
+})
+
+test('블로그 본선 스위치는 기록선 안내 문구와 경로를 함께 바꾼다', () => {
+  const archive = JUNCTION_LINES.find((line) => line.id === 'archive')
+  assert.equal(archive.order, BLOG_LINE_OPEN ? '환승 홀 → 블로그 → 여행' : '환승 홀 → 여행')
+  assert.deepEqual(archive.paths, [BLOG_LINE_OPEN ? 'M90 360 L630 360' : 'M290 360 L630 360'])
+  assert.equal(archive.stations.some((station) => station.code === 'B'), BLOG_LINE_OPEN)
+  const hasBlogLink = LINES.some((station) => [station, ...(station.sublinks ?? []), ...(station.mapStops ?? [])]
+    .some((link) => ['blogArchive', 'blogPost', 'writingStudio', 'bloghub'].includes(link.page)))
+  assert.equal(hasBlogLink, BLOG_LINE_OPEN, '닫힌 동안 블로그·스튜디오로 가는 링크 정의가 없어야 한다')
 })
 
 test('개통 정류장은 모두 대표 목적지를 갖고 미개통 정류장은 이동하지 않는다', () => {

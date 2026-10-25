@@ -2,13 +2,19 @@
 // preview. Playwright must be installed or available via NODE_PATH; no
 // production storage is accessed.
 import assert from 'node:assert/strict'
-import { after, before, test } from 'node:test'
+import { after, before, test as nodeTest } from 'node:test'
 import { createRequire } from 'node:module'
 import { readFile } from 'node:fs/promises'
 import { startIsolatedPreview } from '../../scripts/e2e-isolated-preview.mjs'
 import { VOYAGE } from '../data/voyage.js'
 import { newSeoulContext } from '../e2eContext.mjs'
 import { voyageStorageKey } from '../data/voyageStorage.js'
+import { BLOG_LINE_OPEN } from '../data/lines.js'
+
+// D-031 블로그 운행 중단: 홈·주소에서 블로그/스튜디오가 내려가 있는 동안 이 스위트는 skip 한다(테스트 코드는 보존).
+// 복귀는 data/lines.js 의 BLOG_LINE_OPEN 을 true 로 바꾸면 자동으로 다시 돈다.
+const SKIP_REASON = BLOG_LINE_OPEN ? false : 'D-031 블로그 운행 중단'
+const test = (name, fn) => nodeTest(name, { skip: SKIP_REASON }, fn)
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const externalBase = process.env.STUDIO_TEST_URL
@@ -24,6 +30,7 @@ const draft = {
 let browser
 let preview
 before(async () => {
+  if (SKIP_REASON) return
   if (!externalBase) {
     preview = await startIsolatedPreview({ basePath: '/workaround.co.kr-platform/' })
     base = preview.url
@@ -31,6 +38,7 @@ before(async () => {
   browser = await chromium.launch({ headless: true })
 })
 after(async () => {
+  if (SKIP_REASON) return
   await browser?.close()
   await preview?.stop()
 })
