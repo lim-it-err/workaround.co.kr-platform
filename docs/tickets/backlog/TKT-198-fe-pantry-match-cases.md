@@ -2,7 +2,7 @@
 
 # TKT-198 `[FE]` 자취 밥상 조합 판정 다양화 — 어울리지 않아요·아직 없어요·조건 많아요
 
-- 상태: backlog · 대상 **v2.0**(D-034) · 담당: dev 서브에이전트(Sonnet) · 스펙 `design/pantry-requests-spec.md` §2·§3.
+- 상태: backlog · 대상 **v1.0 이후**(D-034) · 담당: dev 서브에이전트(Sonnet) · 스펙 `design/pantry-requests-spec.md` §2·§3.
 - 선행(PM 콘텐츠): `frontend/src/data/pantry/` 에 `PANTRY_MISMATCHES`·판정 문구·닭 + 사케 세트 추가.
 - scope: `frontend/src/components/Pantry.vue`·`Pantry.e2e.mjs`, `frontend/src/data/pantry/index.js`(판정 함수만 — 콘텐츠 배열은 PM), `styles.css`.
 

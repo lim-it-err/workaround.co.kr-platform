@@ -15,7 +15,7 @@
 
 ## 현재 릴리스 상태
 
-- `v1.0.0`: **후보** (2026-10-25, PO 「현재 버전을 v1.0으로」) — `main` PR · codex-9 감사(`reports/advisory/RELEASE-v1.0.0.md`) 뒤 태그. 다음 `v2.0.0` = 배포 파이프라인(Cloudflare·Tunnel·집 PC 배포) 완성 시(D-034).
+- `v0.8.0`: **후보** (2026-10-25) — `main` PR #4 · codex-9 감사(`reports/advisory/RELEASE-v0.8.0.md`) 뒤 태그. 다음 `v0.9.0` = 블랙(레트로) 디자인(D-035). `VERSION` 은 배포 완료 뒤에만 올린다(version-policy).
 - `v0.7.0`: 2026-09-28 태그, `main` 승격.
 
 - `v0.1.0`: 2026-06-13 릴리스 완료, `main` 병합 완료

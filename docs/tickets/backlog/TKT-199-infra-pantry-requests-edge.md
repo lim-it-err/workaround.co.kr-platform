@@ -2,7 +2,7 @@
 
 # TKT-199 `[INFRA]` 밥상 "주인장에게 요청" — 엣지 저장(선택형)·집계
 
-- 상태: backlog · 대상 **v2.0** · 의존: TKT-191(게이트)·198 · 스펙 `design/pantry-requests-spec.md` §4.
+- 상태: backlog · 대상 **v1.0 이후** · 의존: TKT-191(게이트)·198 · 스펙 `design/pantry-requests-spec.md` §4.
 - scope: `infra/llm-gate/**`(또는 공용 게이트 Worker) 의 `/api/pantry/requests` + Cloudflare KV/D1 바인딩, 집계 읽기 API(보호), 테스트.
 
 ## 완료 조건
