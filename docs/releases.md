@@ -15,6 +15,8 @@
 
 ## 현재 릴리스 상태
 
+- **배포 일정표: [`docs/release-plan.md`](release-plan.md)** — v0.8.0 ~ v1.2.0, 패치·마이너 구분, 보류·닫기 제안.
+
 - `v0.8.0`: **후보** (2026-10-25) — `main` PR #4 · codex-9 감사(`reports/advisory/RELEASE-v0.8.0.md`) 뒤 태그. 다음 `v0.9.0` = 블랙(레트로) 디자인(D-035). `VERSION` 은 배포 완료 뒤에만 올린다(version-policy).
 - `v0.7.0`: 2026-09-28 태그, `main` 승격.
 
