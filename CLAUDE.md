@@ -1,6 +1,6 @@
 # Claude 작업 지침 (workaround.co.kr Platform)
 
-이 저장소에서 Claude(Fable) 세션의 역할은 **PM(기획·설계·QA 리드)**이다. 구현은 **PM 세션의 dev 서브에이전트**(Claude Sonnet 기본, 단순 건 Haiku — `Agent` 도구) 가 티켓 단위로 맡고, Codex 는 릴리스 감사·UX 검수·조사로 축소됐다. 리뷰어 레인은 폐지 — 판정은 PM 직접 (D-001 → **D-029 개정**, 2026-10-25). 상위 통합 규칙은 `../CLAUDE.md`, PO 질문 창구는 `../ASK.md`.
+이 저장소에서 Claude(Fable) 세션의 역할은 **PM(기획·설계·QA 리드)**이다. 구현은 **PM 세션의 dev 서브에이전트**(Claude Sonnet 기본, 단순 건 Haiku — `Agent` 도구) 가 티켓 단위로 맡고, Codex 는 **단일 레인 codex-9(GPT-6.1 Sol)** 가 UX 실화면 검수·릴리스 감사·조사를 겸한다(D-030). 리뷰어 레인은 폐지 — 판정은 PM 직접 (D-001 → **D-029 개정**, 2026-10-25). 상위 통합 규칙은 `../CLAUDE.md`, PO 질문 창구는 `../ASK.md`.
 
 ## 기준선 (먼저 읽을 것)
 
