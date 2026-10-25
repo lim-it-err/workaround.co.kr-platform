@@ -4,17 +4,19 @@ import {
   PANTRY_SETS,
   filterSetsByTags,
   findDish,
+  nearestSetFor,
   pantryTags,
-  pickPantrySets
+  pickPantrySets,
+  setTags
 } from '../data/pantry/index.js'
 
 const SHOPPING_STORAGE_KEY = 'pantry:shopping'
 const HISTORY_STORAGE_KEY = 'pantry:history'
 const TAG_STORAGE_KEY = 'pantry:tags'
 const tagGroups = pantryTags()
-const situationTagGroup = tagGroups.find((group) => group.id === 'situation')
-const primaryTags = ['무알코올', ...situationTagGroup.tags]
-const extraTagGroups = tagGroups.filter((group) => group.id !== 'situation')
+const PRIMARY_GROUP_IDS = ['time', 'when', 'purpose']
+const primaryTags = ['무알코올', ...tagGroups.filter((group) => PRIMARY_GROUP_IDS.includes(group.id)).flatMap((group) => group.tags)]
+const extraTagGroups = tagGroups.filter((group) => !PRIMARY_GROUP_IDS.includes(group.id))
 const validTags = new Set(tagGroups.flatMap((group) => group.tags))
 const drinkTags = new Set(tagGroups.find((group) => group.id === 'drink')?.tags || [])
 
@@ -41,10 +43,16 @@ const recentSetIds = computed(() => {
 
 const matchingSets = computed(() => filterSetsByTags(PANTRY_SETS, selectedTags.value))
 const noTagMatches = computed(() => selectedTags.value.length > 0 && matchingSets.value.length === 0)
-const nearestSet = computed(() => [...PANTRY_SETS]
-  .map((set, index) => ({ set, index, overlap: tagOverlap(set) }))
-  .sort((a, b) => b.overlap - a.overlap || a.index - b.index)[0]?.set || PANTRY_SETS[0])
-const eligibleSets = computed(() => matchingSets.value.length ? matchingSets.value : [nearestSet.value])
+const nearest = computed(() => nearestSetFor(PANTRY_SETS, selectedTags.value))
+const nearestSet = computed(() => nearest.value.set)
+const emptyMessage = computed(() => {
+  const missing = nearest.value.missing
+  return missing ? `${missing}${hasBatchim(missing) ? '이' : '가'} 들어간 상은 아직 없어요` : ''
+})
+const eligibleSets = computed(() => {
+  if (matchingSets.value.length) return matchingSets.value
+  return nearestSet.value ? [nearestSet.value] : PANTRY_SETS
+})
 const hiddenSelectedTagCount = computed(() => selectedTags.value.filter((tag) => (
   tag !== '무알코올' && extraTagGroups.some((group) => group.tags.includes(tag))
 )).length)
@@ -143,8 +151,13 @@ function normalizeStoredTags(tags) {
   return normalized.filter((tag) => tag === '무알코올' || !drinkTags.has(tag))
 }
 
+function hasBatchim(text) {
+  const code = String(text).trim().charCodeAt(String(text).trim().length - 1)
+  return code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 !== 0
+}
+
 function tagOverlap(set) {
-  const tags = new Set(set.tags || [])
+  const tags = new Set(setTags(set))
   return selectedTags.value.reduce((count, tag) => count + Number(tags.has(tag)), 0)
 }
 
@@ -188,6 +201,11 @@ function chooseAnother() {
   )
   seenSetIds.value = [...seenSetIds.value, previousId].slice(-Math.max(0, availableCount - 1))
   stampMessage.value = ''
+}
+
+function clearTags() {
+  selectedTags.value = []
+  persist(TAG_STORAGE_KEY, selectedTags.value)
 }
 
 function toggleTag(tag) {
@@ -285,7 +303,11 @@ function stampMeal() {
     </nav>
 
     <p v-if="noTagMatches" class="pantry-empty-result" role="status">
-      이 조합은 아직 없어요 — 가까운 상: <strong>{{ nearestSet.title }}</strong>
+      <template v-if="nearestSet">이 조합은 아직 없어요 — 가까운 상: <strong>{{ nearestSet.title }}</strong></template>
+      <template v-else>
+        {{ emptyMessage }}
+        <button type="button" class="pantry-chip pantry-empty-clear" @click="clearTags">태그 지우기</button>
+      </template>
     </p>
 
     <section class="pantry-hero" aria-live="polite">
