@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import StationHeader from './components/StationHeader.vue'
 import JunctionMap from './components/JunctionMap.vue'
+import WorkNotes from './components/WorkNotes.vue'
 import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import VoyageView from './components/VoyageView.vue'
@@ -4626,13 +4627,17 @@ function persistStudioPostId(postId) {
           />
 
           <section v-else-if="page === 'work'" class="feature-shell tone-page tone-work-page line-w">
+            <WorkNotes />
+            <!-- D-033: 정적 공개본엔 백엔드가 없어 실행 영역을 접는다(API 요청 0). 라이브에서는 기존 영역이 비밀번호 게이트와 함께 그대로. -->
+            <p v-if="isStaticMode" class="work-ops-collapsed">집 PC 연결 시 사용</p>
+            <template v-else>
             <div class="tone-page-intro">
               <section class="tone-page-hero line-w">
                 <div class="tone-hero-topline">
                   <small>지금 볼 것</small>
                   <span>보호 구역</span>
                 </div>
-                <h1>검토 대기 {{ workToneRows[0].count }}건</h1>
+                <h2>검토 대기 {{ workToneRows[0].count }}건</h2>
                 <p>결정이 필요한 작업만 앞에 둡니다.</p>
               </section>
 
@@ -5023,6 +5028,7 @@ function persistStudioPostId(postId) {
               </aside>
               </section>
             </details>
+            </template>
           </section>
 
           <section v-else class="feature-shell tone-page tone-runtime-page line-r">

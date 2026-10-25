@@ -28,13 +28,13 @@ assert.equal(buildLivePath('pantry', '', projectBase), '/workaround.co.kr-platfo
 assert.equal(buildLivePath('ets2', '', projectBase), '/workaround.co.kr-platform/ets2')
 assert.equal(buildLivePath('ets2Dev', '', projectBase), '/workaround.co.kr-platform/ets2/dev')
 assert.equal(buildLivePath('blogPost', '프라하 첫날', projectBase), '/workaround.co.kr-platform/blog/%ED%94%84%EB%9D%BC%ED%95%98%20%EC%B2%AB%EB%82%A0')
-assert.deepEqual(STATIC_UNAVAILABLE_LIVE_PAGES, ['work', 'runtime', 'ops', 'signals', 'ets2Dev'])
+assert.deepEqual(STATIC_UNAVAILABLE_LIVE_PAGES, ['runtime', 'ops', 'signals', 'ets2Dev'])
 assert.equal(isStaticPageUnavailable('simhub'), false)
 assert.equal(isStaticPageUnavailable('taxi'), false)
 assert.equal(isStaticPageUnavailable('elevator'), false)
 assert.equal(isStaticPageUnavailable('ets2'), false)
 assert.equal(isStaticPageUnavailable('ets2Dev'), true)
-assert.equal(isStaticPageUnavailable('work'), true)
+assert.equal(isStaticPageUnavailable('work'), false) // TKT-195·D-033: 운영 노트는 정적 공개본에서도 열린다
 assert.equal(isStaticPageUnavailable('runtime'), true)
 
 console.log('static routing: project base and deep links pass')

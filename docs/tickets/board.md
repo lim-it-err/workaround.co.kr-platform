@@ -43,7 +43,7 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-195` `P1` `base` `ready` `[FE]` Work Manager 잠금 해제 + 공개 운영 노트 (D-033, PO 2026-10-25) — dev 서브에이전트 Sonnet, 189 뒤
+- `TKT-197` `P1` `base` `ready` `[FE]` 운영 노트 375 압축·상단바 제목 (REV-195)
 
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
 
@@ -68,6 +68,8 @@
 ## Need Review
 
 ## Finished
+
+- `TKT-195` `[FE]` Work Manager 잠금 해제 + 공개 운영 노트 — r1 통과 (2026-10-25, Sonnet, 후속 197)
 
 - `TKT-190` `[FE]` 밥상 칩 행 페이드 포커스 해제 — r1 통과 (2026-10-25, Haiku)
 - `TKT-189` `[FE]` 블로그 본선 운행 중단 — 단일 스위치·주소 가드·E2E skip — r1 통과 (2026-10-25, Sonnet, 후속 196)

@@ -153,7 +153,7 @@ export const JUNCTION_LINES = [
     nameKo: '기지선',
     colorToken: 'junction-depot',
     textColorToken: 'line-w-text',
-    order: 'Work → Runtime · 보호 구역',
+    order: 'Work → Runtime',
     label: { x: 504, y: 512, anchor: 'start' },
     paths: ['M225.6 225.6 L494.4 494.4'],
     stations: [
@@ -163,8 +163,8 @@ export const JUNCTION_LINES = [
         mapName: 'Work',
         lineClass: 'line-w',
         page: 'work',
-        status: '보호 구역',
-        access: 'protected',
+        // TKT-195·D-033: 정적 공개본에서도 열린다(운영 노트). 명령 실행은 라이브에서만, 비밀번호 뒤.
+        status: '운영 노트',
         map: { x: 437.8, y: 437.8, labelX: 428, labelY: 452, anchor: 'end' },
         mapStops: [
           { x: 466.1, y: 466.1, labelX: 452, labelY: 480, label: '작업 흐름', anchor: 'end' }
