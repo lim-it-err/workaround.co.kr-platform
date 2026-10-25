@@ -37,6 +37,10 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
+- `TKT-190` `P1` `pantry` `ready` `[FE]` 자취 밥상 칩 행 페이드 — 키보드 포커스 시 마스크 해제 (UX-TKT-186-r1 I1, codex-9) — dev 서브에이전트 Haiku
+
+- `TKT-189` `P1` `archive` `ready` `[FE]` 블로그 본선 운행 중단 — 홈·주소 노출 0, 코드 보존 (D-031, PO 2026-10-25) — dev 서브에이전트 Sonnet, 188 뒤
+
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
 - `TKT-177` `P2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
@@ -58,6 +62,8 @@
 ## Need Review
 
 ## Finished
+
+- `TKT-188` `[FE]` 스플래시 티커 주기 1.5초 (PO 2026-10-25) — r1 통과 (Haiku)
 - `TKT-187` `[FE]` CSS 잔손질 — 티커 두 줄 균형·단어 경계 분할, 자취 밥상 칩 행 페이드 — r2 통과 (2026-10-25, dev 서브에이전트 Haiku 첫 티켓)
 
 - `TKT-186` `[FE]` 스플래시 티커 멘트 복원 — 39개 풀 무작위 회전 1.3초 — r2 통과 (2026-10-25, dev 서브에이전트 Sonnet 첫 티켓, [제안] 고아 줄 → 187)
