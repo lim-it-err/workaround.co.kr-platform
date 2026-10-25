@@ -13,7 +13,8 @@
 4. [ ] 375/1440 × 다크/라이트에서 해당 화면 전후 캡처 비교 `/private/tmp/tkt211/before-*`·`after-*`(같은 시점·같은 난수 시드에서 눈으로 차이 0).
 5. [ ] App.vue 줄 수 전/후 기록.
 6. [ ] fallback 상수 4개(`fallbackHealth`·`fallbackRuntime`·`fallbackWorkBoard`·`fallbackElevatorState`)를 `frontend/src/data/fallbacks.js` 로 옮기고, 그것을 App.vue 소스 문자열로 잘라 읽는 `SimTone.e2e.mjs`·`taxiDispatch.e2e.mjs` 를 import 방식으로 바꾼다(REV-208·209 후속 — 이 두 E2E 만 수정 허용, 단언 내용은 그대로).
-7. [ ] App.vue ≤ 700줄. 레거시 테스트 라우트 진입(`?mode=v040` 등)은 일반 환승 홀로 열린다.
+7. [ ] 죽은 코드 제거: `BLOG_STATUS_LABELS`·`countWords`·`formatDate` 등 어디서도 쓰지 않는 함수·상수(REV-210) — 제거 목록을 티켓에.
+8. [ ] App.vue ≤ 700줄. 레거시 테스트 라우트 진입(`?mode=v040` 등)은 일반 환승 홀로 열린다.
 
 ## 질문/에스컬레이션
 - 없음.

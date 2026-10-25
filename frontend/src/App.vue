@@ -16,10 +16,14 @@ import ElevatorView from './components/pages/ElevatorView.vue'
 import TaxiView from './components/pages/TaxiView.vue'
 import WorkView from './components/pages/WorkView.vue'
 import RuntimeView from './components/pages/RuntimeView.vue'
+import BlogHubView from './components/pages/BlogHubView.vue'
+import BlogArchiveView from './components/pages/BlogArchiveView.vue'
+import BlogPostView from './components/pages/BlogPostView.vue'
 import { SPLASH_DOOR_OPENING_MS, useSplash } from './composables/useSplash.js'
 import { useElevatorSim } from './composables/useElevatorSim.js'
 import { useTaxiSim } from './composables/useTaxiSim.js'
 import { useWorkManager } from './composables/useWorkManager.js'
+import { useBlogStore } from './composables/useBlogStore.js'
 import { VOYAGE } from './data/voyage.js'
 import { migrateLegacyVoyageStorage, voyageStorageKey } from './data/voyageStorage.js'
 import {
@@ -30,11 +34,6 @@ import {
   stripBasePath,
   withBasePath
 } from './staticRouting.js'
-import {
-  BLOG_POST_STORAGE_KEY,
-  downloadWritingBackup,
-  safeWriteJson
-} from './staticWritingState.js'
 
 const FIRST_ROUTE_DOOR_TIMING = Object.freeze({ closeMs: 450, holdMs: 200, openMs: 350 })
 const REPEAT_ROUTE_DOOR_TIMING = Object.freeze({ closeMs: 270, holdMs: 120, openMs: 210 })
@@ -75,9 +74,6 @@ const LIVE_PAGES = [
 const TESTABLE_PAGES = ['junction', 'elevator', 'work', 'runtime']
 const VERSIONED_TESTABLE_PAGES = ['junction', 'taxi', 'ops', 'signals']
 const THEME_STORAGE_KEY = 'workaround-theme'
-const BLOG_ACTIVE_SLUG_STORAGE_KEY = 'workaround-blog-active-slug'
-const BLOG_STUDIO_VIEW_STORAGE_KEY = 'workaround-blog-studio-view'
-const BLOG_STUDIO_POST_STORAGE_KEY = 'workaround-blog-studio-post'
 const VOYAGE_ARCHIVE_STORAGE_KEY = voyageStorageKey(VOYAGE.id, 'archive')
 let fallbackEntityIdCounter = 0
 
@@ -241,18 +237,45 @@ const {
   loadServicesState,
   loadWorkBoardState
 } = workManager
-const blogPosts = ref(readStoredBlogPosts())
-const activeBlogSlug = ref(readInitialBlogSlug() || readStoredBlogSlug())
-const studioViewMode = ref(readStoredStudioViewMode())
-const studioPostId = ref(readStoredStudioPostId())
-const studioState = ref(createEmptyStudioState())
-const studioDirty = ref(false)
-const studioLastSavedAt = ref('')
-const studioSavePhase = ref('saved')
-const writingBackupMessage = ref('')
+// 블로그 저장소(글 목록·활성 슬러그·Writing Studio 상태·자동저장)는 useBlogStore 가 소유한다(TKT-210).
+// D-031 주소 가드(BLOG_LINE_OPEN·닫힌 주소 토스트)는 라우팅이라 이 파일에 남는다.
+const blogStore = useBlogStore({
+  page,
+  openPage,
+  createEntityId,
+  initialSlug: readInitialBlogSlug(),
+  voyageArchiveStorageKey: VOYAGE_ARCHIVE_STORAGE_KEY
+})
+const {
+  activeBlogSlug,
+  activeBlogPost,
+  studioViewMode,
+  studioPostId,
+  studioState,
+  studioLastSavedAt,
+  studioSavePhase,
+  writingBackupMessage,
+  blogMessage,
+  publishedBlogPosts,
+  draftBlogPosts,
+  archivedBlogPosts,
+  studioPreviewHtml,
+  initializeBlogWorkspace,
+  createNewStudioPost,
+  openStudioForPost,
+  updateStudioField,
+  publishStudioPost,
+  archiveStudioPost,
+  unpublishStudioPost,
+  restoreArchivedPost,
+  backupLocalWriting,
+  prepareStudioTransition,
+  openBlogArchive,
+  setStudioViewMode,
+  clearBlogMessage
+} = blogStore
 const staticModeMessage = ref('')
 const blogClosedNotice = ref('')
-const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
 const doorTransition = ref({
   active: false,
@@ -779,49 +802,10 @@ const currentRoute = computed(() => {
 })
 
 
-const publishedBlogPosts = computed(() =>
-  [...blogPosts.value]
-    .filter((post) => post.status === 'published')
-    .sort((left, right) => String(right.publishedAt || '').localeCompare(String(left.publishedAt || '')))
-)
-const draftBlogPosts = computed(() =>
-  [...blogPosts.value]
-    .filter((post) => post.status === 'draft')
-    .sort((left, right) => String(right.updatedAt || '').localeCompare(String(left.updatedAt || '')))
-)
-const archivedBlogPosts = computed(() =>
-  [...blogPosts.value]
-    .filter((post) => post.status === 'archived')
-    .sort((left, right) => String(right.updatedAt || '').localeCompare(String(left.updatedAt || '')))
-)
-const activeBlogPost = computed(() => {
-  if (!activeBlogSlug.value) {
-    return null
-  }
-  return publishedBlogPosts.value.find((post) => post.slug === activeBlogSlug.value) || null
-})
-const latestPublishedBlogPost = computed(() => publishedBlogPosts.value[0] || null)
-const blogArchiveYears = computed(() => {
-  const groups = new Map()
-  publishedBlogPosts.value.forEach((post) => {
-    const year = new Date(post.publishedAt).getFullYear()
-    const label = Number.isFinite(year) ? year : '날짜 미정'
-    if (!groups.has(label)) {
-      groups.set(label, [])
-    }
-    groups.get(label).push(post)
-  })
-  return Array.from(groups, ([year, posts]) => ({ year, posts }))
-})
-const studioPreviewHtml = computed(() =>
-  renderMarkdownToHtml(studioState.value.bodyMarkdown, studioState.value.tables)
-)
 
 
 let portalRefreshTimer
 let blogClosedNoticeTimer
-let studioAutosaveTimer
-let studioSavedSnapshot = ''
 let reducedMotionMediaQuery
 let reducedMotionMediaListener
 let doorTransitionRunId = 0
@@ -840,53 +824,8 @@ watch(theme, (nextTheme) => {
 })
 
 
-watch(blogPosts, (nextPosts) => {
-  if (!persistBlogPosts(nextPosts) && page.value === 'writingStudio') {
-    studioSavePhase.value = 'error'
-  }
-}, { deep: true })
-
-watch(activeBlogSlug, (nextSlug) => {
-  persistBlogSlug(nextSlug)
-})
-
-watch(studioViewMode, (nextMode) => {
-  persistStudioViewMode(nextMode)
-})
-
-watch(studioPostId, (nextId) => {
-  persistStudioPostId(nextId)
-})
-
-
-watch(
-  () => studioState.value.title,
-  (nextTitle) => {
-    if (studioState.value.slugLocked && studioState.value.slug) {
-      return
-    }
-    studioState.value.slug = slugify(nextTitle)
-  }
-)
-
-watch(
-  () => createStudioEditableSnapshot(studioState.value),
-  (nextSnapshot) => {
-    if (!studioSavedSnapshot) {
-      studioSavedSnapshot = nextSnapshot
-      return
-    }
-    studioDirty.value = nextSnapshot !== studioSavedSnapshot
-    if (studioDirty.value) {
-      scheduleStudioAutosave()
-    }
-  },
-  { flush: 'post' }
-)
-
 onMounted(async () => {
   migrateLegacyVoyageStorage(window.localStorage)
-  window.addEventListener('beforeunload', handleStudioBeforeUnload)
   window.addEventListener('popstate', handleLocationPopState)
   if (typeof window.matchMedia === 'function') {
     reducedMotionMediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -932,8 +871,6 @@ onBeforeUnmount(() => {
   clearDoorTransitionTimers()
   window.clearInterval(portalRefreshTimer)
   window.clearTimeout(blogClosedNoticeTimer)
-  window.clearTimeout(studioAutosaveTimer)
-  window.removeEventListener('beforeunload', handleStudioBeforeUnload)
   window.removeEventListener('popstate', handleLocationPopState)
   if (reducedMotionMediaQuery && reducedMotionMediaListener) {
     if (typeof reducedMotionMediaQuery.removeEventListener === 'function') {
@@ -954,324 +891,6 @@ async function loadPortalData(options = { refreshElevator: true }) {
   ])
 }
 
-
-function initializeBlogWorkspace() {
-  if (blogPosts.value.length === 0) {
-    blogPosts.value = createSeedBlogPosts()
-  }
-
-  if (!activeBlogSlug.value && publishedBlogPosts.value.length > 0) {
-    activeBlogSlug.value = publishedBlogPosts.value[0].slug
-  }
-
-  if (studioPostId.value) {
-    const existing = blogPosts.value.find((post) => post.id === studioPostId.value)
-    if (existing) {
-      populateStudio(existing)
-      return
-    }
-  }
-
-  if (draftBlogPosts.value.length > 0) {
-    populateStudio(draftBlogPosts.value[0])
-    return
-  }
-
-  createNewStudioPost(false)
-}
-
-function openBlogArchive() {
-  if (!activeBlogSlug.value && publishedBlogPosts.value.length > 0) {
-    activeBlogSlug.value = publishedBlogPosts.value[0].slug
-  }
-  openPage('blogArchive')
-}
-
-function openBlogPost(slug) {
-  activeBlogSlug.value = slug
-  openPage('blogPost')
-}
-
-function createNewStudioPost(moveToStudio = true) {
-  if (page.value === 'writingStudio' && !prepareStudioTransition()) {
-    return
-  }
-  const blank = createEmptyStudioState()
-  studioState.value = blank
-  studioPostId.value = blank.id
-  markStudioSaved('', blank)
-  blogMessage.value = ''
-  if (moveToStudio) {
-    openPage('writingStudio')
-  }
-}
-
-function openStudioForPost(postId) {
-  const post = blogPosts.value.find((candidate) => candidate.id === postId)
-  if (!post) {
-    return
-  }
-  if (page.value === 'writingStudio' && postId !== studioPostId.value && !prepareStudioTransition()) {
-    return
-  }
-  populateStudio(post)
-  openPage('writingStudio')
-}
-
-function populateStudio(post) {
-  const slugLocked =
-    typeof post.slugLocked === 'boolean'
-      ? post.slugLocked
-      : Boolean(post.slug && post.slug !== slugify(post.title))
-  studioState.value = {
-    id: post.id,
-    title: post.title,
-    slug: post.slug,
-    summary: post.summary,
-    bodyMarkdown: post.bodyMarkdown,
-    status: post.status,
-    tags: [...(post.tags || [])].join(', '),
-    slugLocked,
-    createdAt: post.createdAt,
-    updatedAt: post.updatedAt,
-    publishedAt: post.publishedAt || '',
-    tables: normalizeStudioTables(post.tables)
-  }
-  studioPostId.value = post.id
-  markStudioSaved(post.updatedAt || '', studioState.value)
-}
-
-function setStudioSlug(value) {
-  studioState.value.slugLocked = true
-  studioState.value.slug = slugify(value)
-}
-
-function updateStudioField(field, value) {
-  blogMessage.value = ''
-  if (field === 'slug') {
-    setStudioSlug(value)
-  } else if (['title', 'bodyMarkdown', 'summary', 'tags'].includes(field)) {
-    studioState.value[field] = value
-  } else if (field === 'tables' && Array.isArray(value)) {
-    studioState.value.tables = normalizeStudioTables(value)
-  }
-}
-
-function saveStudioDraft() {
-  const saved = persistStudioPost(studioState.value.status || 'draft')
-  if (!saved) {
-    return
-  }
-  blogMessage.value = saved.status === 'published' ? '변경사항을 저장했습니다.' : '초안을 저장했습니다.'
-}
-
-function publishStudioPost() {
-  const saved = persistStudioPost('published')
-  if (!saved) {
-    return
-  }
-  activeBlogSlug.value = saved.slug
-  blogMessage.value = '글을 발행했고 공개 아카이브에 반영했습니다.'
-  openPage('blogPost')
-}
-
-function archiveStudioPost() {
-  const saved = persistStudioPost('archived')
-  if (!saved) {
-    return
-  }
-  blogMessage.value = '글을 보관 상태로 전환했습니다.'
-  openPage('bloghub')
-}
-
-function restoreArchivedPost(postId, nextStatus) {
-  const targetStatus = nextStatus === 'published' ? 'published' : 'draft'
-  const postIndex = blogPosts.value.findIndex((post) => post.id === postId && post.status === 'archived')
-  if (postIndex < 0) {
-    return
-  }
-
-  const post = blogPosts.value[postIndex]
-  if (
-    targetStatus === 'published' &&
-    (!String(post.summary || '').trim() || !String(post.bodyMarkdown || '').trim())
-  ) {
-    blogMessage.value = '공개 복원 전 요약과 본문이 필요합니다.'
-    return
-  }
-
-  const restoredPost = {
-    ...post,
-    status: targetStatus,
-    updatedAt: new Date().toISOString(),
-    publishedAt:
-      targetStatus === 'published' ? post.publishedAt || new Date().toISOString() : post.publishedAt || ''
-  }
-  const nextPosts = [...blogPosts.value]
-  nextPosts.splice(postIndex, 1, restoredPost)
-  persistBlogPosts(nextPosts)
-  blogPosts.value = nextPosts
-
-  if (studioPostId.value === restoredPost.id) {
-    populateStudio(restoredPost)
-  }
-  blogMessage.value =
-    targetStatus === 'published' ? '보관 글을 다시 공개했습니다.' : '보관 글을 초안으로 복원했습니다.'
-}
-
-function unpublishStudioPost() {
-  if (studioState.value.status !== 'published') {
-    return
-  }
-  const saved = persistStudioPost('draft')
-  if (saved) {
-    blogMessage.value = '발행을 취소하고 초안으로 전환했습니다.'
-  }
-}
-
-function persistStudioPost(nextStatus, options = {}) {
-  studioSavePhase.value = 'saving'
-  const nowIso = new Date().toISOString()
-  const title = studioState.value.title.trim()
-  const summary = studioState.value.summary.trim()
-  const bodyMarkdown = studioState.value.bodyMarkdown.trim()
-  const current = blogPosts.value.find((post) => post.id === studioState.value.id)
-  const status = nextStatus || current?.status || studioState.value.status || 'draft'
-  if (!title) {
-    studioSavePhase.value = 'error'
-    if (!options.silent) {
-      blogMessage.value = '제목을 입력하면 저장할 수 있습니다.'
-    }
-    return null
-  }
-  if (status === 'published' && (!summary || !bodyMarkdown)) {
-    studioSavePhase.value = 'error'
-    if (!options.silent) {
-      blogMessage.value = '발행하려면 요약과 본문을 입력해 주세요.'
-    }
-    return null
-  }
-
-  const createdAt = current?.createdAt || nowIso
-  const slug = ensureUniqueSlug(
-    studioState.value.slug || studioState.value.title,
-    current?.id || studioState.value.id
-  )
-  const publishedAt =
-    current?.publishedAt || studioState.value.publishedAt || (status === 'published' ? nowIso : '')
-
-  const nextPost = {
-    id: current?.id || studioState.value.id || createEntityId('post'),
-    slug,
-    title,
-    summary,
-    bodyMarkdown,
-    status,
-    slugLocked: Boolean(studioState.value.slugLocked || current?.slugLocked),
-    tags: studioState.value.tags
-      .split(',')
-      .map((tag) => tag.trim())
-      .filter(Boolean),
-    tables: normalizeStudioTables(studioState.value.tables),
-    createdAt,
-    updatedAt: nowIso,
-    publishedAt
-  }
-
-  const existingIndex = blogPosts.value.findIndex((post) => post.id === nextPost.id)
-  const nextPosts = [...blogPosts.value]
-  if (existingIndex >= 0) {
-    nextPosts.splice(existingIndex, 1, nextPost)
-  } else {
-    nextPosts.unshift(nextPost)
-  }
-
-  const postsSaved = persistBlogPosts(nextPosts)
-  const targetSaved = persistStudioPostId(nextPost.id)
-  if (!postsSaved || !targetSaved) {
-    studioSavePhase.value = 'error'
-    if (!options.silent) {
-      blogMessage.value = '브라우저 저장 공간을 확인해 주세요.'
-    }
-    return null
-  }
-  blogPosts.value = nextPosts
-  populateStudio(nextPost)
-  return nextPost
-}
-
-function createStudioEditableSnapshot(state) {
-  return JSON.stringify({
-    id: state.id,
-    title: state.title,
-    slug: state.slug,
-    slugLocked: Boolean(state.slugLocked),
-    summary: state.summary,
-    tags: state.tags,
-    bodyMarkdown: state.bodyMarkdown,
-    tables: normalizeStudioTables(state.tables),
-    status: state.status,
-    publishedAt: state.publishedAt
-  })
-}
-
-function markStudioSaved(savedAt, state = studioState.value) {
-  window.clearTimeout(studioAutosaveTimer)
-  studioSavedSnapshot = createStudioEditableSnapshot(state)
-  studioDirty.value = false
-  studioLastSavedAt.value = savedAt
-  studioSavePhase.value = 'saved'
-}
-
-function scheduleStudioAutosave() {
-  if (typeof window === 'undefined') {
-    return
-  }
-  window.clearTimeout(studioAutosaveTimer)
-  studioSavePhase.value = 'saving'
-  studioAutosaveTimer = window.setTimeout(() => {
-    flushStudioAutosave()
-  }, 800)
-}
-
-function flushStudioAutosave() {
-  if (!studioDirty.value) {
-    return true
-  }
-  window.clearTimeout(studioAutosaveTimer)
-  const saved = persistStudioPost(studioState.value.status || 'draft', { silent: true })
-  return Boolean(saved)
-}
-
-function backupLocalWriting() {
-  writingBackupMessage.value = ''
-  if (studioDirty.value && !flushStudioAutosave()) {
-    writingBackupMessage.value = '저장 실패를 해결한 뒤 다시 시도해 주세요.'
-    return
-  }
-  try {
-    downloadWritingBackup(window.localStorage, VOYAGE_ARCHIVE_STORAGE_KEY)
-    writingBackupMessage.value = '백업 파일을 내려받았습니다.'
-  } catch (error) {
-    writingBackupMessage.value = '백업 파일을 만들지 못했습니다.'
-  }
-}
-
-function prepareStudioTransition() {
-  if (!studioDirty.value || flushStudioAutosave()) {
-    return true
-  }
-  window.clearTimeout(studioAutosaveTimer)
-  return window.confirm('제목 없는 변경은 저장되지 않습니다. 이 화면을 나갈까요?')
-}
-
-function handleStudioBeforeUnload(event) {
-  if (page.value !== 'writingStudio' || !studioDirty.value || flushStudioAutosave()) {
-    return
-  }
-  event.preventDefault()
-  event.returnValue = ''
-}
 
 
 function toggleTheme() {
@@ -1485,93 +1104,6 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
 }
 
 
-function createSeedBlogPosts() {
-  return [
-    {
-      id: 'post-001',
-      slug: 'elevator-loop-after-midnight',
-      title: '엘리베이터 루프를 밤에 다시 본 이유',
-      summary: '숫자로는 멀쩡했지만 체감 이동이 불안정했던 이유를 프런트 폴링과 서비스 tick 관점에서 다시 정리했다.',
-      bodyMarkdown: `## 왜 다시 봤는가
-
-엘리베이터는 **도착 여부** 만 맞아도 되는 기능이 아니었습니다.
-기다리는 사람에게는 이동의 *감각* 도 계약이었습니다.
-
-> 한 층씩 오르는 것처럼 보여야 안심이 됩니다.
-
-- 서비스 tick 간격
-- 프런트 poll cadence
-- 보간이 빠졌을 때 생기는 warp 체감
-
-\`\`\`text
-goal: floor warp를 줄이고도 live loop를 유지한다
-\`\`\``,
-      status: 'published',
-      tags: ['elevator', 'frontend', 'ux'],
-      createdAt: '2026-06-20T09:00:00.000Z',
-      updatedAt: '2026-06-26T11:00:00.000Z',
-      publishedAt: '2026-06-26T11:00:00.000Z'
-    },
-    {
-      id: 'post-002',
-      slug: 'why-blog-district-needs-its-own-rhythm',
-      title: 'Blog District가 시뮬레이터와 다른 리듬이어야 하는 이유',
-      summary: '긴 글 읽기 화면은 상태 배지와 운영 패널보다 폭, 줄간격, 조용한 대비가 먼저여야 한다.',
-      bodyMarkdown: `## 읽기 화면은 다른 종류의 집중을 요구한다
-
-시뮬레이터는 **조작과 상태 읽기** 가 중심입니다.
-블로그는 **긴 호흡의 읽기와 쓰기** 가 중심입니다.
-
-### 그래서 달라진 점
-
-- 허브 카드는 남기되 장식은 줄인다.
-- 본문 폭은 680px~760px 안에서 제한한다.
-- Writing Studio는 편집과 preview를 분리한다.`,
-      status: 'published',
-      tags: ['blog', 'design'],
-      createdAt: '2026-06-24T12:00:00.000Z',
-      updatedAt: '2026-06-26T13:20:00.000Z',
-      publishedAt: '2026-06-26T13:20:00.000Z'
-    },
-    {
-      id: 'post-003',
-      slug: 'draft-city-signal-notes',
-      title: '도시 신호실 메모',
-      summary: '아직 공개하지 않은 초안. 운영 레일과 공개 레일을 어떻게 분리할지 정리하는 중이다.',
-      bodyMarkdown: `## Draft notes
-
-아직 공개 전인 메모입니다.
-
-- 공개 글은 archive에만 노출
-- draft는 studio에서만 노출
-- archived는 삭제가 아니라 보관`,
-      status: 'draft',
-      tags: ['draft', 'ops'],
-      createdAt: '2026-06-26T15:00:00.000Z',
-      updatedAt: '2026-06-26T18:10:00.000Z',
-      publishedAt: ''
-    }
-  ]
-}
-
-function createEmptyStudioState() {
-  const nowIso = new Date().toISOString()
-  return {
-    id: createEntityId('post'),
-    title: '',
-    slug: '',
-    summary: '',
-    bodyMarkdown: '## 새 글\n\n여기에서 본문을 시작합니다.',
-    status: 'draft',
-    slugLocked: false,
-    tags: '',
-    tables: [],
-    createdAt: nowIso,
-    updatedAt: nowIso,
-    publishedAt: ''
-  }
-}
-
 function createEntityId(prefix) {
   if (typeof globalThis.crypto?.randomUUID === 'function') {
     return `${prefix}-${globalThis.crypto.randomUUID()}`
@@ -1582,267 +1114,6 @@ function createEntityId(prefix) {
   }
   fallbackEntityIdCounter += 1
   return `${prefix}-${Date.now().toString(36)}-${fallbackEntityIdCounter.toString(36)}`
-}
-
-function isBlogSeriesTag(tag) {
-  return /^series\s*:\s*.+/i.test(String(tag || ''))
-}
-
-function visibleBlogTags(tags) {
-  return (Array.isArray(tags) ? tags : []).filter((tag) => !isBlogSeriesTag(tag))
-}
-
-function slugify(value) {
-  return String(value || '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9가-힣\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '')
-}
-
-function ensureUniqueSlug(candidate, currentId) {
-  const base = slugify(candidate) || `post-${Date.now()}`
-  let next = base
-  let index = 1
-  while (blogPosts.value.some((post) => post.slug === next && post.id !== currentId)) {
-    index += 1
-    next = `${base}-${index}`
-  }
-  return next
-}
-
-function renderMarkdownToHtml(markdown, tables = []) {
-  const lines = escapeHtml(String(markdown || '')).replace(/\r\n/g, '\n').split('\n')
-  const html = []
-  const studioTables = new Map(normalizeStudioTables(tables).map((table) => [table.id, table]))
-  let inCode = false
-
-  for (let index = 0; index < lines.length; index += 1) {
-    const line = lines[index]
-    if (line.startsWith('```')) {
-      html.push(inCode ? '</code></pre>' : '<pre class="post-code"><code>')
-      inCode = !inCode
-      continue
-    }
-
-    if (inCode) {
-      html.push(`${line}\n`)
-      continue
-    }
-
-    if (!line.trim()) {
-      continue
-    }
-
-    const studioTable = studioTables.get(parseStudioTableMarker(line))
-    if (studioTable) {
-      html.push(renderStudioTable(studioTable))
-      continue
-    }
-
-    const listItem = parseMarkdownListItem(line)
-    if (listItem) {
-      const renderedList = renderMarkdownList(lines, index, listItem.indent, listItem.type)
-      html.push(renderedList.html)
-      index = renderedList.nextIndex - 1
-      continue
-    }
-
-    if (line.startsWith('### ')) {
-      html.push(`<h3>${inlineMarkdown(line.slice(4))}</h3>`)
-      continue
-    }
-
-    if (line.startsWith('## ')) {
-      html.push(`<h2>${inlineMarkdown(line.slice(3))}</h2>`)
-      continue
-    }
-
-    if (line.startsWith('# ')) {
-      html.push(`<h1>${inlineMarkdown(line.slice(2))}</h1>`)
-      continue
-    }
-
-    if (line.startsWith('> ')) {
-      const quoteLines = [line.slice(2)]
-      while (lines[index + 1]?.startsWith('> ')) {
-        index += 1
-        quoteLines.push(lines[index].slice(2))
-      }
-      html.push(`<blockquote>${inlineMarkdown(quoteLines.join(' '))}</blockquote>`)
-      continue
-    }
-
-    const paragraphLines = [line.trim()]
-    while (lines[index + 1]?.trim() && !isMarkdownBlockStart(lines[index + 1])) {
-      index += 1
-      paragraphLines.push(lines[index].trim())
-    }
-    html.push(`<p>${inlineMarkdown(paragraphLines.join(' '))}</p>`)
-  }
-  if (inCode) {
-    html.push('</code></pre>')
-  }
-
-  return html.join('')
-}
-
-function parseMarkdownListItem(line) {
-  const match = line.replace(/\t/g, '    ').match(/^(\s*)([-+*]|\d+\.)\s+(.+)$/)
-  if (!match) {
-    return null
-  }
-  return {
-    indent: match[1].length,
-    type: /\d+\./.test(match[2]) ? 'ol' : 'ul',
-    content: match[3]
-  }
-}
-
-function renderMarkdownList(lines, startIndex, baseIndent, listType) {
-  const html = [`<${listType}>`]
-  let index = startIndex
-
-  while (index < lines.length) {
-    const item = parseMarkdownListItem(lines[index])
-    if (!item || item.indent !== baseIndent || item.type !== listType) {
-      break
-    }
-
-    html.push(`<li>${inlineMarkdown(item.content)}`)
-    index += 1
-
-    while (index < lines.length) {
-      const child = parseMarkdownListItem(lines[index])
-      if (!child || child.indent <= baseIndent) {
-        break
-      }
-      const renderedChild = renderMarkdownList(lines, index, child.indent, child.type)
-      html.push(renderedChild.html)
-      index = renderedChild.nextIndex
-    }
-
-    html.push('</li>')
-  }
-
-  html.push(`</${listType}>`)
-  return { html: html.join(''), nextIndex: index }
-}
-
-function isMarkdownBlockStart(line) {
-  return (
-    line.startsWith('```') ||
-    /^(#{1,3})\s/.test(line) ||
-    line.startsWith('> ') ||
-    Boolean(parseMarkdownListItem(line)) ||
-    Boolean(parseStudioTableMarker(line))
-  )
-}
-
-function normalizeStudioTables(tables) {
-  if (!Array.isArray(tables)) {
-    return []
-  }
-  return tables
-    .filter((table) => table && /^[a-z0-9-]+$/i.test(String(table.id || '')))
-    .map((table, tableIndex) => {
-      const headers = Array.isArray(table.headers) && table.headers.length > 0
-        ? table.headers.map((value, columnIndex) => String(value || `열 ${columnIndex + 1}`))
-        : ['열 1']
-      const rows = Array.isArray(table.rows) && table.rows.length > 0
-        ? table.rows.map((row) => headers.map((_, columnIndex) => String(row?.[columnIndex] || '')))
-        : [headers.map(() => '')]
-      return {
-        id: String(table.id),
-        caption: String(table.caption || `표 ${tableIndex + 1}`),
-        headers,
-        rows
-      }
-    })
-}
-
-function parseStudioTableMarker(line) {
-  return String(line || '').trim().match(/^\[\[studio-table:([a-z0-9-]+)\]\]$/i)?.[1] || ''
-}
-
-function renderStudioTable(table) {
-  const caption = inlineMarkdown(escapeHtml(table.caption))
-  const head = table.headers
-    .map((cell) => `<th scope="col">${inlineMarkdown(escapeHtml(cell))}</th>`)
-    .join('')
-  const body = table.rows
-    .map((row) => `<tr>${row.map((cell) => `<td>${inlineMarkdown(escapeHtml(cell))}</td>`).join('')}</tr>`)
-    .join('')
-  return `<figure class="studio-table"><figcaption>${caption}</figcaption><div class="studio-table-scroll"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div></figure>`
-}
-
-function inlineMarkdown(text) {
-  const protectedTokens = []
-  const protect = (value) => {
-    const token = `\u0000${protectedTokens.length}\u0000`
-    protectedTokens.push(value)
-    return token
-  }
-
-  let rendered = String(text || '').replace(/`([^`\n]+)`/g, (_, code) => protect(`<code>${code}</code>`))
-
-  rendered = rendered.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (_, alt, url) => {
-    const safeUrl = allowedMarkdownImageUrl(url)
-    if (!safeUrl) {
-      return alt
-    }
-    const safeAlt = alt.replace(/[*_`]/g, '')
-    return protect(`<img src="${safeUrl}" alt="${safeAlt}" loading="lazy">`)
-  })
-
-  rendered = rendered.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, url) => {
-    const safeUrl = allowedMarkdownUrl(url, ['http:', 'https:', 'mailto:'])
-    if (!safeUrl) {
-      return label
-    }
-    return protect(`<a href="${safeUrl}" rel="noopener noreferrer">${formatInlineMarkdown(label)}</a>`)
-  })
-
-  rendered = formatInlineMarkdown(rendered)
-  return rendered.replace(/\u0000(\d+)\u0000/g, (_, index) => protectedTokens[Number(index)] || '')
-}
-
-function formatInlineMarkdown(text) {
-  return text
-    .replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
-    .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>')
-}
-
-function allowedMarkdownUrl(value, allowedProtocols) {
-  const candidate = String(value || '').trim()
-  try {
-    const parsed = new URL(candidate)
-    return allowedProtocols.includes(parsed.protocol) ? candidate : ''
-  } catch (error) {
-    return ''
-  }
-}
-
-function allowedMarkdownImageUrl(value) {
-  const candidate = String(value || '').trim()
-  if (
-    candidate.length <= 2_100_000 &&
-    /^data:image\/(?:png|jpeg|gif|webp|avif);base64,[a-z0-9+/]+={0,2}$/i.test(candidate)
-  ) {
-    return candidate
-  }
-  return allowedMarkdownUrl(candidate, ['http:', 'https:'])
-}
-
-function escapeHtml(value) {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
 }
 
 function countWords(text) {
@@ -1865,39 +1136,6 @@ function formatDate(value) {
   } catch (error) {
     return value
   }
-}
-
-function formatBlogDate(value) {
-  if (!value) {
-    return '날짜 미정'
-  }
-  try {
-    return new Date(value).toLocaleDateString('ko-KR', {
-      month: 'long',
-      day: 'numeric'
-    })
-  } catch (error) {
-    return value
-  }
-}
-
-function formatBlogLongDate(value) {
-  if (!value) {
-    return '날짜 미정'
-  }
-  try {
-    return new Date(value).toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
-  } catch (error) {
-    return value
-  }
-}
-
-function blogCategory(post) {
-  return visibleBlogTags(post?.tags)[0] || '기록'
 }
 
 
@@ -2105,105 +1343,6 @@ function handleLocationPopState(event) {
 }
 
 
-function readStoredBlogPosts() {
-  if (typeof window === 'undefined') {
-    return createSeedBlogPosts()
-  }
-  try {
-    const raw = window.localStorage.getItem(BLOG_POST_STORAGE_KEY)
-    if (!raw) {
-      return createSeedBlogPosts()
-    }
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : createSeedBlogPosts()
-  } catch (error) {
-    return createSeedBlogPosts()
-  }
-}
-
-function persistBlogPosts(posts) {
-  if (typeof window === 'undefined') {
-    return true
-  }
-  return safeWriteJson(window.localStorage, BLOG_POST_STORAGE_KEY, posts)
-}
-
-function readStoredBlogSlug() {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-  try {
-    return window.localStorage.getItem(BLOG_ACTIVE_SLUG_STORAGE_KEY) || ''
-  } catch (error) {
-    return ''
-  }
-}
-
-function persistBlogSlug(slug) {
-  if (typeof window === 'undefined') {
-    return true
-  }
-  try {
-    if (slug) {
-      window.localStorage.setItem(BLOG_ACTIVE_SLUG_STORAGE_KEY, slug)
-      return true
-    }
-    window.localStorage.removeItem(BLOG_ACTIVE_SLUG_STORAGE_KEY)
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-function readStoredStudioViewMode() {
-  if (typeof window === 'undefined') {
-    return 'edit'
-  }
-  try {
-    return window.localStorage.getItem(BLOG_STUDIO_VIEW_STORAGE_KEY) === 'preview' ? 'preview' : 'edit'
-  } catch (error) {
-    return 'edit'
-  }
-}
-
-function persistStudioViewMode(mode) {
-  if (typeof window === 'undefined') {
-    return true
-  }
-  try {
-    window.localStorage.setItem(BLOG_STUDIO_VIEW_STORAGE_KEY, mode)
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-function readStoredStudioPostId() {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-  try {
-    return window.localStorage.getItem(BLOG_STUDIO_POST_STORAGE_KEY) || ''
-  } catch (error) {
-    return ''
-  }
-}
-
-function persistStudioPostId(postId) {
-  if (typeof window === 'undefined') {
-    return true
-  }
-  try {
-    if (postId) {
-      window.localStorage.setItem(BLOG_STUDIO_POST_STORAGE_KEY, postId)
-      return true
-    }
-    window.localStorage.removeItem(BLOG_STUDIO_POST_STORAGE_KEY)
-    return true
-  } catch (error) {
-    return false
-  }
-}
 </script>
 
 <template>
@@ -2707,89 +1846,11 @@ function persistStudioPostId(postId) {
             @open-page="openPage"
           />
 
-          <section v-else-if="page === 'bloghub'" class="feature-shell blog-shell">
-            <section class="blog-tone-page blog-hub-page">
-              <section v-if="latestPublishedBlogPost" class="blog-tone-hero">
-                <small>최근 글</small>
-                <h1>
-                  <button type="button" class="blog-text-link" @click="openBlogPost(latestPublishedBlogPost.slug)">
-                    {{ latestPublishedBlogPost.title }}
-                  </button>
-                </h1>
-                <p>{{ latestPublishedBlogPost.summary }}</p>
-              </section>
-              <section v-else class="blog-tone-hero">
-                <small>최근 글</small>
-                <h1>아직 공개된 글이 없습니다</h1>
-                <p>첫 기록은 글쓰기에서 시작할 수 있습니다.</p>
-              </section>
+          <BlogHubView v-else-if="page === 'bloghub'" :store="blogStore" @open-page="openPage" />
 
-              <nav class="blog-tone-actions" aria-label="블로그 바로가기">
-                <button type="button" class="ghost-button" @click="openPage('writingStudio')">새 글 쓰기</button>
-                <button type="button" class="ghost-button" @click="openBlogArchive">보관함</button>
-              </nav>
+          <BlogArchiveView v-else-if="page === 'blogArchive'" :store="blogStore" />
 
-              <div class="blog-timetable" aria-label="최근 발행 글">
-                <article v-for="post in publishedBlogPosts.slice(1, 4)" :key="post.id" class="blog-timetable-row">
-                  <p class="blog-timetable-meta">
-                    <time>{{ formatBlogDate(post.publishedAt) }}</time> · {{ blogCategory(post) }}
-                  </p>
-                  <h2>
-                    <button type="button" class="blog-text-link" @click="openBlogPost(post.slug)">{{ post.title }}</button>
-                  </h2>
-                </article>
-              </div>
-            </section>
-          </section>
-
-          <section v-else-if="page === 'blogArchive'" class="feature-shell blog-shell">
-            <section class="blog-tone-page blog-archive-page">
-              <header class="blog-tone-hero">
-                <small>글 보관함</small>
-                <h1>생각이 지나간 자리</h1>
-              </header>
-
-              <section v-for="group in blogArchiveYears" :key="group.year" class="blog-year-group">
-                <h2 class="blog-year-label">{{ group.year }}<template v-if="group.year !== '날짜 미정'">년</template></h2>
-                <div class="blog-archive-timetable">
-                  <button
-                    v-for="post in group.posts"
-                    :key="post.id"
-                    type="button"
-                    class="blog-archive-row"
-                    @click="openBlogPost(post.slug)"
-                  >
-                    <time>{{ formatBlogDate(post.publishedAt) }}</time>
-                    <strong>{{ post.title }}</strong>
-                  </button>
-                </div>
-              </section>
-
-              <p v-if="blogArchiveYears.length === 0" class="blog-empty-copy">아직 공개된 글이 없습니다.</p>
-            </section>
-          </section>
-
-          <section v-else-if="page === 'blogPost'" class="feature-shell blog-shell">
-            <article v-if="activeBlogPost" class="post-detail">
-              <header class="post-tone-hero">
-                <h1>{{ activeBlogPost.title }}</h1>
-                <p>{{ formatBlogLongDate(activeBlogPost.publishedAt) }} · {{ blogCategory(activeBlogPost) }}</p>
-              </header>
-
-              <div class="markdown-body post-body" v-html="renderMarkdownToHtml(activeBlogPost.bodyMarkdown, activeBlogPost.tables)"></div>
-
-              <footer class="post-foot-nav">
-                <button type="button" class="post-nav-link" @click="openBlogArchive">← 보관함</button>
-                <button type="button" class="post-nav-link" @click="openStudioForPost(activeBlogPost.id)">이어서 쓰기 →</button>
-              </footer>
-            </article>
-            <article v-else class="blog-tone-page blog-not-found" role="status">
-              <p class="eyebrow">찾을 수 없음</p>
-              <h3>공개 글을 찾을 수 없습니다</h3>
-              <p>주소가 바뀌었거나 보관된 글입니다.</p>
-              <button type="button" class="ghost-button" @click="openBlogArchive">공개 글 목록</button>
-            </article>
-          </section>
+          <BlogPostView v-else-if="page === 'blogPost'" :store="blogStore" />
 
           <WritingStudio
             v-else-if="page === 'writingStudio'"
@@ -2802,7 +1863,7 @@ function persistStudioPostId(postId) {
             :message="blogMessage"
             :backup-message="writingBackupMessage"
             @update-field="updateStudioField"
-            @update-view="studioViewMode = $event"
+            @update-view="setStudioViewMode"
             @exit="openPage('bloghub')"
             @publish="publishStudioPost"
             @archive="archiveStudioPost"
@@ -2811,7 +1872,7 @@ function persistStudioPostId(postId) {
             @open-post="openStudioForPost"
             @restore="restoreArchivedPost"
             @backup="backupLocalWriting"
-            @clear-message="blogMessage = ''"
+            @clear-message="clearBlogMessage"
           />
 
           <WorkView v-else-if="page === 'work'" :manager="workManager" :is-static-mode="isStaticMode" />
