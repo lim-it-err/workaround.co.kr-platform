@@ -2621,6 +2621,8 @@ function startSplashDoorOpening() {
     lineClass: doorLineClassFor('junction'),
     label: ''
   }
+  // TKT-201: 문이 닫힌 채로 먼저 환승 홀로 바꿔 두고, 다음 프레임에 문을 열어 환승 홀을 드러낸다.
+  applyPageChange('junction', { replace: true })
   nextTick(() => {
     if (runId !== doorTransitionRunId) return
     document.querySelector('.door-left')?.getBoundingClientRect()
@@ -2631,7 +2633,6 @@ function startSplashDoorOpening() {
     }
     queueDoorTransition(() => {
       if (runId !== doorTransitionRunId) return
-      applyPageChange('junction', { replace: true })
       resetDoorTransition()
       focusCurrentPageHeading()
     }, SPLASH_DOOR_OPENING_MS)

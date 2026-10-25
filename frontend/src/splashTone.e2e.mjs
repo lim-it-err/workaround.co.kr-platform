@@ -181,10 +181,10 @@ async function finishSplashAt(page, remainingMs) {
   }
   await page.locator('.door-transition.opening').waitFor()
   assert.equal(await page.locator('.door-panel').count(), 2, '환승 홀을 두 장의 문이 열며 드러내야 한다')
-  assert.equal(await page.locator('.splash-stage').count(), 1, '문 열림 중에는 마지막 문구가 뒤에 남아야 한다')
+  assert.equal(await page.locator('.splash-stage').count(), 0, '문 열림 중에는 스플래시가 아니라 환승 홀이 뒤에 있어야 한다')
+  assert.equal(await page.locator('.station-topbar h2').count(), 1, '문 열림 중 환승 홀 제목이 DOM 에 있어야 한다')
   await page.clock.runFor(doorOpeningMs - 1)
   assert.equal(await page.locator('.door-transition').count(), 1, '총 전환 시각 직전에는 문 열림이 남아야 한다')
-  assert.equal(await page.locator('.splash-stage').count(), 1, '문 열림이 끝나기 전에는 마지막 문구를 제거하지 않아야 한다')
   await page.clock.runFor(1)
   await page.locator('.door-transition').waitFor({ state: 'detached' })
   await page.locator('.splash-stage').waitFor({ state: 'detached', timeout: 2000 })
@@ -506,8 +506,9 @@ test('실난수 4환경: 첫 방문 각 문구 0.7초·재방문 최종 문구 1
       )
     }
     assert.ok(
-      firstVisit.at(-1).removedAtMs >= firstVisitDurationMs
-      && firstVisit.at(-1).removedAtMs <= firstVisitDurationMs + 20,
+      // TKT-201: 문이 닫힌 채 환승 홀로 바꾸므로 스플래시 DOM 은 문 열림 시작(5.5초-0.5초)에 사라진다.
+      firstVisit.at(-1).removedAtMs >= firstVisitDurationMs - doorOpeningMs
+      && firstVisit.at(-1).removedAtMs <= firstVisitDurationMs - doorOpeningMs + 20,
       `${environment.name} 실제 DOM 제거 ${firstVisit.at(-1).removedAtMs}ms`
     )
     await firstPage.clock.runFor(32)
@@ -871,5 +872,43 @@ test('16px·32px·SVG 파비콘은 Pages base와 열린 기점 형태를 보존�
       document.body.appendChild(preview)
     }, [`${publicBase}favicon-16x16.png`, `${publicBase}favicon-32x32.png`])
     await page.locator('.favicon-preview').screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/favicon-16-32-dark-light.png` })
+  }
+})
+
+test('TKT-201 문 열림 중간(250ms): 뒤에 환승 홀 노선도가 있고 스플래시 플랩은 없다', async t => {
+  const cases = [
+    { name: '375', width: 375, height: 812 },
+    { name: '1440', width: 1440, height: 900 }
+  ]
+  for (const environment of cases) {
+    const page = await setup(t, { ...environment, seenAt: clockTime(-60_000) })
+    const settledAtMs = await waitForOpeningToSettle(page, returnVisitSettleLimitMs)
+    const splashTotalMs = Math.min(returnVisitMaximumMs, Math.max(returnVisitDurationMs, settledAtMs + 1000))
+    await page.clock.runFor(Math.max(0, splashTotalMs - settledAtMs - doorOpeningMs - 1))
+    await page.clock.runFor(1)
+    await page.locator('.door-transition.opening').waitFor()
+    await page.clock.runFor(250)
+    assert.equal(await page.locator('.door-transition.opening').count(), 1, '250ms 시점에도 문 열림 중')
+    assert.equal(await page.locator('.splash-stage').count(), 0, '스플래시 플랩이 DOM 에 없어야 한다')
+    assert.equal(await page.getByText('DOORS OPENING', { exact: true }).count(), 0, 'DOORS OPENING 문구가 보이면 안 된다')
+    assert.ok(await page.locator('.junction-map').count() >= 1, '환승 홀 노선도가 문 뒤에 있어야 한다')
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0)
+    const layering = await page.evaluate(() => {
+      const door = getComputedStyle(document.querySelector('.door-transition')).zIndex
+      const map = document.querySelector('.junction-map')
+      return { door: Number(door), mapZ: Number(getComputedStyle(map).zIndex) || 0 }
+    })
+    assert.ok(layering.door > layering.mapZ, '문 레이어가 페이지 위에 있어야 한다')
+    // 가상 시계는 CSS 전환을 진행시키지 않으므로 문짝 애니메이션을 250ms 지점으로 고정해 캡처한다.
+    await page.evaluate(() => document.querySelectorAll('.door-panel').forEach(panel => {
+      panel.getAnimations().forEach(animation => { animation.pause(); animation.currentTime = 250 })
+    }))
+    await page.screenshot({ path: `/private/tmp/tkt201/door-opening-mid-${environment.name}.png` })
+    await page.clock.runFor(250)
+    await page.locator('.door-transition').waitFor({ state: 'detached' })
+    assert.equal(
+      await page.locator('.station-topbar h2').evaluate(element => element === document.activeElement),
+      true
+    )
   }
 })
