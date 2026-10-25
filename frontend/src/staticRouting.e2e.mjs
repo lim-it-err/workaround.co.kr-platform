@@ -158,14 +158,14 @@ for (const scenario of [
     assert.deepEqual(await page.locator('.junction-sublinks > .static-server').allTextContents(), ['유로트럭 개발자', '엘리베이터'])
     assert.equal(await page.locator('.junction-sublinks > .planned').textContent(), '화이트채플')
     assert.equal(await page.locator('.junction-page-stop.static-server').count(), 2)
-    assert.equal(await page.locator('.junction-page-stop.planned').filter({ hasText: '화이트채플' }).count(), 1)
+    assert.equal(await page.locator('.junction-page-stop.planned[data-stop-label="화이트채플"]').count(), 1)
     const expectedDimOpacity = scenario.theme === 'light' ? '0.8' : '0.55'
     assert.equal(
       await page.locator('.junction-page-stop.static-server').first().evaluate(element => getComputedStyle(element).opacity),
       expectedDimOpacity
     )
     assert.equal(
-      await page.locator('.junction-page-stop').filter({ hasText: '택시' }).evaluate(element => getComputedStyle(element).opacity),
+      await page.locator('.junction-page-stop[data-stop-label="택시"]').evaluate(element => getComputedStyle(element).opacity),
       '1'
     )
     const initialUrl = page.url()

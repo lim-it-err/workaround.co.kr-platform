@@ -102,8 +102,7 @@ async function routeTextContrasts(page) {
     '.junction-route-row.restricted .junction-route-name',
     '.junction-route-row.restricted .junction-route-status',
     '.junction-station.restricted .junction-station-code',
-    '.junction-station.restricted .junction-station-name',
-    '.junction-map-line.protected .junction-page-stop text'
+    '.junction-station.restricted .junction-station-name'
   ].join(',')).evaluateAll(elements => {
     const parse = value => (value.match(/[\d.]+/g) || []).slice(0, 3).map(Number)
     const luminance = ([red, green, blue]) => {
@@ -253,7 +252,7 @@ for (const scenario of [
       const visibleMapTextSizes = await page.locator([
         '.junction-station-code',
         '.junction-station-name',
-        '.junction-page-stop text',
+        '.junction-stop-tip',
         '.junction-line-name',
         '.junction-hub-name'
       ].join(',')).evaluateAll(elements => elements
@@ -268,7 +267,7 @@ for (const scenario of [
     const mapTextOverlaps = await page.locator([
       '.junction-station-code',
       '.junction-station-name',
-      '.junction-page-stop text',
+      '.junction-stop-tip',
       '.junction-line-name',
       '.junction-hub-name'
     ].join(',')).evaluateAll(elements => {
@@ -293,7 +292,7 @@ for (const scenario of [
     const routeTextIntersections = await page.evaluate(() => {
       const textSelectors = [
         '.junction-station-name',
-        '.junction-page-stop text',
+        '.junction-stop-tip',
         '.junction-line-name',
         '.junction-hub-name'
       ].join(',')
@@ -380,20 +379,60 @@ for (const scenario of [
     }
 
     if (scenario.width >= 900) {
-      const labelOwners = await page.locator('.junction-page-stop text').evaluateAll(elements => elements.map(element => {
-        const rect = element.getBoundingClientRect()
-        const owner = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
-          ?.closest('.junction-page-stop')?.dataset.stopLabel
-        return { label: element.textContent.trim(), owner }
-      }))
-      assert.ok(
-        labelOwners.every(({ label, owner }) => label === owner),
-        `소역 라벨 중심 클릭은 자기 역이 소유해야 한다: ${JSON.stringify(labelOwners)}`
-      )
+      // TKT-202: 기본 상태의 지도 글자는 큰 역 이름 + 노선 이름 + 환승 홀뿐. 작은 역 이름은 올림·포커스 때만 한 줄로 뜬다.
+      const mapTexts = () => page.locator('.junction-map text:not(.junction-station-code)').evaluateAll(elements => elements
+        .filter(element => element.getClientRects().length > 0)
+        .map(element => element.textContent.trim()))
+      const baseTexts = await mapTexts()
+      // 손으로 센 기대값: 큰 역 이름 7(블로그 열림이면 8) + 노선 이름 3 + 환승 홀 1
+      assert.equal(baseTexts.length, STATION_COUNT + 4, `기본 상태 지도 글자 수: ${baseTexts.join(', ')}`)
+      assert.ok(baseTexts.length <= (BLOG_LINE_OPEN ? 13 : 12), '기본 상태 지도 글자는 12개 이하여야 한다')
+      assert.equal(await page.locator('.junction-stop-tip').count(), 0, '기본 상태에는 툴팁이 없다')
+
+      const stopLabels = await page.locator('.junction-page-stop').evaluateAll(elements => elements.map(element => element.dataset.stopLabel))
+      assert.equal(stopLabels.length, SUBSTOP_COUNT)
+      const bigTextRects = () => page.locator('.junction-station-name, .junction-line-name, .junction-hub-name')
+        .evaluateAll(elements => elements.filter(element => element.getClientRects().length > 0).map(element => {
+          const rect = element.getBoundingClientRect()
+          return { label: element.textContent.trim(), left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }
+        }))
+      for (const label of stopLabels) {
+        const hit = page.locator(`.junction-page-stop-hit[data-stop-label="${label}"]`)
+        const box = await hit.boundingBox()
+        await page.mouse.move(box.x + box.width / 2 + 14, box.y + box.height / 2 + 14)
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+        const tip = page.locator('.junction-stop-tip')
+        await tip.waitFor()
+        assert.equal(await tip.count(), 1, '툴팁은 한 번에 하나')
+        assert.equal(await tip.textContent(), label, `올림 툴팁은 그 역 이름이어야 한다: ${label}`)
+        assert.equal(await tip.evaluate(element => getComputedStyle(element).pointerEvents), 'none')
+        const tipRect = await tip.evaluate(element => {
+          const rect = element.getBoundingClientRect()
+          return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }
+        })
+        const collisions = (await bigTextRects()).filter(other => tipRect.right > other.left + 1 && other.right > tipRect.left + 1
+          && tipRect.bottom > other.top + 1 && other.bottom > tipRect.top + 1).map(other => other.label)
+        assert.deepEqual(collisions, [], `툴팁 ${label} 이 큰 글자를 가리면 안 된다`)
+        await page.mouse.move(2, 2)
+        assert.equal(await page.locator('.junction-stop-tip').count(), 0, '포인터가 떠나면 툴팁이 사라진다')
+        assert.equal(
+          (await page.evaluate(() => document.querySelectorAll('.junction-map text:not(.junction-station-code)').length)) - baseTexts.length,
+          0
+        )
+      }
+
+      // 키보드 포커스: 작은 역에 Tab 으로 닿으면 이름이 뜨고 접근 이름도 갖는다.
+      const focusStop = page.locator('.junction-page-stop[data-stop-label="격납고"]')
+      assert.equal(await focusStop.getAttribute('aria-label'), '격납고 열기')
+      await page.keyboard.press('Tab')
+      await focusStop.focus()
+      assert.equal(await page.locator('.junction-stop-tip').textContent(), '격납고')
+      await page.evaluate(() => document.activeElement?.blur())
+      assert.equal(await page.locator('.junction-stop-tip').count(), 0, '포커스를 잃으면 툴팁이 사라진다')
     }
 
     if (scenario.width >= 900) {
-      const detailStopCircle = page.locator('.junction-page-stop').filter({ hasText: '격납고' }).locator('.junction-page-stop-dot')
+      const detailStopCircle = page.locator('.junction-page-stop[data-stop-label="격납고"]').locator('.junction-page-stop-dot')
       const detailStopBox = await detailStopCircle.boundingBox()
       const topmostOwner = await page.evaluate(({ x, y }) => (
         document.elementFromPoint(x, y)?.closest('.junction-page-stop, .junction-station')?.getAttribute('class') ?? ''

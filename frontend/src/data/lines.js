@@ -12,6 +12,10 @@ export const JUNCTION = { x: 360, y: 360 }
 // 복귀: true 로 바꾸고 블로그·스튜디오 E2E 의 skip 이 풀리는지 확인한다. 컴포넌트·데이터는 지우지 않는다.
 export const BLOG_LINE_OPEN = false
 
+// 지도 viewBox (TKT-202). 블로그가 내려간 동안은 왼쪽 꼬리·블로그 역이 없으니 내용 범위로 잘라 지도가 가운데 오게 한다.
+// 열리면 블로그 본선(x=90~250)이 들어오므로 예전 정사각 캔버스를 쓴다.
+export const MAP_VIEWBOX = BLOG_LINE_OPEN ? '0 0 720 720' : '135 66 615 480'
+
 const BLOG_STATION = {
   code: 'B',
   nameKo: '블로그 본선',
@@ -144,7 +148,7 @@ export const JUNCTION_LINES = [
         status: `오늘의 한 상: ${todayPantry.title}`,
         targetVersion: 'v0.9.0',
         pathIndex: 1,
-        map: { x: 232.7, y: 487.3, labelX: 216, labelY: 482, anchor: 'end' }
+        map: { x: 232.7, y: 487.3, labelX: 252, labelY: 493, anchor: 'start' }
       }
     ]
   },

@@ -1,6 +1,6 @@
 <script setup>
-import { onBeforeUnmount, ref } from 'vue'
-import { JUNCTION, JUNCTION_LINES } from '../data/lines.js'
+import { computed, onBeforeUnmount, ref } from 'vue'
+import { JUNCTION, JUNCTION_LINES, MAP_VIEWBOX } from '../data/lines.js'
 import { withBasePath } from '../staticRouting.js'
 
 const props = defineProps({
@@ -14,6 +14,25 @@ const COUNT_WORDS = ['영', '한', '두', '세', '네', '다섯', '여섯', '일
 const stationCount = JUNCTION_LINES.reduce((total, line) => total + line.stations.length, 0)
 const stationCountLabel = COUNT_WORDS[stationCount] ?? String(stationCount)
 const accessToast = ref(null)
+
+// TKT-202: 작은 역은 점만 두고, 올림·포커스 때에만 이름을 한 줄 툴팁으로 띄운다(데스크톱).
+const detailStops = JUNCTION_LINES.flatMap(line => line.stations.flatMap(station => (
+  (station.mapStops || []).map(stop => ({ ...stop, key: `${station.code}-${stop.label}` }))
+)))
+const activeStopKey = ref('')
+const activeStop = computed(() => detailStops.find(stop => stop.key === activeStopKey.value))
+
+function showStopTip(key) {
+  activeStopKey.value = key
+}
+
+function hideStopTip(key) {
+  if (activeStopKey.value === key) activeStopKey.value = ''
+}
+
+function focusStopTip(key, event) {
+  if (event?.target?.matches?.(':focus-visible')) activeStopKey.value = key
+}
 let accessToastTimer
 
 function effectiveAccess(destination) {
@@ -92,7 +111,7 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
       <h3 id="junction-map-title">환승 홀 · 기록선 · 실험선 · 기지선</h3>
       <svg
         class="junction-map"
-        viewBox="0 0 720 720"
+        :viewBox="MAP_VIEWBOX"
         role="img"
         :aria-label="`환승 홀에서 기록선, 실험선, 기지선으로 이어지는 ${stationCountLabel} 정류장`"
       >
@@ -183,6 +202,8 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
               :cx="stop.x"
               :cy="stop.y"
               r="26"
+              @pointerenter="showStopTip(`${station.code}-${stop.label}`)"
+              @pointerleave="hideStopTip(`${station.code}-${stop.label}`)"
               @click="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
             />
           </template>
@@ -213,15 +234,27 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
               :role="stop.page || isRestricted(stop) ? 'button' : undefined"
               :tabindex="stop.page || isRestricted(stop) ? 0 : undefined"
               :aria-label="isRestricted(stop) ? `${stop.label} · ${accessMessage(stop)}` : stop.page ? `${stop.label} 열기` : undefined"
+              @pointerenter="showStopTip(`${station.code}-${stop.label}`)"
+              @pointerleave="hideStopTip(`${station.code}-${stop.label}`)"
+              @focus="focusStopTip(`${station.code}-${stop.label}`, $event)"
+              @blur="hideStopTip(`${station.code}-${stop.label}`)"
               @click="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
               @keydown.enter.prevent="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
               @keydown.space.prevent="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
             >
               <circle class="junction-page-stop-dot" :cx="stop.x" :cy="stop.y" r="4.5" />
-              <text :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
             </g>
           </template>
         </g>
+
+        <text
+          v-if="activeStop"
+          class="junction-stop-tip"
+          aria-hidden="true"
+          :x="activeStop.labelX"
+          :y="activeStop.labelY"
+          :text-anchor="activeStop.anchor"
+        >{{ activeStop.label }}</text>
 
         <g class="junction-hub">
           <circle class="junction-hub-ring" :cx="JUNCTION.x" :cy="JUNCTION.y" r="28" />
@@ -305,11 +338,12 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
   pointer-events: all;
 }
 
-.junction-page-stop text {
+.junction-stop-tip {
   paint-order: stroke;
   stroke: var(--bg);
   stroke-width: 5px;
   stroke-linejoin: round;
+  pointer-events: none;
 }
 
 .junction-page-stop-hit {

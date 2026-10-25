@@ -3608,9 +3608,10 @@ button {
   stroke-width: 4;
 }
 
-.junction-page-stop text {
-  fill: var(--text-2);
+.junction-stop-tip {
+  fill: var(--text);
   font-size: 15px;
+  font-weight: 650;
 }
 
 .junction-line-name {
@@ -3832,6 +3833,7 @@ a.junction-route-row:focus-visible {
 
 @media (max-width: 899px) {
   .junction-page-stop,
+  .junction-stop-tip,
   .junction-station.upcoming .junction-station-name {
     display: none;
   }
