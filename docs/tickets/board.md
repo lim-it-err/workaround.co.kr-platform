@@ -43,7 +43,6 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-209` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 기지선 (순서대로, 동작 변화 0)
 - `TKT-210` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 블로그 (순서대로, 동작 변화 0)
 - `TKT-211` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 환승 홀·셸·레거시 라우트 제거 (순서대로, 동작 변화 0)
 
@@ -67,6 +66,8 @@
 ## Need Review
 
 ## Finished
+
+- `TKT-209` App.vue 분해 — 기지선(Work 실행 영역·Runtime·인증) — r1 통과 (2026-10-25, v0.8.3)
 
 - `TKT-208` App.vue 분해 — 시뮬(격납고·엘리베이터·택시) — r1 통과 (2026-10-25, v0.8.3)
 

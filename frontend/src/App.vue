@@ -2,7 +2,6 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import StationHeader from './components/StationHeader.vue'
 import JunctionMap from './components/JunctionMap.vue'
-import WorkNotes from './components/WorkNotes.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import VoyageView from './components/VoyageView.vue'
 import WritingStudio from './components/WritingStudio.vue'
@@ -15,9 +14,12 @@ import SplashView from './components/pages/SplashView.vue'
 import SimHubView from './components/pages/SimHubView.vue'
 import ElevatorView from './components/pages/ElevatorView.vue'
 import TaxiView from './components/pages/TaxiView.vue'
+import WorkView from './components/pages/WorkView.vue'
+import RuntimeView from './components/pages/RuntimeView.vue'
 import { SPLASH_DOOR_OPENING_MS, useSplash } from './composables/useSplash.js'
 import { useElevatorSim } from './composables/useElevatorSim.js'
 import { useTaxiSim } from './composables/useTaxiSim.js'
+import { useWorkManager } from './composables/useWorkManager.js'
 import { VOYAGE } from './data/voyage.js'
 import { migrateLegacyVoyageStorage, voyageStorageKey } from './data/voyageStorage.js'
 import {
@@ -72,33 +74,13 @@ const LIVE_PAGES = [
 ]
 const TESTABLE_PAGES = ['junction', 'elevator', 'work', 'runtime']
 const VERSIONED_TESTABLE_PAGES = ['junction', 'taxi', 'ops', 'signals']
-const BOARD_READY_STORAGE_KEY = 'workaround-ready-lane'
 const THEME_STORAGE_KEY = 'workaround-theme'
-const TOKEN_STORAGE_KEY = 'workaround-work-manager-token'
-const TOKEN_EXPIRY_STORAGE_KEY = 'workaround-work-manager-token-expires-at'
 const BLOG_ACTIVE_SLUG_STORAGE_KEY = 'workaround-blog-active-slug'
 const BLOG_STUDIO_VIEW_STORAGE_KEY = 'workaround-blog-studio-view'
 const BLOG_STUDIO_POST_STORAGE_KEY = 'workaround-blog-studio-post'
 const VOYAGE_ARCHIVE_STORAGE_KEY = voyageStorageKey(VOYAGE.id, 'archive')
 let fallbackEntityIdCounter = 0
-const TARGET_VERSION_OPTIONS = ['v0.4.0', 'v0.5.0', 'v0.5.1', 'v0.6.0', 'infra', 'chore']
-const WORK_ROADMAP_ITEMS = [
-  {
-    version: 'v0.4.0',
-    title: '운영 포털 구조 복구',
-    summary: 'Work Manager 메타데이터, command gate, 페이지 분리'
-  },
-  {
-    version: 'v0.5.0',
-    title: '시뮬레이션 포털 확장',
-    summary: '택시 시뮬레이터 진입, worker 가시화, DB 준비'
-  },
-  {
-    version: '인프라 / 잡무',
-    title: '기반 정렬',
-    summary: '툴체인, 호스팅, 문서/브랜치 정리'
-  }
-]
+
 
 const fallbackHealth = {
   status: 'degraded',
@@ -242,33 +224,23 @@ const isLegacyTestRoute = computed(() => testRouteMode.value === 'v040')
 const isVersionedTestRoute = computed(() => testRouteMode.value === 'v050')
 const page = ref(readInitialPage())
 const theme = ref(readInitialTheme())
-const selectedWorkTicketId = ref('')
-const selectedCommand = ref('')
-const commandNote = ref('')
-const workManagerPassword = ref('')
-const initialWorkManagerSession = readStoredWorkManagerSession()
-const workManagerToken = ref(initialWorkManagerSession.token)
-const workManagerTokenExpiresAt = ref(initialWorkManagerSession.expiresAt)
-const workManagerMessage = ref('')
-const workManagerError = ref(
-  initialWorkManagerSession.expired
-    ? '이전 command gate 세션이 만료되어 다시 잠갔습니다. 재인증해 주세요.'
-    : ''
-)
-const metadataTargetVersion = ref('v0.4.0')
-const metadataPriority = ref('P2')
-const metadataDependencies = ref('')
-const metadataMessage = ref('')
-const metadataError = ref('')
-const isUnlockingWorkManager = ref(false)
-const isRunningCommand = ref(false)
-const isSavingMetadata = ref(false)
-const dragTicketId = ref('')
-const readyTicketIds = ref(readReadyTicketIds())
-const healthState = ref(fallbackHealth)
-const runtimeState = ref(fallbackRuntime)
-const servicesState = ref([])
-const workBoardState = ref(fallbackWorkBoard)
+// 기지선(Work Manager·Runtime) 상태·인증 세션·타이머는 useWorkManager 가 소유한다(TKT-209).
+const workManager = useWorkManager({
+  fetchJson,
+  fallbacks: { health: fallbackHealth, runtime: fallbackRuntime, workBoard: fallbackWorkBoard }
+})
+const {
+  healthState,
+  runtimeState,
+  servicesState,
+  workBoardState,
+  readyColumnTickets,
+  countWorkTicketsByStatus,
+  loadHealthState,
+  loadRuntimeState,
+  loadServicesState,
+  loadWorkBoardState
+} = workManager
 const blogPosts = ref(readStoredBlogPosts())
 const activeBlogSlug = ref(readInitialBlogSlug() || readStoredBlogSlug())
 const studioViewMode = ref(readStoredStudioViewMode())
@@ -806,63 +778,6 @@ const currentRoute = computed(() => {
   }
 })
 
-function runtimeStatusMeta(value) {
-  const status = String(value || '').trim().toLowerCase()
-  if (['online', 'available', 'ok', 'healthy'].includes(status)) {
-    return { label: '정상', warning: false }
-  }
-  if (status === 'degraded') {
-    return { label: '지연', warning: true }
-  }
-  if (['unavailable', 'offline'].includes(status)) {
-    return { label: '중단', warning: true }
-  }
-  return { label: '확인 중', warning: true }
-}
-
-function runtimeMetric(source) {
-  const responseTime = [source?.responseTimeMs, source?.latencyMs, source?.durationMs]
-    .map(Number)
-    .find(value => Number.isFinite(value) && value >= 0)
-  return responseTime === undefined ? '' : `${Math.round(responseTime)} ms`
-}
-
-function runtimeToneRow({ key, label, detail, source, status }) {
-  const meta = runtimeStatusMeta(status)
-  const metric = runtimeMetric(source)
-  return {
-    key,
-    label,
-    detail,
-    status: metric ? `${meta.label} · ${metric}` : meta.label,
-    warning: meta.warning
-  }
-}
-
-const runtimeToneRows = computed(() => [
-  runtimeToneRow({
-    key: 'gateway',
-    label: '웹 화면',
-    detail: 'gateway',
-    source: healthState.value,
-    status: healthState.value.status
-  }),
-  runtimeToneRow({
-    key: 'ollama',
-    label: '인공지능 응답',
-    detail: 'Ollama',
-    source: runtimeState.value.ollama,
-    status: runtimeState.value.ollama?.status
-  }),
-  ...(runtimeState.value.nodes || []).map((node) => runtimeToneRow({
-    key: node.nodeId,
-    label: node.nodeId,
-    detail: node.role,
-    source: node,
-    status: node.availability
-  }))
-])
-const runtimeNeedsAttention = computed(() => runtimeToneRows.value.some((row) => row.warning))
 
 const publishedBlogPosts = computed(() =>
   [...blogPosts.value]
@@ -902,170 +817,9 @@ const studioPreviewHtml = computed(() =>
   renderMarkdownToHtml(studioState.value.bodyMarkdown, studioState.value.tables)
 )
 
-const workWorkerSummary = computed(() => {
-  const summary = workBoardState.value.workerSummary
-  if (Array.isArray(summary) && summary.length > 0) {
-    return summary
-  }
-
-  const startedTickets = workBoardColumns.value.find((column) => column.status === 'started')?.tickets || []
-  return [
-    {
-      workerId: 'ion2-worker',
-      status: startedTickets.length > 0 ? 'active' : 'idle',
-      currentTicketIds: startedTickets.map((ticket) => ticket.id),
-      focus: startedTickets.length > 0 ? 'Started lane ownership' : 'Ready pick 대기'
-    }
-  ]
-})
-
-const workPriorityPolicy = computed(() => {
-  return (
-    workBoardState.value.priorityPolicy || {
-      queueSource: 'docs/tickets/board.md backlog',
-      automaticRange: ['우선순위 힌트 계산', 'Started owner 표시'],
-      manualRange: ['실제 착수 결정', 'Need Review 이후 종료 판정'],
-      nextCandidates: readyColumnTickets.value
-        .concat(workBoardColumns.value.find((column) => column.status === 'backlog')?.tickets || [])
-        .slice(0, 4)
-        .map((ticket) => `${ticket.id} ${ticket.priority}`)
-    }
-  )
-})
-
-const workPersistence = computed(() => {
-  return (
-    workBoardState.value.persistence || {
-      mode: 'memory-fallback',
-      filePath: 'gateway/data/work-manager-store.json',
-      auditEventCount: 0,
-      lastAuditAt: '',
-      targetDatabase: 'embedded-h2'
-    }
-  )
-})
-
-const workBoardColumns = computed(() => {
-  const normalized = new Map(
-    (workBoardState.value.columns || []).map((column) => [column.status, column])
-  )
-
-  const backlogSource = normalized.get('backlog')?.tickets || []
-  const safeReadyIds = readyTicketIds.value.filter((ticketId) =>
-    backlogSource.some((ticket) => ticket.id === ticketId)
-  )
-  if (safeReadyIds.length !== readyTicketIds.value.length) {
-    readyTicketIds.value = safeReadyIds
-    persistReadyTicketIds(safeReadyIds)
-  }
-
-  const readySet = new Set(safeReadyIds)
-  const backlogTickets = backlogSource.filter((ticket) => !readySet.has(ticket.id))
-  const readyTickets = backlogSource.filter((ticket) => readySet.has(ticket.id))
-
-  return [
-    {
-      status: 'backlog',
-      label: 'Backlog',
-      helper: '아직 선점되지 않은 작업',
-      tickets: backlogTickets
-    },
-    {
-      status: 'ready',
-      label: 'Ready',
-      helper: '다른 작업이 끝나기를 기다림',
-      tickets: readyTickets
-    },
-    {
-      status: 'started',
-      label: 'Started',
-      helper: '담당자가 수행 중',
-      tickets: normalized.get('started')?.tickets || []
-    },
-    {
-      status: 'need_review',
-      label: 'Need Review',
-      helper: 'PM 확인 대기',
-      tickets: normalized.get('need_review')?.tickets || []
-    },
-    {
-      status: 'finished',
-      label: 'Finished',
-      helper: '검수 완료 및 히스토리 반영',
-      tickets: normalized.get('finished')?.tickets || []
-    }
-  ]
-})
-
-const readyColumnTickets = computed(() =>
-  workBoardColumns.value.find((column) => column.status === 'ready')?.tickets || []
-)
-
-const workToneRows = computed(() => [
-  { status: 'need_review', label: '검토 대기', shortStatus: '검토' },
-  { status: 'started', label: '진행 중', shortStatus: '진행' },
-  { status: 'ready', label: '다음 작업', shortStatus: '대기' }
-].map((item) => {
-  const column = workBoardColumns.value.find((candidate) => candidate.status === item.status)
-  return {
-    ...item,
-    count: column?.tickets.length || 0,
-    helper: column?.helper || ''
-  }
-}))
-
-const allWorkTickets = computed(() => workBoardColumns.value.flatMap((column) => column.tickets))
-
-const selectedWorkTicket = computed(() => {
-  const ticket =
-    allWorkTickets.value.find((candidate) => candidate.id === selectedWorkTicketId.value) ||
-    allWorkTickets.value[0] ||
-    null
-  if (!ticket) {
-    return null
-  }
-
-  const lane = workBoardColumns.value.find((column) =>
-    column.tickets.some((candidate) => candidate.id === ticket.id)
-  )
-
-  return {
-    ...ticket,
-    lane: lane?.label || ticket.status
-  }
-})
-
-const workVersionSummary = computed(() => {
-  const versionCount = new Map()
-  for (const ticket of allWorkTickets.value) {
-    const key = ticket.targetVersion || 'unknown'
-    versionCount.set(key, (versionCount.get(key) || 0) + 1)
-  }
-  return Array.from(versionCount.entries()).sort(([left], [right]) => left.localeCompare(right))
-})
-
-const workTargetVersionOptions = computed(() => {
-  const values = new Set(TARGET_VERSION_OPTIONS)
-  if (selectedWorkTicket.value?.targetVersion) {
-    values.add(selectedWorkTicket.value.targetVersion)
-  }
-  return Array.from(values)
-})
-
-const workVersionHeader = computed(() => ({
-  focusVersion: selectedWorkTicket.value?.targetVersion || 'v0.4.0',
-  developmentCeiling: 'v0.5.0',
-  activeRange: 'v0.4.0 -> v0.5.0',
-  selectedPriority: selectedWorkTicket.value?.priority || 'P?'
-}))
-
-const commandPresets = computed(() => workBoardState.value.actions?.commandPresets || [])
-const activityFeed = computed(() => workBoardState.value.activityFeed || [])
-const commandHistory = computed(() => workBoardState.value.commandHistory || [])
 
 let portalRefreshTimer
 let blogClosedNoticeTimer
-let workManagerExpiryTimer
 let studioAutosaveTimer
 let studioSavedSnapshot = ''
 let reducedMotionMediaQuery
@@ -1085,14 +839,6 @@ watch(theme, (nextTheme) => {
   }
 })
 
-watch(
-  [workManagerToken, workManagerTokenExpiresAt],
-  ([nextToken, nextExpiresAt]) => {
-    persistWorkManagerSession(nextToken, nextExpiresAt)
-    scheduleWorkManagerExpiration()
-  },
-  { immediate: true }
-)
 
 watch(blogPosts, (nextPosts) => {
   if (!persistBlogPosts(nextPosts) && page.value === 'writingStudio') {
@@ -1112,52 +858,6 @@ watch(studioPostId, (nextId) => {
   persistStudioPostId(nextId)
 })
 
-watch(
-  () => allWorkTickets.value.map((ticket) => ticket.id).join(','),
-  () => {
-    if (!selectedWorkTicketId.value && allWorkTickets.value.length > 0) {
-      selectedWorkTicketId.value = allWorkTickets.value[0].id
-      selectedCommand.value = commandPresets.value[0]?.action || ''
-      return
-    }
-
-    if (
-      selectedWorkTicketId.value &&
-      !allWorkTickets.value.some((ticket) => ticket.id === selectedWorkTicketId.value)
-    ) {
-      selectedWorkTicketId.value = allWorkTickets.value[0]?.id || ''
-    }
-  },
-  { immediate: true }
-)
-
-watch(
-  () => [
-    selectedWorkTicket.value?.id || '',
-    selectedWorkTicket.value?.targetVersion || '',
-    selectedWorkTicket.value?.priority || '',
-    selectedWorkTicket.value?.dependencies || selectedWorkTicket.value?.prerequisites || ''
-  ].join('|'),
-  () => {
-    metadataTargetVersion.value = selectedWorkTicket.value?.targetVersion || 'v0.4.0'
-    metadataPriority.value = selectedWorkTicket.value?.priority || 'P2'
-    metadataDependencies.value =
-      selectedWorkTicket.value?.dependencies || selectedWorkTicket.value?.prerequisites || ''
-    metadataMessage.value = ''
-    metadataError.value = ''
-  },
-  { immediate: true }
-)
-
-watch(
-  () => commandPresets.value.map((preset) => preset.action).join(','),
-  () => {
-    if (!selectedCommand.value && commandPresets.value.length > 0) {
-      selectedCommand.value = commandPresets.value[0].action
-    }
-  },
-  { immediate: true }
-)
 
 watch(
   () => studioState.value.title,
@@ -1232,7 +932,6 @@ onBeforeUnmount(() => {
   clearDoorTransitionTimers()
   window.clearInterval(portalRefreshTimer)
   window.clearTimeout(blogClosedNoticeTimer)
-  window.clearTimeout(workManagerExpiryTimer)
   window.clearTimeout(studioAutosaveTimer)
   window.removeEventListener('beforeunload', handleStudioBeforeUnload)
   window.removeEventListener('popstate', handleLocationPopState)
@@ -1255,38 +954,6 @@ async function loadPortalData(options = { refreshElevator: true }) {
   ])
 }
 
-async function loadHealthState() {
-  try {
-    healthState.value = await fetchJson('/api/health')
-  } catch (error) {
-    healthState.value = fallbackHealth
-  }
-}
-
-async function loadRuntimeState() {
-  try {
-    runtimeState.value = await fetchJson('/api/runtime')
-  } catch (error) {
-    runtimeState.value = fallbackRuntime
-  }
-}
-
-async function loadServicesState() {
-  try {
-    const response = await fetchJson('/api/services')
-    servicesState.value = response.services || []
-  } catch (error) {
-    servicesState.value = []
-  }
-}
-
-async function loadWorkBoardState() {
-  try {
-    workBoardState.value = await fetchJson('/api/work-manager/board')
-  } catch (error) {
-    workBoardState.value = fallbackWorkBoard
-  }
-}
 
 function initializeBlogWorkspace() {
   if (blogPosts.value.length === 0) {
@@ -1606,200 +1273,6 @@ function handleStudioBeforeUnload(event) {
   event.returnValue = ''
 }
 
-async function unlockWorkManager() {
-  if (!workManagerPassword.value.trim()) {
-    workManagerError.value = '비밀번호를 입력해야 합니다.'
-    return
-  }
-
-  isUnlockingWorkManager.value = true
-  workManagerError.value = ''
-  workManagerMessage.value = ''
-  try {
-    const response = await fetchJson('/api/work-manager/auth', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        password: workManagerPassword.value
-      })
-    })
-    const session = resolveWorkManagerAuthSession(response)
-    if (!session) {
-      throw new Error('인증 응답에 유효한 세션 만료 시각이 없습니다.')
-    }
-    workManagerToken.value = session.token
-    workManagerTokenExpiresAt.value = session.expiresAt
-    workManagerPassword.value = ''
-    workManagerMessage.value = response.message || 'Command gate unlocked'
-    await loadWorkBoardState()
-  } catch (error) {
-    workManagerError.value = error.message || '비밀번호 확인에 실패했습니다.'
-  } finally {
-    isUnlockingWorkManager.value = false
-  }
-}
-
-async function saveWorkTicketMetadata() {
-  if (!selectedWorkTicket.value?.id) {
-    metadataError.value = '먼저 수정할 티켓을 선택해야 합니다.'
-    return
-  }
-
-  if (!hasActiveWorkManagerSession()) {
-    metadataError.value = '먼저 command gate 를 열어야 메타데이터를 저장할 수 있습니다.'
-    return
-  }
-
-  isSavingMetadata.value = true
-  metadataError.value = ''
-  metadataMessage.value = ''
-  try {
-    const response = await fetchJson(`/api/work-manager/tickets/${selectedWorkTicket.value.id}/metadata`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Work-Manager-Token': workManagerToken.value
-      },
-      body: JSON.stringify({
-        targetVersion: metadataTargetVersion.value,
-        priority: metadataPriority.value,
-        dependencies: metadataDependencies.value
-      })
-    })
-    metadataMessage.value = response.message || '티켓 메타데이터를 저장했습니다.'
-    if (response.board) {
-      workBoardState.value = response.board
-    } else {
-      await loadWorkBoardState()
-    }
-  } catch (error) {
-    if (handleWorkManagerAuthorizationError(error, 'metadata')) {
-      return
-    }
-    metadataError.value = error.message || '티켓 메타데이터 저장에 실패했습니다.'
-  } finally {
-    isSavingMetadata.value = false
-  }
-}
-
-async function submitPresetCommand() {
-  if (!selectedCommand.value) {
-    workManagerError.value = '프리셋 액션을 선택해야 합니다.'
-    return
-  }
-
-  if (!hasActiveWorkManagerSession()) {
-    workManagerError.value = '먼저 command gate 를 열어야 합니다.'
-    return
-  }
-
-  isRunningCommand.value = true
-  workManagerError.value = ''
-  workManagerMessage.value = ''
-  try {
-    const response = await fetchJson('/api/work-manager/commands', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Work-Manager-Token': workManagerToken.value
-      },
-      body: JSON.stringify({
-        action: selectedCommand.value,
-        note: commandNote.value,
-        relatedTicketId: selectedWorkTicket.value?.id || ''
-      })
-    })
-    workManagerMessage.value = response.message || 'Preset command was queued'
-    commandNote.value = ''
-    await loadWorkBoardState()
-  } catch (error) {
-    if (handleWorkManagerAuthorizationError(error, 'command')) {
-      return
-    }
-    workManagerError.value = error.message || '명령 실행에 실패했습니다.'
-  } finally {
-    isRunningCommand.value = false
-  }
-}
-
-function logoutWorkManager() {
-  clearWorkManagerSession()
-  workManagerMessage.value = 'Command gate 를 잠갔습니다.'
-}
-
-function hasActiveWorkManagerSession() {
-  if (!workManagerToken.value) {
-    return false
-  }
-  if (isExpiredWorkManagerSession(workManagerTokenExpiresAt.value)) {
-    lockWorkManagerSession('Command gate 세션이 만료되었습니다. 다시 인증해 주세요.')
-    return false
-  }
-  return true
-}
-
-function handleWorkManagerAuthorizationError(error, target) {
-  if (error?.status !== 401) {
-    return false
-  }
-
-  const message = 'Command gate 세션이 만료되었거나 유효하지 않습니다. 다시 인증해 주세요.'
-  lockWorkManagerSession(message)
-  if (target === 'metadata') {
-    metadataError.value = message
-  }
-  return true
-}
-
-function lockWorkManagerSession(message) {
-  clearWorkManagerSession()
-  workManagerMessage.value = ''
-  workManagerError.value = message
-}
-
-function clearWorkManagerSession() {
-  workManagerToken.value = ''
-  workManagerTokenExpiresAt.value = ''
-  if (typeof window !== 'undefined') {
-    window.clearTimeout(workManagerExpiryTimer)
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY)
-    window.localStorage.removeItem(TOKEN_EXPIRY_STORAGE_KEY)
-  }
-}
-
-function scheduleWorkManagerExpiration() {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  window.clearTimeout(workManagerExpiryTimer)
-  if (!workManagerToken.value) {
-    return
-  }
-
-  const expiresAtMs = Date.parse(workManagerTokenExpiresAt.value)
-  const remainingMs = expiresAtMs - Date.now()
-  if (!Number.isFinite(expiresAtMs) || remainingMs <= 0) {
-    lockWorkManagerSession('Command gate 세션이 만료되었습니다. 다시 인증해 주세요.')
-    return
-  }
-
-  workManagerExpiryTimer = window.setTimeout(() => {
-    lockWorkManagerSession('Command gate 세션이 만료되었습니다. 다시 인증해 주세요.')
-  }, remainingMs)
-}
-
-function countWorkTicketsByStatus(status) {
-  return (
-    workBoardColumns.value.find((column) => column.status === status)?.tickets.length || 0
-  )
-}
-
-function selectWorkTicket(ticketId) {
-  selectedWorkTicketId.value = ticketId
-}
 
 function toggleTheme() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
@@ -2011,29 +1484,6 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
   })
 }
 
-function startTicketDrag(ticketId) {
-  dragTicketId.value = ticketId
-}
-
-function dropIntoReady() {
-  if (!dragTicketId.value) {
-    return
-  }
-  if (!readyTicketIds.value.includes(dragTicketId.value)) {
-    readyTicketIds.value = [...readyTicketIds.value, dragTicketId.value]
-    persistReadyTicketIds(readyTicketIds.value)
-  }
-  dragTicketId.value = ''
-}
-
-function dropIntoBacklog() {
-  if (!dragTicketId.value) {
-    return
-  }
-  readyTicketIds.value = readyTicketIds.value.filter((ticketId) => ticketId !== dragTicketId.value)
-  persistReadyTicketIds(readyTicketIds.value)
-  dragTicketId.value = ''
-}
 
 function createSeedBlogPosts() {
   return [
@@ -2450,21 +1900,6 @@ function blogCategory(post) {
   return visibleBlogTags(post?.tags)[0] || '기록'
 }
 
-function formatTimestamp(value) {
-  if (!value) {
-    return ''
-  }
-  try {
-    return new Date(value).toLocaleString('ko-KR', {
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
-  } catch (error) {
-    return value
-  }
-}
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options)
@@ -2669,91 +2104,6 @@ function handleLocationPopState(event) {
   })
 }
 
-function readReadyTicketIds() {
-  if (typeof window === 'undefined') {
-    return []
-  }
-  try {
-    const raw = window.localStorage.getItem(BOARD_READY_STORAGE_KEY)
-    const parsed = JSON.parse(raw || '[]')
-    return Array.isArray(parsed) ? parsed.filter((value) => typeof value === 'string') : []
-  } catch (error) {
-    return []
-  }
-}
-
-function persistReadyTicketIds(ticketIds) {
-  if (typeof window === 'undefined') {
-    return
-  }
-  try {
-    window.localStorage.setItem(BOARD_READY_STORAGE_KEY, JSON.stringify(ticketIds))
-  } catch (error) {
-    // 조회 화면의 임시 Ready 상태 저장 실패는 정적 화면을 막지 않는다.
-  }
-}
-
-function readStoredWorkManagerSession() {
-  if (typeof window === 'undefined') {
-    return { token: '', expiresAt: '', expired: false }
-  }
-
-  try {
-    const token = window.localStorage.getItem(TOKEN_STORAGE_KEY) || ''
-    const expiresAt = window.localStorage.getItem(TOKEN_EXPIRY_STORAGE_KEY) || ''
-    if (token && !isExpiredWorkManagerSession(expiresAt)) {
-      return { token, expiresAt, expired: false }
-    }
-
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY)
-    window.localStorage.removeItem(TOKEN_EXPIRY_STORAGE_KEY)
-    return { token: '', expiresAt: '', expired: Boolean(token) }
-  } catch (error) {
-    return { token: '', expiresAt: '', expired: false }
-  }
-}
-
-function persistWorkManagerSession(token, expiresAt) {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  try {
-    if (token && !isExpiredWorkManagerSession(expiresAt)) {
-      window.localStorage.setItem(TOKEN_STORAGE_KEY, token)
-      window.localStorage.setItem(TOKEN_EXPIRY_STORAGE_KEY, expiresAt)
-      return
-    }
-
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY)
-    window.localStorage.removeItem(TOKEN_EXPIRY_STORAGE_KEY)
-  } catch (error) {
-    // 정적 공개본에서는 저장소가 막혀도 여행·글쓰기 읽기를 유지한다.
-  }
-}
-
-function resolveWorkManagerAuthSession(response) {
-  const token = response?.token || ''
-  const directExpiresAt = response?.expiresAt || ''
-  const directExpiresAtMs = Date.parse(directExpiresAt)
-  if (token && Number.isFinite(directExpiresAtMs) && directExpiresAtMs > Date.now()) {
-    return { token, expiresAt: new Date(directExpiresAtMs).toISOString() }
-  }
-
-  const ttlMinutes = Number(response?.sessionTtlMinutes)
-  if (token && Number.isFinite(ttlMinutes) && ttlMinutes > 0) {
-    return {
-      token,
-      expiresAt: new Date(Date.now() + ttlMinutes * 60 * 1000).toISOString()
-    }
-  }
-  return null
-}
-
-function isExpiredWorkManagerSession(expiresAt) {
-  const expiresAtMs = Date.parse(expiresAt)
-  return !Number.isFinite(expiresAtMs) || expiresAtMs <= Date.now()
-}
 
 function readStoredBlogPosts() {
   if (typeof window === 'undefined') {
@@ -3464,473 +2814,9 @@ function persistStudioPostId(postId) {
             @clear-message="blogMessage = ''"
           />
 
-          <section v-else-if="page === 'work'" class="feature-shell tone-page tone-work-page line-w">
-            <WorkNotes />
-            <!-- D-033: 정적 공개본엔 백엔드가 없어 실행 영역을 접는다(API 요청 0). 라이브에서는 기존 영역이 비밀번호 게이트와 함께 그대로. -->
-            <p v-if="isStaticMode" class="work-ops-collapsed">집 PC 연결 시 사용</p>
-            <template v-else>
-            <div class="tone-page-intro">
-              <section class="tone-page-hero line-w">
-                <div class="tone-hero-topline">
-                  <small>지금 볼 것</small>
-                  <span>보호 구역</span>
-                </div>
-                <h2>검토 대기 {{ workToneRows[0].count }}건</h2>
-                <p>결정이 필요한 작업만 앞에 둡니다.</p>
-              </section>
+          <WorkView v-else-if="page === 'work'" :manager="workManager" :is-static-mode="isStaticMode" />
 
-              <div class="tone-status-list" aria-label="작업 상태 요약">
-                <div v-for="item in workToneRows" :key="item.status" class="tone-status-row">
-                  <span class="tone-status-dot" :class="{ wait: item.status !== 'started' }" aria-hidden="true"></span>
-                  <div>
-                    <strong>{{ item.label }} {{ item.count }}건</strong>
-                    <small>{{ item.helper }}</small>
-                  </div>
-                  <span>{{ item.shortStatus }}</span>
-                </div>
-              </div>
-            </div>
-
-            <details class="tone-support-details">
-              <summary>버전·작업자·저장 기준</summary>
-              <div class="tone-support-details__body">
-            <section class="section-block">
-              <div class="section-head">
-                <div>
-                  <p class="eyebrow">목표 버전</p>
-                  <h3>목표 버전과 로드맵 요약</h3>
-                </div>
-                <span>`v0.4.0` 레일 안의 작업과 이후 후보 버전을 한 화면에서 읽습니다.</span>
-              </div>
-
-              <div class="version-strip">
-                <article v-for="[version, count] in workVersionSummary" :key="version" class="version-chip-card">
-                  <strong>{{ version }}</strong>
-                  <small>티켓 {{ count }}건</small>
-                </article>
-              </div>
-
-              <div class="version-strip version-focus-strip">
-                <article class="version-chip-card version-focus-card">
-                  <strong>{{ workVersionHeader.focusVersion }}</strong>
-                  <small>현재 집중</small>
-                </article>
-                <article class="version-chip-card">
-                  <strong>{{ workVersionHeader.developmentCeiling }}</strong>
-                  <small>개발 상한</small>
-                </article>
-                <article class="version-chip-card">
-                  <strong>{{ workVersionHeader.activeRange }}</strong>
-                  <small>활성 범위</small>
-                </article>
-                <article class="version-chip-card">
-                  <strong>{{ workVersionHeader.selectedPriority }}</strong>
-                  <small>선택 티켓 우선순위</small>
-                </article>
-              </div>
-
-              <div class="roadmap-summary-grid">
-                <article v-for="item in WORK_ROADMAP_ITEMS" :key="item.version" class="roadmap-summary-card">
-                  <span>{{ item.version }}</span>
-                  <strong>{{ item.title }}</strong>
-                  <p>{{ item.summary }}</p>
-                </article>
-              </div>
-            </section>
-
-            <section class="section-block split-layout">
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">담당 현황</p>
-                    <h3>진행 중 담당</h3>
-                  </div>
-                  <span>Ready 이후 실제 worker 소유 구간을 카드로 분리해 보여줍니다.</span>
-                </div>
-
-                <div class="crew-grid">
-                  <article v-for="crew in workWorkerSummary" :key="crew.workerId" class="crew-card line-w">
-                    <div class="fleet-top">
-                      <strong>{{ crew.workerId }}</strong>
-                      <span>{{ crew.status }}</span>
-                    </div>
-                    <p>{{ crew.focus }}</p>
-                    <small>{{ (crew.currentTicketIds || []).join(', ') || '현재 선점 없음' }}</small>
-                  </article>
-                </div>
-              </article>
-
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">우선순위 정책</p>
-                    <h3>자동/수동 경계</h3>
-                  </div>
-                </div>
-
-                <div class="prototype-rule-list">
-                  <article class="prototype-rule-card">
-                    <strong>큐 출처</strong>
-                    <p>{{ workPriorityPolicy.queueSource }}</p>
-                  </article>
-                  <article class="prototype-rule-card">
-                    <strong>자동</strong>
-                    <p>{{ (workPriorityPolicy.automaticRange || []).join(', ') }}</p>
-                  </article>
-                  <article class="prototype-rule-card">
-                    <strong>수동</strong>
-                    <p>{{ (workPriorityPolicy.manualRange || []).join(', ') }}</p>
-                  </article>
-                </div>
-              </article>
-            </section>
-
-            <section class="section-block split-layout">
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">저장 방식</p>
-                    <h3>파일 저장과 DB 전환 기준</h3>
-                  </div>
-                </div>
-
-                <div class="info-stack">
-                  <article>
-                    <span>방식</span>
-                    <strong>{{ workPersistence.mode }}</strong>
-                  </article>
-                  <article>
-                    <span>감사 파일</span>
-                    <strong>{{ workPersistence.filePath }}</strong>
-                  </article>
-                  <article>
-                    <span>대상 DB</span>
-                    <strong>{{ workPersistence.targetDatabase }}</strong>
-                  </article>
-                  <article>
-                    <span>감사 기록</span>
-                    <strong>{{ workPersistence.auditEventCount }}</strong>
-                  </article>
-                </div>
-
-                <p class="status-copy">
-                  마지막 감사 시각 {{ formatTimestamp(workPersistence.lastAuditAt) || '없음' }}
-                </p>
-              </article>
-
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">다음 작업 예상</p>
-                    <h3>우선순위 반응 예상</h3>
-                  </div>
-                </div>
-
-                <ul class="check-list">
-                  <li v-for="item in workPriorityPolicy.nextCandidates || []" :key="item">{{ item }}</li>
-                </ul>
-              </article>
-            </section>
-
-              </div>
-            </details>
-
-            <details class="tone-work-manager-details">
-              <summary>전체 작업 보드·지시</summary>
-              <section class="section-block work-layout tone-work-layout">
-              <div class="work-board">
-                <article
-                  v-for="column in workBoardColumns"
-                  :key="column.status"
-                  class="lane-card"
-                  @dragover.prevent
-                  @drop.prevent="column.status === 'ready' ? dropIntoReady() : column.status === 'backlog' ? dropIntoBacklog() : null"
-                >
-                  <div class="lane-head">
-                    <div>
-                      <strong>{{ column.label }}</strong>
-                      <small>티켓 {{ column.tickets.length }}건</small>
-                    </div>
-                    <span class="lane-status">{{ column.helper }}</span>
-                  </div>
-
-                  <div class="lane-body">
-                    <button
-                      v-for="ticket in column.tickets"
-                      :key="ticket.id"
-                      type="button"
-                      class="ticket-card"
-                      :class="{ active: selectedWorkTicket?.id === ticket.id }"
-                      :draggable="column.status === 'backlog' || column.status === 'ready'"
-                      @dragstart="startTicketDrag(ticket.id)"
-                      @click="selectWorkTicket(ticket.id)"
-                    >
-                      <div class="ticket-top">
-                        <strong>{{ ticket.id }}</strong>
-                        <span>{{ ticket.priority }}</span>
-                      </div>
-                      <p>{{ ticket.title }}</p>
-                      <small>{{ ticket.targetVersion }} · {{ ticket.progressDecision }}</small>
-                    </button>
-                  </div>
-                </article>
-              </div>
-
-              <aside class="detail-panel">
-                <div class="section-head">
-                  <div>
-                    <h3>{{ selectedWorkTicket?.id || '선택 없음' }}</h3>
-                  </div>
-                </div>
-
-                <div v-if="selectedWorkTicket" class="detail-stack">
-                  <article>
-                    <span>레인</span>
-                    <strong>{{ selectedWorkTicket.lane }}</strong>
-                  </article>
-                  <article>
-                    <span>목표 버전</span>
-                    <strong>{{ selectedWorkTicket.targetVersion }}</strong>
-                  </article>
-                  <article class="detail-editor">
-                    <span>목표 버전 수정</span>
-                    <select v-model="metadataTargetVersion" class="select-input" aria-label="목표 버전 수정">
-                      <option v-for="version in workTargetVersionOptions" :key="version" :value="version">
-                        {{ version }}
-                      </option>
-                    </select>
-                  </article>
-                  <article>
-                    <span>우선순위</span>
-                    <strong>{{ selectedWorkTicket.priority || '없음' }}</strong>
-                  </article>
-                  <article class="detail-editor">
-                    <span>우선순위 수정</span>
-                    <select v-model="metadataPriority" class="select-input" aria-label="우선순위 수정">
-                      <option value="P1">P1</option>
-                      <option value="P2">P2</option>
-                      <option value="P3">P3</option>
-                      <option value="P4">P4</option>
-                      <option value="P5">P5</option>
-                    </select>
-                  </article>
-                  <article>
-                    <span>진행 판정</span>
-                    <strong>{{ selectedWorkTicket.progressDecision || '없음' }}</strong>
-                  </article>
-                  <article>
-                    <span>목표</span>
-                    <p>{{ selectedWorkTicket.goal || '없음' }}</p>
-                  </article>
-                  <article>
-                    <span>작업 항목</span>
-                    <p>{{ selectedWorkTicket.workItems || '없음' }}</p>
-                  </article>
-                  <article>
-                    <span>산출물</span>
-                    <p>{{ selectedWorkTicket.deliverables || '없음' }}</p>
-                  </article>
-                  <article>
-                    <span>선행 조건</span>
-                    <p>{{ selectedWorkTicket.prerequisites || '없음' }}</p>
-                  </article>
-                  <article>
-                    <span>의존성</span>
-                    <p>{{ selectedWorkTicket.dependencies || selectedWorkTicket.prerequisites || '없음' }}</p>
-                  </article>
-                  <article class="detail-editor detail-editor-wide">
-                    <span>의존성 수정</span>
-                    <textarea
-                      v-model="metadataDependencies"
-                      class="textarea-input"
-                      rows="4"
-                      aria-label="의존성 수정"
-                      placeholder="TKT-039 또는 선행 티켓/의존성 메모를 적습니다."
-                    ></textarea>
-                  </article>
-                  <article>
-                    <span>질문</span>
-                    <p>{{ selectedWorkTicket.questions || '없음' }}</p>
-                  </article>
-                  <article>
-                    <span>검토 메모</span>
-                    <p>{{ selectedWorkTicket.reviewMemo || '없음' }}</p>
-                  </article>
-                  <article>
-                    <span>PR 준비 메모</span>
-                    <p>{{ selectedWorkTicket.prPreparationMemo || '없음' }}</p>
-                  </article>
-                  <article>
-                    <span>메모</span>
-                    <p>{{ selectedWorkTicket.notes || '없음' }}</p>
-                  </article>
-                </div>
-
-                <div v-if="selectedWorkTicket" class="detail-actions">
-                  <p class="status-copy" :class="{ ok: !!workManagerToken, error: !workManagerToken }">
-                    {{ workManagerToken ? 'command gate 가 열려 있어 메타데이터를 저장할 수 있습니다.' : '메타데이터 저장은 command gate 를 연 뒤에만 가능합니다.' }}
-                  </p>
-                  <div class="command-actions">
-                    <button type="button" class="primary-button" :disabled="isSavingMetadata || !workManagerToken" @click="saveWorkTicketMetadata">
-                      {{ isSavingMetadata ? '저장 중...' : '메타데이터 저장' }}
-                    </button>
-                  </div>
-                  <p v-if="metadataMessage" class="status-copy ok">{{ metadataMessage }}</p>
-                  <p v-if="metadataError" class="status-copy error">{{ metadataError }}</p>
-                </div>
-              </aside>
-
-              <aside class="command-panel">
-                <div class="section-head">
-                  <div>
-                    <h3>작업 지시</h3>
-                  </div>
-                </div>
-
-                <div class="auth-panel">
-                  <label class="input-block">
-                    <span>공유 비밀번호</span>
-                    <input
-                      v-model="workManagerPassword"
-                      class="text-input"
-                      type="password"
-                      placeholder="command gate 비밀번호"
-                    />
-                  </label>
-                  <div class="command-actions">
-                    <button type="button" class="primary-button" :disabled="isUnlockingWorkManager" @click="unlockWorkManager">
-                      {{ isUnlockingWorkManager ? '확인 중...' : 'gate 열기' }}
-                    </button>
-                    <button v-if="workManagerToken" type="button" class="ghost-button" @click="logoutWorkManager">
-                      잠그기
-                    </button>
-                  </div>
-                  <p v-if="workManagerMessage" class="status-copy ok">{{ workManagerMessage }}</p>
-                  <p v-if="workManagerError" class="status-copy error">{{ workManagerError }}</p>
-                </div>
-
-                <div class="preset-column">
-                  <button
-                    v-for="preset in commandPresets"
-                    :key="preset.action"
-                    type="button"
-                    class="command-card"
-                    :class="{ active: selectedCommand === preset.action }"
-                    @click="selectedCommand = preset.action"
-                  >
-                    <strong>{{ preset.label }}</strong>
-                    <p>{{ preset.description }}</p>
-                  </button>
-                </div>
-
-                <label class="input-block">
-                  <span>메모</span>
-                  <textarea
-                    v-model="commandNote"
-                    class="textarea-input"
-                    rows="4"
-                    placeholder="지금까지 사용자와 AI가 합의한 맥락을 짧게 남깁니다."
-                  ></textarea>
-                </label>
-
-                <div class="command-actions">
-                  <button
-                    type="button"
-                    class="primary-button"
-                    :disabled="isRunningCommand || !selectedCommand || !workManagerToken"
-                    @click="submitPresetCommand"
-                  >
-                    {{ isRunningCommand ? '큐 등록 중...' : '미리 정한 명령 전송' }}
-                  </button>
-                </div>
-
-                <div class="feed-block">
-                  <strong>활동 기록</strong>
-                  <article v-for="entry in activityFeed.slice(0, 6)" :key="entry.id" class="activity-entry">
-                    <div class="feed-meta">
-                      <span>{{ entry.type }}</span>
-                      <small>{{ formatTimestamp(entry.timestamp) }}</small>
-                    </div>
-                    <p>{{ entry.title }}</p>
-                    <small>{{ entry.summary }}</small>
-                  </article>
-                  <article v-for="entry in commandHistory.slice(0, 3)" :key="entry.id" class="activity-entry">
-                    <div class="feed-meta">
-                      <span>명령</span>
-                      <small>{{ formatTimestamp(entry.createdAt) }}</small>
-                    </div>
-                    <p>{{ entry.label }}</p>
-                    <small>{{ entry.note || entry.message }}</small>
-                  </article>
-                </div>
-              </aside>
-              </section>
-            </details>
-            </template>
-          </section>
-
-          <section v-else class="feature-shell tone-page tone-runtime-page line-r">
-            <section class="tone-page-hero line-r">
-              <div class="tone-hero-topline">
-                <small>주의가 필요한 신호</small>
-                <span>보호 구역</span>
-              </div>
-              <h1>{{ runtimeNeedsAttention ? '응답 지연이 평소보다 깁니다' : '모든 실행 환경이 응답 중입니다' }}</h1>
-              <p>{{ runtimeNeedsAttention ? '서비스는 동작 중이며 최근 10분의 변화입니다.' : '최근 확인한 실행 환경이 정상입니다.' }}</p>
-            </section>
-
-            <div class="tone-runtime-list" aria-label="실행 환경 상태">
-              <div v-for="row in runtimeToneRows" :key="row.key" class="tone-runtime-row">
-                <span class="tone-status-dot" :class="{ wait: row.warning }" aria-hidden="true"></span>
-                <div>
-                  <strong>{{ row.label }}</strong>
-                  <small>{{ row.detail }}</small>
-                </div>
-                <span class="tone-runtime-metric">{{ row.status }}</span>
-              </div>
-            </div>
-
-            <button type="button" class="ghost-button tone-refresh" @click="loadPortalData">상태 새로고침</button>
-
-            <details class="tone-support-details tone-runtime-details">
-              <summary>오프로드·배포 기준</summary>
-              <div class="tone-support-details__body">
-            <section class="section-block split-layout">
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">라우팅 규칙</p>
-                    <h3>오프로드 정책</h3>
-                  </div>
-                </div>
-
-                <ul class="rule-list">
-                  <li v-for="rule in runtimeState.routingRules" :key="`${rule.when}-${rule.preferNode}`">
-                    {{ rule.when }} -> {{ rule.preferNode }} / {{ rule.degradedFallback }}
-                  </li>
-                </ul>
-              </article>
-
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <p class="eyebrow">배포 경로</p>
-                    <h3>배포 레일</h3>
-                  </div>
-                </div>
-
-                <ol class="path-steps" aria-label="배포 레일 단계">
-                  <li><span>01</span><strong>UI / docs 정리</strong></li>
-                  <li><span>02</span><strong>티켓 acceptance 확인</strong></li>
-                  <li><span>03</span><strong>tests / CI 확인</strong></li>
-                  <li><span>04</span><strong>PR 정리</strong></li>
-                  <li><span>05</span><strong>tag / release</strong></li>
-                </ol>
-              </article>
-            </section>
-              </div>
-            </details>
-          </section>
+          <RuntimeView v-else :manager="workManager" @refresh="loadPortalData" />
 
           <nav
             v-if="!isTestRoute"
