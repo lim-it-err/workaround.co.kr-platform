@@ -170,7 +170,7 @@ test('격납고와 환승 홀 소역에서 진입하고 정적 주소 새로고�
   await page.getByRole('button', { name: '환승 홀', exact: true }).click()
   const smallStop = page.locator('.junction-page-stop[data-stop-label="유로트럭"]')
   assert.equal(await smallStop.count(), 1)
-  await smallStop.click()
+  await smallStop.locator('.junction-page-stop-dot').click()
   await page.locator('.ets2-live-page').waitFor()
   assert.match(new URL(page.url()).pathname, /\/ets2$/)
   await capture(page, 'ets2-1440-dark')

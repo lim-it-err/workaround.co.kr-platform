@@ -3608,10 +3608,11 @@ button {
   stroke-width: 4;
 }
 
-.junction-stop-tip {
-  fill: var(--text);
-  font-size: 15px;
-  font-weight: 650;
+/* TKT-203: 작은 역 이름은 항상 보인다 — 큰 역(굵고 밝게)보다 한 단계 작고 흐리게. */
+.junction-page-stop-name {
+  fill: var(--text-2);
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .junction-line-name {
@@ -3833,7 +3834,6 @@ a.junction-route-row:focus-visible {
 
 @media (max-width: 899px) {
   .junction-page-stop,
-  .junction-stop-tip,
   .junction-station.upcoming .junction-station-name {
     display: none;
   }

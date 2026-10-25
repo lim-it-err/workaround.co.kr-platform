@@ -114,7 +114,7 @@ export const JUNCTION_LINES = [
           { x: 501.4, y: 150, labelX: 487, labelY: 154, label: '유로트럭', page: 'ets2', pathIndex: 2, anchor: 'end' },
           { x: 501.4, y: 105, labelX: 487, labelY: 109, label: '유로트럭 개발자', page: 'ets2Dev', pathIndex: 2, staticAccess: 'server', staticMessage: '개발자 페이지 · 로컬 전용', anchor: 'end' },
           { x: 565.1, y: 154.9, labelX: 578, labelY: 168, label: '엘리베이터', page: 'elevator', staticAccess: 'server', anchor: 'start' },
-          { x: 586.3, y: 133.7, labelX: 600, labelY: 104, label: '택시', page: 'taxi', anchor: 'end' },
+          { x: 586.3, y: 133.7, labelX: 592, labelY: 106, label: '택시', page: 'taxi', anchor: 'end' },
           { x: 607.5, y: 112.5, labelX: 620, labelY: 126, label: '화이트채플', access: 'planned', upcoming: true, anchor: 'start' }
         ],
         sublinks: [
@@ -169,7 +169,7 @@ export const JUNCTION_LINES = [
         page: 'work',
         // TKT-195·D-033: 정적 공개본에서도 열린다(운영 노트). 명령 실행은 라이브에서만, 비밀번호 뒤.
         status: '운영 노트',
-        map: { x: 437.8, y: 437.8, labelX: 428, labelY: 452, anchor: 'end' },
+        map: { x: 437.8, y: 437.8, labelX: 418, labelY: 452, anchor: 'end' },
         mapStops: [
           { x: 466.1, y: 466.1, labelX: 452, labelY: 480, label: '작업 흐름', anchor: 'end' }
         ]

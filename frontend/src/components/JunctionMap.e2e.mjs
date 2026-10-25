@@ -252,7 +252,7 @@ for (const scenario of [
       const visibleMapTextSizes = await page.locator([
         '.junction-station-code',
         '.junction-station-name',
-        '.junction-stop-tip',
+        '.junction-page-stop-name',
         '.junction-line-name',
         '.junction-hub-name'
       ].join(',')).evaluateAll(elements => elements
@@ -267,7 +267,7 @@ for (const scenario of [
     const mapTextOverlaps = await page.locator([
       '.junction-station-code',
       '.junction-station-name',
-      '.junction-stop-tip',
+      '.junction-page-stop-name',
       '.junction-line-name',
       '.junction-hub-name'
     ].join(',')).evaluateAll(elements => {
@@ -292,7 +292,7 @@ for (const scenario of [
     const routeTextIntersections = await page.evaluate(() => {
       const textSelectors = [
         '.junction-station-name',
-        '.junction-stop-tip',
+        '.junction-page-stop-name',
         '.junction-line-name',
         '.junction-hub-name'
       ].join(',')
@@ -379,56 +379,41 @@ for (const scenario of [
     }
 
     if (scenario.width >= 900) {
-      // TKT-202: 기본 상태의 지도 글자는 큰 역 이름 + 노선 이름 + 환승 홀뿐. 작은 역 이름은 올림·포커스 때만 한 줄로 뜬다.
-      const mapTexts = () => page.locator('.junction-map text:not(.junction-station-code)').evaluateAll(elements => elements
-        .filter(element => element.getClientRects().length > 0)
-        .map(element => element.textContent.trim()))
-      const baseTexts = await mapTexts()
-      // 손으로 센 기대값: 큰 역 이름 7(블로그 열림이면 8) + 노선 이름 3 + 환승 홀 1
-      assert.equal(baseTexts.length, STATION_COUNT + 4, `기본 상태 지도 글자 수: ${baseTexts.join(', ')}`)
-      assert.ok(baseTexts.length <= (BLOG_LINE_OPEN ? 13 : 12), '기본 상태 지도 글자는 12개 이하여야 한다')
-      assert.equal(await page.locator('.junction-stop-tip').count(), 0, '기본 상태에는 툴팁이 없다')
-
+      // TKT-203: 작은 역 이름은 항상 보인다(툴팁 없음) — 큰 역보다 작고 흐리고 가늘게.
       const stopLabels = await page.locator('.junction-page-stop').evaluateAll(elements => elements.map(element => element.dataset.stopLabel))
       assert.equal(stopLabels.length, SUBSTOP_COUNT)
-      const bigTextRects = () => page.locator('.junction-station-name, .junction-line-name, .junction-hub-name')
-        .evaluateAll(elements => elements.filter(element => element.getClientRects().length > 0).map(element => {
-          const rect = element.getBoundingClientRect()
-          return { label: element.textContent.trim(), left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }
+      const smallNames = await page.locator('.junction-page-stop-name').evaluateAll(elements => elements
+        .filter(element => element.getClientRects().length > 0)
+        .map(element => {
+          const style = getComputedStyle(element)
+          const matrix = element.getScreenCTM()
+          return { label: element.textContent.trim(), size: parseFloat(style.fontSize) * Math.hypot(matrix.a, matrix.b), fill: style.fill, weight: Number(style.fontWeight) }
         }))
-      for (const label of stopLabels) {
-        const hit = page.locator(`.junction-page-stop-hit[data-stop-label="${label}"]`)
-        const box = await hit.boundingBox()
-        await page.mouse.move(box.x + box.width / 2 + 14, box.y + box.height / 2 + 14)
-        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
-        const tip = page.locator('.junction-stop-tip')
-        await tip.waitFor()
-        assert.equal(await tip.count(), 1, '툴팁은 한 번에 하나')
-        assert.equal(await tip.textContent(), label, `올림 툴팁은 그 역 이름이어야 한다: ${label}`)
-        assert.equal(await tip.evaluate(element => getComputedStyle(element).pointerEvents), 'none')
-        const tipRect = await tip.evaluate(element => {
-          const rect = element.getBoundingClientRect()
-          return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom }
-        })
-        const collisions = (await bigTextRects()).filter(other => tipRect.right > other.left + 1 && other.right > tipRect.left + 1
-          && tipRect.bottom > other.top + 1 && other.bottom > tipRect.top + 1).map(other => other.label)
-        assert.deepEqual(collisions, [], `툴팁 ${label} 이 큰 글자를 가리면 안 된다`)
-        await page.mouse.move(2, 2)
-        assert.equal(await page.locator('.junction-stop-tip').count(), 0, '포인터가 떠나면 툴팁이 사라진다')
-        assert.equal(
-          (await page.evaluate(() => document.querySelectorAll('.junction-map text:not(.junction-station-code)').length)) - baseTexts.length,
-          0
-        )
+      assert.deepEqual(smallNames.map(item => item.label).sort(), [...stopLabels].sort(), '작은 역 이름이 모두 보여야 한다')
+      const bigName = await page.locator('.junction-station-name').first().evaluate(element => {
+        const style = getComputedStyle(element)
+        const matrix = element.getScreenCTM()
+        return { size: parseFloat(style.fontSize) * Math.hypot(matrix.a, matrix.b), fill: style.fill, weight: Number(style.fontWeight) }
+      })
+      for (const item of smallNames) {
+        assert.ok(item.size >= 10.95 && item.size <= 12.5, `작은 역 글씨는 11~12px: ${item.label} ${item.size}`)
+        assert.ok(item.size < bigName.size, `작은 역 글씨가 큰 역보다 작아야 한다: ${item.label}`)
+        assert.notEqual(item.fill, bigName.fill, `작은 역 색이 큰 역과 달라야 한다: ${item.label}`)
+        assert.ok(item.weight < bigName.weight, `작은 역 굵기가 큰 역보다 가벼워야 한다: ${item.label}`)
       }
+      assert.equal(await page.locator('.junction-stop-tip').count(), 0, '툴팁은 제거됐다')
+      // 작은 역 이름 글자는 클릭을 가로채지 않는다.
+      assert.equal(
+        await page.locator('.junction-page-stop-name').first().evaluate(element => getComputedStyle(element).pointerEvents),
+        'none'
+      )
+      // 작은 역 이름 글자가 큰 글자(역 이름·노선 이름·환승 홀)와 겹치지 않는다는 점은 위의 겹침 검사가 함께 본다.
 
-      // 키보드 포커스: 작은 역에 Tab 으로 닿으면 이름이 뜨고 접근 이름도 갖는다.
+      // 키보드 포커스: 작은 역에 Tab 으로 닿으면 접근 이름을 갖는다.
       const focusStop = page.locator('.junction-page-stop[data-stop-label="격납고"]')
       assert.equal(await focusStop.getAttribute('aria-label'), '격납고 열기')
-      await page.keyboard.press('Tab')
       await focusStop.focus()
-      assert.equal(await page.locator('.junction-stop-tip').textContent(), '격납고')
       await page.evaluate(() => document.activeElement?.blur())
-      assert.equal(await page.locator('.junction-stop-tip').count(), 0, '포커스를 잃으면 툴팁이 사라진다')
     }
 
     if (scenario.width >= 900) {
@@ -501,12 +486,12 @@ for (const scenario of [
 
     if (scenario.width >= 900) {
       const junctionUrl = page.url()
-      await page.locator('.junction-page-stop[data-stop-label="유로트럭"]').click()
+      await page.locator('.junction-page-stop[data-stop-label="유로트럭"]').locator('.junction-page-stop-dot').click()
       assert.match(new URL(page.url()).pathname, /\/ets2$/)
       await page.getByRole('button', { name: '환승 홀', exact: true }).click()
       await page.locator('.junction-overview').waitFor()
 
-      await page.locator('.junction-page-stop[data-stop-label="유로트럭 개발자"]').click()
+      await page.locator('.junction-page-stop[data-stop-label="유로트럭 개발자"]').locator('.junction-page-stop-dot').click()
       const developerToast = page.locator('.junction-access-toast')
       await developerToast.waitFor()
       assert.equal(await developerToast.textContent(), '개발자 페이지 · 로컬 전용')
