@@ -327,19 +327,27 @@ for (const scenario of [
       `SVG 역은 투명 hit 원(r≥20, pointer-events: all)을 가져야 한다: ${JSON.stringify(svgStationHitTargets)}`
     )
 
-    const detailStopHitTargets = await page.locator('.junction-page-stop').evaluateAll(elements => elements.map(element => {
-      const hitCircle = element.querySelector('.junction-page-stop-hit')
+    const detailStopHitTargets = await page.locator('.junction-page-stop-hit').evaluateAll(elements => elements.map(hitCircle => {
+      const rect = hitCircle.getBoundingClientRect()
       return {
-        label: element.dataset.stopLabel,
-        radius: Number(hitCircle?.getAttribute('r')),
-        pointerEvents: hitCircle ? getComputedStyle(hitCircle).pointerEvents : ''
+        label: hitCircle.dataset.stopLabel,
+        width: rect.width,
+        height: rect.height,
+        radius: Number(hitCircle.getAttribute('r')),
+        pointerEvents: getComputedStyle(hitCircle).pointerEvents
       }
     }))
     assert.equal(detailStopHitTargets.length, 13)
     assert.ok(
-      detailStopHitTargets.every(({ radius, pointerEvents }) => radius >= 20 && pointerEvents === 'all'),
-      `모든 소역은 투명 hit 원(r≥20, pointer-events: all)을 가져야 한다: ${JSON.stringify(detailStopHitTargets)}`
+      detailStopHitTargets.every(({ radius, pointerEvents }) => radius >= 26 && pointerEvents === 'all'),
+      `모든 소역은 투명 hit 원(r≥26, pointer-events: all)을 가져야 한다: ${JSON.stringify(detailStopHitTargets)}`
     )
+    if (scenario.width >= 900) {
+      assert.ok(
+        detailStopHitTargets.every(({ width, height }) => width >= 40 && height >= 40),
+        `1440 소역 hit bbox는 모두 40×40px 이상이어야 한다: ${JSON.stringify(detailStopHitTargets)}`
+      )
+    }
 
     if (scenario.width >= 900) {
       const labelOwners = await page.locator('.junction-page-stop text').evaluateAll(elements => elements.map(element => {
