@@ -36,6 +36,7 @@ workaround.co.kr / workaround.kr 을 Cloudflare 프록시 뒤에서 자가 서�
 - Docker Desktop/daemon 기동 확인: Server `24.0.2`
 - 로컬 compose 실제 기동: **미완료**. `caddy:2.9-alpine` pull이 두 차례 모두 출력 없이 장시간 정지해 중단했다. 따라서 Host 헤더 curl 4종은 아직 실행하지 못했다.
 - 2026-08-17 04:39 KST 재시도: Docker daemon `24.0.2` 정상, 호스트에서 Docker Hub registry endpoint는 HTTP `401`로 도달했지만 `docker pull caddy:2.9-alpine`은 약 50초 동안 출력/진행 없이 다시 정지했다. pull을 중단했고 Caddy 이미지는 생성되지 않았다.
+- 2026-10-25 재시도: Docker Desktop/daemon `24.0.2`와 `desktop-linux` 컨텍스트는 정상이고 호스트의 Docker Hub registry endpoint도 HTTP `401`로 도달했다. 그러나 gateway BuildKit이 `maven:3.9.9-eclipse-temurin-21`·`eclipse-temurin:21-jre` 메타데이터 조회에서 `DeadlineExceeded`로 실패했고, `docker pull cloudflare/cloudflared:latest`도 60초 이상 출력 없이 정지해 중단했다. 필요한 세 이미지는 로컬에 없다. 엔진은 `HTTPProxy`·`HTTPSProxy`를 `http.docker.internal:3128`로 사용 중이라 호스트 curl과 Docker VM pull 경로가 다르다.
 
 ## 질문/결정 기록
 
@@ -44,6 +45,7 @@ workaround.co.kr / workaround.kr 을 Cloudflare 프록시 뒤에서 자가 서�
 - D-011 이전 차단 조건(폐기): Docker registry에서 `caddy:2.9-alpine` pull이 가능한 환경에서 README의 `--profile local` 기동과 Host 헤더 curl을 재실행한다.
 - PM 질문: 다음 실행에서 registry 접근이 복구되면 동일 게이트를 재시도해도 되는가? 구현 범위 변경은 필요 없다.
 - 재시도 메모: 호스트 HTTPS 연결 자체는 정상이므로 Docker Desktop engine의 image pull 경로/credential/network 상태 확인이 필요하다. 실행 중인 타 작업 컨테이너가 있어 Docker Desktop 강제 재시작은 수행하지 않았다.
+- 2026-10-25 재차단: daemon 기동 조건은 해소됐지만 Docker Desktop VM/BuildKit의 registry 다운로드 경로가 계속 시간 초과한다. 실행 중 컨테이너 13개를 임의 중단할 수 없어 Desktop 재시작·네트워크 설정 변경은 수행하지 않았다. PO가 실행 중 작업을 정리한 뒤 Docker Desktop 재시작 또는 registry/proxy 설정 점검이 필요하다.
 
 
 ## 방향 갱신 (D-011 확정, 2026-08-18 — PO "채택")

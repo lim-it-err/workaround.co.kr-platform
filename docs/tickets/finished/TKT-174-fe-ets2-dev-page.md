@@ -2,7 +2,7 @@
 
 # TKT-174 `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — 주행 정보·실시간 화면·감시/복구·게임 제어·차선 변경·시뮬레이터 (보호 구역)
 
-- 상태: started (2026-10-24, PM r1 반려 → r2)· **P1** · 담당: codex-1 · 의존: TKT-168 finished(뷰어 뼈대 공유). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.** 스펙 `design/ets2-live-spec.md` v2 §B·§D. PoC 계약 `services/ets2-adas/API.md`.
+- 상태: finished (2026-10-25, PM r2 통과)· **P1** · 담당: codex-1 · 의존: TKT-168 finished(뷰어 뼈대 공유). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박] 의무.** 스펙 `design/ets2-live-spec.md` v2 §B·§D. PoC 계약 `services/ets2-adas/API.md`.
 - scope: `frontend/src/components/Ets2Dev.vue`(신규), `frontend/src/App.vue`(라우팅), `frontend/src/data/lines.js`(실험선 S 소역 `유로트럭 개발자`, `staticAccess: 'server'` — D-022 문법), `frontend/src/staticRouting.js`(`/ets2/dev` 를 `STATIC_UNAVAILABLE_LIVE_PAGES` 에), `frontend/src/styles.css`, `frontend/public/ets2-sim/`(PoC `index.html`·`styles.css`·`controller.js`·`app.js` 의 시뮬레이터 부분을 정적 복사 — 원본은 `services/ets2-adas/`, 복사 스크립트 `frontend/scripts/sync-ets2-sim.mjs`), `Ets2Dev.e2e.mjs`(PoC API 를 흉내내는 로컬 스텁 서버 포함).
 
 ## 화면 (톤 원칙: 읽기 행은 면 없음, 조작부만 면·40px)
@@ -39,3 +39,13 @@
 
 ## PM 반려 (2026-10-24, r1) — `docs/reviews/REV-TKT-174-r1.md`
 - [블로커] B1 읽기 영역·섹션 면 제거 · [중요] I1 실패 안내 위치 · I2 연결 끊김 시 비활성 · I3 range 높이(소역 hit 는 179) · 흡수: UX-168 I1 샘플 표시·capturedAt, S1 마지막 수신, dialog aria.
+
+## r2 구현 내역 (2026-10-24)
+- 최근 이벤트·읽기 전용 구역의 카드 면을 없애고 제목·hairline 중심으로 정리했다. 버튼과 입력처럼 실제 조작부만 면을 유지한다.
+- 감시·게임 제어·차선 변경의 처리 중/성공/실패 피드백을 누른 버튼 묶음 바로 아래에 배치했다. 서버 또는 게임 연결이 끊기면 준비·ACC ±5·차선 유지·차선 변경을 비활성화하고 이유를 노출하며, 안전 중단만 예외로 남겼다.
+- 정적 시뮬레이터 range 높이를 생성 CSS 기준 40px 이상으로 올렸다. 확인 다이얼로그에 접근 가능한 제목 연결을 추가했다.
+- 샘플 화면은 `샘플 화면 · 실제 주행 정보 아님`으로 명시하고 회전마다 `capturedAt`을 갱신한다. 실데이터가 stale/신호 소실이면 수치를 `마지막 수신`으로 표시한다.
+- E2E는 Pages-base 빌드와 `VITE_ETS2_DEV_API` 유무에 독립적인 loopback 전용 스텁·런타임 플래그를 자급한다. 연결 상실 잠금, 거절 응답의 근접 오류, range 40px, 무면 섹션, 다이얼로그 이름을 회귀 계약으로 추가했다.
+- 검증: 메인/Pages-base build 각 55 modules, unit 27/27, Ets2Dev E2E 6/6, Ets2Live E2E 4/4, staticRouting E2E 4/4, JunctionMap E2E 4/4, ToneTools E2E 12/12 통과. 375/1440 × 다크/라이트 4종 직접 확인에서 overflow 0·읽기 무면·조작 가시성을 확인했다.
+- 남은 위험: 없음. 커밋은 PM만 수행한다.
+- 2026-10-25 PM: **r2 통과 → finished** — `docs/reviews/REV-TKT-174-r2.md`.

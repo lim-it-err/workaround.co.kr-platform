@@ -38,8 +38,8 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-180` `P1` `pantry` `ready` `[FE]` 자취 밥상 태그 칩 확장(재료·상황·술)·quip 표시 (PO 10-05)
-- `TKT-183` `P3` `tone` `ready` `[FE]` 글쓰기 저장 실패 중 백업 동선 (UX-164 I1)
+- `TKT-185` `P1` `pantry` `ready` `[FE]` 무알코올 칩 기본 행 상시 노출·한 줄 스크롤 (REV-180 I1)
+- `TKT-184` `P1` `tone` `ready` `[FE]` 소역 히트 원 r=26 — 1440 에서 40px (REV-179 I2)
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
 - `TKT-177` `P2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
@@ -57,13 +57,8 @@
 
 ## Started
 
-- `TKT-174` `P1` `ets2` `started` `[FE]` 유로트럭 개발자 — **r1 반려**(읽기 영역 면·실패 안내·연결 끊김 비활성·range·샘플 표시·E2E 자급)
-- `TKT-182` `P1` `tone` `started` `[FE]` 문 닫힘 애니메이션 — **r1 반려**(목업 스크립트 0·마지막 문구 0.7초, 총 5.5초)
-- `TKT-179` `P1` `tone` `started` `[FE]` 실험선 수직 지선 — **r1 반려**(라벨 왼쪽·소역 히트 원 r≥20)
-- `TKT-170` `P1` `pantry` `started` `[FE]` 자취 밥상 — **r2 반려**(대안 선택 시 칩 유지·빠른 대안 라벨)
-- `TKT-172` `P2` `voyage` `started` `[FE]` 여행 결산 — **r1 반려**(노출 조건 날짜상 종료 포함)
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
-- `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
+- `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — daemon 정상, Docker Desktop VM의 registry pull 시간 초과로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
@@ -72,6 +67,13 @@
 
 ## Finished
 
+- `TKT-174` `[FE]` 유로트럭 개발자 `/ets2/dev` — 보호 구역·PoC 제어·감시·시뮬레이터, 면 제거·연결 잠금 — r2 통과 (2026-10-25)
+- `TKT-182` `[FE]` 문 닫힘/열림 애니메이션 — 5.5초·문구 유지·CSS 목업 — r2 통과 (2026-10-25)
+- `TKT-179` `[FE]` 실험선 수직 지선 — 라벨 왼쪽·소역 히트 원 — r2 통과 (2026-10-25, 40px 은 184)
+- `TKT-172` `[FE]` 여행 결산 화면 — 날짜상 종료 노출 — r2 통과 (2026-10-25)
+- `TKT-183` `[FE]` 저장 실패 중 응급 백업 — r1 통과 (2026-10-25)
+- `TKT-170` `[FE]` 자취 밥상 `/pantry`·P선 개통 — r3 통과 (2026-10-25)
+- `TKT-180` `[FE]` 자취 밥상 태그 칩 4묶음·quip — r1 통과 (2026-10-25, 무알코올 기본 노출 → 185)
 - `TKT-176` `[FE]` E2E 시간대 고정 timezoneId — r1 통과 (2026-10-24, 묶음 커밋 대기)
 - `TKT-178` `[FE]` 스플래시 플랩 속도 5초/2.5초 — r1 통과 (2026-10-24, 182 r2 묶음)
 - `TKT-181` `[조사]` 자취 밥상 카피 재료·태그 후보 — codex-4 보고서 (2026-10-05, 태그 7종 반영)

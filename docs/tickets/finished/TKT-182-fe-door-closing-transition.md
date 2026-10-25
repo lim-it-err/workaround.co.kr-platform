@@ -2,7 +2,7 @@
 
 # TKT-182 `[FE]` 문 닫힘 애니메이션 — 역 출발 전환(DOORS CLOSING) + 스플래시 끝 문 열림을 실제 문짝 연출로
 
-- 상태: started (2026-10-24, PM r1 반려 → r2)· **P1** · 담당: codex-1 · 의존: TKT-178 need_review(스플래시 타이밍 공유 — 178 뒤 바로). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박]·[구체화 질문] 의무.**
+- 상태: finished (2026-10-25, PM r2 통과)· **P1** · 담당: codex-1 · 의존: TKT-178 finished(스플래시 타이밍 공유). 브랜치 `codex/v0.8.0-live`. **UX 1순위·[반박]·[구체화 질문] 의무.**
 - 근거: PO 2026-10-05 "문이 닫히는 애니메이션도… 만들어줘 다시." 톤 원칙(지하철 메타포): 스플래시는 `DOORS OPENING` 문구로 끝나지만 지금은 페이드일 뿐 **문짝이 없다**. 목업 r5(2026-09-13 "티커 3회 + 문 열림 연출")의 연출이 구현에서 빠졌다.
 - scope: `frontend/src/App.vue`(스플래시 종료 연출, `openPage()` 출발 전환), `frontend/src/styles.css`(문짝 2장: `.door-left/.door-right`, 전환 키프레임), `frontend/src/splashTone.e2e.mjs`·`frontend/src/staticRouting.e2e.mjs`(전환 중 overflow·reduced-motion), `frontend/public/mockups/splash.html`(r7 — 같은 연출로 목업 동기화).
 
@@ -30,3 +30,12 @@
 
 ## PM 반려 (2026-10-24, r1) — `docs/reviews/REV-TKT-182-r1.md`
 - [블로커] B1 목업 스크립트 0(CSS 연출) · [중요] I1 총 5.5초, 마지막 문구 ≥0.7초 유지(문 열림 중 문구 유지), E2E 실제 DOM 제거 시각 계산.
+
+## r2 구현 내역 (2026-10-24)
+- 첫 방문 총시간을 5.5초로 늘렸다. 5.0초에 문 열림을 시작하되 스플래시 DOM과 `DOORS OPENING`을 뒤에 유지하고, 5.5초에 문 열림 완료와 함께 환승 홀로 바꾼다. 재방문 2.5~2.8초와 reduced-motion 경로는 유지했다.
+- 읽기 시간 E2E는 더 이상 총시간 상수로 마지막 문구 종료를 추정하지 않고 실제 `.splash-stage` DOM 제거 시각을 20ms 간격으로 관찰한다. 실난수 네 환경에서 마지막 문구 1.38~1.46초, 실제 제거 5.50초를 확인했다.
+- `frontend/public/mockups/splash.html`의 JavaScript를 모두 제거했다. 자동 도착 문 열림은 CSS keyframes, 문 닫힘 시연은 `:target`, 환승 홀 이동은 가로채기 없는 일반 링크로 구성했다. 목업 `script` 0을 브라우저 E2E로 고정했다.
+- 검증: root/Pages-base build 각 55 modules, splash E2E 11/11, staticRouting 4/4, JunctionMap 4/4, Pantry 4/4, ToneTools 12/12, unit 27/27, `git diff --check` 통과.
+- 시각 검증: 375/1440 × 다크/라이트의 마지막 문구 화면과 CSS-only 375 목업을 직접 확인했다. 문짝 3단계 캡처 12종은 r1 연출을 그대로 유지하며 overflow 0이다.
+- 공유 파일: `frontend/src/App.vue`, `frontend/src/splashTone.e2e.mjs`는 선행 need_review 티켓 변경 위에 이어지며 기존 hunk를 보존했다. 남은 위험 없음. 커밋은 PM만 수행한다.
+- 2026-10-25 PM: **r2 통과 → finished** — `docs/reviews/REV-TKT-182-r2.md`.
