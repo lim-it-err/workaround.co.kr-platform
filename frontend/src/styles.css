@@ -5173,6 +5173,8 @@ a.junction-route-row:focus-visible {
   height: 40px;
   flex-wrap: nowrap;
   overscroll-behavior-inline: contain;
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
 }
 
 .pantry-filters,
@@ -5758,6 +5760,9 @@ button.station-prev:hover {
     min-width: 0;
     min-height: calc(2 * 1.55em);
     line-height: 1.55;
+    text-wrap: balance;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
   }
 }
 
