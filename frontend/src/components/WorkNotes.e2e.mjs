@@ -108,15 +108,28 @@ async function assertNotesRendered(page, scenario) {
   }
   assert.equal(await page.locator('.work-note-points > li').count(), OPERATING_NOTES.reduce((sum, note) => sum + note.points.length, 0))
 
-  // 흐름: 1440 은 화살표로 이어진 한 줄, 375 는 세로.
+  // 절 접기: 1440 은 모두 펼침, 375 는 첫 절만 펼침.
+  const openStates = await page.locator('.work-note').evaluateAll(items => items.map(item => item.open))
+  assert.deepEqual(openStates, OPERATING_NOTES.map((_, index) => scenario.width >= 900 || index === 0), `절 펼침 상태 ${openStates}`)
+
+  // 흐름: 모든 폭에서 단계별 세로 목록이 아니라 화살표로 이어진 문장. 375 는 줄바꿈된다.
   for (const note of OPERATING_NOTES.filter(item => item.flow)) {
-    const tops = await page.locator(`[data-note-id="${note.id}"] .work-note-flow > li`).evaluateAll(items => items.map(item => Math.round(item.getBoundingClientRect().top)))
-    assert.equal(tops.length, note.flow.length)
-    if (scenario.width >= 900) {
-      assert.equal(new Set(tops).size, 1, `${note.id}: 데스크톱 흐름은 한 줄이어야 한다 ${tops}`)
-    } else {
-      assert.equal(new Set(tops).size, tops.length, `${note.id}: 모바일 흐름은 세로여야 한다 ${tops}`)
+    const flow = page.locator(`[data-note-id="${note.id}"] .work-note-flow`)
+    if (await flow.isVisible()) {
+      const box = await flow.evaluate(element => {
+        const lineHeight = parseFloat(getComputedStyle(element).lineHeight)
+        return { height: element.getBoundingClientRect().height, lineHeight, display: getComputedStyle(element.querySelector('li')).display }
+      })
+      assert.equal(box.display, 'inline', `${note.id}: 흐름 단계는 인라인이어야 한다`)
+      assert.ok(box.height <= box.lineHeight * (note.flow.length - 1) + 1, `${note.id}: 흐름이 단계별 세로 목록이다 ${JSON.stringify(box)}`)
+      if (scenario.width >= 900) assert.ok(box.height <= box.lineHeight * 2 + 1, `${note.id}: 데스크톱 흐름은 1~2줄 ${box.height}`)
     }
+  }
+
+  // 접힌 상태 375 전체 높이 ≤ 2,000px (상단바 포함 문서 높이).
+  if (scenario.width < 900) {
+    const height = await page.evaluate(() => document.querySelector('.work-notes').getBoundingClientRect().height)
+    assert.ok(height <= 2000, `375 운영 노트 높이 ${height}px > 2000`)
   }
 
   assert.equal(await page.locator('.tone-page-hero, .tone-work-manager-details, .tone-support-details').count(), 0, '정적 공개본은 실행 영역을 렌더하지 않는다')

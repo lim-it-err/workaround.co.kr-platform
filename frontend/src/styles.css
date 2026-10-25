@@ -6029,10 +6029,41 @@ button.station-prev:hover {
 }
 
 .work-note-titleline {
+  cursor: pointer;
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 12px;
+}
+
+.work-note-titleline::-webkit-details-marker {
+  display: none;
+}
+
+.work-note-titleline::after {
+  content: '＋';
+  margin-left: auto;
+  color: var(--muted);
+}
+
+.work-note[open] > .work-note-titleline::after {
+  content: '－';
+}
+
+.work-note-titleline:focus-visible {
+  outline: 2px solid var(--line-w-text);
+  outline-offset: 2px;
+}
+
+@media (min-width: 900px) {
+  .work-note-titleline {
+    cursor: default;
+  }
+
+  .work-note-titleline::after {
+    content: none !important;
+  }
 }
 
 .work-note-titleline h2 {
@@ -6069,26 +6100,23 @@ button.station-prev:hover {
 }
 
 .work-note-flow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 0;
   margin: 12px 0 0;
   padding: 0;
   list-style: none;
   font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text-1);
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .work-note-flow li {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  color: var(--text-1);
+  display: inline;
 }
 
 .work-note-flow li + li::before {
   content: '→';
-  margin: 0 8px;
+  margin: 0 7px;
   color: var(--line-w-text);
 }
 
@@ -6112,23 +6140,16 @@ button.station-prev:hover {
   color: var(--muted);
 }
 
-@media (max-width: 640px) {
-  .work-note-flow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
+@media (max-width: 899px) {
+  .work-note {
+    padding: 4px 0 4px 18px;
   }
 
-  .work-note-flow li + li::before {
-    content: '↓';
-    display: block;
-    margin: 0;
-    width: 1.2em;
+  .work-note-titleline {
+    min-height: 44px;
   }
 
-  .work-note-flow li {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2px;
+  .work-note[open] {
+    padding-bottom: 14px;
   }
 }

@@ -823,7 +823,7 @@ const currentRoute = computed(() => {
   if (page.value === 'work') {
     return {
       line: 'Line W / Work Manager',
-      title: '운영 관제실',
+      title: '운영 노트',
       description: '티켓 상태, Ready 표시, 상세 패널, preset command 를 운영실처럼 분리합니다.'
     }
   }
