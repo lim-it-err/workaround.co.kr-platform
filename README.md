@@ -2,6 +2,28 @@
 
 작은 개인용 서비스를 모아 운영하고, 티켓 기반 자동화와 워커 실행 흐름을 붙일 수 있도록 설계한 개인 플랫폼 모노레포다.
 
+## 지금 어디에 배포돼 있나
+
+공개본은 **GitHub Pages** 에 있다. `main` 에 반영되면 자동 배포된다(Cloudflare 이전 전까지의 임시 공개본, D-011).
+
+- 주소: <https://lim-it-err.github.io/workaround.co.kr-platform/>
+- 배포 확인: <https://lim-it-err.github.io/workaround.co.kr-platform/deployment.json> — 배포된 커밋 SHA·빌드 시각
+
+| 화면 | 경로 | 비고 |
+|---|---|---|
+| 스플래시 → 환승 홀 | [`/`](https://lim-it-err.github.io/workaround.co.kr-platform/) | 노선도에서 모든 화면으로 |
+| 여행 노선 | [`/voyage`](https://lim-it-err.github.io/workaround.co.kr-platform/voyage) | 중부유럽 2026 기록·결산 |
+| 자취 밥상 | [`/pantry`](https://lim-it-err.github.io/workaround.co.kr-platform/pantry) | 오늘의 한 상·술 페어링 |
+| 미스터리 트레인 | [`/sim`](https://lim-it-err.github.io/workaround.co.kr-platform/sim) | 격납고 — 엘리베이터 `/elevator`·심야 택시 `/taxi` |
+| 유로트럭 뷰어 | [`/ets2`](https://lim-it-err.github.io/workaround.co.kr-platform/ets2) | 지금은 샘플 화면(R2 연결 전) |
+| 운영 노트 | [`/work`](https://lim-it-err.github.io/workaround.co.kr-platform/work) | 개발·운영 구조 공개(D-033), 명령 실행은 보호 |
+| Developer Advisor | [`/advisor/`](https://lim-it-err.github.io/workaround.co.kr-platform/advisor/) | 별도 앱 |
+| 유로트럭 개발자 | `/ets2/dev` | 보호 구역 — 공개본에서는 잠김 |
+| Runtime Board | `/runtime` | 보호 구역 — 공개본에서는 잠김 |
+| 블로그·글쓰기 | `/blog`·`/studio` | 운행 중단(D-031) — 환승 홀로 돌아감 |
+
+- 깊은 주소는 Pages 가 HTTP 404 를 돌려준 뒤 `404.html` 셸이 앱을 띄우는 방식이라, 화면은 정상으로 열린다(서버 200 은 TKT-177).
+
 ## 목표
 
 이 저장소의 기본 구조는 다음과 같다.
