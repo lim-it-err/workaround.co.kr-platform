@@ -5,6 +5,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { newSeoulContext } from '../e2eContext.mjs'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -54,7 +55,7 @@ async function serveStaticBuild(request, response) {
 }
 
 async function setup(t, scenario) {
-  const context = await browser.newContext({
+  const context = await newSeoulContext(browser, {
     viewport: { width: scenario.width, height: scenario.height },
     reducedMotion: 'reduce'
   })
@@ -171,9 +172,9 @@ async function assertRestrictedInteractions(page, scenario) {
   assert.equal(await toast.textContent(), '예정 노선 · 준비 중')
   assert.equal(page.url(), initialUrl, '예정 역 목록 행은 주소를 바꾸면 안 된다')
 
-  const palateMapStation = page.getByRole('button', { name: '취향 · 예정 노선 · 준비 중' })
-  await palateMapStation.locator('.junction-station-dot').click()
-  await palateMapStation.locator('.junction-station-dot').click()
+  const discoveryMapStation = page.getByRole('button', { name: '발견 · 예정 노선 · 준비 중' })
+  await discoveryMapStation.locator('.junction-station-dot').click()
+  await discoveryMapStation.locator('.junction-station-dot').click()
   assert.equal(await page.locator('.junction-access-toast').count(), 1, '연속 클릭에도 토스트는 하나여야 한다')
   assert.equal(page.url(), initialUrl, '예정 SVG 역은 주소를 바꾸면 안 된다')
 
@@ -187,17 +188,18 @@ for (const scenario of [
   { width: 1440, height: 900, theme: 'dark' },
   { width: 1440, height: 900, theme: 'light' }
 ]) {
-  test(`${scenario.width}px ${scenario.theme}: 세 노선 직선 통과, 3묶음, 실제 이동과 가독성`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: 세 노선 본선·S 수직 지선, 3묶음, 실제 이동과 가독성`, async t => {
     const page = await setup(t, scenario)
 
     assert.equal(await page.locator('.junction-route-group').count(), 3)
     assert.equal(await page.locator('.junction-route-row').count(), 8)
     assert.equal(await page.locator('.junction-route-row:is(a, button)').count(), 8)
-    assert.equal(await page.locator('.junction-branch').count(), 4)
+    assert.equal(await page.locator('.junction-branch').count(), 5)
     assert.equal(await page.locator('.junction-station').count(), 8)
     assert.equal(await page.locator('.junction-station-hit').count(), 8)
-    assert.equal(await page.locator('.junction-station.restricted').count(), 4)
-    assert.equal(await page.locator('.junction-route-row.restricted').count(), 4)
+    assert.equal(await page.locator('.junction-page-stop-hit').count(), 13)
+    assert.equal(await page.locator('.junction-station.restricted').count(), 3)
+    assert.equal(await page.locator('.junction-route-row.restricted').count(), 3)
     assert.equal(await page.getByText('Archive Line', { exact: true }).count(), 0)
 
     const mapBox = await page.locator('.junction-map-box').boundingBox()
@@ -325,8 +327,35 @@ for (const scenario of [
       `SVG 역은 투명 hit 원(r≥20, pointer-events: all)을 가져야 한다: ${JSON.stringify(svgStationHitTargets)}`
     )
 
+    const detailStopHitTargets = await page.locator('.junction-page-stop').evaluateAll(elements => elements.map(element => {
+      const hitCircle = element.querySelector('.junction-page-stop-hit')
+      return {
+        label: element.dataset.stopLabel,
+        radius: Number(hitCircle?.getAttribute('r')),
+        pointerEvents: hitCircle ? getComputedStyle(hitCircle).pointerEvents : ''
+      }
+    }))
+    assert.equal(detailStopHitTargets.length, 13)
+    assert.ok(
+      detailStopHitTargets.every(({ radius, pointerEvents }) => radius >= 20 && pointerEvents === 'all'),
+      `모든 소역은 투명 hit 원(r≥20, pointer-events: all)을 가져야 한다: ${JSON.stringify(detailStopHitTargets)}`
+    )
+
     if (scenario.width >= 900) {
-      const detailStopCircle = page.locator('.junction-page-stop').filter({ hasText: '격납고' }).locator('circle')
+      const labelOwners = await page.locator('.junction-page-stop text').evaluateAll(elements => elements.map(element => {
+        const rect = element.getBoundingClientRect()
+        const owner = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
+          ?.closest('.junction-page-stop')?.dataset.stopLabel
+        return { label: element.textContent.trim(), owner }
+      }))
+      assert.ok(
+        labelOwners.every(({ label, owner }) => label === owner),
+        `소역 라벨 중심 클릭은 자기 역이 소유해야 한다: ${JSON.stringify(labelOwners)}`
+      )
+    }
+
+    if (scenario.width >= 900) {
+      const detailStopCircle = page.locator('.junction-page-stop').filter({ hasText: '격납고' }).locator('.junction-page-stop-dot')
       const detailStopBox = await detailStopCircle.boundingBox()
       const topmostOwner = await page.evaluate(({ x, y }) => (
         document.elementFromPoint(x, y)?.closest('.junction-page-stop, .junction-station')?.getAttribute('class') ?? ''
@@ -339,8 +368,73 @@ for (const scenario of [
 
     const advisorHref = await page.getByRole('link', { name: /Developer Advisor/ }).getAttribute('href')
     assert.equal(advisorHref, `${publicBase}advisor/`)
-    const voyageEntry = page.getByRole('button', { name: /여행 노선/ }).locator('..')
+    const voyageEntry = page.locator('.junction-route-entry').filter({ has: page.getByRole('button', { name: /여행 노선/ }) })
     assert.equal(await voyageEntry.getByRole('button', { name: '노선도', exact: true }).count(), 1)
+    const pantryEntry = page.locator('.junction-route-entry').filter({ has: page.getByRole('button', { name: /자취 밥상/ }) })
+    assert.match(await pantryEntry.innerText(), /오늘의 한 상:/)
+    await page.locator('.junction-route-row').filter({ hasText: '자취 밥상' }).click()
+    await page.getByRole('heading', { name: '자취 밥상', exact: true }).waitFor()
+    assert.match(new URL(page.url()).pathname, /\/pantry$/)
+    await page.getByRole('button', { name: '환승 홀', exact: true }).click()
+
+    const ets2Entry = page.locator('.junction-route-entry').filter({ has: page.getByRole('button', { name: /미스터리 트레인/ }) })
+    assert.equal(await ets2Entry.getByRole('button', { name: '유로트럭', exact: true }).count(), 1)
+    assert.equal(await ets2Entry.locator('.junction-sublinks > button').filter({ hasText: /^유로트럭 개발자$/ }).count(), 1)
+    assert.deepEqual(await ets2Entry.locator('.junction-sublinks > *').allTextContents(), [
+      '격납고',
+      '유로트럭',
+      '유로트럭 개발자',
+      '엘리베이터',
+      '택시',
+      '화이트채플'
+    ])
+
+    const labSpur = page.locator('.junction-branch[data-line-id="lab"][data-path-index="2"]')
+    assert.equal(await labSpur.getAttribute('d'), 'M501.4 218.6 L501.4 96')
+    assert.equal(
+      await labSpur.evaluate(element => getComputedStyle(element).display !== 'none'),
+      scenario.width >= 900,
+      '수직 지선은 소역이 보이는 데스크톱에서만 보여야 한다'
+    )
+    const [labMainStyle, labSpurStyle] = await page
+      .locator('.junction-branch[data-line-id="lab"][data-path-index="0"], .junction-branch[data-line-id="lab"][data-path-index="2"]')
+      .evaluateAll(elements => elements.map(element => {
+        const style = getComputedStyle(element)
+        return { stroke: style.stroke, strokeWidth: style.strokeWidth, strokeLinecap: style.strokeLinecap }
+      }))
+    assert.deepEqual(labSpurStyle, labMainStyle, '수직 지선은 실험선 본선과 같은 색·굵기·둥근 끝을 써야 한다')
+    assert.equal(labSpurStyle.strokeWidth, scenario.width < 900 ? '7px' : '5px')
+    assert.equal(labSpurStyle.strokeLinecap, 'round')
+    const spurStops = page.locator('.junction-page-stop[data-path-index="2"]')
+    assert.deepEqual(await spurStops.evaluateAll(elements => elements.map(element => ({
+      label: element.dataset.stopLabel,
+      cx: Number(element.querySelector('.junction-page-stop-dot')?.getAttribute('cx')),
+      cy: Number(element.querySelector('.junction-page-stop-dot')?.getAttribute('cy'))
+    }))), [
+      { label: '유로트럭', cx: 501.4, cy: 150 },
+      { label: '유로트럭 개발자', cx: 501.4, cy: 105 }
+    ])
+
+    if (process.env.JUNCTION_SCREENSHOT_DIR) {
+      await page.screenshot({
+        path: `${process.env.JUNCTION_SCREENSHOT_DIR}/junction-${scenario.width}-${scenario.theme}.png`,
+        fullPage: true
+      })
+    }
+
+    if (scenario.width >= 900) {
+      const junctionUrl = page.url()
+      await page.locator('.junction-page-stop[data-stop-label="유로트럭"]').click()
+      assert.match(new URL(page.url()).pathname, /\/ets2$/)
+      await page.getByRole('button', { name: '환승 홀', exact: true }).click()
+      await page.locator('.junction-overview').waitFor()
+
+      await page.locator('.junction-page-stop[data-stop-label="유로트럭 개발자"]').click()
+      const developerToast = page.locator('.junction-access-toast')
+      await developerToast.waitFor()
+      assert.equal(await developerToast.textContent(), '개발자 페이지 · 로컬 전용')
+      assert.equal(page.url(), junctionUrl, '정적 공개본의 개발자 소역은 주소를 바꾸면 안 된다')
+    }
 
     const contrasts = await routeTextContrasts(page)
     assert.ok(
@@ -356,16 +450,9 @@ for (const scenario of [
       assert.equal(value, 0, `${selector} 가로 넘침이 없어야 한다`)
     }
 
-    if (process.env.JUNCTION_SCREENSHOT_DIR) {
-      await page.screenshot({
-        path: `${process.env.JUNCTION_SCREENSHOT_DIR}/junction-${scenario.width}-${scenario.theme}.png`,
-        fullPage: true
-      })
-    }
-
     await assertRestrictedInteractions(page, scenario)
 
-    await page.getByRole('button', { name: /여행 노선/ }).focus()
+    await page.locator('.junction-route-row').filter({ hasText: '여행 노선' }).focus()
     await page.keyboard.press('Enter')
     await page.getByRole('heading', { name: '중부유럽 순환선', exact: true }).waitFor()
     await page.getByRole('button', { name: /^3일차/ }).focus()

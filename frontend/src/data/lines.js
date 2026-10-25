@@ -2,10 +2,14 @@
 // 세 노선의 지도 좌표와 실제 이동 목록이 이 구조를 함께 사용한다.
 
 import { VOYAGES } from './voyage.js'
+import { pickPantrySets } from './pantry/index.js'
 
 export const JUNCTION = { x: 360, y: 360 }
 
 const currentVoyage = VOYAGES.find((voyage) => voyage.status === 'boarding') || VOYAGES[0]
+const pantryDate = new Date()
+const pantryDateKey = `${pantryDate.getFullYear()}-${String(pantryDate.getMonth() + 1).padStart(2, '0')}-${String(pantryDate.getDate()).padStart(2, '0')}`
+const todayPantry = pickPantrySets(pantryDateKey).main
 
 export const JUNCTION_LINES = [
   {
@@ -59,11 +63,12 @@ export const JUNCTION_LINES = [
     nameKo: '실험선',
     colorToken: 'junction-lab',
     textColorToken: 'line-d-text',
-    order: 'Advisor → 미스터리 트레인 → 발견 → 취향',
+    order: 'Advisor → 미스터리 트레인 → 발견 → 자취 밥상',
     label: { x: 612, y: 104, anchor: 'start' },
     paths: [
       'M360 360 L607.5 112.5',
-      'M360 360 L204.4 515.6'
+      'M360 360 L204.4 515.6',
+      'M501.4 218.6 L501.4 96'
     ],
     stations: [
       {
@@ -89,16 +94,20 @@ export const JUNCTION_LINES = [
         page: 'simhub',
         status: '격납고',
         subtitle: '심야 임시 운행',
-        rowStops: '격납고 2대 대기',
+        rowStops: '격납고 3대 대기',
         map: { x: 501.4, y: 218.6, labelX: 518, labelY: 232, anchor: 'start' },
         mapStops: [
           { x: 522.6, y: 197.4, labelX: 536, labelY: 210, label: '격납고', page: 'simhub', anchor: 'start' },
-          { x: 543.8, y: 176.2, labelX: 557, labelY: 189, label: '엘리베이터', page: 'elevator', staticAccess: 'server', anchor: 'start' },
-          { x: 565.1, y: 154.9, labelX: 578, labelY: 168, label: '택시', page: 'taxi', anchor: 'start' },
-          { x: 586.3, y: 133.7, labelX: 600, labelY: 147, label: '화이트채플', access: 'planned', upcoming: true, anchor: 'start' }
+          { x: 501.4, y: 150, labelX: 487, labelY: 154, label: '유로트럭', page: 'ets2', pathIndex: 2, anchor: 'end' },
+          { x: 501.4, y: 105, labelX: 487, labelY: 109, label: '유로트럭 개발자', page: 'ets2Dev', pathIndex: 2, staticAccess: 'server', staticMessage: '개발자 페이지 · 로컬 전용', anchor: 'end' },
+          { x: 565.1, y: 154.9, labelX: 578, labelY: 168, label: '엘리베이터', page: 'elevator', staticAccess: 'server', anchor: 'start' },
+          { x: 586.3, y: 133.7, labelX: 600, labelY: 104, label: '택시', page: 'taxi', anchor: 'end' },
+          { x: 607.5, y: 112.5, labelX: 620, labelY: 126, label: '화이트채플', access: 'planned', upcoming: true, anchor: 'start' }
         ],
         sublinks: [
           { label: '격납고', page: 'simhub' },
+          { label: '유로트럭', page: 'ets2' },
+          { label: '유로트럭 개발자', page: 'ets2Dev', staticAccess: 'server', staticMessage: '개발자 페이지 · 로컬 전용' },
           { label: '엘리베이터', page: 'elevator', staticAccess: 'server' },
           { label: '택시', page: 'taxi' },
           { label: '화이트채플', access: 'planned', upcoming: true }
@@ -119,13 +128,11 @@ export const JUNCTION_LINES = [
       },
       {
         code: 'P',
-        nameKo: '취향',
-        mapName: '취향',
+        nameKo: '자취 밥상',
+        mapName: '자취 밥상',
         lineClass: 'line-p',
-        page: null,
-        status: '연장 예정',
-        access: 'planned',
-        upcoming: true,
+        page: 'pantry',
+        status: `오늘의 한 상: ${todayPantry.title}`,
         targetVersion: 'v0.9.0',
         pathIndex: 1,
         map: { x: 232.7, y: 487.3, labelX: 216, labelY: 482, anchor: 'end' }

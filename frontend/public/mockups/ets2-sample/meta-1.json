@@ -1,0 +1,12 @@
+{
+  "seq": 1,
+  "ageSeconds": 2,
+  "width": 1280,
+  "height": 720,
+  "connected": true,
+  "speedKmh": 82,
+  "cruiseKmh": 80,
+  "speedLimitKmh": 90,
+  "routeDistanceKm": 14.2,
+  "monitor": { "active": true, "stillSeconds": 0, "recoveryState": "idle" }
+}

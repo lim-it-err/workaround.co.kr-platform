@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+// 고정 시각: 2026-08-31 09:00(+09:00) = 출근길 슬롯.
+
 test.beforeEach(async ({ page }) => {
   await page.route('http://localhost:8080/**', route => route.abort())
 })

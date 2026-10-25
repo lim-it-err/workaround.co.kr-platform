@@ -24,6 +24,7 @@ const imageInput = ref(null)
 const pendingBodyRange = ref(null)
 const previewReturnRange = ref(null)
 const toolMessage = ref('')
+const emergencyBackupMessage = ref('')
 const bodyInputs = new Map()
 let blockSequence = 0
 const preview = computed(() => props.viewMode === 'preview')
@@ -43,6 +44,8 @@ const saveLabel = computed(() => {
     ? `저장됨 ${time.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false })}`
     : '저장됨'
 })
+const backupStatusMessage = computed(() => emergencyBackupMessage.value || props.backupMessage)
+const storageFailureReason = '브라우저 저장 공간 부족 또는 저장 차단으로 현재 변경 내용을 기록하지 못했습니다.'
 
 function updateField(field, event) {
   emit('update-field', field, event.target.value)
@@ -100,6 +103,67 @@ function serializeEditorBlocks(blocks = editorBlocks.value) {
 
 function emitBodyBlocks() {
   emit('update-field', 'bodyMarkdown', serializeEditorBlocks())
+}
+
+function emergencyDraftSnapshot() {
+  const tags = Array.isArray(props.state.tags)
+    ? [...props.state.tags]
+    : String(props.state.tags || '').split(',').map(tag => tag.trim()).filter(Boolean)
+  return {
+    id: props.state.id,
+    slug: props.state.slug,
+    title: props.state.title,
+    summary: props.state.summary,
+    bodyMarkdown: serializeEditorBlocks(),
+    status: props.state.status,
+    slugLocked: Boolean(props.state.slugLocked),
+    tags,
+    tables: studioTables.value.map(table => ({
+      ...table,
+      headers: [...table.headers],
+      rows: table.rows.map(row => [...row])
+    })),
+    createdAt: props.state.createdAt,
+    updatedAt: props.state.updatedAt,
+    publishedAt: props.state.publishedAt
+  }
+}
+
+function downloadEmergencyBackup() {
+  const exportedAt = new Date().toISOString()
+  const backup = {
+    format: 'workaround-writing-emergency',
+    version: 1,
+    exportedAt,
+    failure: {
+      code: 'browser-storage-write-failed',
+      message: storageFailureReason
+    },
+    draft: emergencyDraftSnapshot()
+  }
+  const blob = new Blob([`${JSON.stringify(backup, null, 2)}\n`], { type: 'application/json' })
+  const objectUrl = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = objectUrl
+  anchor.download = `workaround-writing-emergency-${exportedAt.slice(0, 10)}.json`
+  document.body.appendChild(anchor)
+  anchor.click()
+  anchor.remove()
+  URL.revokeObjectURL(objectUrl)
+}
+
+function backupWriting() {
+  emergencyBackupMessage.value = ''
+  if (props.savePhase !== 'error') {
+    emit('backup')
+    return
+  }
+  try {
+    downloadEmergencyBackup()
+    emergencyBackupMessage.value = '저장 실패 중인 현재 글을 JSON으로 내려받았습니다.'
+  } catch (error) {
+    emergencyBackupMessage.value = '현재 글의 JSON 백업을 만들지 못했습니다.'
+  }
 }
 
 function setBodyInput(element, blockId) {
@@ -394,10 +458,15 @@ watch(() => props.state.id, async () => {
   pendingBodyRange.value = null
   previewReturnRange.value = null
   toolMessage.value = ''
+  emergencyBackupMessage.value = ''
   await nextTick()
   resizeTextarea(titleInput.value)
   bodyInputs.forEach(resizeTextarea)
   if (!overlay.value) titleInput.value?.focus({ preventScroll: true })
+})
+
+watch(() => props.savePhase, (phase) => {
+  if (phase !== 'error') emergencyBackupMessage.value = ''
 })
 
 watch(() => props.state.bodyMarkdown, (markdown) => {
@@ -625,8 +694,9 @@ function formatModified(value) {
 
         <div v-else-if="overlay === 'help'" class="writer-help">
           <p>{{ LOCAL_WRITING_HELP }}</p>
-          <button type="button" class="ghost-button" autofocus @click="emit('backup')">내 기록 백업</button>
-          <p v-if="backupMessage" role="status">{{ backupMessage }}</p>
+          <p v-if="savePhase === 'error'" class="writer-backup-failure" role="alert">{{ storageFailureReason }}</p>
+          <button type="button" class="ghost-button" autofocus @click="backupWriting">내 기록 백업</button>
+          <p v-if="backupStatusMessage" role="status">{{ backupStatusMessage }}</p>
         </div>
       </div>
     </dialog>
@@ -723,6 +793,7 @@ function formatModified(value) {
 .writer-restore { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .writer-restore button { font-size: .8rem; padding: 8px 12px; }
 .writer-help p { margin: 0; color: var(--text-2); line-height: 1.7; }
+.writer-help .writer-backup-failure { color: var(--danger); }
 @media (min-width: 1100px) {
   .writer-tools { display: grid; }
   .writer-tool-trigger { display: none; }

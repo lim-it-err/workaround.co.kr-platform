@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>환승 홀 — 직선 통과 목업 r16</title><style>
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>환승 홀 — 실험선 수직 지선 목업 r17</title><style>
 :root{--bg:#0A0F16;--card:#0D131C;--tx:#F3F6FB;--tx2:#AEB8C8;--mut:#7C8AA0;--hair:rgba(255,255,255,.09);--hair2:rgba(255,255,255,.16);--ring:#E9EDF3;--safety:#F3C544;
 --keep:#E14D78;--try:#7C89F0;--run:#35C275;--dim:#7C8AA0}
 @media(prefers-color-scheme:light){:root{--bg:#EDF1F6;--card:#F7F9FC;--tx:#16202E;--tx2:#4B5A70;--mut:#6B7A90;--hair:rgba(10,20,40,.10);--hair2:rgba(10,20,40,.18);--ring:#16202E;--safety:#B8860B;--keep:#C0264F;--try:#3D4EC0;--run:#1F8A4C;--dim:#8A97AA}}
@@ -21,12 +21,12 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
 .code.todo{fill:var(--dim)}
 .nm{fill:var(--tx);font-size:15px;font-weight:700}.nm.todo{fill:var(--dim);font-weight:500}
 .pstop{fill:var(--card);stroke-width:2.5}
-.pg{fill:var(--tx2);font-size:11px}
+.pg{fill:var(--tx2);font-size:11px;paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
 .ln{font-size:12px;letter-spacing:.12em;font-weight:800}
 .hub{fill:none;stroke:var(--safety);stroke-width:4;stroke-linecap:round}
 .hubdot{fill:var(--safety)}
 .hubname{fill:var(--safety);font-size:13px;font-weight:800;text-anchor:middle;letter-spacing:.04em}
-@media(max-width:899px){.pg,.pstop{display:none}.nm{font-size:24px}.nm.todo{font-size:22px}.code{font-size:19px}.stn{r:17px}.ln{font-size:18px}.br{stroke-width:7}.hubname{font-size:22px}}
+@media(max-width:899px){.pg,.pstop,.br-spur{display:none}.nm{font-size:24px}.nm.todo{font-size:22px}.code{font-size:19px}.stn{r:17px}.ln{font-size:18px}.br{stroke-width:7}.hubname{font-size:22px}}
 .legend{color:var(--mut);font-size:12px;margin-top:10px}
 .lines{min-width:0}
 .grp{margin-bottom:26px;border-left:3px solid var(--c);padding-left:14px}
@@ -40,7 +40,7 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
 .sub{display:flex;flex-wrap:wrap;gap:14px;padding:0 0 12px 36px;font-size:13px;color:var(--tx2)}
 .sub a{border-bottom:1px solid var(--hair2)}
 </style>
-<header class="banner">MOCKUP — 실화면 아님 · tone r16 · 환승 홀 직선 통과 (PM)</header>
+<header class="banner">MOCKUP — 실화면 아님 · tone r17 · 실험선 수직 지선 (PM)</header>
 <main>
 <div class="top">
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.7 4.4 A9 9 0 1 1 8.3 4.4" fill="none" stroke="var(--safety)" stroke-width="2.6" stroke-linecap="round"/><circle cx="12" cy="3.4" r="1.4" fill="var(--safety)"/></svg>
@@ -50,8 +50,8 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
 <div class="wrap">
 <section class="mapbox">
   <div class="k">환승 홀 · 기록선 · 실험선 · 기지선</div>
-  <svg class="map" viewBox="0 0 720 720" role="img" aria-label="workaround 환승 홀 — 세 노선이 직선으로 통과">
-    <!-- r16: 세 노선이 환승 홀을 직선으로 통과한다 (부산 지하철식). 기록선 동서 · 기지선 북서–남동 · 실험선 북동–남서 -->
+  <svg class="map" viewBox="0 0 720 720" role="img" aria-label="workaround 환승 홀 — 세 노선 본선과 실험선 수직 지선">
+    <!-- r17: r16의 세 직선 본선을 유지하고, 미스터리 트레인에서 유로트럭 수직 지선만 분기한다. -->
     <!-- 기록선 (Archive): 동서 수평 — 블로그(서) · 여행(동) -->
     <path class="br" d="M90 360 L630 360" stroke="var(--keep)"/>
     <circle class="pstop" cx="120" cy="360" r="4.5" stroke="var(--keep)"/><text class="pg" x="120" y="384" text-anchor="middle">스튜디오</text>
@@ -70,15 +70,19 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
     <circle class="pstop" cx="466.1" cy="466.1" r="4.5" stroke="var(--run)"/><text class="pg" x="452" y="480" text-anchor="end">작업 흐름</text>
     <text class="ln" x="504" y="512" fill="var(--run)">기지선</text>
 
-    <!-- 실험선 (Lab): 북동–남서 대각 — Advisor · 미스터리 트레인(북동) · 발견 · 취향(남서, 예정) -->
+    <!-- 실험선 (Lab): 북동–남서 본선 + 미스터리 트레인에서 위로 뻗는 유로트럭 지선 -->
     <path class="br" d="M360 360 L607.5 112.5" stroke="var(--try)"/>
     <path class="br todo" d="M360 360 L204.4 515.6" stroke="var(--try)"/>
+    <path class="br br-spur" d="M501.4 218.6 L501.4 96" stroke="var(--try)"/>
     <circle class="stn" cx="437.8" cy="282.2" r="12" stroke="var(--try)"/><text class="code" x="437.8" y="282.2">A</text><text class="nm" x="454" y="296">Advisor</text>
     <circle class="pstop" cx="466.1" cy="253.9" r="4.5" stroke="var(--try)"/><text class="pg" x="480" y="268">코스 · 미션</text>
     <circle class="stn" cx="501.4" cy="218.6" r="12" stroke="var(--try)"/><text class="code" x="501.4" y="218.6">S</text><text class="nm" x="518" y="232">미스터리 트레인</text>
-    <circle class="pstop" cx="529.7" cy="190.3" r="4.5" stroke="var(--try)"/><text class="pg" x="544" y="204">격납고</text>
-    <circle class="pstop" cx="558" cy="162" r="4.5" stroke="var(--try)"/><text class="pg" x="572" y="176">엘베 · 택시</text>
-    <circle class="pstop" cx="586.3" cy="133.7" r="4.5" stroke="var(--try)"/><text class="pg" x="600" y="148">화이트채플</text>
+    <circle class="pstop" cx="522.6" cy="197.4" r="4.5" stroke="var(--try)"/><text class="pg" x="536" y="210">격납고</text>
+    <circle class="pstop" cx="501.4" cy="150" r="4.5" stroke="var(--try)"/><text class="pg" x="487" y="154" text-anchor="end">유로트럭</text>
+    <g opacity=".7"><circle class="pstop" cx="501.4" cy="105" r="4.5" stroke="var(--try)"/><text class="pg" x="487" y="109" text-anchor="end">유로트럭 개발자</text></g>
+    <circle class="pstop" cx="565.1" cy="154.9" r="4.5" stroke="var(--try)"/><text class="pg" x="578" y="168">엘리베이터</text>
+    <circle class="pstop" cx="586.3" cy="133.7" r="4.5" stroke="var(--try)"/><text class="pg" x="600" y="104" text-anchor="end">택시</text>
+    <circle class="pstop" cx="607.5" cy="112.5" r="4.5" stroke="var(--try)"/><text class="pg" x="620" y="126">화이트채플</text>
     <circle class="stn todo" cx="282.2" cy="437.8" r="12" stroke="var(--try)"/><text class="code todo" x="282.2" y="437.8">D</text><text class="nm todo" x="266" y="432" text-anchor="end">발견</text>
     <circle class="stn todo" cx="232.7" cy="487.3" r="12" stroke="var(--try)"/><text class="code todo" x="232.7" y="487.3">P</text><text class="nm todo" x="216" y="482" text-anchor="end">취향</text>
     <text class="ln" x="612" y="104" fill="var(--try)">실험선</text>
@@ -102,7 +106,7 @@ svg.map{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
   <section class="grp" style="--c:var(--try)"><h2>실험선 <small>Lab Line</small></h2><p class="ord">Advisor → 미스터리 트레인 → 발견 → 취향</p>
     <div class="row"><span class="badge">A</span><span class="name">Developer Advisor</span><span class="aside">코스 · 미션</span></div>
     <div class="row"><span class="badge">S</span><span class="name">미스터리 트레인</span><span class="aside">격납고</span></div>
-    <div class="sub"><a href="simhub.html">격납고</a><a href="simhub.html">엘리베이터</a><a href="simhub.html">택시</a><a href="simhub.html">화이트채플</a></div>
+    <div class="sub"><a href="simhub.html">격납고</a><a href="ets2.html">유로트럭</a><a href="ets2-dev.html">유로트럭 개발자</a><a href="simhub.html">엘리베이터</a><a href="simhub.html">택시</a><a href="simhub.html">화이트채플</a></div>
     <div class="row dim"><span class="badge">D</span><span class="name">발견</span><span class="aside">연장 예정</span></div>
     <div class="row dim"><span class="badge">P</span><span class="name">취향</span><span class="aside">연장 예정</span></div>
   </section>

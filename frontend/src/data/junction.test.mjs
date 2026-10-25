@@ -20,7 +20,7 @@ test('환승 홀은 세 노선과 여덟 정류장을 단일 구조로 제공한
   assert.deepEqual(JUNCTION_LINES.map((line) => line.nameKo), ['기록선', '실험선', '기지선'])
   assert.equal(LINES.length, 8)
   assert.deepEqual(LINES.map((line) => line.code), ['B', 'V', 'A', 'S', 'D', 'P', 'W', 'R'])
-  assert.deepEqual(LINES.filter((line) => line.upcoming).map((line) => line.code), ['D', 'P'])
+  assert.deepEqual(LINES.filter((line) => line.upcoming).map((line) => line.code), ['D'])
 })
 
 test('개통 정류장은 모두 대표 목적지를 갖고 미개통 정류장은 이동하지 않는다', () => {
@@ -39,21 +39,55 @@ test('여행 노선은 통합 노선도 진입점 하나만 노출한다', () =>
   assert.deepEqual(voyage.sublinks.map((link) => link.label), ['노선도'])
 })
 
-test('미스터리 트레인은 격납고·엘리베이터·택시·화이트채플 경계를 명시한다', () => {
+test('취향선 P는 자취 밥상으로 개통되고 오늘의 추천을 알린다', () => {
+  const pantry = LINES.find((line) => line.code === 'P')
+  assert.equal(pantry.nameKo, '자취 밥상')
+  assert.equal(pantry.page, 'pantry')
+  assert.equal(pantry.upcoming, undefined)
+  assert.equal(pantry.access, undefined)
+  assert.match(pantry.status, /^오늘의 한 상: .+/)
+})
+
+test('미스터리 트레인은 격납고·유로트럭·개발자·엘리베이터·택시·화이트채플 경계를 명시한다', () => {
   const simulation = LINES.find((line) => line.code === 'S')
   assert.deepEqual(simulation.mapStops.map((stop) => stop.label), [
     '격납고',
+    '유로트럭',
+    '유로트럭 개발자',
     '엘리베이터',
     '택시',
     '화이트채플'
   ])
+  assert.equal(simulation.mapStops.find((stop) => stop.label === '유로트럭').page, 'ets2')
+  assert.equal(simulation.sublinks.find((link) => link.label === '유로트럭').page, 'ets2')
+  assert.equal(simulation.mapStops.find((stop) => stop.label === '유로트럭 개발자').staticAccess, 'server')
+  assert.equal(simulation.sublinks.find((link) => link.label === '유로트럭 개발자').staticAccess, 'server')
   assert.equal(simulation.mapStops.find((stop) => stop.page === 'elevator').staticAccess, 'server')
   assert.equal(simulation.sublinks.find((link) => link.page === 'elevator').staticAccess, 'server')
   assert.equal(simulation.mapStops.find((stop) => stop.label === '화이트채플').access, 'planned')
   assert.equal(simulation.sublinks.find((link) => link.label === '화이트채플').access, 'planned')
 })
 
-test('세 노선은 환승 홀을 직선으로 통과하고 소속 역이 같은 선 위에 놓인다', () => {
+test('유로트럭 두 소역은 미스터리 트레인에서 위로 뻗는 수직 지선에 놓인다', () => {
+  const lab = JUNCTION_LINES.find((line) => line.id === 'lab')
+  const simulation = lab.stations.find((station) => station.code === 'S')
+  const truckStops = simulation.mapStops.filter((stop) => stop.pathIndex === 2)
+
+  assert.equal(lab.paths[2], 'M501.4 218.6 L501.4 96')
+  assert.deepEqual(truckStops.map((stop) => ({
+    label: stop.label,
+    x: stop.x,
+    y: stop.y,
+    labelX: stop.labelX,
+    labelY: stop.labelY,
+    anchor: stop.anchor
+  })), [
+    { label: '유로트럭', x: 501.4, y: 150, labelX: 487, labelY: 154, anchor: 'end' },
+    { label: '유로트럭 개발자', x: 501.4, y: 105, labelX: 487, labelY: 109, anchor: 'end' }
+  ])
+})
+
+test('세 노선 본선은 환승 홀을 통과하고 역·소역은 선언한 본선 또는 지선 위에 놓인다', () => {
   for (const line of JUNCTION_LINES) {
     const segments = line.paths.map(parseSegment)
     const route = segments[0]
@@ -62,18 +96,23 @@ test('세 노선은 환승 홀을 직선으로 통과하고 소속 역이 같은
       pointLineDistance(JUNCTION, route) < 0.5,
       `${line.nameKo}가 환승 홀을 통과해야 한다`,
     )
-    for (const segment of segments) {
-      assert.ok(pointLineDistance(segment.start, route) < 0.5)
-      assert.ok(pointLineDistance(segment.end, route) < 0.5)
+    for (const [pathIndex, segment] of segments.entries()) {
+      if (pathIndex === 0) continue
+      assert.ok(
+        pointLineDistance(segment.start, route) < 0.5,
+        `${line.nameKo} ${pathIndex}번 지선은 본선에서 시작해야 한다`,
+      )
     }
     for (const station of line.stations) {
+      const stationRoute = segments[station.pathIndex ?? 0]
       assert.ok(
-        pointLineDistance(station.map, route) < 0.5,
+        pointLineDistance(station.map, stationRoute) < 0.5,
         `${line.nameKo} ${station.code} 큰 역이 노선 위에 있어야 한다`,
       )
       for (const stop of station.mapStops ?? []) {
+        const stopRoute = segments[stop.pathIndex ?? station.pathIndex ?? 0]
         assert.ok(
-          pointLineDistance(stop, route) < 0.5,
+          pointLineDistance(stop, stopRoute) < 0.5,
           `${line.nameKo} ${station.code} ${stop.label} 작은 역이 노선 위에 있어야 한다`,
         )
       }

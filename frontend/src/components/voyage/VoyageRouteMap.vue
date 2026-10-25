@@ -112,6 +112,11 @@ const replayStatus = computed(() => {
   return replayPhase.value === 'paused' ? `${dayLabel}에서 멈춤` : `${dayLabel} 재생 중`
 })
 const gauges = computed(() => routeGauges(effectiveVoyage.value, todayIndex.value))
+const settlement = computed(() => (
+  gauges.value.isComplete && props.voyage.settlement?.grandTotal
+    ? props.voyage.settlement
+    : null
+))
 const distanceProgress = computed(() => percent(gauges.value.completedDistance, gauges.value.totalDistance))
 const spendProgress = computed(() => percent(gauges.value.spent, gauges.value.budgetPlan))
 const currentStatus = computed(() => {
@@ -667,6 +672,13 @@ function entryFare(entry) {
   return '—'
 }
 
+function formatSettlementAmount(value) {
+  return Number(value || 0).toLocaleString('ko-KR', {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1
+  })
+}
+
 function stopRecordMarker(record) {
   if (!record) return null
   const labels = []
@@ -978,6 +990,71 @@ function stopRecordMarker(record) {
         </template>
       </section>
     </div>
+
+    <section v-if="settlement" class="route-settlement" aria-labelledby="voyage-settlement-title">
+      <header>
+        <div class="route-settlement__title">
+          <p>결산</p>
+          <h3 id="voyage-settlement-title">영수증 기준 실제 지출</h3>
+        </div>
+        <p class="route-settlement__total">
+          <strong>{{ formatSettlementAmount(settlement.grandTotal) }}만원</strong>
+          <span>· 1인 {{ formatSettlementAmount(settlement.perPerson) }}만원</span>
+        </p>
+      </header>
+
+      <dl class="route-settlement__summary" aria-label="결산 구분">
+        <div data-settlement-kind="prebooked" :data-amount="settlement.prebooked.total">
+          <dt>사전 확정</dt>
+          <dd>{{ formatSettlementAmount(settlement.prebooked.total) }}만원</dd>
+        </div>
+        <div data-settlement-kind="on-trip" :data-amount="settlement.onTrip.total">
+          <dt>현지 지출</dt>
+          <dd>{{ formatSettlementAmount(settlement.onTrip.total) }}만원</dd>
+        </div>
+      </dl>
+
+      <div class="route-settlement__breakdown">
+        <table class="route-settlement__table route-settlement__table--category">
+          <caption>카테고리별 현지 지출</caption>
+          <tbody>
+            <tr v-for="item in settlement.onTrip.byCategory" :key="item.label" :data-amount="item.amount">
+              <th scope="row">{{ item.label }}</th>
+              <td>{{ formatSettlementAmount(item.amount) }}만원</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row">합계</th>
+              <td>{{ formatSettlementAmount(settlement.onTrip.total) }}만원</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <table class="route-settlement__table route-settlement__table--region">
+          <caption>지역별 현지 지출</caption>
+          <tbody>
+            <tr v-for="item in settlement.onTrip.byRegion" :key="item.label" :data-amount="item.amount">
+              <th scope="row">{{ item.label }}</th>
+              <td>{{ formatSettlementAmount(item.amount) }}만원</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row">합계</th>
+              <td>{{ formatSettlementAmount(settlement.onTrip.total) }}만원</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <section class="route-settlement__excluded" aria-labelledby="voyage-settlement-excluded-title">
+        <h4 id="voyage-settlement-excluded-title">합계에서 제외</h4>
+        <ul>
+          <li v-for="item in settlement.excluded" :key="item">{{ item }}</li>
+        </ul>
+      </section>
+    </section>
 
     <div v-if="detail" class="route-detail-backdrop" @click.self="closeDetail">
       <aside
@@ -1979,6 +2056,161 @@ function stopRecordMarker(record) {
   gap: 8px;
 }
 
+.route-settlement {
+  display: grid;
+  gap: 22px;
+  margin-top: 34px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line-strong);
+}
+
+.route-settlement > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  padding-left: 14px;
+  border-left: 3px solid var(--accent);
+}
+
+.route-settlement__title p,
+.route-settlement__title h3,
+.route-settlement__total {
+  margin: 0;
+}
+
+.route-settlement__title p {
+  color: var(--accent-text);
+  font-size: var(--fs-caption);
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.route-settlement__title h3 {
+  margin-top: 4px;
+  color: var(--text);
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  letter-spacing: -0.025em;
+}
+
+.route-settlement__total {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.route-settlement__total strong {
+  color: var(--text);
+  font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+  letter-spacing: -0.045em;
+}
+
+.route-settlement__total span {
+  color: var(--muted);
+  font-size: var(--fs-caption);
+}
+
+.route-settlement__summary {
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.route-settlement__summary > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+}
+
+.route-settlement__summary dt {
+  color: var(--text-2);
+}
+
+.route-settlement__summary dd {
+  margin: 0;
+  color: var(--text);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.route-settlement__breakdown {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 52px);
+}
+
+.route-settlement__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+}
+
+.route-settlement__table caption {
+  padding-bottom: 9px;
+  color: var(--text);
+  font-size: var(--fs-body);
+  font-weight: 850;
+  text-align: left;
+}
+
+.route-settlement__table th,
+.route-settlement__table td {
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.route-settlement__table th {
+  padding-right: 16px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.route-settlement__table td {
+  width: 7.2rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.route-settlement__table tfoot th,
+.route-settlement__table tfoot td {
+  border-top-color: var(--line-strong);
+  font-weight: 900;
+}
+
+.route-settlement__excluded h4 {
+  margin: 0 0 9px;
+  color: var(--text);
+  font-size: var(--fs-body);
+}
+
+.route-settlement__excluded ul {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--line);
+  list-style: none;
+}
+
+.route-settlement__excluded li {
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+  line-height: 1.55;
+}
+
 .route-file-input {
   position: fixed;
   width: 1px;
@@ -2361,6 +2593,20 @@ function stopRecordMarker(record) {
 
   .route-replay__summary span {
     white-space: normal;
+  }
+
+  .route-settlement > header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .route-settlement__total {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .route-settlement__breakdown {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .route-timetable__head,

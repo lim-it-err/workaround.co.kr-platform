@@ -193,6 +193,78 @@ button {
     linear-gradient(180deg, #0a0f15 0%, #0f161f 52%, #0b1016 100%);
 }
 
+/* TKT-182 — 역 출발/도착을 같은 두 장 문법으로 잇는 전환 */
+.door-transition {
+  --door-duration: 450ms;
+  --door-surface: #111821;
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.door-panel {
+  position: absolute;
+  inset-block: 0;
+  width: calc(50% + 1px);
+  background: var(--door-surface);
+  will-change: transform;
+  transition: transform var(--door-duration) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.door-left {
+  left: 0;
+  border-right: 1px solid var(--accent, var(--safety));
+  transform: translateX(-100%);
+}
+
+.door-right {
+  right: 0;
+  border-left: 1px solid var(--accent, var(--safety));
+  transform: translateX(100%);
+}
+
+.door-transition.closing .door-panel,
+.door-transition.closed .door-panel {
+  transform: translateX(0);
+}
+
+.door-transition.opening .door-left {
+  transform: translateX(-100%);
+}
+
+.door-transition.opening .door-right {
+  transform: translateX(100%);
+}
+
+.door-flap-label {
+  position: absolute;
+  top: clamp(20px, 7vh, 64px);
+  left: 50%;
+  z-index: 1;
+  min-width: min(78vw, 320px);
+  padding: 9px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent, var(--safety)) 62%, transparent);
+  border-radius: 3px;
+  background: #070a0e;
+  color: #f3f6fb;
+  font: 800 clamp(0.78rem, 2vw, 0.95rem)/1.2 ui-monospace, SFMono-Regular, Consolas, monospace;
+  letter-spacing: 0.16em;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.app-shell[data-theme='light'] .door-transition {
+  --door-surface: #edf1f6;
+}
+
+.app-shell.door-transitioning .fade-enter-active,
+.app-shell.door-transitioning .fade-leave-active {
+  transition: none;
+}
+
 .splash-panel {
   display: grid;
   grid-template-rows: auto 1fr auto auto;
@@ -3818,6 +3890,10 @@ a.junction-route-row:focus-visible {
     transition: none;
   }
 
+  .door-transition {
+    display: none;
+  }
+
   .mobile-quick-nav.static {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4440,6 +4516,1075 @@ a.junction-route-row:focus-visible {
 
 .junction-shell {
   gap: 12px;
+}
+
+/* TKT-168 — 읽기 전용 유로트럭 관제. 한 장면과 hairline 정보만 둔다. */
+.ets2-live-page {
+  display: grid;
+  gap: 0;
+  width: min(100%, 960px);
+  margin-inline: auto;
+  padding-bottom: 28px;
+}
+
+.ets2-live-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 5px 0 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ets2-live-head h1,
+.ets2-live-head p,
+.ets2-frame-figure,
+.ets2-frame-shell p {
+  margin: 0;
+}
+
+.ets2-live-head h1 {
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.045em;
+}
+
+.ets2-freshness {
+  color: var(--text-2);
+  font-size: 0.82rem;
+  font-weight: 780;
+  text-align: right;
+}
+
+.ets2-last-received {
+  margin: 0;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 780;
+}
+
+.ets2-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ets2-telemetry {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.ets2-telemetry > div {
+  min-width: 0;
+  padding: 12px 10px 12px 0;
+}
+
+.ets2-telemetry > div + div {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+
+.ets2-telemetry dt {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.ets2-telemetry dd {
+  margin: 3px 0 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ets2-frame-figure {
+  position: relative;
+  padding-top: 18px;
+}
+
+.ets2-frame-shell {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  place-items: center;
+  overflow: hidden;
+  background: var(--panel-soft);
+  transition: filter 180ms ease, opacity 180ms ease;
+}
+
+.ets2-frame-shell img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ets2-frame-shell p {
+  color: var(--muted);
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.ets2-frame-shell.stale,
+.ets2-frame-shell.signal-lost {
+  filter: blur(1.2px) grayscale(0.38);
+  opacity: 0.56;
+}
+
+.ets2-frame-alert {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 10px 12px;
+  border-block: 1px solid color-mix(in srgb, var(--text) 36%, transparent);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.ets2-polling-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 750;
+}
+
+/* TKT-174 — 로컬 PoC 개발자 제어. 읽기 행은 면을 빼고 조작부만 묶는다. */
+.ets2-dev-page {
+  position: relative;
+  width: min(100%, 1120px);
+  margin-inline: auto;
+  padding-bottom: 32px;
+}
+
+.ets2-dev-content {
+  display: grid;
+  gap: 22px;
+}
+
+.ets2-dev-page.is-static-preview .ets2-dev-content {
+  filter: blur(2.4px) grayscale(0.35);
+  opacity: 0.42;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ets2-dev-static-toast {
+  position: fixed;
+  z-index: 50;
+  top: 50%;
+  left: 50%;
+  min-width: min(320px, calc(100vw - 32px));
+  margin: 0;
+  padding: 12px 18px;
+  border: 1px solid var(--line-strong);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  color: var(--text);
+  font-weight: 850;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(10px);
+}
+
+.ets2-dev-head,
+.ets2-dev-section-head,
+.ets2-dev-button-row,
+.ets2-dev-settings > div {
+  display: flex;
+  align-items: center;
+}
+
+.ets2-dev-head {
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ets2-dev-head .eyebrow,
+.ets2-dev-head h1,
+.ets2-dev-connection,
+.ets2-dev-section-head h2,
+.ets2-dev-section-head span,
+.ets2-dev-reason,
+.ets2-dev-frame p,
+.ets2-dev-message,
+.ets2-dev-dialog h2,
+.ets2-dev-dialog p {
+  margin: 0;
+}
+
+.ets2-dev-head h1 {
+  margin-top: 3px;
+  font-size: clamp(1.85rem, 5vw, 2.7rem);
+  letter-spacing: -0.05em;
+  line-height: 1.06;
+}
+
+.ets2-dev-connection {
+  color: var(--danger);
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-align: right;
+}
+
+.ets2-dev-connection.connected {
+  color: var(--line-s-text);
+}
+
+.ets2-dev-telemetry {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.ets2-dev-telemetry > div {
+  min-width: 0;
+  padding: 0 10px 13px 0;
+}
+
+.ets2-dev-telemetry > div + div {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+
+.ets2-dev-telemetry dt,
+.ets2-dev-read-row dt,
+.ets2-dev-settings dt {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 760;
+}
+
+.ets2-dev-telemetry dd,
+.ets2-dev-read-row dd,
+.ets2-dev-settings dd {
+  margin: 3px 0 0;
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 830;
+  overflow-wrap: anywhere;
+}
+
+.ets2-dev-section-head {
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ets2-dev-section-head h2 {
+  font-size: 0.95rem;
+}
+
+.ets2-dev-section-head span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-align: right;
+}
+
+.ets2-dev-frame {
+  display: grid;
+  aspect-ratio: 16 / 9;
+  margin-top: 12px;
+  overflow: hidden;
+  background: var(--panel-soft);
+  place-items: center;
+}
+
+.ets2-dev-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ets2-dev-frame p {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.ets2-dev-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(240px, 0.7fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.ets2-dev-controls {
+  display: grid;
+  gap: 14px;
+}
+
+.ets2-dev-control-group,
+.ets2-dev-events {
+  padding: 0 0 18px;
+  border: 0;
+  background: transparent;
+}
+
+.ets2-dev-read-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.ets2-dev-button-row {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.ets2-dev-button-row button {
+  min-height: 40px;
+  padding: 8px 13px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--panel-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.79rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ets2-dev-button-row button:hover:not(:disabled) {
+  border-color: var(--line-s);
+}
+
+.ets2-dev-button-row button:focus-visible,
+.ets2-dev-control-group input:focus-visible,
+.ets2-dev-simulator summary:focus-visible {
+  outline: 2px solid var(--line-s);
+  outline-offset: 3px;
+}
+
+.ets2-dev-button-row button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.ets2-dev-button-row .ets2-dev-primary {
+  border-color: var(--line-s);
+  background: color-mix(in srgb, var(--line-s) 18%, var(--panel));
+}
+
+.ets2-dev-button-row .ets2-dev-danger {
+  border-color: color-mix(in srgb, var(--danger) 72%, var(--line));
+  background: color-mix(in srgb, var(--danger) 13%, var(--panel));
+  color: var(--danger);
+}
+
+.ets2-dev-control-group label {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  gap: 9px;
+  font-size: 0.8rem;
+  font-weight: 730;
+}
+
+.ets2-dev-control-group input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--line-s);
+}
+
+.ets2-dev-reason {
+  padding-top: 10px;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.ets2-dev-action-feedback {
+  margin: 10px 0 0;
+  padding: 8px 0;
+  border-block: 1px solid var(--line);
+  color: var(--text-2);
+  font-size: 0.76rem;
+  font-weight: 780;
+}
+
+.ets2-dev-action-feedback[data-tone='pending'] {
+  color: var(--line-s-text);
+}
+
+.ets2-dev-action-feedback[data-tone='success'] {
+  color: var(--exit);
+}
+
+.ets2-dev-action-feedback[data-tone='error'] {
+  color: var(--danger);
+}
+
+.ets2-dev-events ol {
+  max-height: 510px;
+  margin: 0;
+  padding: 4px 0 0;
+  overflow: auto;
+  list-style: none;
+}
+
+.ets2-dev-events li {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-2);
+  font-size: 0.74rem;
+}
+
+.ets2-dev-events time {
+  display: inline-block;
+  min-width: 68px;
+  color: var(--line-s-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ets2-dev-simulator {
+  border-block: 1px solid var(--line);
+}
+
+.ets2-dev-simulator summary {
+  min-height: 48px;
+  padding: 13px 0;
+  font-size: 0.9rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.ets2-dev-simulator summary span {
+  margin-left: 8px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.ets2-dev-simulator iframe {
+  display: block;
+  width: 100%;
+  min-height: 720px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: #11181d;
+}
+
+.ets2-dev-settings {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(150px, 0.6fr) minmax(280px, 1.5fr);
+  margin: 0;
+  border-block: 1px solid var(--line);
+}
+
+.ets2-dev-settings > div {
+  min-width: 0;
+  min-height: 52px;
+  gap: 10px;
+  padding: 8px 12px 8px 0;
+}
+
+.ets2-dev-settings > div + div {
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+
+.ets2-dev-settings dd {
+  margin: 0 0 0 auto;
+  text-align: right;
+}
+
+.ets2-dev-message {
+  padding: 10px 12px;
+  border-left: 3px solid var(--danger);
+  color: var(--danger);
+  font-size: 0.78rem;
+  font-weight: 780;
+}
+
+.ets2-dev-dialog {
+  width: min(460px, calc(100vw - 32px));
+  padding: 22px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.ets2-dev-dialog::backdrop {
+  background: rgb(0 0 0 / 0.62);
+}
+
+.ets2-dev-dialog p {
+  padding-top: 10px;
+  color: var(--text-2);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 800px) {
+  .ets2-dev-telemetry {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ets2-dev-telemetry > div:nth-child(4) {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .ets2-dev-telemetry > div:nth-child(n + 4) {
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  .ets2-dev-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .ets2-dev-events ol {
+    max-height: 240px;
+  }
+
+  .ets2-dev-simulator iframe {
+    min-height: 620px;
+  }
+
+  .ets2-dev-settings {
+    grid-template-columns: 1fr;
+  }
+
+  .ets2-dev-settings > div + div {
+    padding-left: 0;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .ets2-dev-head {
+    display: grid;
+    gap: 8px;
+  }
+
+  .ets2-dev-connection {
+    text-align: left;
+  }
+
+  .ets2-dev-read-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ets2-dev-button-row button {
+    flex: 1 1 calc(50% - 8px);
+  }
+
+  .ets2-dev-simulator iframe {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 600px) {
+  .ets2-live-head {
+    display: grid;
+    gap: 5px;
+    padding-top: 0;
+  }
+
+  .ets2-live-head h1 {
+    font-size: 1.85rem;
+  }
+
+  .ets2-freshness {
+    text-align: left;
+  }
+
+  .ets2-telemetry {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .ets2-telemetry > div:nth-child(4) {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .ets2-telemetry > div:nth-child(5) {
+    grid-column: span 2;
+    border-top: 1px solid var(--line);
+  }
+
+  .ets2-frame-figure {
+    padding-top: 14px;
+  }
+}
+
+/* TKT-170 — 취향선 자취 밥상. 읽기 행은 면을 두지 않고 조작부만 채운다. */
+.pantry-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+  max-width: 760px;
+  margin-inline: auto;
+  padding-bottom: 28px;
+  overflow-x: clip;
+}
+
+.pantry-tag-picker {
+  width: 100%;
+  min-width: 0;
+  padding: 2px 0 12px;
+  overflow: hidden;
+}
+
+.pantry-filter-primary {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.pantry-filter-primary > .pantry-filters {
+  flex: 1 1 auto;
+  width: 0;
+}
+
+.pantry-filters,
+.pantry-filter-list {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pantry-filters::-webkit-scrollbar,
+.pantry-filter-list::-webkit-scrollbar {
+  display: none;
+}
+
+.pantry-chip,
+.pantry-tags-toggle,
+.pantry-next,
+.pantry-stamp button {
+  min-height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--panel-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pantry-chip {
+  flex: none;
+  padding: 0 15px;
+}
+
+.pantry-chip.active,
+.pantry-tags-toggle.active {
+  border-color: var(--line-p);
+  background: color-mix(in srgb, var(--line-p) 16%, transparent);
+  color: var(--line-p-text);
+}
+
+.pantry-tags-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  white-space: nowrap;
+}
+
+.pantry-tags-toggle small {
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--line-p);
+  color: #071c18;
+  font-size: 0.68rem;
+}
+
+.pantry-tag-groups {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.pantry-tag-group {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.pantry-tag-group h2 {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.pantry-empty-result {
+  min-width: 0;
+  margin: 0;
+  padding: 9px 0;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+}
+
+.pantry-empty-result strong {
+  color: var(--text);
+}
+
+.pantry-hero {
+  position: relative;
+  padding: clamp(16px, 3vw, 28px) 0 18px 18px;
+  border-left: 3px solid var(--line-p);
+}
+
+.pantry-kicker,
+.pantry-hero h1,
+.pantry-mood,
+.pantry-quip,
+.pantry-pairing {
+  margin: 0;
+}
+
+.pantry-kicker {
+  color: var(--line-p-text);
+  font-size: 0.76rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.pantry-hero h1 {
+  margin-top: 3px;
+  font-size: clamp(1.7rem, 6vw, 2.6rem);
+  line-height: 1.14;
+  letter-spacing: -0.045em;
+}
+
+.pantry-mood {
+  margin-top: 7px;
+  max-width: 54ch;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+
+.pantry-quip {
+  margin-top: 5px;
+  max-width: 62ch;
+  overflow: hidden;
+  color: var(--muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.pantry-facts {
+  display: flex;
+  gap: 24px;
+  margin: 13px 0 0;
+}
+
+.pantry-facts div {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.pantry-facts dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.pantry-facts dd {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.pantry-pairing {
+  margin-top: 8px;
+  color: var(--text-2);
+  font-size: 0.82rem;
+}
+
+.pantry-pairing strong {
+  margin-right: 8px;
+  color: var(--line-p-text);
+}
+
+.pantry-next {
+  margin-top: 14px;
+  padding: 0 18px;
+}
+
+.pantry-next:hover,
+.pantry-stamp button:hover:not(:disabled) {
+  border-color: var(--line-p);
+  color: var(--line-p-text);
+}
+
+.pantry-alternatives {
+  border-top: 1px solid var(--line);
+}
+
+.pantry-alternative {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 7px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pantry-alternative > span,
+.pantry-alternative > small {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.pantry-alternative > strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+}
+
+.pantry-alternative:hover > strong,
+.pantry-alternative:focus-visible > strong {
+  color: var(--line-p-text);
+}
+
+.pantry-detail {
+  margin-top: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pantry-detail > summary,
+.pantry-dish-row > summary {
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.pantry-detail > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--line-p-text);
+  font-weight: 850;
+  list-style: none;
+}
+
+.pantry-detail > summary::-webkit-details-marker,
+.pantry-dish-row > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pantry-detail > summary::after {
+  content: '＋';
+}
+
+.pantry-detail[open] > summary::after {
+  content: '－';
+}
+
+.pantry-note {
+  margin: 0 0 18px;
+  padding-left: 14px;
+  border-left: 2px solid var(--line-p);
+  color: var(--text-2);
+}
+
+.pantry-detail-quip {
+  margin: 0 0 8px;
+  color: var(--text-2);
+}
+
+.pantry-dishes h2,
+.pantry-shopping h2 {
+  margin: 24px 0 4px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+}
+
+.pantry-dish-row {
+  border-top: 1px solid var(--line);
+}
+
+.pantry-dish-row:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.pantry-dish-row > summary {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.pantry-dish-row > summary span,
+.pantry-dish-row > summary small {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.pantry-dish-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  padding: 6px 0 20px 48px;
+}
+
+.pantry-dish-body h3 {
+  margin: 0;
+  font-size: 0.84rem;
+}
+
+.pantry-dish-body ul,
+.pantry-dish-body ol {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--text-2);
+  font-size: 0.82rem;
+}
+
+.pantry-shopping {
+  display: grid;
+}
+
+.pantry-shopping label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.pantry-shopping input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--line-p);
+}
+
+.pantry-shopping input:checked + span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.pantry-stamp {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 0;
+}
+
+.pantry-stamp button {
+  padding: 0 18px;
+}
+
+.pantry-stamp button:disabled {
+  cursor: default;
+  opacity: 0.62;
+}
+
+.pantry-stamp p {
+  margin: 0;
+  color: var(--line-p-text);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 560px) {
+  .pantry-hero {
+    padding-block: 12px 13px;
+    padding-left: 14px;
+  }
+
+  .pantry-hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .pantry-mood {
+    font-size: 0.86rem;
+  }
+
+  .pantry-tags-toggle {
+    padding-inline: 12px;
+  }
+
+  .pantry-facts {
+    margin-top: 9px;
+  }
+
+  .pantry-next {
+    margin-top: 10px;
+  }
+
+  .pantry-alternative {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 2px 10px;
+  }
+
+  .pantry-alternative > small {
+    grid-column: 2;
+  }
+
+  .pantry-dish-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding-left: 0;
+  }
+
+  .pantry-stamp {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 /* 노선도 라벨 클릭 이동 (PO 2026-08-17) */

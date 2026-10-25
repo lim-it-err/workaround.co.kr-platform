@@ -5,6 +5,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { newSeoulContext } from '../e2eContext.mjs'
 
 const advisorRequire = createRequire(new URL('../../../services/advisor/frontend/package.json', import.meta.url))
 const { chromium } = advisorRequire('playwright')
@@ -60,7 +61,7 @@ for (const scenario of [
   { width: 1440, height: 900, theme: 'light' }
 ]) {
   test(`${scenario.width}px ${scenario.theme}: 벨베데레와 Advisor 미션을 왕복한다`, async t => {
-    const context = await browser.newContext({
+    const context = await newSeoulContext(browser, {
       viewport: { width: scenario.width, height: scenario.height },
       reducedMotion: 'reduce'
     })

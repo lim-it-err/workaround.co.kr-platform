@@ -9,6 +9,8 @@ export default defineConfig({
   reporter: 'list',
   use: {
     baseURL: 'http://127.0.0.1:5173',
+    timezoneId: 'Asia/Seoul',
+    locale: 'ko-KR',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
