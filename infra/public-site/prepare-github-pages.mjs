@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -154,6 +154,62 @@ function createFallbackHtml(base, advisorBase) {
 `
 }
 
+// Check BLOG_LINE_OPEN flag and delete mockup files if closed
+function checkBlogLineOpenAndCleanupMockups(distDirectory) {
+  const linesFilePath = resolve(projectRoot, 'frontend/src/data/lines.js')
+  const linesContent = readFileSync(linesFilePath, 'utf8')
+
+  // Match the export statement: export const BLOG_LINE_OPEN = false|true
+  const blogLineOpenMatch = linesContent.match(/export\s+const\s+BLOG_LINE_OPEN\s*=\s*(true|false)/)
+  if (!blogLineOpenMatch) {
+    throw new Error('Cannot find BLOG_LINE_OPEN in lines.js')
+  }
+
+  const isBlogLineOpen = blogLineOpenMatch[1] === 'true'
+
+  if (!isBlogLineOpen) {
+    // Delete blog mockup files from dist/mockups
+    const mockupsDir = resolve(distDirectory, 'mockups')
+    const deletedFiles = []
+
+    // Delete specific mockup files
+    const filesToDelete = [
+      'blog-archive.html',
+      'blog-post.html',
+      'writing-studio.html'
+    ]
+
+    for (const fileName of filesToDelete) {
+      const filePath = resolve(mockupsDir, fileName)
+      if (existsSync(filePath)) {
+        rmSync(filePath)
+        deletedFiles.push(filePath)
+      }
+    }
+
+    // Also delete any blog-*.html pattern files
+    if (existsSync(mockupsDir)) {
+      const allFiles = readdirSync(mockupsDir)
+      for (const fileName of allFiles) {
+        if (fileName.startsWith('blog-') && fileName.endsWith('.html')) {
+          const filePath = resolve(mockupsDir, fileName)
+          if (!deletedFiles.includes(filePath)) {
+            rmSync(filePath)
+            deletedFiles.push(filePath)
+          }
+        }
+      }
+    }
+
+    if (deletedFiles.length > 0) {
+      console.log('Blog line closed - deleted mockup files:')
+      for (const file of deletedFiles) {
+        console.log(`  ${file}`)
+      }
+    }
+  }
+}
+
 const args = readArguments(process.argv.slice(2))
 const distDirectory = resolve(args.get('dist') || 'frontend/dist')
 const advisorDistArgument = args.get('advisor-dist')
@@ -167,6 +223,9 @@ if (base !== EXPECTED_BASE) {
 if (!advisorDistArgument) {
   throw new Error('Advisor GitHub Pages output must be provided with --advisor-dist.')
 }
+
+// Clean up blog mockup files if blog line is closed
+checkBlogLineOpenAndCleanupMockups(distDirectory)
 
 const indexPath = resolve(distDirectory, 'index.html')
 const { references, html: mainIndexHtml } = verifyIndex(indexPath, distDirectory, base, 'GitHub Pages')

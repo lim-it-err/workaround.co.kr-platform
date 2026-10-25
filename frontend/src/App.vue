@@ -5098,7 +5098,7 @@ function persistStudioPostId(postId) {
           <nav
             v-if="!isTestRoute"
             class="mobile-quick-nav"
-            :style="BLOG_LINE_OPEN ? undefined : { gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }"
+            :class="{ 'mobile-quick-nav--blog-closed': !BLOG_LINE_OPEN }"
             aria-label="빠른 환승"
           >
             <button type="button" :class="{ active: page === 'junction' }" @click="openPage('junction')">노선도</button>

@@ -4075,6 +4075,10 @@ a.junction-route-row:focus-visible {
     backdrop-filter: blur(12px);
   }
 
+  .mobile-quick-nav--blog-closed {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .mobile-quick-nav button {
     min-height: 48px;
     border: 0;
