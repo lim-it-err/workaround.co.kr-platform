@@ -2,7 +2,7 @@
 
 # TKT-212 `[FE]` 자취 밥상 태그 정리 + "가까운 상" 버그 수정
 
-- 상태: ready · **P1 · v0.8.3** · 담당: dev 서브에이전트(Sonnet) · 브랜치 `codex/v0.8.3`(작업 트리 `/Users/imjeonghan/newProject/wa-083`).
+- 상태: started · **P1 · v0.8.3** · 담당: dev 서브에이전트(Sonnet) · 브랜치 `codex/v0.8.3`(작업 트리 `/Users/imjeonghan/newProject/wa-083`).
 - 근거: PO 2026-10-25 「삼겹살이랑 돼지고기는 하나의 태그로 해야 될 것 같아. 태그가 너무 난잡해. 태그 정리 한 번만 해줘」 + PM 버그 제안 ①(가까운 상이 고른 재료를 안 담음) ②(15분 세트에 `10분`, `해장`+`소주` 동시).
 - scope: `frontend/src/data/pantry/index.js`(태그 그룹·시간 태그 계산·가까운 상), `frontend/src/data/pantry/sets.js`(**tags 배열만** — 다른 문구 수정 금지), `frontend/src/components/Pantry.vue`(안내 문구 분기), `Pantry.e2e.mjs`, `pantry.test.mjs`.
 
