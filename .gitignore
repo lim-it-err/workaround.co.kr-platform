@@ -45,3 +45,8 @@ services/ets2-adas/backups/
 services/ets2-adas/runtime/
 services/ets2-adas/.build/
 services/ets2-adas/.env
+
+# E2E 러너 산출물 / macOS
+.DS_Store
+frontend/dist-root/
+frontend/dist-base/

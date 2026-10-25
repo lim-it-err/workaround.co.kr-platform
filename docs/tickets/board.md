@@ -46,15 +46,11 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-197` `v0.8.2` `base` `ready` `[FE]` 운영 노트 375 압축·상단바 제목 (REV-195)
-
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
 
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
-- `TKT-177` `v0.8.2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
-- `TKT-159` `v0.8.2` `infra` `ready` `[INFRA]` 메인 E2E 통합 러너 `npm run e2e:all` (AS-R009 권고)
 - `TKT-078` `P1` `v0.7.0` `ready` `[INFRA]` 화이트채플 Pages 편입 — prepare-github-pages 병합 (09-15 승격, Pages 우선)
 - `TKT-160` `v0.8.2` `infra` `ready` `[INFRA]` Pages 배포 후 스모크 job
 - `TKT-161` `P2` `tone` `ready` `[UX]` 접근성 검수 — VoiceOver·키보드 (codex-8)
@@ -71,6 +67,12 @@
 ## Need Review
 
 ## Finished
+
+- `TKT-159` 메인 E2E 통합 러너 `npm run e2e:all` — r1 통과 (2026-10-25, v0.8.2)
+
+- `TKT-177` Pages 깊은 주소 200 — 경로별 index.html 복제 — r1 통과 (2026-10-25, v0.8.2)
+
+- `TKT-197` 운영 노트 375 압축·상단바 제목 — r1 통과 (2026-10-25, v0.8.2)
 
 - `TKT-203` `[FE]` 노선도 작은 역 이름 복귀 — 작고 흐리게 항상 표시 — r1 통과 (2026-10-25, v0.8.1)
 
