@@ -5,6 +5,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { newSeoulContext } from './e2eContext.mjs'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -54,7 +55,7 @@ async function serveStaticBuild(request, response) {
 }
 
 async function setup(t, scenario) {
-  const context = await browser.newContext({
+  const context = await newSeoulContext(browser, {
     viewport: { width: scenario.width, height: scenario.height },
     reducedMotion: 'reduce'
   })
@@ -110,6 +111,14 @@ for (const scenario of [
       })
     }
 
+    await page.locator('.tone-service-row').filter({ hasText: '심야 택시' }).getByRole('button', { name: '시작', exact: true }).click()
+    assert.match(page.url(), /\/taxi$/)
+    assert.equal(await page.locator('.door-transition, .door-panel').count(), 0, 'reduced-motion은 문짝 없이 즉시 전환해야 한다')
+    await page.waitForFunction(() => document.activeElement === document.querySelector('.station-topbar h2'))
+    assert.equal(await page.locator('.station-topbar h2').textContent(), '심야 택시')
+    await page.goto(`${base}sim`)
+    await page.locator('.tone-sim-page').waitFor()
+
     await page.goto(`${base}elevator`)
     await page.locator('.elevator-tone-page').waitFor()
     assert.match(page.url(), /\/elevator$/)
@@ -142,14 +151,15 @@ for (const scenario of [
       assert.equal(new URL(page.url()).pathname, publicBase)
     }
 
-    assert.equal(await page.locator('.junction-sublinks').filter({ has: page.getByText('격납고', { exact: true }) }).locator(':scope > *').count(), 4)
-    assert.equal(await page.locator('.junction-sublinks > .static-server').textContent(), '엘리베이터')
+    assert.equal(await page.locator('.junction-sublinks').filter({ has: page.getByText('격납고', { exact: true }) }).locator(':scope > *').count(), 6)
+    assert.equal(await page.locator('.junction-sublinks').getByRole('button', { name: '유로트럭', exact: true }).count(), 1)
+    assert.deepEqual(await page.locator('.junction-sublinks > .static-server').allTextContents(), ['유로트럭 개발자', '엘리베이터'])
     assert.equal(await page.locator('.junction-sublinks > .planned').textContent(), '화이트채플')
-    assert.equal(await page.locator('.junction-page-stop.static-server').count(), 1)
+    assert.equal(await page.locator('.junction-page-stop.static-server').count(), 2)
     assert.equal(await page.locator('.junction-page-stop.planned').filter({ hasText: '화이트채플' }).count(), 1)
     const expectedDimOpacity = scenario.theme === 'light' ? '0.8' : '0.55'
     assert.equal(
-      await page.locator('.junction-page-stop.static-server').evaluate(element => getComputedStyle(element).opacity),
+      await page.locator('.junction-page-stop.static-server').first().evaluate(element => getComputedStyle(element).opacity),
       expectedDimOpacity
     )
     assert.equal(
@@ -157,9 +167,24 @@ for (const scenario of [
       '1'
     )
     const initialUrl = page.url()
-    await page.locator('.junction-sublinks > .static-server').click()
+    await page.locator('.junction-sublinks > .static-server').filter({ hasText: '엘리베이터' }).click()
     assert.equal(page.url(), initialUrl)
     assert.equal(await page.locator('.junction-access-toast').textContent(), '서버 시뮬 · 정적 공개본에서는 준비 중')
+    await page.locator('.junction-sublinks > .static-server').filter({ hasText: '유로트럭 개발자' }).click()
+    assert.equal(page.url(), initialUrl)
+    assert.equal(await page.locator('.junction-access-toast').textContent(), '개발자 페이지 · 로컬 전용')
+
+    await page.goto(`${base}ets2/dev`)
+    await page.locator('.ets2-dev-page.is-static-preview').waitFor()
+    assert.match(page.url(), /\/ets2\/dev$/)
+    assert.equal(await page.locator('.ets2-dev-static-toast').textContent(), '개발자 페이지 · 로컬 전용')
+    assert.equal(await page.locator('.ets2-dev-content').getAttribute('inert'), '')
+    assert.notEqual(await page.locator('.ets2-dev-content').evaluate(element => getComputedStyle(element).filter), 'none')
+    await page.goto(`${base}sim`)
+    const devRow = page.locator('.tone-service-row').filter({ hasText: '유로트럭 개발자' })
+    await devRow.getByRole('button', { name: '개발 도구 열기', exact: true }).click()
+    assert.match(page.url(), /\/sim$/)
+    assert.equal(await page.locator('.junction-access-toast').textContent(), '개발자 페이지 · 로컬 전용')
 
     if (scenario.width < 900) {
       assert.equal(await page.locator('.mobile-quick-nav').getByRole('button', { name: '승강장', exact: true }).count(), 1)

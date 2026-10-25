@@ -4,6 +4,7 @@ import { before, after, test } from 'node:test'
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import vm from 'node:vm'
+import { newSeoulContext } from '../e2eContext.mjs'
 const { chromium } = createRequire(import.meta.url)('playwright')
 const base = process.env.TAXI_TEST_URL || 'http://127.0.0.1:4175'
 const source = await readFile(new URL('../App.vue', import.meta.url), 'utf8')
@@ -16,7 +17,7 @@ before(async () => { browser = await chromium.launch({ headless: true }) })
 after(async () => { await browser?.close() })
 
 async function setup(t, { theme = 'dark', width = 375, controlledClock = true } = {}) {
-  const context = await browser.newContext({ viewport: { width, height: width === 375 ? 812 : 1000 }, reducedMotion: 'reduce' })
+  const context = await newSeoulContext(browser, { viewport: { width, height: width === 375 ? 812 : 1000 }, reducedMotion: 'reduce' })
   t.after(() => context.close())
   const page = await context.newPage()
   const errors = []

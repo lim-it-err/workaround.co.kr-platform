@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+// 고정 시각: 2026-08-03 08:00·09:00, 08-04 08:00(+09:00) = 출근길 슬롯.
+
 const WINE_TITLE = '와인 추천기의 뒤엉킨 책임 풀어내기'
 const KTX_TITLE = '통일호가 살아 있는 예매 시스템에 KTX 넣기'
 const PROJECT_TITLE = '공공자전거 시스템 — 맨땅에서'
@@ -98,7 +100,7 @@ test('오늘: 다음 한 걸음 하나와 접힌 보조 루틴을 보여준다',
   })
   page.on('pageerror', (error) => errors.push(error.message))
 
-  await page.clock.setFixedTime(new Date('2026-08-03T08:00:00'))
+  await page.clock.setFixedTime(new Date('2026-08-03T08:00:00+09:00'))
   await page.goto('/routine')
   await expect(page).toHaveURL(/\/today$/)
   await expect(page.getByRole('navigation', { name: '전역 메뉴' }).getByRole('link')).toHaveCount(3)
@@ -147,7 +149,7 @@ test('한 번만 물어본다면: 관측으로 가설을 흐리고 지목 뒤 �
   })
   page.on('pageerror', (error) => errors.push(error.message))
   await page.setViewportSize({ width: 375, height: 812 })
-  await page.clock.setFixedTime(new Date('2026-08-03T09:00:00'))
+  await page.clock.setFixedTime(new Date('2026-08-03T09:00:00+09:00'))
   await page.evaluate(() => {
     localStorage.setItem('advisor.learner.v1', JSON.stringify({
       seasonStats: { seasonStart: '2026-08-03', gains: [] },
@@ -198,7 +200,7 @@ test('경계선 한 칸: 같은 운명 구간과 타임아웃 결과를 보고 �
   })
   page.on('pageerror', (error) => errors.push(error.message))
   await page.setViewportSize({ width: 375, height: 812 })
-  await page.clock.setFixedTime(new Date('2026-08-03T09:00:00'))
+  await page.clock.setFixedTime(new Date('2026-08-03T09:00:00+09:00'))
   await page.evaluate(() => {
     localStorage.setItem('advisor.learner.v1', JSON.stringify({
       seasonStats: { seasonStart: '2026-08-03', gains: [] },
@@ -318,7 +320,7 @@ test('사건 파일: Day 1부터 몰아보고 근본 원인을 한 번 지목한
 })
 
 test('시즌: 루틴 수동 체크가 교양 +1과 최근 적립 로그에 반영된다', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-08-04T08:00:00'))
+  await page.clock.setFixedTime(new Date('2026-08-04T08:00:00+09:00'))
   await page.evaluate(() => {
     localStorage.setItem('advisor.learner.v1', JSON.stringify({
       learner: { nickname: 'Codex E2E' },

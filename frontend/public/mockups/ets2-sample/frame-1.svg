@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="산길을 달리는 합성 주행 화면">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#85b8d4"/><stop offset="1" stop-color="#d9d2b1"/></linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#58636a"/><stop offset="1" stop-color="#20272c"/></linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <path d="M0 315 180 198 348 315 506 162 690 318 866 196 1080 323 1280 225V515H0Z" fill="#62786c"/>
+  <path d="M0 385 260 298 430 379 650 276 872 389 1100 304 1280 362V540H0Z" fill="#43594f"/>
+  <path d="M470 720 594 390 698 390 860 720Z" fill="url(#road)"/>
+  <path d="M635 698 638 618 643 546 646 485 649 425" fill="none" stroke="#f0df93" stroke-width="8" stroke-dasharray="38 34"/>
+  <path d="M0 642Q264 575 470 548L445 720H0Z" fill="#293e31"/>
+  <path d="M860 548Q1054 570 1280 650V720H883Z" fill="#293e31"/>
+  <path d="M0 660Q640 568 1280 662V720H0Z" fill="#11171b"/>
+  <path d="M476 688Q640 641 804 688" fill="none" stroke="#313c43" stroke-width="34"/>
+</svg>

@@ -1,0 +1,8 @@
+{
+  "changedSinceSnapshot": [
+    "frontend/src/App.vue",
+    "frontend/src/staticRouting.e2e.mjs",
+    "frontend/src/styles.css",
+    "frontend/src/splashTone.e2e.mjs"
+  ]
+}

@@ -3,6 +3,7 @@ import { after, before, test } from 'node:test'
 import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import vm from 'node:vm'
+import { newSeoulContext } from '../e2eContext.mjs'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const base = process.env.SIM_TONE_TEST_URL || 'http://127.0.0.1:4175'
@@ -37,7 +38,7 @@ function elevatorFixture(refreshCount) {
 }
 
 async function setup(t, { path, theme, width, controlledClock = true }) {
-  const context = await browser.newContext({
+  const context = await newSeoulContext(browser, {
     viewport: { width, height: width === 375 ? 812 : 900 },
     reducedMotion: 'reduce'
   })

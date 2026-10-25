@@ -5,6 +5,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { newSeoulContext } from '../e2eContext.mjs'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const distRoot = fileURLToPath(new URL('../../dist/', import.meta.url))
@@ -124,7 +125,7 @@ async function serveStaticBuild(request, response) {
 }
 
 async function setup(t, scenario, path) {
-  const context = await browser.newContext({
+  const context = await newSeoulContext(browser, {
     viewport: { width: scenario.width, height: scenario.height },
     reducedMotion: 'reduce'
   })
@@ -234,15 +235,21 @@ const scenarios = [
 ]
 
 for (const scenario of scenarios) {
-  test(`${scenario.width}px ${scenario.theme}: 격납고는 한 히어로와 시뮬레이션 행으로 읽힌다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: 격납고는 한 히어로와 세 시뮬레이션 행으로 읽힌다`, async t => {
     const page = await setup(t, scenario, 'sim')
     await page.getByRole('heading', { name: '멈춘 엘리베이터', exact: true }).waitFor()
     assert.equal(await page.locator('.tone-page-hero').count(), 1)
     assert.equal(await page.locator('.station-sign, .line-card').count(), 0)
-    assert.equal(await page.locator('.tone-service-row').count(), 1)
+    assert.equal(await page.locator('.tone-service-row').count(), 3)
     assert.equal(await page.getByText('추천 시나리오 · 시스템 설계', { exact: true }).count(), 1)
     assert.equal(await page.getByRole('heading', { name: '심야 택시', exact: true }).count(), 1)
     assert.equal(await page.getByText('제품 판단', { exact: true }).count(), 1)
+    assert.equal(await page.getByRole('heading', { name: '유로트럭 관제', exact: true }).count(), 1)
+    assert.equal(await page.getByText('읽기 전용', { exact: true }).count(), 1)
+    assert.equal(await page.getByRole('button', { name: '관제 보기', exact: true }).count(), 1)
+    assert.equal(await page.getByRole('heading', { name: '유로트럭 개발자', exact: true }).count(), 1)
+    assert.equal(await page.getByText('로컬 전용', { exact: true }).count(), 1)
+    assert.equal(await page.getByRole('button', { name: '개발 도구 열기', exact: true }).count(), 1)
     assert.equal(await page.getByRole('button', { name: '시작', exact: true }).count(), 2)
     assert.equal(await page.getByText('Elevator Station', { exact: true }).count(), 0)
     assert.equal(await page.getByText('Taxi District Lab', { exact: true }).count(), 0)

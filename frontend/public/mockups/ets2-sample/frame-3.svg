@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="비 오는 밤길의 합성 주행 화면">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#111c2d"/><stop offset="1" stop-color="#344351"/></linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#46525a"/><stop offset="1" stop-color="#171d22"/></linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)"/>
+  <path d="M0 344 196 244 390 350 618 220 830 354 1038 238 1280 338V548H0Z" fill="#1d2b35"/>
+  <path d="M0 430Q252 346 504 424T950 418T1280 430V622H0Z" fill="#1d2c29"/>
+  <path d="M384 720 572 408 700 408 920 720Z" fill="url(#road)"/>
+  <path d="M640 700 640 630 638 560 637 495 636 438" fill="none" stroke="#f0dc87" stroke-width="8" stroke-dasharray="35 31"/>
+  <g stroke="#a7c9d9" stroke-width="3" opacity=".5"><path d="m80 50-32 72m160-84-34 78m166-57-36 82m188-106-34 78m174-55-38 84m190-116-32 73m178-48-38 84m194-98-36 80"/></g>
+  <g fill="#f3c271"><circle cx="516" cy="420" r="8"/><circle cx="756" cy="422" r="8"/></g>
+  <path d="M0 663Q640 574 1280 662V720H0Z" fill="#0c1116"/>
+  <path d="M474 688Q640 640 806 688" fill="none" stroke="#29333b" stroke-width="34"/>
+</svg>

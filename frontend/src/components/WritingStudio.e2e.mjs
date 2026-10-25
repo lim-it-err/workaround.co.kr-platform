@@ -7,6 +7,7 @@ import { createRequire } from 'node:module'
 import { readFile } from 'node:fs/promises'
 import { startIsolatedPreview } from '../../scripts/e2e-isolated-preview.mjs'
 import { VOYAGE } from '../data/voyage.js'
+import { newSeoulContext } from '../e2eContext.mjs'
 import { voyageStorageKey } from '../data/voyageStorage.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
@@ -35,7 +36,7 @@ after(async () => {
 })
 
 async function setup(t, { posts = [draft], theme = 'dark', width = 375, height = 812 } = {}) {
-  const context = await browser.newContext({ viewport: { width, height }, acceptDownloads: true })
+  const context = await newSeoulContext(browser, { viewport: { width, height }, acceptDownloads: true })
   const page = await context.newPage()
   const errors = []
   const apiRequests = []
@@ -58,6 +59,10 @@ async function setup(t, { posts = [draft], theme = 'dark', width = 375, height =
   await page.goto(`${base}studio`)
   await page.getByRole('textbox', { name: '본문', exact: true }).waitFor()
   return page
+}
+
+async function waitForDoorsOpen(page) {
+  await page.waitForFunction(() => document.querySelector('.app-shell')?.getAttribute('aria-busy') !== 'true')
 }
 
 const body = page => page.getByRole('textbox', { name: '본문', exact: true })
@@ -232,7 +237,9 @@ test('054: publish sheet validation, published autosave and first publication da
   await sheet(page).getByRole('button', { name: '발행 확정' }).click()
   await page.waitForURL(`${base}blog/**`)
   assert.equal((await posts(page))[0].publishedAt, initialPublishedAt)
+  await waitForDoorsOpen(page)
   await page.getByRole('button', { name: '이어서 쓰기 →' }).click()
+  await page.waitForURL(`${base}studio`)
   assert.equal(await body(page).inputValue(), '공개 상태를 유지하는 편집')
 })
 
@@ -261,6 +268,33 @@ test('054: blocked save and cancelled exit/new-draft guard preserve input', asyn
   assert.equal((await posts(page))[0].bodyMarkdown, '복구 후 재입력')
 })
 
+test('183: full local storage still downloads the current in-memory draft as JSON', async t => {
+  const page = await setup(t)
+  await page.evaluate(() => {
+    const original = Storage.prototype.setItem
+    Storage.prototype.setItem = function (key, value) {
+      if (key === 'workaround-blog-posts') throw new DOMException('quota', 'QuotaExceededError')
+      return original.call(this, key, value)
+    }
+  })
+  await body(page).fill('저장소가 가득 차도 지킬 현재 본문')
+  await page.waitForFunction(() => document.querySelector('.writer-save')?.textContent === '저장 실패')
+  assert.equal((await posts(page))[0].bodyMarkdown, '', '저장소에는 현재 본문이 반영되지 않아야 한다')
+
+  await page.getByRole('button', { name: '저장 안내와 백업', exact: true }).click()
+  assert.match(await sheet(page).getByRole('alert').textContent(), /저장 공간 부족 또는 저장 차단/)
+  const downloading = page.waitForEvent('download')
+  await sheet(page).getByRole('button', { name: '내 기록 백업', exact: true }).click()
+  const download = await downloading
+  assert.match(download.suggestedFilename(), /^workaround-writing-emergency-\d{4}-\d{2}-\d{2}\.json$/)
+  const backup = JSON.parse(await readFile(await download.path(), 'utf8'))
+  assert.equal(backup.format, 'workaround-writing-emergency')
+  assert.equal(backup.failure.code, 'browser-storage-write-failed')
+  assert.match(backup.failure.message, /저장 공간 부족 또는 저장 차단/)
+  assert.equal(backup.draft.bodyMarkdown, '저장소가 가득 차도 지킬 현재 본문')
+  assert.match(await sheet(page).getByRole('status').textContent(), /현재 글을 JSON으로 내려받았습니다/)
+})
+
 test('056/055: archive drawer restores draft/public, preserves dates and excludes private deep links', async t => {
   const archived = { ...draft, id: 'archived', title: '보관 검증', slug: 'archived', slugLocked: true, status: 'archived', summary: '요약', bodyMarkdown: '복원 본문', publishedAt: initialPublishedAt }
   const page = await setup(t, { posts: [draft, archived] })
@@ -287,9 +321,13 @@ test('056/055: archive drawer restores draft/public, preserves dates and exclude
   await page.reload()
   assert.match(await page.locator('.post-body').textContent(), /복원 본문/)
   await page.getByRole('button', { name: '← 보관함', exact: true }).click()
+  await page.waitForURL(`${base}blog`)
+  await waitForDoorsOpen(page)
   await page.goBack()
+  await page.waitForURL(`${base}blog/archived`)
   await page.locator('.post-body').waitFor()
   await page.goForward()
+  await page.waitForURL(`${base}blog`)
   assert.equal(new URL(page.url()).pathname.endsWith('/blog'), true)
   await page.goto(`${base}blog/studio-regression`)
   await page.locator('.blog-not-found').waitFor()

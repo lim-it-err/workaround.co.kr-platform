@@ -1,6 +1,6 @@
 # Claude 작업 지침 (workaround.co.kr Platform)
 
-이 저장소에서 Claude의 역할은 **PM(기획·설계·QA 리드)**이다. 구현은 Codex가 전담한다 (D-001, `docs/decisions.md`). 상위 통합 규칙은 `../CLAUDE.md`, PO 질문 창구는 `../ASK.md`.
+이 저장소에서 Claude(Fable) 세션의 역할은 **PM(기획·설계·QA 리드)**이다. 구현은 **PM 세션의 dev 서브에이전트**(Claude Sonnet 기본, 단순 건 Haiku — `Agent` 도구) 가 티켓 단위로 맡고, Codex 는 **단일 레인 codex-9(GPT-6.1 Sol)** 가 UX 실화면 검수·릴리스 감사·조사를 겸한다(D-030). 리뷰어 레인은 폐지 — 판정은 PM 직접 (D-001 → **D-029 개정**, 2026-10-25). 상위 통합 규칙은 `../CLAUDE.md`, PO 질문 창구는 `../ASK.md`.
 
 ## 기준선 (먼저 읽을 것)
 
@@ -18,14 +18,14 @@
 - 메인 프런트 E2E(`frontend/src/**/*.e2e.mjs`)는 `createRequire` 로 playwright 를 찾는다 — PM 실행은 `NODE_PATH=services/advisor/frontend/node_modules node --test <파일>` (Pages base dist 를 먼저 빌드).
 - `need_review` 티켓을 **직접 검증**으로 리뷰한다: frontend `npm --prefix frontend run build`, gateway `mvn -q package`(+ 기동·`/api/health` 응답), 컨테이너 변경 시 compose 기동.
 - UI/UX 작업 전 `design/` 기준선 문서를 읽는다. 디자이너 트랙 산출물(`design/orchestrator_review/`, `design/review_done/`)은 보존한다.
-- 프로덕션 코드는 직접 수정하지 않는다 — 예외: PO 직접 지시.
+- PM(Fable) 은 프로덕션 코드를 직접 수정하지 않는다 — 구현은 티켓을 낸 뒤 **dev 서브에이전트**(`Agent` 도구, `dev-sonnet`/`dev-haiku`)에 맡기고 결과를 판정한다(D-029 개정). 티켓 없는 1파일 이하 게이트 픽스도 서브에이전트(Haiku)로 하고 REV 에 "PM 서브에이전트 수정" 한 줄. 예외: PO 직접 지시. 디스패치 순서는 `../inbox/dev.md`, 파일이 겹치지 않는 티켓만 병렬.
 - 커밋 주체는 Claude. push는 PO 지시 시에만 (Q-004 확정 전까지 로컬 커밋 기본). **트렁크 `main` push 는 PO 실행(자동 모드 차단) — Pages 자동 배포.** 여러 티켓을 한 커밋에 묶을 때는 본문에 티켓별 파일 목록을 적는다 (AS-R007).
 - 의사결정은 `docs/decisions.md`에 PO 발언 인용과 함께 기록하고, 작업은 `docs/history/YYYY-MM-DD.md`에 남긴다.
 
 ## 세션 시작 시퀀스
 
 1. 브랜치 확인 — 작업 브랜치 `codex/v0.8.0-live` 인지, 트렁크는 `main` 인지부터 본다.
-2. `docs/tickets/board.md` — need_review 우선.
+2. `docs/tickets/board.md` — need_review 우선. 리뷰어 초안은 없다 — PM 게이트·실화면 직접(U-33); 디자이너 `UX-TKT-###` 초안이 있으면 판정 입력으로.
 3. `docs/history/` 최신 파일로 맥락 복원.
 4. `../ASK.md` 에 PO 답변이 있으면 반영이 최우선.
 

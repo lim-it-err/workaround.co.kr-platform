@@ -38,10 +38,13 @@ assert.equal(segments.at(-1).state, 'upcoming')
 
 const gauges = routeGauges(voyage, todayIndex)
 assert.deepEqual(
-  { completedDistance: gauges.completedDistance, totalDistance: gauges.totalDistance, prepaid: gauges.prepaid, budgetPlan: gauges.budgetPlan },
-  { completedDistance: 740, totalDistance: 1515, prepaid: 650.01, budgetPlan: 856 }
+  { isComplete: gauges.isComplete, completedDistance: gauges.completedDistance, totalDistance: gauges.totalDistance, prepaid: gauges.prepaid, budgetPlan: gauges.budgetPlan },
+  { isComplete: false, completedDistance: 740, totalDistance: 1515, prepaid: 650.01, budgetPlan: 856 }
 )
-assert.ok(Math.abs(gauges.spent - 742.762) < 0.0001, '현재까지 선결제와 일차별 지출이 합산되어야 한다')
+assert.ok(Math.abs(gauges.spent - 777.101) < 0.0001, '결산 총액이 있으면 일차별 계산보다 우선해야 한다')
+assert.equal(routeGauges(voyage, voyage.days.length).isComplete, true, 'boarding 상태여도 날짜상 종료면 완료여야 한다')
+const unsettledGauges = routeGauges({ ...voyage, settlement: undefined }, todayIndex)
+assert.ok(Math.abs(unsettledGauges.spent - 742.762) < 0.0001, '결산 전에는 선결제와 일차별 지출이 합산되어야 한다')
 
 const dayThree = buildDayTimeline(voyage, 2)
 assert.ok(dayThree.some(item => item.title.includes("Papa's") && item.kind === 'meal'))

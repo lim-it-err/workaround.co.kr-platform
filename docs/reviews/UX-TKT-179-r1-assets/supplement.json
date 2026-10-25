@@ -1,0 +1,98 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "mockup": {
+      "script": 0,
+      "banner": "MOCKUP — 실화면 아님 · tone r17 · 실험선 수직 지선 (PM)",
+      "overflow": 0
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "mockup": {
+      "script": 0,
+      "banner": "MOCKUP — 실화면 아님 · tone r17 · 실험선 수직 지선 (PM)",
+      "overflow": 0
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "mockup": {
+      "script": 0,
+      "banner": "MOCKUP — 실화면 아님 · tone r17 · 실험선 수직 지선 (PM)",
+      "overflow": 0
+    },
+    "geometry": [
+      {
+        "label": "유로트럭",
+        "intersections": 22,
+        "first": {
+          "x": 609.4652637203534,
+          "y": 280.80033724374243
+        },
+        "last": {
+          "x": 621.1606539580557,
+          "y": 269.10494700604016
+        },
+        "opacity": "1",
+        "halo": "rgb(13, 19, 28)"
+      },
+      {
+        "label": "유로트럭 개발자",
+        "intersections": 24,
+        "first": {
+          "x": 640.653003068765,
+          "y": 249.61263394918706
+        },
+        "last": {
+          "x": 653.462217104435,
+          "y": 236.80340188658897
+        },
+        "opacity": "0.55",
+        "halo": "rgb(13, 19, 28)"
+      }
+    ]
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "mockup": {
+      "script": 0,
+      "banner": "MOCKUP — 실화면 아님 · tone r17 · 실험선 수직 지선 (PM)",
+      "overflow": 0
+    },
+    "geometry": [
+      {
+        "label": "유로트럭",
+        "intersections": 22,
+        "first": {
+          "x": 609.4652637203534,
+          "y": 280.80033724374243
+        },
+        "last": {
+          "x": 621.1606539580557,
+          "y": 269.10494700604016
+        },
+        "opacity": "1",
+        "halo": "rgb(237, 241, 246)"
+      },
+      {
+        "label": "유로트럭 개발자",
+        "intersections": 24,
+        "first": {
+          "x": 640.653003068765,
+          "y": 249.61263394918706
+        },
+        "last": {
+          "x": 653.462217104435,
+          "y": 236.80340188658897
+        },
+        "opacity": "0.8",
+        "halo": "rgb(237, 241, 246)"
+      }
+    ]
+  }
+]

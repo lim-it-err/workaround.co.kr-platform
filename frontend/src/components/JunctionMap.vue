@@ -22,6 +22,7 @@ function isRestricted(destination) {
 }
 
 function accessMessage(destination) {
+  if (destination?.staticMessage) return destination.staticMessage
   const access = effectiveAccess(destination)
   if (access === 'protected') return '보호 구역 · 준비 중'
   if (access === 'static-server') return '서버 시뮬 · 정적 공개본에서는 준비 중'
@@ -106,6 +107,8 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
             :key="`${line.id}-path-${pathIndex}`"
             class="junction-branch"
             :class="{ upcoming: line.stations.some((station) => station.upcoming && station.pathIndex === pathIndex) }"
+            :data-line-id="line.id"
+            :data-path-index="pathIndex"
             :d="path"
           />
         </g>
@@ -159,6 +162,30 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
 
         <g
           v-for="line in JUNCTION_LINES"
+          :key="`${line.id}-stop-hits`"
+          class="junction-map-line"
+          :class="lineAccess(line)"
+          :style="{
+            '--route-color': `var(--${line.colorToken})`,
+            '--route-text-color': `var(--${line.textColorToken})`
+          }"
+        >
+          <template v-for="station in line.stations" :key="`${station.code}-stops`">
+            <circle
+              v-for="stop in station.mapStops || []"
+              :key="`${station.code}-${stop.label}-hit`"
+              class="junction-page-stop-hit"
+              :data-stop-label="stop.label"
+              :cx="stop.x"
+              :cy="stop.y"
+              r="26"
+              @click="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
+            />
+          </template>
+        </g>
+
+        <g
+          v-for="line in JUNCTION_LINES"
           :key="`${line.id}-stops`"
           class="junction-map-line"
           :class="lineAccess(line)"
@@ -172,6 +199,8 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
               v-for="stop in station.mapStops || []"
               :key="`${station.code}-${stop.label}`"
               class="junction-page-stop"
+              :data-path-index="stop.pathIndex ?? station.pathIndex ?? 0"
+              :data-stop-label="stop.label"
               :class="{
                 restricted: isRestricted(stop),
                 planned: effectiveAccess(stop) === 'planned',
@@ -184,7 +213,7 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
               @keydown.enter.prevent="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
               @keydown.space.prevent="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
             >
-              <circle :cx="stop.x" :cy="stop.y" r="4.5" />
+              <circle class="junction-page-stop-dot" :cx="stop.x" :cy="stop.y" r="4.5" />
               <text :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
             </g>
           </template>
@@ -272,7 +301,24 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
   pointer-events: all;
 }
 
+.junction-page-stop text {
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 5px;
+  stroke-linejoin: round;
+}
+
+.junction-page-stop-hit {
+  fill: transparent;
+  stroke: transparent;
+  pointer-events: all;
+}
+
 @media (max-width: 899px) {
+  .junction-branch[data-line-id='lab'][data-path-index='2'] {
+    display: none;
+  }
+
   .junction-station-code {
     font-size: 19px;
   }

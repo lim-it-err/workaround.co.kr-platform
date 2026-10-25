@@ -1,13 +1,17 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import StationHeader from './components/StationHeader.vue'
 import JunctionMap from './components/JunctionMap.vue'
 import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import VoyageView from './components/VoyageView.vue'
 import WritingStudio from './components/WritingStudio.vue'
+import Pantry from './components/Pantry.vue'
+import Ets2Live from './components/Ets2Live.vue'
+import Ets2Dev from './components/Ets2Dev.vue'
 import { SiteLoopSymbol } from './components/tone/index.js'
 import { LINES } from './data/lines.js'
+import { pickSplashTicker } from './data/splashTicker.js'
 import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
 import { VOYAGE } from './data/voyage.js'
 import { migrateLegacyVoyageStorage, voyageStorageKey } from './data/voyageStorage.js'
@@ -25,18 +29,28 @@ import {
   safeWriteJson
 } from './staticWritingState.js'
 
-const SPLASH_DURATION_MS = 10000
-const SPLASH_RETURN_DURATION_MS = 3800
-const SPLASH_RETURN_SETTLE_LIMIT_MS = 2800
+const SPLASH_DURATION_MS = 5500
+const SPLASH_PHRASE_INTERVAL_MS = 1660
+const SPLASH_TICKER_INTERVAL_MS = 1300
+const SPLASH_RETURN_DURATION_MS = 2500
+const SPLASH_RETURN_SETTLE_LIMIT_MS = 1600
 const SPLASH_RETURN_READING_MS = 1000
-const SPLASH_RETURN_MAX_DURATION_MS = 4000
+const SPLASH_RETURN_MAX_DURATION_MS = 2800
+const SPLASH_DOOR_OPENING_MS = 500
+const FIRST_ROUTE_DOOR_TIMING = Object.freeze({ closeMs: 450, holdMs: 200, openMs: 350 })
+const REPEAT_ROUTE_DOOR_TIMING = Object.freeze({ closeMs: 270, holdMs: 120, openMs: 210 })
 const SPLASH_SEEN_STORAGE_KEY = 'splash:seen'
 const SPLASH_SEEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 const APP_BASE_PATH = normalizeBasePath(import.meta.env.BASE_URL)
 const TEST_ROUTE_PATH = withBasePath('/test', APP_BASE_PATH)
 const VERSIONED_TEST_ROUTE_PATH = withBasePath('/test/v0-5-0', APP_BASE_PATH)
-const isStaticMode = import.meta.env.VITE_STATIC_MODE === 'true' || APP_BASE_PATH !== '/'
+const ETS2_DEV_TEST_API = typeof window !== 'undefined'
+  && ['127.0.0.1', 'localhost', '[::1]'].includes(window.location.hostname)
+  ? String(window.__WORKAROUND_ETS2_DEV_TEST_API__ || '')
+  : ''
+const isStaticMode = !ETS2_DEV_TEST_API && (import.meta.env.VITE_STATIC_MODE === 'true' || APP_BASE_PATH !== '/')
 const STATIC_UNAVAILABLE_PAGES = new Set(STATIC_UNAVAILABLE_LIVE_PAGES)
+const STATIC_DIRECT_PREVIEW_PAGES = new Set(['ets2Dev'])
 const LIVE_PAGES = [
   'junction',
   'simhub',
@@ -47,6 +61,9 @@ const LIVE_PAGES = [
   'blogPost',
   'writingStudio',
   'voyage',
+  'pantry',
+  'ets2',
+  'ets2Dev',
   'work',
   'runtime'
 ]
@@ -78,12 +95,6 @@ const WORK_ROADMAP_ITEMS = [
     title: '기반 정렬',
     summary: '툴체인, 호스팅, 문서/브랜치 정리'
   }
-]
-
-const splashTickerMessages = [
-  '에스컬레이터 방향 다수결로 정하는 중…',
-  '지연 시간을 정성껏 반올림하는 중…',
-  '출구 번호에 서열 매기는 중…'
 ]
 
 const splashPhrases = ['WORKING AROUND', 'MIND THE GAP', 'DOORS OPENING']
@@ -294,14 +305,20 @@ const staticModeMessage = ref('')
 const staticSimNotice = ref(null)
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
-const currentTickerIndex = ref(0)
+const doorTransition = ref({
+  active: false,
+  phase: 'idle',
+  durationMs: 0,
+  lineClass: 'line-w',
+  label: ''
+})
+const currentTicker = ref('')
 const currentSplashPhrase = ref(splashPhrases[0])
 const isReturnVisitSplash = ref(false)
 const splashDurationMs = ref(SPLASH_DURATION_MS)
 const splashBoardCells = ref(
   Array.from({ length: splashCellCount }, (_, index) => createSplashCellState(`splash-${index}`))
 )
-const currentTicker = computed(() => splashTickerMessages[currentTickerIndex.value])
 const splashAutoTransitionLabel = computed(() => `${splashDurationMs.value / 1000}초 후 자동 전환`)
 
 const orchestratorSlices = [
@@ -653,6 +670,9 @@ const TOPBAR_LINES = {
   blogPost: ['line-b', 'B'],
   writingStudio: ['line-b', 'B'],
   voyage: ['line-v', 'V'],
+  pantry: ['line-p', 'P'],
+  ets2: ['line-s', 'S'],
+  ets2Dev: ['line-s', 'S'],
   work: ['line-w', 'W'],
   runtime: ['line-r', 'R'],
   ops: ['line-w', 'W'],
@@ -766,6 +786,30 @@ const currentRoute = computed(() => {
     }
   }
 
+  if (page.value === 'pantry') {
+    return {
+      line: '취향선',
+      title: '자취 밥상',
+      description: '오늘의 한 상과 빠른 대안을 골라 장보기와 식탁 기록까지 이어 갑니다.'
+    }
+  }
+
+  if (page.value === 'ets2') {
+    return {
+      line: '실험선 S',
+      title: '유로트럭 관제',
+      description: '최근 주행 화면과 신선도, 읽기 전용 주행 정보를 한 장면으로 확인합니다.'
+    }
+  }
+
+  if (page.value === 'ets2Dev') {
+    return {
+      line: '실험선 S · 보호 구역',
+      title: '유로트럭 개발자',
+      description: '로컬 PoC의 주행 상태, 감시와 복구, 게임 제어를 한곳에서 확인합니다.'
+    }
+  }
+
   if (page.value === 'work') {
     return {
       line: 'Line W / Work Manager',
@@ -869,6 +913,29 @@ const simHubCards = computed(() => [
     status: '제품 판단',
     accent: 'line-t',
     cta: '시작'
+  },
+  {
+    key: 'ets2',
+    page: 'ets2',
+    lineNo: 'S',
+    name: '유로트럭 관제',
+    displayName: '유로트럭 관제',
+    summary: '최근 주행 화면과 연결 상태를 읽습니다.',
+    status: '읽기 전용',
+    accent: 'line-s',
+    cta: '관제 보기'
+  },
+  {
+    key: 'ets2Dev',
+    page: 'ets2Dev',
+    lineNo: 'S',
+    name: '유로트럭 개발자',
+    displayName: '유로트럭 개발자',
+    summary: '로컬 PoC 제어와 정적 시뮬레이터를 점검합니다.',
+    status: '로컬 전용',
+    accent: 'line-s',
+    cta: '개발 도구 열기',
+    staticAccess: 'server'
   }
 ])
 const featuredSimCard = computed(() => simHubCards.value[0])
@@ -1193,8 +1260,13 @@ let reducedMotionMediaQuery
 let reducedMotionMediaListener
 let splashAnimationRunId = 0
 let splashAnimationTimers = []
+const splashTickerShown = new Set()
 let splashRunStartedAtMs = 0
 let settledSplashRunId = 0
+let doorTransitionRunId = 0
+let doorTransitionTimers = []
+let completedRouteDoorTransitions = 0
+const pageScrollPositions = new Map()
 
 watch(theme, (nextTheme) => {
   if (typeof window !== 'undefined') {
@@ -1411,17 +1483,13 @@ function setSplashBoardToPhrase(phrase) {
   currentSplashPhrase.value = phrase
 }
 
-function randomSplashRange(min, max) {
-  return min + Math.random() * (max - min)
-}
-
 function buildSplashFlipSequence(targetCharacter, charIndex, compact = false) {
   const spins =
     targetCharacter === ' '
       ? (Math.random() < 0.3 ? 1 : 0)
       : compact
-        ? 3 + (charIndex % 2) + Math.floor(Math.random() * 3)
-        : 3 + (charIndex % 3) + Math.floor(Math.random() * 4)
+        ? 1 + (charIndex % 2)
+        : 1 + (charIndex % 2) + Math.floor(Math.random() * 2)
   const sequence = []
   for (let spinIndex = 0; spinIndex < spins; spinIndex += 1) {
     sequence.push(splashLatinCharset.charAt(1 + Math.floor(Math.random() * (splashLatinCharset.length - 1))))
@@ -1473,7 +1541,7 @@ function animateSplashCellFlip(cell, nextCharacter, durationMs, settle, runId, o
       }
       updateSplashCellDisplay(cell, nextCharacter)
       onComplete()
-    }, Math.round(durationMs * 1.58) + 96)
+    }, Math.round(durationMs * (settle ? 1.18 : 1.02)) + 20)
   }, 0)
 }
 
@@ -1483,7 +1551,7 @@ function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0
   }
   const nextCharacter = sequence[index]
   const isLast = index === sequence.length - 1
-  const durationMs = isLast ? 330 : stepDurationMs
+  const durationMs = isLast ? 180 : stepDurationMs
 
   animateSplashCellFlip(cell, nextCharacter, durationMs, isLast, runId, () => {
     if (!isLast) {
@@ -1524,11 +1592,11 @@ function animateSplashPhrase(phrase, runId) {
   splashBoardCells.value.forEach((cell, charIndex) => {
     const targetCharacter = target.charAt(charIndex) || ' '
     const delayMs = compact
-      ? 120 + charIndex * 30 + randomSplashRange(0, 24)
-      : 180 + charIndex * 45 + randomSplashRange(0, 36)
+      ? 80 + charIndex * 16
+      : 100 + charIndex * 22
     const stepDurationMs = compact
-      ? 64 + randomSplashRange(-6, 8)
-      : 82 + randomSplashRange(-8, 12)
+      ? 42
+      : 48
     const sequence = buildSplashFlipSequence(targetCharacter, charIndex, compact)
     queueSplashAnimation(() => {
       playSplashCellSequence(cell, sequence, stepDurationMs, runId, 0, () => {
@@ -1539,6 +1607,15 @@ function animateSplashPhrase(phrase, runId) {
   })
 }
 
+// 스플래시 티커 문구를 바꾸는 유일한 곳이다. 선택 규칙은 data/splashTicker.js 의 pickSplashTicker.
+function rotateSplashTicker(runId) {
+  if (runId !== splashAnimationRunId) {
+    return
+  }
+  currentTicker.value = pickSplashTicker(currentTicker.value, splashTickerShown)
+  queueSplashAnimation(() => rotateSplashTicker(runId), SPLASH_TICKER_INTERVAL_MS)
+}
+
 function playSplashFlap() {
   splashAnimationRunId += 1
   const runId = splashAnimationRunId
@@ -1546,13 +1623,14 @@ function playSplashFlap() {
   settledSplashRunId = 0
   clearSplashAnimationTimers()
   const phraseEntries = isReturnVisitSplash.value
-    ? [{ phrase: splashPhrases.at(-1), tickerIndex: splashTickerMessages.length - 1, delayMs: 0 }]
+    ? [{ phrase: splashPhrases.at(-1), delayMs: 0 }]
     : splashPhrases.map((phrase, phraseIndex) => ({
         phrase,
-        tickerIndex: phraseIndex,
-        delayMs: phraseIndex * 3300
+        delayMs: phraseIndex * SPLASH_PHRASE_INTERVAL_MS
       }))
-  currentTickerIndex.value = phraseEntries[0].tickerIndex
+  // 티커는 플랩 문구와 분리해 회전한다. 모션이 아니라 텍스트 교체이므로 reduced-motion 에서도 돈다.
+  splashTickerShown.clear()
+  rotateSplashTicker(runId)
 
   if (prefersReducedMotion.value) {
     setSplashBoardToPhrase(phraseEntries[0].phrase)
@@ -1569,9 +1647,8 @@ function playSplashFlap() {
       }
     }, SPLASH_RETURN_SETTLE_LIMIT_MS)
   }
-  phraseEntries.forEach(({ phrase, tickerIndex, delayMs }) => {
+  phraseEntries.forEach(({ phrase, delayMs }) => {
     queueSplashAnimation(() => {
-      currentTickerIndex.value = tickerIndex
       animateSplashPhrase(phrase, runId)
     }, delayMs)
   })
@@ -1628,6 +1705,7 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   window.clearTimeout(splashTimer)
   clearSplashAnimationTimers()
+  clearDoorTransitionTimers()
   window.clearInterval(portalRefreshTimer)
   window.clearInterval(elevatorRefreshTimer)
   window.clearInterval(taxiSimulationTimer)
@@ -2340,7 +2418,16 @@ function showStaticSimNotice(event) {
   }, 2500)
 }
 
+function showEts2DevStaticNotice(event) {
+  showStaticSimNotice(event)
+  staticSimNotice.value.message = '개발자 페이지 · 로컬 전용'
+}
+
 function openSimCard(card, event) {
+  if (isStaticMode && card.staticAccess === 'server') {
+    showEts2DevStaticNotice(event)
+    return
+  }
   if (isStaticMode && card.page === 'elevator') {
     showStaticSimNotice(event)
     return
@@ -2369,6 +2456,28 @@ function openPage(nextPage) {
   if (nextPage === 'writingStudio' && !studioPostId.value) {
     createNewStudioPost(false)
   }
+  const normalizedNextPage = isVersionedTestRoute.value
+    ? normalizeVersionedTestView(nextPage)
+    : isLegacyTestRoute.value
+      ? normalizeTestView(nextPage)
+      : normalizeLivePage(nextPage)
+  if (normalizedNextPage === page.value) {
+    focusCurrentPageHeading()
+    return
+  }
+  if (prefersReducedMotion.value) {
+    applyPageChange(normalizedNextPage)
+    focusCurrentPageHeading()
+    return
+  }
+  startRouteDoorTransition(normalizedNextPage)
+}
+
+function applyPageChange(nextPage, { replace = false } = {}) {
+  const currentScroller = document.querySelector('.page-scroller')
+  if (currentScroller && page.value !== 'splash') {
+    pageScrollPositions.set(`${testRouteMode.value}:${page.value}`, currentScroller.scrollTop)
+  }
   if (isVersionedTestRoute.value) {
     page.value = normalizeVersionedTestView(nextPage)
   } else if (isLegacyTestRoute.value) {
@@ -2376,12 +2485,124 @@ function openPage(nextPage) {
   } else {
     page.value = normalizeLivePage(nextPage)
   }
-  syncBrowserLocation()
+  syncBrowserLocation({ replace })
   if (page.value === 'elevator' && !isStaticMode) {
     void activateElevatorPage()
   }
   window.requestAnimationFrame(() => {
-    document.querySelector('.page-scroller')?.scrollTo({ top: 0, behavior: 'smooth' })
+    const savedTop = pageScrollPositions.get(`${testRouteMode.value}:${page.value}`) || 0
+    document.querySelector('.page-scroller')?.scrollTo({ top: savedTop, behavior: 'auto' })
+  })
+}
+
+function doorLineClassFor(pageName) {
+  return (TOPBAR_LINES[pageName] || TOPBAR_LINES.junction)[0]
+}
+
+function queueDoorTransition(callback, delayMs) {
+  const timer = window.setTimeout(() => {
+    doorTransitionTimers = doorTransitionTimers.filter((entry) => entry !== timer)
+    callback()
+  }, delayMs)
+  doorTransitionTimers.push(timer)
+}
+
+function clearDoorTransitionTimers() {
+  doorTransitionTimers.forEach((timer) => window.clearTimeout(timer))
+  doorTransitionTimers = []
+}
+
+function resetDoorTransition() {
+  doorTransition.value = {
+    active: false,
+    phase: 'idle',
+    durationMs: 0,
+    lineClass: 'line-w',
+    label: ''
+  }
+}
+
+function focusCurrentPageHeading() {
+  nextTick(() => {
+    document.querySelector('.station-topbar h2')?.focus({ preventScroll: true })
+  })
+}
+
+function startRouteDoorTransition(nextPage) {
+  if (doorTransition.value.active) {
+    return
+  }
+  clearDoorTransitionTimers()
+  doorTransitionRunId += 1
+  const runId = doorTransitionRunId
+  const timing = completedRouteDoorTransitions === 0
+    ? FIRST_ROUTE_DOOR_TIMING
+    : REPEAT_ROUTE_DOOR_TIMING
+  doorTransition.value = {
+    active: true,
+    phase: 'primed',
+    durationMs: timing.closeMs,
+    lineClass: doorLineClassFor(nextPage),
+    label: ''
+  }
+
+  nextTick(() => {
+    if (runId !== doorTransitionRunId) return
+    document.querySelector('.door-left')?.getBoundingClientRect()
+    doorTransition.value = { ...doorTransition.value, phase: 'closing' }
+    queueDoorTransition(() => {
+      if (runId !== doorTransitionRunId) return
+      doorTransition.value = {
+        ...doorTransition.value,
+        phase: 'closed',
+        durationMs: 0,
+        label: 'DOORS CLOSING'
+      }
+      queueDoorTransition(() => {
+        if (runId !== doorTransitionRunId) return
+        applyPageChange(nextPage)
+        doorTransition.value = {
+          ...doorTransition.value,
+          phase: 'opening',
+          durationMs: timing.openMs,
+          label: ''
+        }
+        queueDoorTransition(() => {
+          if (runId !== doorTransitionRunId) return
+          completedRouteDoorTransitions += 1
+          resetDoorTransition()
+          focusCurrentPageHeading()
+        }, timing.openMs)
+      }, timing.holdMs)
+    }, timing.closeMs)
+  })
+}
+
+function startSplashDoorOpening() {
+  clearDoorTransitionTimers()
+  doorTransitionRunId += 1
+  const runId = doorTransitionRunId
+  doorTransition.value = {
+    active: true,
+    phase: 'closed',
+    durationMs: 0,
+    lineClass: doorLineClassFor('junction'),
+    label: ''
+  }
+  nextTick(() => {
+    if (runId !== doorTransitionRunId) return
+    document.querySelector('.door-left')?.getBoundingClientRect()
+    doorTransition.value = {
+      ...doorTransition.value,
+      phase: 'opening',
+      durationMs: SPLASH_DOOR_OPENING_MS
+    }
+    queueDoorTransition(() => {
+      if (runId !== doorTransitionRunId) return
+      applyPageChange('junction', { replace: true })
+      resetDoorTransition()
+      focusCurrentPageHeading()
+    }, SPLASH_DOOR_OPENING_MS)
   })
 }
 
@@ -2398,12 +2619,17 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
 function scheduleSplashTransition() {
   window.clearTimeout(splashTimer)
   const elapsedMs = Math.max(0, Date.now() - splashRunStartedAtMs)
-  const remainingMs = Math.max(0, splashDurationMs.value - elapsedMs)
+  const doorOpeningMs = prefersReducedMotion.value ? 0 : SPLASH_DOOR_OPENING_MS
+  const remainingMs = Math.max(0, splashDurationMs.value - elapsedMs - doorOpeningMs)
   splashTimer = window.setTimeout(() => {
     clearSplashAnimationTimers()
     markSplashVisitComplete()
-    page.value = 'junction'
-    syncLiveLocation({ replace: true })
+    if (prefersReducedMotion.value) {
+      applyPageChange('junction', { replace: true })
+      focusCurrentPageHeading()
+      return
+    }
+    startSplashDoorOpening()
   }, remainingMs)
 }
 
@@ -3068,7 +3294,7 @@ function readInitialPage() {
   const mode = readTestRouteMode()
   if (mode === 'live') {
     const route = readLiveRoute(window.location.pathname, APP_BASE_PATH)
-    if (route && isStaticMode && STATIC_UNAVAILABLE_PAGES.has(route.page)) {
+    if (route && isStaticMode && STATIC_UNAVAILABLE_PAGES.has(route.page) && !STATIC_DIRECT_PREVIEW_PAGES.has(route.page)) {
       return 'junction'
     }
     return route?.page || 'splash'
@@ -3169,6 +3395,9 @@ function handleLocationPopState(event) {
 
   window.clearTimeout(splashTimer)
   clearSplashAnimationTimers()
+  clearDoorTransitionTimers()
+  doorTransitionRunId += 1
+  resetDoorTransition()
   testRouteMode.value = nextMode
 
   if (nextMode === 'v050') {
@@ -3179,7 +3408,7 @@ function handleLocationPopState(event) {
     const liveRoute = readLiveRoute(window.location.pathname, APP_BASE_PATH)
     if (liveRoute) {
       activeBlogSlug.value = liveRoute.slug
-      page.value = isStaticMode && STATIC_UNAVAILABLE_PAGES.has(liveRoute.page)
+      page.value = isStaticMode && STATIC_UNAVAILABLE_PAGES.has(liveRoute.page) && !STATIC_DIRECT_PREVIEW_PAGES.has(liveRoute.page)
         ? 'junction'
         : liveRoute.page
     } else {
@@ -3387,8 +3616,24 @@ function persistStudioPostId(postId) {
 </script>
 
 <template>
-  <div class="app-shell" :data-theme="theme">
-    <transition name="fade" mode="out-in">
+  <div
+    class="app-shell"
+    :class="{ 'door-transitioning': doorTransition.active }"
+    :data-theme="theme"
+    :aria-busy="doorTransition.active ? 'true' : undefined"
+  >
+    <div
+      v-if="doorTransition.active"
+      class="door-transition"
+      :class="[doorTransition.phase, doorTransition.lineClass]"
+      :style="{ '--door-duration': `${doorTransition.durationMs}ms` }"
+      :data-phase="doorTransition.phase"
+    >
+      <span class="door-panel door-left" aria-hidden="true"></span>
+      <span class="door-panel door-right" aria-hidden="true"></span>
+      <span v-if="doorTransition.label" class="door-flap-label" role="status">{{ doorTransition.label }}</span>
+    </div>
+
       <section v-if="page === 'splash'" class="splash-stage">
         <div class="splash-panel">
           <div class="splash-top">
@@ -3419,7 +3664,7 @@ function persistStudioPostId(postId) {
             </div>
           </div>
 
-          <div class="ticker-strip splash-ticker-strip" aria-live="polite">
+          <div class="ticker-strip splash-ticker-strip" aria-live="off">
             <span class="ticker-label">알림</span>
             <span class="ticker-copy">{{ currentTicker }}</span>
           </div>
@@ -3435,7 +3680,7 @@ function persistStudioPostId(postId) {
         <header class="station-topbar" :class="topbarLineClass">
           <SiteLoopSymbol v-if="page === 'junction'" />
           <span v-else class="roundel" :class="topbarLineClass">{{ topbarLetter }}</span>
-          <h2>{{ page === 'writingStudio' ? '글쓰기' : currentRoute.title }}</h2>
+          <h2 tabindex="-1">{{ page === 'writingStudio' ? '글쓰기' : currentRoute.title }}</h2>
           <div class="topbar-actions">
             <button
               v-if="page !== 'junction'"
@@ -3909,6 +4154,12 @@ function persistStudioPostId(postId) {
           </section>
 
           <VoyageView v-else-if="page === 'voyage'" @exit="openPage('junction')" />
+
+          <Pantry v-else-if="page === 'pantry'" />
+
+          <Ets2Live v-else-if="page === 'ets2'" />
+
+          <Ets2Dev v-else-if="page === 'ets2Dev'" :static-mode="isStaticMode" />
 
           <section v-else-if="page === 'elevator'" class="feature-shell sim-tone-page elevator-tone-page">
             <p v-if="isStaticMode" class="static-preview-hairline" role="status">
@@ -4798,7 +5049,7 @@ function persistStudioPostId(postId) {
             </button>
             <button
               type="button"
-              :class="{ active: ['simhub', 'elevator', 'taxi'].includes(page) }"
+              :class="{ active: ['simhub', 'elevator', 'taxi', 'ets2', 'ets2Dev'].includes(page) }"
               @click="openPage('simhub')"
             >
               승강장
@@ -4806,6 +5057,5 @@ function persistStudioPostId(postId) {
           </nav>
         </div>
       </main>
-    </transition>
   </div>
 </template>

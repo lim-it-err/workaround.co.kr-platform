@@ -9,7 +9,6 @@
 - `TKT-175` `P2` `ets2` `backlog` `[INFRA]` 개발자 페이지 LAN 프록시 `/api/ets2/*` (SSH 포워드 대안 뒤)
 - `TKT-171` `P2` `ets2` `backlog` `[INFRA]` 유로트럭 실시간 스트리밍 MediaMTX WebRTC — 085 Tunnel 뒤
 
-
 - `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
 - `TKT-012` `P1` `v0.2.1` `진행 가능` `[BE]` 테스트 코드 확장과 커버리지 측정 기반 (PM 게이트 해제 2026-08-17)
 - `TKT-011` `P2` `v0.3.0` `진행 가능` 엘리베이터 시뮬레이터 통합 프리뷰 연결
@@ -36,14 +35,10 @@
 
 ## Ready
 
-> **브랜치 안내 (D-016)**: 아래 전환 시리즈는 전부 `codex/v0.7.0-tone` 에서. 트렁크 동결.
+> **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-173` `P1` `release` `ready` `[PM]` `main` 승격 — v0.7.0 태그 뒤·v0.8.0 전 (D-027, push 는 PO)
-- `TKT-170` `P1` `pantry` `ready` `[FE]` 자취 밥상 `/pantry` — 오늘의 한 상·대안·장보기·스탬프, P선 개통 (PO 09-27)
-- `TKT-168` `P1` `ets2` `ready` `[FE]` 유로트럭 뷰어 `/ets2` — 프레임 폴링·주행 정보 행·정지 상태 (v2)
-- `TKT-174` `P1` `ets2` `ready` `[FE]` 유로트럭 개발자 페이지 `/ets2/dev` — 감시/복구·게임 제어·차선 변경·시뮬레이터 (보호 구역)
-- `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + R2 퍼블리셔 (v2, codex-2)
-- `TKT-172` `P2` `voyage` `ready` `[FE]` 여행 결산 화면 (settlement 데이터 표시)
+- `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
+- `TKT-177` `P2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
 - `TKT-159` `P1` `infra` `ready` `[INFRA]` 메인 E2E 통합 러너 `npm run e2e:all` (AS-R009 권고)
@@ -54,20 +49,34 @@
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
-
-
-
 ## Started
 
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
-- `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — Docker daemon 미기동으로 cloudflared+gateway 컨테이너 게이트 대기
+- `TKT-085` `P1` `infra` `blocked` `[INFRA]` Pages+Tunnel 구현·정적 검증 완료 — daemon 정상, Docker Desktop VM의 registry pull 시간 초과로 cloudflared+gateway 컨테이너 게이트 대기
 - `TKT-018` `P1` `v0.2.0` `진행 가능` 릴리스 후보 검증과 PR 수용 게이트
 
 ## Need Review
 
-
 ## Finished
+- `TKT-187` `[FE]` CSS 잔손질 — 티커 두 줄 균형·단어 경계 분할, 자취 밥상 칩 행 페이드 — r2 통과 (2026-10-25, dev 서브에이전트 Haiku 첫 티켓)
 
+- `TKT-186` `[FE]` 스플래시 티커 멘트 복원 — 39개 풀 무작위 회전 1.3초 — r2 통과 (2026-10-25, dev 서브에이전트 Sonnet 첫 티켓, [제안] 고아 줄 → 187)
+- `TKT-184` `[FE]` 홈 노선도 소역 히트 원 r=26(1440 에서 41px) — r1 통과 (2026-10-25)
+- `TKT-185` `[FE]` 자취 밥상 무알코올 칩 기본 행 상시 노출·한 줄 스크롤 — r1 통과 (2026-10-25, [제안] 스크롤 단서)
+
+- `TKT-174` `[FE]` 유로트럭 개발자 `/ets2/dev` — 보호 구역·PoC 제어·감시·시뮬레이터, 면 제거·연결 잠금 — r2 통과 (2026-10-25)
+- `TKT-182` `[FE]` 문 닫힘/열림 애니메이션 — 5.5초·문구 유지·CSS 목업 — r2 통과 (2026-10-25)
+- `TKT-179` `[FE]` 실험선 수직 지선 — 라벨 왼쪽·소역 히트 원 — r2 통과 (2026-10-25, 40px 은 184)
+- `TKT-172` `[FE]` 여행 결산 화면 — 날짜상 종료 노출 — r2 통과 (2026-10-25)
+- `TKT-183` `[FE]` 저장 실패 중 응급 백업 — r1 통과 (2026-10-25)
+- `TKT-170` `[FE]` 자취 밥상 `/pantry`·P선 개통 — r3 통과 (2026-10-25)
+- `TKT-180` `[FE]` 자취 밥상 태그 칩 4묶음·quip — r1 통과 (2026-10-25, 무알코올 기본 노출 → 185)
+- `TKT-176` `[FE]` E2E 시간대 고정 timezoneId — r1 통과 (2026-10-24, 묶음 커밋 대기)
+- `TKT-178` `[FE]` 스플래시 플랩 속도 5초/2.5초 — r1 통과 (2026-10-24, 182 r2 묶음)
+- `TKT-181` `[조사]` 자취 밥상 카피 재료·태그 후보 — codex-4 보고서 (2026-10-05, 태그 7종 반영)
+- `TKT-181` `[조사]` 자취 밥상 카피 재료·태그 후보 10 — codex-4 보고서 `reports/2026-10-05-pantry-copy-material.md` (2026-10-05, 태그 7종 콘텐츠 반영)
+- `TKT-168` `[FE]` 유로트럭 뷰어 `/ets2`·S 소역 — r1 통과 (2026-10-05, 커밋은 174 묶음 조건부)
+- `TKT-173` `[PM]` `main` 승격 — 역사 보존 병합 `3618f45`(트리 = v0.7.0)·문서·Pages 트리거 정리, 작업 브랜치 `codex/v0.8.0-live` (2026-09-28, main push 는 PO)
 - `TKT-166` `[PM]` 유로트럭 관제 구조 결정·스펙 `design/ets2-live-spec.md` (2026-09-27)
 - `TKT-169` `[PM]` 자취 밥상 스펙·콘텐츠(요리 25·세트 13·페어링) `design/pantry-spec.md` (2026-09-27)
 - `TKT-165` `[FE]` 글쓰기 E2E 견고화 — 순간 상태 대기 제거·임의 포트 self-host, 동시 3라운드 78/78 — r1 통과 (2026-09-17, 다음 배치)

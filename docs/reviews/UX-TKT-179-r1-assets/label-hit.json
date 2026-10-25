@@ -1,0 +1,24 @@
+[
+  {
+    "theme": "dark",
+    "hit": {
+      "x": 620.0775756835938,
+      "y": 270.18804931640625,
+      "insidePublicLabel": true,
+      "owner": "엘리베이터"
+    },
+    "toast": "서버 시뮬 · 정적 공개본에서는 준비 중",
+    "url": "http://127.0.0.1:65317/workaround.co.kr-platform/"
+  },
+  {
+    "theme": "light",
+    "hit": {
+      "x": 620.0775756835938,
+      "y": 270.18804931640625,
+      "insidePublicLabel": true,
+      "owner": "엘리베이터"
+    },
+    "toast": "서버 시뮬 · 정적 공개본에서는 준비 중",
+    "url": "http://127.0.0.1:65317/workaround.co.kr-platform/"
+  }
+]

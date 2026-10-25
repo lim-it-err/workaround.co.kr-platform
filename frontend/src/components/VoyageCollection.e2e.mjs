@@ -5,6 +5,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { newSeoulContext } from '../e2eContext.mjs'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -54,7 +55,7 @@ async function serveStaticBuild(request, response) {
 }
 
 async function setup(t, { width, height, theme }) {
-  const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' })
+  const context = await newSeoulContext(browser, { viewport: { width, height }, reducedMotion: 'reduce' })
   const page = await context.newPage()
   const errors = []
   const apiRequests = []

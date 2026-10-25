@@ -10,7 +10,7 @@ export const EAST_EUROPE_2026 = defineVoyage({
   summary: '프라하에서 시작해 여덟 도시를 잇는 순환 여행',
   subtitle: '프라하 → 체스키크룸로프 → 할슈타트 → 잘츠부르크 → 바하우 → 비엔나 → 부다페스트 → 브르노 → 프라하',
   period: { start: '2026-09-08', end: '2026-09-18', nights: 9, days: 11 },
-  status: 'boarding', // planned | boarding(여행 중) | arrived(종료·기록)
+  status: 'boarding', // planned | boarding(여행 중) | arrived(종료·기록) — 종료 판정은 날짜(routeGauges)로, 'arrived' 전환은 E2E 픽스처 분리 뒤(TKT-172 r2 메모)
   cities: [
     { id: 'prague', name: '프라하', lat: 50.0755, lon: 14.4378 },
     { id: 'cesky-krumlov', name: '체스키크룸로프', lat: 48.8127, lon: 14.3175 },
@@ -425,7 +425,7 @@ export const EAST_EUROPE_2026 = defineVoyage({
         {
           label: '아시아나 프라하 체크인',
           url: 'https://flyasiana.com/C/US/KO/travel/airport?airportCd=PRG',
-          note: 'T1 1층 카운터는 출발 3시간 전부터 50분 전까지 운영하며 셀프 체크인 키오스크는 지원하지 않습니다. OZ546 출발은 e-ticket 확인 전까지 데이터의 18:50을 유지합니다.',
+          note: 'T1 1층 카운터는 출발 3시간 전부터 50분 전까지 운영하며 셀프 체크인 키오스크는 지원하지 않습니다. OZ546 출발 18:50 기준 카운터 운영 15:50~18:00.',
           checkedAt: '2026-09-15'
         }
       ]

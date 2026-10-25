@@ -274,11 +274,13 @@ export function routeGauges(voyage, todayIndex) {
   const budgetPlan = voyage.budget?.items?.reduce((total, item) => total + (item.amount || 0), 0)
     || voyage.budget?.plan
     || 0
+  const settledSpend = Number(voyage.settlement?.grandTotal)
 
   return {
+    isComplete,
     completedDistance,
     totalDistance,
-    spent: prepaid + tripSpend,
+    spent: Number.isFinite(settledSpend) ? settledSpend : prepaid + tripSpend,
     prepaid,
     tripSpend,
     budgetPlan

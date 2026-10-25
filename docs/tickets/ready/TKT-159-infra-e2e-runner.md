@@ -2,7 +2,7 @@
 
 # TKT-159 `[INFRA]` 메인 E2E 통합 러너 — `npm run e2e:all` 한 명령
 
-- 상태: ready · **P1** · 담당: codex-2 · 의존: 없음. 브랜치 `codex/v0.7.0-tone`. **[반박]·[구체화 질문] 의무.**
+- 상태: ready · **P1** · 담당: codex-2 · 의존: 없음. 브랜치 `codex/v0.8.0-live`. **[반박]·[구체화 질문] 의무.**
 - 근거: AS-R009 §후속 — "E2E 정적 origin/base 계약이 파일마다 달라 한 명령으로 재현이 어렵다, 릴리스 전 스크립트로 고정 권고". 현재 PM 게이트는 스위트별 4종 base 를 손으로 맞춘다(Pages-base self-serve 8 · WritingStudio `dist-base` preview 4174 · SimTone/taxi `dist-root` preview 4175 · ToneTools root dist). 사이트 `CLAUDE.md` 절차 참조.
 - scope: `frontend/package.json` scripts(`e2e:all`·`e2e:pages`·`e2e:root`·`e2e:studio`), `frontend/scripts/run-e2e.mjs`(신규), `.gitignore`(`.DS_Store`·`frontend/dist-base/`·`frontend/dist-root/`), `docs/workflow.md` 절. 테스트 파일 자체는 수정하지 않는다(146 과 충돌 방지).
 

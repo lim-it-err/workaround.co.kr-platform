@@ -1,0 +1,57 @@
+vite v5.4.21 building for production...
+transforming...
+✓ 119 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                  0.58 kB │ gzip:   0.32 kB
+dist/assets/FileSubmitEditor-BvbbC7Y8.css        0.88 kB │ gzip:   0.37 kB
+dist/assets/NicknamePrompt-BfI5gHbI.css          1.29 kB │ gzip:   0.55 kB
+dist/assets/TodayPage-BjAVwJJo.css               1.90 kB │ gzip:   0.69 kB
+dist/assets/CoursesPage-BgBfzl9d.css             2.38 kB │ gzip:   0.75 kB
+dist/assets/CourseSimulationPage-DNj20YIB.css    2.73 kB │ gzip:   0.84 kB
+dist/assets/CourseDetailPage-BGctuJ-T.css        2.88 kB │ gzip:   0.89 kB
+dist/assets/InflightPage-DPAUNShZ.css            3.18 kB │ gzip:   0.94 kB
+dist/assets/CaseFilePage-D3y661qM.css            3.30 kB │ gzip:   0.99 kB
+dist/assets/SwipeReviewPage-BP7IhSHS.css         3.39 kB │ gzip:   0.99 kB
+dist/assets/PracticeGamePage-CrDwKKK1.css        4.12 kB │ gzip:   1.12 kB
+dist/assets/ProjectJourneyPage-DooI153s.css      5.15 kB │ gzip:   1.32 kB
+dist/assets/ProbeGamePage-sX1IgFfv.css           5.38 kB │ gzip:   1.36 kB
+dist/assets/BoundaryGamePage-BMdfsqBX.css        6.42 kB │ gzip:   1.54 kB
+dist/assets/index-BNeo_fkl.css                   7.46 kB │ gzip:   2.48 kB
+dist/assets/LearnPage-_73UZx62.css               8.39 kB │ gzip:   2.02 kB
+dist/assets/RecordsPage-JpSzSvjl.css            11.92 kB │ gzip:   2.36 kB
+dist/assets/ReviewPage-CsosfD7h.css             12.49 kB │ gzip:   2.33 kB
+dist/assets/MissionPage-BM8hc1zj.css            18.04 kB │ gzip:   3.35 kB
+dist/assets/durationFormat-BhLohAQ9.js           0.22 kB │ gzip:   0.20 kB
+dist/assets/MarkdownBlock-Ca43JDQy.js            0.31 kB │ gzip:   0.25 kB
+dist/assets/FileSubmitEditor-Xhbr3lhb.js         1.28 kB │ gzip:   0.81 kB
+dist/assets/NicknamePrompt-By0_-g3u.js           1.59 kB │ gzip:   1.07 kB
+dist/assets/CoursesPage-xZgQ8d0N.js              2.29 kB │ gzip:   1.30 kB
+dist/assets/CourseDetailPage-DYxD9AOO.js         2.38 kB │ gzip:   1.32 kB
+dist/assets/TodayPage-ByTRtcEW.js                3.21 kB │ gzip:   1.84 kB
+dist/assets/CaseFilePage-DmvXVqzu.js             3.76 kB │ gzip:   1.88 kB
+dist/assets/sampleBoundaryRounds-CSGfZZwR.js     3.96 kB │ gzip:   3.56 kB
+dist/assets/sampleProbeRounds-CJvYdUYG.js        4.27 kB │ gzip:   3.63 kB
+dist/assets/learnCatalog-DAMsIwwW.js             5.14 kB │ gzip:   2.12 kB
+dist/assets/SwipeReviewPage-DVKMLCPg.js          5.26 kB │ gzip:   2.46 kB
+dist/assets/ProjectJourneyPage-Ba0ad5UW.js       5.41 kB │ gzip:   2.61 kB
+dist/assets/InflightPage-B3Jek_90.js             5.43 kB │ gzip:   2.81 kB
+dist/assets/CourseSimulationPage-BN7fIEFX.js     5.87 kB │ gzip:   2.99 kB
+dist/assets/BoundaryGamePage-DqsZEEJj.js         6.23 kB │ gzip:   2.81 kB
+dist/assets/ProbeGamePage-4aArb4dR.js            6.53 kB │ gzip:   3.02 kB
+dist/assets/sampleSwipeCards-C5N4vbDj.js         6.58 kB │ gzip:   4.79 kB
+dist/assets/PracticeGamePage-CBqrqeRw.js         9.34 kB │ gzip:   3.80 kB
+dist/assets/index-Dj49M3IZ.js                   10.83 kB │ gzip:   4.44 kB
+dist/assets/RecordsPage-QK-p0-eR.js             11.07 kB │ gzip:   4.80 kB
+dist/assets/LearnPage-VGNX7-ax.js               11.58 kB │ gzip:   4.62 kB
+dist/assets/ReviewPage-vPwlhh1U.js              11.65 kB │ gzip:   5.00 kB
+dist/assets/sampleCaseFiles-BfGxbTL1.js         13.96 kB │ gzip:  10.60 kB
+dist/assets/inflightContent-Ckc_Lvg2.js         16.23 kB │ gzip:  12.68 kB
+dist/assets/practice-BGheQk6J.js                26.54 kB │ gzip:  17.24 kB
+dist/assets/MissionPage-BnzsLdsF.js             27.75 kB │ gzip:  11.43 kB
+dist/assets/markdown-JKvyS0Pp.js                35.40 kB │ gzip:  11.15 kB
+dist/assets/courseBudapestBaths-DzefAphV.js     36.18 kB │ gzip:  23.08 kB
+dist/assets/missions-DyqmF4n1.js                52.58 kB │ gzip:  25.79 kB
+dist/assets/vue-AwMKi2rh.js                     93.97 kB │ gzip:  36.78 kB
+dist/assets/sampleContent-CtWGu-WQ.js          283.97 kB │ gzip: 168.33 kB
+✓ built in 784ms

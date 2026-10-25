@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+// 고정 시각: 2026-08-05 08:00(+09:00) = 출근길 슬롯.
+
 const scenarios = [
   { width: 375, colorScheme: 'dark' as const },
   { width: 375, colorScheme: 'light' as const },
@@ -62,7 +64,7 @@ for (const scenario of scenarios) {
 }
 
 test('오늘의 독서 CTA는 추천 제목과 출발 문맥을 그대로 연습 판에 전달한다', async ({ page }) => {
-  await page.clock.setFixedTime(new Date('2026-08-05T08:00:00'))
+  await page.clock.setFixedTime(new Date('2026-08-05T08:00:00+09:00'))
   await page.goto('/today')
 
   const recommendedTitle = (await page.locator('.surface-hero h1').textContent())?.trim() ?? ''

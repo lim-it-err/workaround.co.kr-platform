@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>유로트럭 정적 주행 시험</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header><div><p>02 시뮬레이션</p><h1>반복 가능한 주행 시험</h1></div><span>게임 명령 없음</span></header>
+    <section class="metrics" aria-label="시뮬레이션 주행 정보">
+      <div><small>속도</small><strong id="speed">90.0 km/h</strong></div>
+      <div><small>앞차 간격</small><strong id="gap">—</strong></div>
+      <div><small>차선 중심 오차</small><strong id="offset">0.00 m</strong></div>
+      <div><small>진행 시간</small><strong id="time">0.0초</strong></div>
+    </section>
+    <div class="workspace">
+      <section><canvas id="road" width="920" height="590" aria-label="2차로 시험 도로">2차로 시험 도로</canvas></section>
+      <aside>
+        <label>상황<select id="scenario"><option value="follow">느린 앞차 추종</option><option value="keep">차선 중심 복귀</option><option value="clear">차선 변경 · 옆 차로 비어 있음</option><option value="rear">차선 변경 · 빠른 뒤 차량</option><option value="exit">출구 접근 · 추월 차로 진입 제한</option></select></label>
+        <label>목표 속도 <span id="target-value">90 km/h</span><input id="target-speed" type="range" min="60" max="110" step="5" value="90"></label>
+        <div class="buttons"><button id="play" class="primary">시작</button><button id="reset">초기화</button><button id="fast">1×</button></div>
+        <div class="buttons"><button id="sim-left">← 왼쪽 변경</button><button id="sim-right">오른쪽 변경 →</button></div>
+        <p id="decision" class="decision">앞차와의 간격에 따라 감속합니다.</p>
+        <p id="gap-detail" class="hint">앞차 없음 · 목표 속도와 차선 중심을 유지합니다.</p>
+        <h2>실험 기록</h2><ol id="events"><li>아직 기록이 없습니다.</li></ol>
+      </aside>
+    </div>
+    <footer>정적 시뮬레이터 · 네트워크와 게임 제어를 사용하지 않습니다.</footer>
+  </main>
+  <script src="controller.js"></script><script src="app.js"></script>
+</body>
+</html>

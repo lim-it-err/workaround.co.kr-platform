@@ -1,0 +1,100 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "requests": [],
+    "inert": true,
+    "toast": {
+      "x": 27.5,
+      "y": 380.203125,
+      "width": 320,
+      "height": 51.59375,
+      "top": 380.203125,
+      "right": 347.5,
+      "bottom": 431.796875,
+      "left": 27.5
+    },
+    "overflow": 0
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "requests": [],
+    "inert": true,
+    "toast": {
+      "x": 27.5,
+      "y": 380.203125,
+      "width": 320,
+      "height": 51.59375,
+      "top": 380.203125,
+      "right": 347.5,
+      "bottom": 431.796875,
+      "left": 27.5
+    },
+    "overflow": 0
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "requests": [],
+    "inert": true,
+    "toast": {
+      "x": 560,
+      "y": 424.203125,
+      "width": 320,
+      "height": 51.59375,
+      "top": 424.203125,
+      "right": 880,
+      "bottom": 475.796875,
+      "left": 560
+    },
+    "overflow": 0,
+    "stopBox": {
+      "x": 505.7955627441406,
+      "y": 251.39071655273438,
+      "width": 110.38339233398438,
+      "height": 31.753509521484375
+    },
+    "circleBox": {
+      "x": 607.1214599609375,
+      "y": 274.08673095703125,
+      "width": 9.0574951171875,
+      "height": 9.0574951171875
+    },
+    "textClick": true,
+    "homeUrl": "http://127.0.0.1:56218/workaround.co.kr-platform/",
+    "homeText": "환승 홀\n☀\n환승 홀 · 기록선 · 실험선 · 기지선\nB\n블로그\nV\n여행\n기록선\nA\nAdvisor\nS\n미스터리 트레인\nD\n발견\nP\n자취 밥상\n실험선\nW\nWork\nR\nRuntime\n기지선\n아카이브\n글 상세\n스튜디오\n노선도\n코스 · 미션\n격납고\n유로트럭\n유로트럭 개발자\n엘리베이터\n택시\n화이트채플\n작업 흐름\n실행 상태\n환승 홀\n\n큰 역은 서비스 · 작은 역은 세부 화면\n\n기록선\n\n환승 홀 → 블로그 → 여행\n\nB\n블로그 본선\n읽고 쓰는 기록\n공개 아카이브\n글 상세\nWriting Studio\nV\n여행 노선\n여정과 기억\n노선도\n실험선\n\nAdvisor → 미스터리 트레인 → 발견 → 자취 밥상\n\nA\nDeveloper Advisor\n코스 · 미션\nS\n미스터리 트레인\n격납고\n격납고\n유로트럭\n유로트럭 개발자\n엘리베이터\n택시\n화이트채플\nD\n발견\n연장 예정\nP\n자취 밥상\n오늘의 한 상: 순두부찌개 15분\n기지선\n\nWork → Runtime · 보호 구역\n\nW\nWork Manager\n보호 구역\nR\nRuntime Board\n보호 구역\n\n개발자 페이지 · 로컬 전용"
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "requests": [],
+    "inert": true,
+    "toast": {
+      "x": 560,
+      "y": 424.203125,
+      "width": 320,
+      "height": 51.59375,
+      "top": 424.203125,
+      "right": 880,
+      "bottom": 475.796875,
+      "left": 560
+    },
+    "overflow": 0,
+    "stopBox": {
+      "x": 505.7955627441406,
+      "y": 251.39071655273438,
+      "width": 110.38339233398438,
+      "height": 31.753509521484375
+    },
+    "circleBox": {
+      "x": 607.1214599609375,
+      "y": 274.08673095703125,
+      "width": 9.0574951171875,
+      "height": 9.0574951171875
+    },
+    "textClick": true,
+    "homeUrl": "http://127.0.0.1:56218/workaround.co.kr-platform/",
+    "homeText": "환승 홀\n☾\n환승 홀 · 기록선 · 실험선 · 기지선\nB\n블로그\nV\n여행\n기록선\nA\nAdvisor\nS\n미스터리 트레인\nD\n발견\nP\n자취 밥상\n실험선\nW\nWork\nR\nRuntime\n기지선\n아카이브\n글 상세\n스튜디오\n노선도\n코스 · 미션\n격납고\n유로트럭\n유로트럭 개발자\n엘리베이터\n택시\n화이트채플\n작업 흐름\n실행 상태\n환승 홀\n\n큰 역은 서비스 · 작은 역은 세부 화면\n\n기록선\n\n환승 홀 → 블로그 → 여행\n\nB\n블로그 본선\n읽고 쓰는 기록\n공개 아카이브\n글 상세\nWriting Studio\nV\n여행 노선\n여정과 기억\n노선도\n실험선\n\nAdvisor → 미스터리 트레인 → 발견 → 자취 밥상\n\nA\nDeveloper Advisor\n코스 · 미션\nS\n미스터리 트레인\n격납고\n격납고\n유로트럭\n유로트럭 개발자\n엘리베이터\n택시\n화이트채플\nD\n발견\n연장 예정\nP\n자취 밥상\n오늘의 한 상: 순두부찌개 15분\n기지선\n\nWork → Runtime · 보호 구역\n\nW\nWork Manager\n보호 구역\nR\nRuntime Board\n보호 구역\n\n개발자 페이지 · 로컬 전용"
+  }
+]

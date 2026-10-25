@@ -1,0 +1,402 @@
+[
+  {
+    "width": 375,
+    "theme": "dark",
+    "errors": [],
+    "moves": [
+      {
+        "start": 111.79999995231628,
+        "end": 986.4000000953674,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 427.90000009536743
+          },
+          {
+            "phase": "opening",
+            "ms": 638.8000000715256
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "환승 홀",
+        "focus": true
+      },
+      {
+        "start": 1131.7000000476837,
+        "end": 608,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 274.59999990463257
+          },
+          {
+            "phase": "opening",
+            "ms": 399.89999997615814
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "자취 밥상",
+        "focus": true
+      },
+      {
+        "start": 1772.8999999761581,
+        "end": 602.1000000238419,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 266.5
+          },
+          {
+            "phase": "opening",
+            "ms": 396.8000000715256
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "환승 홀",
+        "focus": true
+      },
+      {
+        "start": 2406.2999999523163,
+        "end": 608.4000000953674,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 274.40000009536743
+          },
+          {
+            "phase": "opening",
+            "ms": 396.40000009536743
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "자취 밥상",
+        "focus": true
+      },
+      {
+        "start": 3047.899999976158,
+        "end": 608.2000000476837,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 274.89999997615814
+          },
+          {
+            "phase": "opening",
+            "ms": 398.89999997615814
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "환승 홀",
+        "focus": true
+      },
+      {
+        "start": 3689.600000023842,
+        "end": 608.3999999761581,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 275
+          },
+          {
+            "phase": "opening",
+            "ms": 395.89999997615814
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "자취 밥상",
+        "focus": true
+      },
+      {
+        "start": 4333.399999976158,
+        "end": 599.5,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 272.7000000476837
+          },
+          {
+            "phase": "opening",
+            "ms": 390.2000000476837
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "환승 홀",
+        "focus": true
+      },
+      {
+        "start": 4964.700000047684,
+        "end": 608.2999999523163,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 274.7999999523163
+          },
+          {
+            "phase": "opening",
+            "ms": 395.6999999284744
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "자취 밥상",
+        "focus": true
+      },
+      {
+        "start": 5607.700000047684,
+        "end": 607.6999999284744,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 273.5
+          },
+          {
+            "phase": "opening",
+            "ms": 394.6999999284744
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "환승 홀",
+        "focus": true
+      },
+      {
+        "start": 6250,
+        "end": 598.2999999523163,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 272.7999999523163
+          },
+          {
+            "phase": "opening",
+            "ms": 391.89999997615814
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "자취 밥상",
+        "focus": true
+      }
+    ],
+    "reduced": {
+      "panels": 0,
+      "focus": true
+    },
+    "mockup": {
+      "scripts": 1,
+      "banner": "MOCKUP — 실화면 아님 · 시작 화면 r13 · split-flap + doors"
+    }
+  },
+  {
+    "width": 375,
+    "theme": "light",
+    "errors": [],
+    "moves": [
+      {
+        "start": 98.39999997615814,
+        "end": 985.3999999761581,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 426.3000000715256
+          },
+          {
+            "phase": "opening",
+            "ms": 635.8000000715256
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "환승 홀",
+        "focus": true
+      },
+      {
+        "start": 1118.5,
+        "end": 606.3999999761581,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 271.7000000476837
+          },
+          {
+            "phase": "opening",
+            "ms": 393.10000002384186
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "자취 밥상",
+        "focus": true
+      }
+    ],
+    "reduced": {
+      "panels": 0,
+      "focus": true
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "errors": [],
+    "moves": [
+      {
+        "start": 118.90000009536743,
+        "end": 985.0999999046326,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 426.5
+          },
+          {
+            "phase": "opening",
+            "ms": 632
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "환승 홀",
+        "focus": true
+      },
+      {
+        "start": 1128.9000000953674,
+        "end": 608.2999999523163,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 274.89999997615814
+          },
+          {
+            "phase": "opening",
+            "ms": 391.7999999523163
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "자취 밥상",
+        "focus": true
+      }
+    ],
+    "reduced": {
+      "panels": 0,
+      "focus": true
+    }
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "errors": [],
+    "moves": [
+      {
+        "start": 121.60000002384186,
+        "end": 981.3999999761581,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 422.7000000476837
+          },
+          {
+            "phase": "opening",
+            "ms": 636.1000000238419
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "환승 홀",
+        "focus": true
+      },
+      {
+        "start": 1127.9000000953674,
+        "end": 600,
+        "phases": [
+          {
+            "phase": "closing",
+            "ms": 0
+          },
+          {
+            "phase": "closed",
+            "ms": 266.09999990463257
+          },
+          {
+            "phase": "opening",
+            "ms": 393.59999990463257
+          }
+        ],
+        "maxPanels": 2,
+        "maxOverflow": 0,
+        "heading": "자취 밥상",
+        "focus": true
+      }
+    ],
+    "reduced": {
+      "panels": 0,
+      "focus": true
+    }
+  }
+]

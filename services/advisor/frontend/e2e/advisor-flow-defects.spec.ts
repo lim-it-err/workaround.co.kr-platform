@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 import { getPracticeGame } from '../src/modules/missions/games/practiceCatalog.js'
 
+// 고정 시각: 2026-08-03 09:00(+09:00) = 출근길 슬롯.
+
 const MISSION_ID = 's1-wine-01'
 
 test.beforeEach(async ({ page }) => {
@@ -17,7 +19,7 @@ test('일일 Probe는 관측 뒤 결과와 다음 가설이 375px에서 바로 �
   await page.setViewportSize({ width: 375, height: 812 })
   await page.emulateMedia({ colorScheme: 'dark' })
   await page.evaluate(() => localStorage.setItem('workaround-theme', 'dark'))
-  await page.clock.setFixedTime(new Date('2026-08-03T09:00:00'))
+  await page.clock.setFixedTime(new Date('2026-08-03T09:00:00+09:00'))
   await page.evaluate(() => {
     localStorage.setItem('advisor.learner.v1', JSON.stringify({
       seasonStats: { seasonStart: '2026-08-03', gains: [] },

@@ -5,6 +5,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { newSeoulContext } from '../e2eContext.mjs'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -53,7 +54,7 @@ async function serveStaticBuild(request, response) {
 }
 
 async function setup(t, scenario) {
-  const context = await browser.newContext({
+  const context = await newSeoulContext(browser, {
     viewport: { width: scenario.width, height: scenario.height },
     reducedMotion: 'reduce'
   })
@@ -101,7 +102,7 @@ for (const scenario of [
     assert.equal(await page.locator('.route-station').count(), 9)
     assert.equal(await page.locator('.route-segment').count(), 8)
     assert.match(await page.getByText('740km', { exact: false }).first().textContent(), /740km/)
-    assert.match(await page.getByText('742만원', { exact: false }).first().textContent(), /742만원/)
+    assert.match(await page.getByText('777만원', { exact: false }).first().textContent(), /777만원/)
 
     await page.getByRole('button', { name: /^8일차/ }).click()
     const officialLinks = page.locator('.route-day-links a')
@@ -262,7 +263,9 @@ for (const scenario of [
       mimeType: 'image/png',
       buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
     })
-    assert.equal(await detail.locator('.route-detail__photos img').count(), 1)
+    const photoPreview = detail.locator('.route-detail__photos img')
+    await photoPreview.waitFor()
+    assert.equal(await photoPreview.count(), 1)
 
     if (scenario.width < 900) {
       await page.setViewportSize({ width: scenario.width, height: 420 })
@@ -276,7 +279,7 @@ for (const scenario of [
     await detail.getByRole('button', { name: '정차역 저장', exact: true }).click()
     assert.match(await detail.getByRole('status').textContent(), /저장했습니다/)
     assert.match(await page.locator('.route-timetable footer').textContent(), /114,300원/)
-    assert.match(await page.locator('.route-gauge--spend').textContent(), /743만원/)
+    assert.match(await page.locator('.route-gauge--spend').textContent(), /777만원/)
 
     if (process.env.VOYAGE_ROUTE_SCREENSHOT_DIR) {
       await page.screenshot({
