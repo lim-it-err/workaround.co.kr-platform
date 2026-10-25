@@ -3,20 +3,48 @@ import { PANTRY_SETS, findSet } from './sets.js'
 
 export { PANTRY_DISHES, PANTRY_SETS, findDish, findSet }
 
-// 태그 묶음 — 칩 행(TKT-180). 세트 tags 에 실제로 쓰인 것만 노출한다.
+// 태그 묶음 — 칩 6묶음 36개(TKT-212). 세트 tags 에는 칩에 있는 태그만 둔다.
+// 시간 태그는 tags 에 쓰지 않고 minutes 로 계산한다(setTags).
 export const PANTRY_TAG_GROUPS = [
-  { id: 'ingredient', label: '재료', tags: ['계란', '김치', '두부', '라면', '돼지고기', '삼겹살', '닭', '고등어', '회', '스팸', '소면', '콩나물', '순두부', '감자', '채소'] },
-  { id: 'situation', label: '상황', tags: ['10분', '15분', '20분대', '30분이상', '국물', '야식', '해장', '손님', '주말', '평일', '월급날', '비오는날', '더운날', '가을', '추운날', '다이어트', '냉장고털이', '편의점', '한잔', '집밥'] },
-  { id: 'life', label: '자취', tags: ['혼밥', '한그릇', '냄비하나', '설거지적음', '냉동가능', '도시락', '남은재료'] },
+  { id: 'ingredient', label: '재료', tags: ['돼지고기', '닭', '생선·회', '계란', '두부', '김치', '면', '채소', '국물'] },
+  { id: 'time', label: '시간', tags: ['15분 이내', '25분 이내', '30분 이상'] },
+  { id: 'when', label: '때·날씨', tags: ['평일', '주말', '야식', '비오는날', '더운날', '추운날'] },
+  { id: 'purpose', label: '목적', tags: ['해장', '다이어트', '손님', '월급날', '한잔'] },
+  { id: 'life', label: '자취', tags: ['한그릇', '설거지적음', '도시락', '냉동가능', '냉장고털이', '편의점'] },
   { id: 'drink', label: '술', tags: ['맥주', '소주', '막걸리', '하이볼', '와인', '사케', '무알코올'] },
 ]
+export function timeTagOf(minutes) {
+  if (minutes <= 15) return '15분 이내'
+  if (minutes <= 25) return '25분 이내'
+  return '30분 이상'
+}
+// 세트가 가진 모든 태그(직접 쓴 태그 + minutes 로 계산한 시간 태그)
+export function setTags(set) {
+  return [...(set.tags || []), timeTagOf(set.minutes)]
+}
 export function pantryTags() {
-  const used = new Set(PANTRY_SETS.flatMap((set) => set.tags || []))
+  const used = new Set(PANTRY_SETS.flatMap((set) => setTags(set)))
   return PANTRY_TAG_GROUPS.map((group) => ({ ...group, tags: group.tags.filter((tag) => used.has(tag)) })).filter((group) => group.tags.length)
 }
 export function filterSetsByTags(sets, selected = []) {
   if (!selected.length) return sets
-  return sets.filter((set) => selected.every((tag) => (set.tags || []).includes(tag)))
+  return sets.filter((set) => {
+    const tags = setTags(set)
+    return selected.every((tag) => tags.includes(tag))
+  })
+}
+/**
+ * AND 결과가 0건일 때 보여 줄 가까운 상. 고른 재료 태그를 하나 이상 담은 세트에서만 겹침 최대(동률은 기존 순서)로 고른다.
+ * 그런 세트가 없으면 set 은 null, missing 은 첫 재료.
+ */
+export function nearestSetFor(sets, selected = []) {
+  const ingredientTags = PANTRY_TAG_GROUPS.find((group) => group.id === 'ingredient').tags
+  const picked = selected.filter((tag) => ingredientTags.includes(tag))
+  const overlap = (set) => { const tags = setTags(set); return selected.reduce((n, tag) => n + Number(tags.includes(tag)), 0) }
+  const pool = picked.length ? sets.filter((set) => picked.some((tag) => setTags(set).includes(tag))) : sets
+  if (!pool.length) return { set: null, missing: picked[0] }
+  const best = pool.map((set, index) => ({ set, index, n: overlap(set) })).sort((x, y) => y.n - x.n || x.index - y.index)[0]
+  return { set: best.set, missing: null }
 }
 
 // 날짜 시드 — 같은 날에는 같은 추천 (design/pantry-spec.md §2)

@@ -13,11 +13,11 @@ PO 2026-09-27: "오늘 자취생이 먹을 음식 추천하는 페이지 만들�
 
 - `dishes.js` — 요리 카드: `id, name, kind(main|side|soup|snack), minutes, cost(원, 1인분 대략), tags[](간편·해장·야식·가을·비오는날·손님·다이어트·냉장고털이…), ingredients[](≤6, 편의점·마트 구분), steps[](≤4줄), storage(남은 재료 보관 한 줄)`.
 - `sets.js` — 한 상: `id, title, mood(한 줄), when[](weekday|weekend|rain|cold|hot|late|hangover|payday|broke), minutes, cost, main, sides[], soup?, pairing{ drink, type(맥주|소주|막걸리|하이볼|와인|사케|무알코올), why, alt(무알코올 대안) }, shopping[](세트 장보기 합본), note(자취 팁 한 줄)`.
-- `index.js` — `pickPantrySets(dateKey, { mood?, budget?, alcohol? })`: 날짜 시드(같은 날엔 같은 추천)로 **오늘의 한 상 1 · 10분 대안 1 · 야식/한잔 1** 을 고른다. 규칙: 요일(주말은 손이 가는 것 허용) · 월(9~11 가을 태그 가중) · 최근 7일 중복 회피(localStorage `pantry:history`).
+- `index.js` — `pickPantrySets(dateKey, { mood?, budget?, alcohol? })`: 날짜 시드(같은 날엔 같은 추천)로 **오늘의 한 상 1 · 빠른 대안 1 · 야식/한잔 1** 을 고른다. 규칙: 요일(주말은 손이 가는 것 허용) · 월(9~11 가을 태그 가중) · 최근 7일 중복 회피(localStorage `pantry:history`).
 
 ## 3. 페이지 (TKT-170)
 
-- 첫 화면 = **오늘의 한 상 하나가 주인공**(제목·한 줄 기분·시간·비용·페어링 한 줄) + `다른 상 보기`(다음 후보로 교체, 같은 화면). 그 아래 hairline 행 2개: `10분 대안`, `야식·한잔`.
+- 첫 화면 = **오늘의 한 상 하나가 주인공**(제목·한 줄 기분·시간·비용·페어링 한 줄) + `다른 상 보기`(다음 후보로 교체, 같은 화면). 그 아래 hairline 행 2개: `빠른 대안`(TKT-215, 15분 이내 우선), `야식·한잔`.
 - 상 상세(같은 화면 펼침): 메인·반찬·국 카드 대신 **행**으로, 각 행 펼치면 재료·순서 4줄. `장보기 목록` 은 체크 가능(localStorage `pantry:shopping`), `오늘 먹었음` 스탬프 → 히스토리에 기록.
 - 필터는 칩 4개만: `10분` `해장` `손님` `무알코올`. 술 페어링은 기본 노출하되 `무알코올` 칩이면 대안만 표시.
 - 톤: 면 없는 읽기 행, 조작부(칩·체크·스탬프)만 면. 40px. 영어 간판 0(요리명 원어는 괄호 보조).

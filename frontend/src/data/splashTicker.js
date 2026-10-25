@@ -42,8 +42,10 @@ export const SPLASH_TICKER_POOL = Object.freeze([
   '직장인들 화가 취미로 오르는 중…'
 ])
 
-// 마지막(4번째) 티커의 고정 문구. 풀(20번)의 원문을 그대로 가져와 오타 방지 (TKT-205)
-export const FIXED_SPLASH_TICKER = SPLASH_TICKER_POOL[19]
+// 마지막(4번째) 티커의 고정 문구 (TKT-205). 풀의 20번째 원문을 문자열로 직접 적는다.
+// 인덱스로 참조하면 풀 순서가 바뀔 때 다른 문구가 고정되므로(REV-TKT-205-r1) 문자열 상수로 둔다.
+// 풀에 이 문자열이 있는지는 data/splashTicker.test.mjs 가 확인한다.
+export const FIXED_SPLASH_TICKER = '관리자 몰래 내맘대로 홈페이지 로딩하는 중.'
 
 // 다음 티커 문구를 고른다. 직전 문구(previous)와 이번 방문에 이미 나온 문구(shown, Set)는 제외하고,
 // 후보가 바닥나면 shown 을 비워 다시 시작한다(그래도 직전 문구는 제외). 고른 문구는 shown 에 더한다.

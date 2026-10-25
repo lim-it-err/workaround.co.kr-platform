@@ -7,9 +7,10 @@ import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from '../e2eContext.mjs'
 import { PANTRY_SETS } from '../data/pantry/sets.js'
+import { setTags } from '../data/pantry/index.js'
 
 // 태그 필터 기대값은 콘텐츠에서 계산한다(세트가 늘어도 깨지지 않게 — TKT-206)
-const titlesWithTag = (tag, excludeIds = []) => PANTRY_SETS.filter((set) => set.tags.includes(tag) && !excludeIds.includes(set.id)).map((set) => set.title)
+const titlesWithTag = (tag, excludeIds = []) => PANTRY_SETS.filter((set) => setTags(set).includes(tag) && !excludeIds.includes(set.id)).map((set) => set.title)
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
 const distRoot = fileURLToPath(new URL('../../dist/', import.meta.url))
@@ -204,11 +205,11 @@ test('차림·장보기 체크는 펼쳐지고 로컬 저장 뒤 새로고침에
 test('조건 칩은 시간·상황을 거르고 무알코올 화면에는 술 이름을 남기지 않는다', async t => {
   const page = await setup(t, { width: 1440, height: 900, theme: 'dark' })
   await capture(page, 'pantry-1440-dark')
-  const quickTag = page.getByRole('button', { name: '10분', exact: true })
+  const quickTag = page.getByRole('button', { name: '15분 이내', exact: true })
   await quickTag.click()
   assert.equal(await quickTag.getAttribute('aria-pressed'), 'true')
-  assert.ok(titlesWithTag('10분').includes(await title(page)))
-  assert.equal(await page.locator('.pantry-alternative span').first().textContent(), '10분 대안')
+  assert.ok(titlesWithTag('15분 이내').includes(await title(page)))
+  assert.equal(await page.locator('.pantry-alternative span').first().textContent(), '빠른 대안')
   await quickTag.click()
 
   const hangoverTag = page.getByRole('button', { name: '해장', exact: true })
@@ -253,7 +254,7 @@ test('조건 칩은 시간·상황을 거르고 무알코올 화면에는 술 �
 
 test('태그는 복수 AND로 추천하고 다시 누르면 선택을 해제한다', async t => {
   const page = await setup(t, { width: 375, height: 812, theme: 'dark' })
-  const quickTag = page.getByRole('button', { name: '10분', exact: true })
+  const quickTag = page.getByRole('button', { name: '15분 이내', exact: true })
   await quickTag.click()
   const tagToggle = page.getByRole('button', { name: '태그 더 보기', exact: true })
   const tagToggleBox = await tagToggle.boundingBox()
@@ -267,14 +268,15 @@ test('태그는 복수 AND로 추천하고 다시 누르면 선택을 해제한�
   await vegetableTag.click()
   await capture(page, 'pantry-tags-375-dark')
 
-  assert.equal(await title(page), '가벼운 저녁 샐러드', '10분 AND 채소를 모두 가진 한 상이어야 한다')
-  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('pantry:tags'))), ['10분', '채소'])
+  const both = PANTRY_SETS.filter((set) => setTags(set).includes('15분 이내') && setTags(set).includes('채소')).map((set) => set.title)
+  assert.ok(both.length >= 2 && both.includes(await title(page)), '15분 이내 AND 채소를 모두 가진 한 상이어야 한다')
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('pantry:tags'))), ['15분 이내', '채소'])
   assert.equal(await quickTag.getAttribute('aria-pressed'), 'true')
   assert.equal(await vegetableTag.getAttribute('aria-pressed'), 'true')
 
   await vegetableTag.click()
   assert.equal(await vegetableTag.getAttribute('aria-pressed'), 'false')
-  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('pantry:tags'))), ['10분'])
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('pantry:tags'))), ['15분 이내'])
   const chipHeights = await page.locator('.pantry-chip, .pantry-tags-toggle').evaluateAll((elements) => (
     elements.map((element) => element.getBoundingClientRect().height)
   ))
@@ -287,7 +289,7 @@ test('선택한 상황·재료 태그는 새로고침 뒤에도 복원된다', a
   const guestTag = page.getByRole('button', { name: '손님', exact: true })
   await guestTag.click()
   await page.getByRole('button', { name: '태그 더 보기', exact: true }).click()
-  const sashimiTag = page.getByRole('button', { name: '회', exact: true })
+  const sashimiTag = page.getByRole('button', { name: '생선·회', exact: true })
   await sashimiTag.click()
   assert.equal(await title(page), '월급날 회무침')
 
@@ -295,24 +297,37 @@ test('선택한 상황·재료 태그는 새로고침 뒤에도 복원된다', a
   await page.locator('.pantry-page').waitFor()
   assert.equal(await guestTag.getAttribute('aria-pressed'), 'true')
   await page.getByRole('button', { name: /^태그 더 보기/ }).click()
-  assert.equal(await page.getByRole('button', { name: '회', exact: true }).getAttribute('aria-pressed'), 'true')
+  assert.equal(await page.getByRole('button', { name: '생선·회', exact: true }).getAttribute('aria-pressed'), 'true')
   assert.equal(await title(page), '월급날 회무침')
   await assertNoOverflow(page)
 })
 
-test('일치하는 한 상이 없으면 태그가 가장 많이 겹치는 가까운 상을 한 행으로 알린다', async t => {
+test('일치하는 한 상이 없으면 고른 재료를 담은 가까운 상을 한 행으로 알린다', async t => {
   const page = await setup(t, { width: 1440, height: 900, theme: 'light' })
   await page.getByRole('button', { name: '해장', exact: true }).click()
   await page.getByRole('button', { name: '태그 더 보기', exact: true }).click()
-  await page.getByRole('button', { name: '회', exact: true }).click()
+  await page.getByRole('button', { name: '생선·회', exact: true }).click()
   await capture(page, 'pantry-tags-empty-1440-light')
 
   assert.equal(await page.locator('.pantry-empty-result').count(), 1)
   assert.match(await page.locator('.pantry-empty-result').textContent(), /이 조합은 아직 없어요 — 가까운 상/)
-  assert.equal(await title(page), '해장 한 상')
+  assert.ok(titlesWithTag('생선·회').includes(await title(page)), '가까운 상은 고른 재료(생선·회)를 담은 세트여야 한다')
   await assertDistinctRecommendations(page, '0건 가까운 상')
   await assertNoOverflow(page)
 })
+
+for (const [ingredient, drink, theme] of [['닭', '막걸리', 'dark'], ['생선·회', '막걸리', 'light']]) {
+  test(`${ingredient}+${drink} 는 0건이어도 ${ingredient} 세트를 가까운 상으로 보여 준다`, async t => {
+    const page = await setup(t, { width: 375, height: 812, theme })
+    await page.getByRole('button', { name: '태그 더 보기', exact: true }).click()
+    await page.getByRole('button', { name: ingredient, exact: true }).click()
+    await page.getByRole('button', { name: drink, exact: true }).click()
+    assert.equal(await page.locator('.pantry-empty-result').count(), 1)
+    assert.ok(titlesWithTag(ingredient).includes(await title(page)), `가까운 상이 ${ingredient} 세트여야 한다`)
+    await capture(page, `pantry-tags-open-nearest-375-${theme}`)
+    await assertNoOverflow(page)
+  })
+}
 
 test('P 역은 자취 밥상으로 열리고 스탬프는 기록되어 다음 추천에 반영된다', async t => {
   const page = await setup(t, { width: 1440, height: 900, theme: 'light' })
