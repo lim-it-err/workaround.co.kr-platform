@@ -102,8 +102,7 @@ async function routeTextContrasts(page) {
     '.junction-route-row.restricted .junction-route-name',
     '.junction-route-row.restricted .junction-route-status',
     '.junction-station.restricted .junction-station-code',
-    '.junction-station.restricted .junction-station-name',
-    '.junction-map-line.protected .junction-page-stop text'
+    '.junction-station.restricted .junction-station-name'
   ].join(',')).evaluateAll(elements => {
     const parse = value => (value.match(/[\d.]+/g) || []).slice(0, 3).map(Number)
     const luminance = ([red, green, blue]) => {
@@ -253,7 +252,7 @@ for (const scenario of [
       const visibleMapTextSizes = await page.locator([
         '.junction-station-code',
         '.junction-station-name',
-        '.junction-page-stop text',
+        '.junction-page-stop-name',
         '.junction-line-name',
         '.junction-hub-name'
       ].join(',')).evaluateAll(elements => elements
@@ -268,7 +267,7 @@ for (const scenario of [
     const mapTextOverlaps = await page.locator([
       '.junction-station-code',
       '.junction-station-name',
-      '.junction-page-stop text',
+      '.junction-page-stop-name',
       '.junction-line-name',
       '.junction-hub-name'
     ].join(',')).evaluateAll(elements => {
@@ -293,7 +292,7 @@ for (const scenario of [
     const routeTextIntersections = await page.evaluate(() => {
       const textSelectors = [
         '.junction-station-name',
-        '.junction-page-stop text',
+        '.junction-page-stop-name',
         '.junction-line-name',
         '.junction-hub-name'
       ].join(',')
@@ -380,20 +379,45 @@ for (const scenario of [
     }
 
     if (scenario.width >= 900) {
-      const labelOwners = await page.locator('.junction-page-stop text').evaluateAll(elements => elements.map(element => {
-        const rect = element.getBoundingClientRect()
-        const owner = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
-          ?.closest('.junction-page-stop')?.dataset.stopLabel
-        return { label: element.textContent.trim(), owner }
-      }))
-      assert.ok(
-        labelOwners.every(({ label, owner }) => label === owner),
-        `소역 라벨 중심 클릭은 자기 역이 소유해야 한다: ${JSON.stringify(labelOwners)}`
+      // TKT-203: 작은 역 이름은 항상 보인다(툴팁 없음) — 큰 역보다 작고 흐리고 가늘게.
+      const stopLabels = await page.locator('.junction-page-stop').evaluateAll(elements => elements.map(element => element.dataset.stopLabel))
+      assert.equal(stopLabels.length, SUBSTOP_COUNT)
+      const smallNames = await page.locator('.junction-page-stop-name').evaluateAll(elements => elements
+        .filter(element => element.getClientRects().length > 0)
+        .map(element => {
+          const style = getComputedStyle(element)
+          const matrix = element.getScreenCTM()
+          return { label: element.textContent.trim(), size: parseFloat(style.fontSize) * Math.hypot(matrix.a, matrix.b), fill: style.fill, weight: Number(style.fontWeight) }
+        }))
+      assert.deepEqual(smallNames.map(item => item.label).sort(), [...stopLabels].sort(), '작은 역 이름이 모두 보여야 한다')
+      const bigName = await page.locator('.junction-station-name').first().evaluate(element => {
+        const style = getComputedStyle(element)
+        const matrix = element.getScreenCTM()
+        return { size: parseFloat(style.fontSize) * Math.hypot(matrix.a, matrix.b), fill: style.fill, weight: Number(style.fontWeight) }
+      })
+      for (const item of smallNames) {
+        assert.ok(item.size >= 10.95 && item.size <= 12.5, `작은 역 글씨는 11~12px: ${item.label} ${item.size}`)
+        assert.ok(item.size < bigName.size, `작은 역 글씨가 큰 역보다 작아야 한다: ${item.label}`)
+        assert.notEqual(item.fill, bigName.fill, `작은 역 색이 큰 역과 달라야 한다: ${item.label}`)
+        assert.ok(item.weight < bigName.weight, `작은 역 굵기가 큰 역보다 가벼워야 한다: ${item.label}`)
+      }
+      assert.equal(await page.locator('.junction-stop-tip').count(), 0, '툴팁은 제거됐다')
+      // 작은 역 이름 글자는 클릭을 가로채지 않는다.
+      assert.equal(
+        await page.locator('.junction-page-stop-name').first().evaluate(element => getComputedStyle(element).pointerEvents),
+        'none'
       )
+      // 작은 역 이름 글자가 큰 글자(역 이름·노선 이름·환승 홀)와 겹치지 않는다는 점은 위의 겹침 검사가 함께 본다.
+
+      // 키보드 포커스: 작은 역에 Tab 으로 닿으면 접근 이름을 갖는다.
+      const focusStop = page.locator('.junction-page-stop[data-stop-label="격납고"]')
+      assert.equal(await focusStop.getAttribute('aria-label'), '격납고 열기')
+      await focusStop.focus()
+      await page.evaluate(() => document.activeElement?.blur())
     }
 
     if (scenario.width >= 900) {
-      const detailStopCircle = page.locator('.junction-page-stop').filter({ hasText: '격납고' }).locator('.junction-page-stop-dot')
+      const detailStopCircle = page.locator('.junction-page-stop[data-stop-label="격납고"]').locator('.junction-page-stop-dot')
       const detailStopBox = await detailStopCircle.boundingBox()
       const topmostOwner = await page.evaluate(({ x, y }) => (
         document.elementFromPoint(x, y)?.closest('.junction-page-stop, .junction-station')?.getAttribute('class') ?? ''
@@ -462,12 +486,12 @@ for (const scenario of [
 
     if (scenario.width >= 900) {
       const junctionUrl = page.url()
-      await page.locator('.junction-page-stop[data-stop-label="유로트럭"]').click()
+      await page.locator('.junction-page-stop[data-stop-label="유로트럭"]').locator('.junction-page-stop-dot').click()
       assert.match(new URL(page.url()).pathname, /\/ets2$/)
       await page.getByRole('button', { name: '환승 홀', exact: true }).click()
       await page.locator('.junction-overview').waitFor()
 
-      await page.locator('.junction-page-stop[data-stop-label="유로트럭 개발자"]').click()
+      await page.locator('.junction-page-stop[data-stop-label="유로트럭 개발자"]').locator('.junction-page-stop-dot').click()
       const developerToast = page.locator('.junction-access-toast')
       await developerToast.waitFor()
       assert.equal(await developerToast.textContent(), '개발자 페이지 · 로컬 전용')

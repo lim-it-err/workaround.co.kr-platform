@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { BLOG_LINE_OPEN, JUNCTION, JUNCTION_LINES, LINES } from './lines.js'
+import { BLOG_LINE_OPEN, JUNCTION, JUNCTION_LINES, LINES, MAP_VIEWBOX } from './lines.js'
 
 function parseSegment(path) {
   const values = path.match(/-?\d+(?:\.\d+)?/g)?.map(Number) ?? []
@@ -130,6 +130,20 @@ test('세 노선 본선은 환승 홀을 통과하고 역·소역은 선언한 �
           `${line.nameKo} ${station.code} ${stop.label} 작은 역이 노선 위에 있어야 한다`,
         )
       }
+    }
+  }
+})
+
+test('지도 viewBox 는 모든 큰 역·소역 점을 안에 둔다 (TKT-202)', () => {
+  const [x, y, width, height] = MAP_VIEWBOX.split(' ').map(Number)
+  const points = LINES.flatMap((station) => [station.map, ...(station.mapStops ?? [])])
+  for (const point of points) {
+    assert.ok(point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height, `${JSON.stringify(point)} 가 viewBox 밖`)
+  }
+  for (const path of JUNCTION_LINES.flatMap((line) => line.paths)) {
+    const { start, end } = parseSegment(path)
+    for (const point of [start, end]) {
+      assert.ok(point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height, `${path} 끝점이 viewBox 밖`)
     }
   }
 })

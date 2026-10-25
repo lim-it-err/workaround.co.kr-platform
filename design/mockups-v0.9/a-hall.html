@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>환승 홀 — A 순수 터미널</title>
+<style>:root{--bg:#0c0c0c;--fg:#d6d6d6;--dim:#9a9a9a;--hi:#7ef0a8;--line:#5c5c5c;--line2:#8a8a8a;--c1:#ff8fb0;--c2:#a9b3ff;--c3:#5fe39a;--warn:#ffc94a}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.65 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"D2Coding","Nanum Gothic Coding","Noto Sans Mono CJK KR","Apple SD Gothic Neo",monospace;word-break:keep-all;overflow-wrap:anywhere}
+a{color:inherit;text-decoration:none}
+.banner{position:sticky;top:0;z-index:30;background:#ffd23f;color:#000;text-align:center;font-weight:700;font-size:13px;line-height:28px;height:28px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px 64px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:0 4px;margin:10px 0 4px}
+nav.tabs a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;color:var(--dim)}
+nav.tabs a[aria-current]{color:var(--hi)}
+h1{font-size:19px;margin:14px 0 6px;font-weight:700;color:var(--hi)}
+h2{font-size:16px;margin:0 0 6px;color:var(--hi)}
+p{margin:6px 0}
+ul{margin:6px 0;padding:0;list-style:none}
+.dim{color:var(--dim)}
+.cols{display:grid;gap:8px 28px}
+@media(min-width:900px){.cols.two{grid-template-columns:1.1fr 1fr;align-items:start}}
+.rule{overflow:hidden;white-space:nowrap;color:var(--line);line-height:1;user-select:none}
+.btn{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid var(--line2);background:transparent;color:var(--fg);font:inherit;cursor:pointer}
+.btn[aria-pressed=true]{color:var(--bg);background:var(--hi);border-color:var(--hi)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.tag{color:var(--dim)}
+.row{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 0}
+.row .nm{font-weight:700}
+.row .stt{margin-left:auto;text-align:right;color:var(--dim);font-size:13px}
+.row.off .nm{color:var(--dim);font-weight:400}
+.chain{display:flex;flex-wrap:wrap;gap:6px 0;align-items:center;margin:8px 0}
+.chain .n{padding:4px 10px}
+.chain .ar{padding:0 6px;color:var(--dim)}
+.chain .p{display:inline-flex;align-items:center;white-space:nowrap;max-width:100%}.chain .n{white-space:normal}
+.status{display:inline-block;padding:0 8px;font-size:13px}
+.cur{display:inline-block;width:.6em;height:1.1em;vertical-align:text-bottom;background:var(--hi);margin-left:4px;animation:bl 1.1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.cur{animation:none}}
+.stops{display:flex;flex-direction:column;border-left:1px solid var(--lc);margin:2px 0 8px 6px;padding-left:10px}
+.stops .conn{display:none}
+.st{display:flex;align-items:center;min-height:36px}
+.st .pre{color:var(--lc);margin-right:6px}
+.st .dot{color:var(--lc);margin-right:6px}
+.st.off{color:var(--dim)}
+.mline{margin:10px 0}
+.mline .lname{font-weight:700;color:var(--lc)}
+.mline .ord{color:var(--dim);font-size:13px}
+@media(min-width:900px){
+ .stops{flex-direction:row;flex-wrap:wrap;border-left:0;padding-left:0;margin-left:0;align-items:center}
+ .stops .pre{display:none}
+ .stops .conn{display:block;flex:1;min-width:24px;max-width:90px;overflow:hidden;white-space:nowrap;color:var(--lc);line-height:1;margin:0 6px}
+}
+.hub{font-weight:700;color:var(--hi);margin:8px 0}
+.lc-archive{--lc:var(--c1)}.lc-lab{--lc:var(--c2)}.lc-depot{--lc:var(--c3)}
+
+.box{position:relative;border:1px solid var(--line);padding:20px 14px 12px;margin:24px 0 14px}
+.box>.bt{position:absolute;top:-.85em;left:18px;background:var(--bg);padding:0 6px;color:var(--hi);font-weight:700;line-height:1.5}
+.box>.bt b{color:var(--line);font-weight:400}
+.box>i.c{position:absolute;background:var(--bg);color:var(--line2);font-style:normal;line-height:.8;width:.7em;text-align:center}
+.box>i.tl{top:-.4em;left:-.35em}.box>i.tr{top:-.4em;right:-.35em}.box>i.bl{bottom:-.4em;left:-.35em}.box>i.br{bottom:-.4em;right:-.35em}
+.ps{color:var(--fg);margin:12px 0 4px}.ps .g{color:var(--hi);margin-right:8px}
+.row{border-bottom:1px dotted var(--line)}
+.row .cd{color:var(--lc)}
+.chain .n{border:1px solid var(--line2)}
+.status{border:1px solid var(--line2)}
+.status.ok{color:var(--hi);border-color:var(--hi)}.status.pr{color:var(--warn);border-color:var(--warn)}
+.sh li{display:flex;align-items:center;min-height:36px}.sh .bx{color:var(--line2);margin-right:10px}
+.pts li{padding-left:2.2em;text-indent:-2.2em}.pts li .m{color:var(--hi);display:inline-block;width:2.2em;text-indent:0}
+.hd{color:var(--line);overflow:hidden;white-space:nowrap;line-height:1}
+</style></head>
+<body class="">
+<div class="banner" role="note">MOCKUP — 실화면 아님 · v1.1 시안 A 순수 터미널</div>
+<div class="wrap">
+<nav class="tabs" aria-label="화면"><a href="a-hall.html" aria-current="page">▌환승 홀</a><a href="a-pantry.html">자취 밥상</a><a href="a-notes.html">운영 노트</a><a href="index.html">비교 인덱스</a></nav>
+<h1>환승 홀</h1><p class="ps"><span class="g" aria-hidden="true">&gt;</span>노선 보기<span class="cur" aria-hidden="true"></span></p><div class="cols two"><div><section class="box"><i class="c tl" aria-hidden="true">┌</i><i class="c tr" aria-hidden="true">┐</i><i class="c bl" aria-hidden="true">└</i><i class="c br" aria-hidden="true">┘</i><span class="bt"><b aria-hidden="true">┤</b> 노선도 <b aria-hidden="true">├</b></span><div class="hub">● 환승 홀</div><div class="mline lc-archive"><span class="lname">기록선</span> <span class="ord">환승 홀 → 여행</span><div class="stops"><span class="st"><span class="pre" aria-hidden="true">└─</span><span class="dot" aria-hidden="true">●</span>여행</span></div></div><div class="mline lc-lab"><span class="lname">실험선</span> <span class="ord">Advisor → 미스터리 트레인 → 발견 → 자취 밥상</span><div class="stops"><span class="st"><span class="pre" aria-hidden="true">├─</span><span class="dot" aria-hidden="true">●</span>Advisor</span><i class="conn" aria-hidden="true">──────────────────────────────</i><span class="st"><span class="pre" aria-hidden="true">├─</span><span class="dot" aria-hidden="true">●</span>미스터리 트레인</span><i class="conn" aria-hidden="true">──────────────────────────────</i><span class="st off"><span class="pre" aria-hidden="true">├─</span><span class="dot" aria-hidden="true">○</span>발견</span><i class="conn" aria-hidden="true">──────────────────────────────</i><span class="st"><span class="pre" aria-hidden="true">└─</span><span class="dot" aria-hidden="true">●</span>자취 밥상</span></div></div><div class="mline lc-depot"><span class="lname">기지선</span> <span class="ord">Work → Runtime</span><div class="stops"><span class="st"><span class="pre" aria-hidden="true">├─</span><span class="dot" aria-hidden="true">●</span>Work</span><i class="conn" aria-hidden="true">──────────────────────────────</i><span class="st"><span class="pre" aria-hidden="true">└─</span><span class="dot" aria-hidden="true">●</span>Runtime</span></div></div></section></div><div><p class="ps"><span class="g" aria-hidden="true">&gt;</span>역 목록</p><div class="lc-archive"><section class="box"><i class="c tl" aria-hidden="true">┌</i><i class="c tr" aria-hidden="true">┐</i><i class="c bl" aria-hidden="true">└</i><i class="c br" aria-hidden="true">┘</i><span class="bt"><b aria-hidden="true">┤</b> 기록선 <b aria-hidden="true">├</b></span><a class="row" href="#"><span class="cd" aria-hidden="true">[V]</span><span class="nm">여행 노선</span><span class="stt">여정과 기억</span></a><div class="dim" style="font-size:13px;padding:0 0 6px 44px">중부유럽 순환선</div></section></div><div class="lc-lab"><section class="box"><i class="c tl" aria-hidden="true">┌</i><i class="c tr" aria-hidden="true">┐</i><i class="c bl" aria-hidden="true">└</i><i class="c br" aria-hidden="true">┘</i><span class="bt"><b aria-hidden="true">┤</b> 실험선 <b aria-hidden="true">├</b></span><a class="row" href="#"><span class="cd" aria-hidden="true">[A]</span><span class="nm">Advisor</span><span class="stt">코스 · 미션</span></a><a class="row" href="#"><span class="cd" aria-hidden="true">[S]</span><span class="nm">미스터리 트레인</span><span class="stt">격납고</span></a><div class="dim" style="font-size:13px;padding:0 0 6px 44px">격납고 3대 대기</div><a class="row off" href="#"><span class="cd" aria-hidden="true">[D]</span><span class="nm">발견</span><span class="stt">연장 예정</span></a><a class="row" href="#"><span class="cd" aria-hidden="true">[P]</span><span class="nm">자취 밥상</span><span class="stt">오늘의 한 상: 가을 일요일 한 상</span></a></section></div><div class="lc-depot"><section class="box"><i class="c tl" aria-hidden="true">┌</i><i class="c tr" aria-hidden="true">┐</i><i class="c bl" aria-hidden="true">└</i><i class="c br" aria-hidden="true">┘</i><span class="bt"><b aria-hidden="true">┤</b> 기지선 <b aria-hidden="true">├</b></span><a class="row" href="#"><span class="cd" aria-hidden="true">[W]</span><span class="nm">Work</span><span class="stt">운영 노트</span></a><a class="row" href="#"><span class="cd" aria-hidden="true">[R]</span><span class="nm">Runtime</span><span class="stt">보호 구역</span></a></section></div></div></div>
+</div></body></html>

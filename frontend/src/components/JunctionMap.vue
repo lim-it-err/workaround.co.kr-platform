@@ -1,6 +1,6 @@
 <script setup>
 import { onBeforeUnmount, ref } from 'vue'
-import { JUNCTION, JUNCTION_LINES } from '../data/lines.js'
+import { JUNCTION, JUNCTION_LINES, MAP_VIEWBOX } from '../data/lines.js'
 import { withBasePath } from '../staticRouting.js'
 
 const props = defineProps({
@@ -14,6 +14,7 @@ const COUNT_WORDS = ['영', '한', '두', '세', '네', '다섯', '여섯', '일
 const stationCount = JUNCTION_LINES.reduce((total, line) => total + line.stations.length, 0)
 const stationCountLabel = COUNT_WORDS[stationCount] ?? String(stationCount)
 const accessToast = ref(null)
+
 let accessToastTimer
 
 function effectiveAccess(destination) {
@@ -92,7 +93,7 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
       <h3 id="junction-map-title">환승 홀 · 기록선 · 실험선 · 기지선</h3>
       <svg
         class="junction-map"
-        viewBox="0 0 720 720"
+        :viewBox="MAP_VIEWBOX"
         role="img"
         :aria-label="`환승 홀에서 기록선, 실험선, 기지선으로 이어지는 ${stationCountLabel} 정류장`"
       >
@@ -218,7 +219,7 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
               @keydown.space.prevent="stop.page || isRestricted(stop) ? go(stop, $event) : undefined"
             >
               <circle class="junction-page-stop-dot" :cx="stop.x" :cy="stop.y" r="4.5" />
-              <text :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
+              <text class="junction-page-stop-name" :x="stop.labelX" :y="stop.labelY" :text-anchor="stop.anchor">{{ stop.label }}</text>
             </g>
           </template>
         </g>
@@ -305,11 +306,12 @@ onBeforeUnmount(() => window.clearTimeout(accessToastTimer))
   pointer-events: all;
 }
 
-.junction-page-stop text {
+.junction-page-stop-name {
   paint-order: stroke;
   stroke: var(--bg);
-  stroke-width: 5px;
+  stroke-width: 4px;
   stroke-linejoin: round;
+  pointer-events: none;
 }
 
 .junction-page-stop-hit {

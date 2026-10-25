@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>v1.1 레트로 시안 비교</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0c0c0c;color:#d6d6d6;font:15px/1.7 ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"D2Coding","Nanum Gothic Coding","Noto Sans Mono CJK KR","Apple SD Gothic Neo",monospace;word-break:keep-all;overflow-wrap:anywhere}
+.banner{position:sticky;top:0;background:#ffd23f;color:#000;text-align:center;font-weight:700;font-size:13px;line-height:28px;height:28px}
+.wrap{max-width:980px;margin:0 auto;padding:12px 16px 64px}
+h1{font-size:19px;color:#7ef0a8}h2{font-size:16px;color:#7ef0a8;margin-top:30px}
+.dim{color:#9a9a9a;font-size:13px}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #5c5c5c;padding:8px 6px;text-align:left;vertical-align:top}
+.lk{white-space:nowrap;display:inline-flex;align-items:center;min-height:40px;padding:0 10px;color:#7ef0a8;text-decoration:underline}
+.demo{display:grid;gap:16px}@media(min-width:900px){.demo{grid-template-columns:1fr 1fr}}
+pre{margin:0;padding:10px;border:1px dashed #5c5c5c;overflow:auto;font:inherit;line-height:1.35;white-space:pre}
+.good{position:relative;border:1px solid #5c5c5c;padding:14px 12px}
+.good .bt{position:absolute;top:-.85em;left:14px;background:#0c0c0c;padding:0 6px;color:#7ef0a8}
+.good i{position:absolute;background:#0c0c0c;color:#8a8a8a;font-style:normal;line-height:.8;width:.7em;text-align:center}
+.tl{top:-.4em;left:-.35em}.tr{top:-.4em;right:-.35em}.bl{bottom:-.4em;left:-.35em}.br{bottom:-.4em;right:-.35em}
+</style></head><body>
+<div class="banner" role="note">MOCKUP — 실화면 아님</div>
+<div class="wrap">
+<h1>v1.1 레트로 터미널 시안 비교 (TKT-200 · D-035)</h1>
+<p class="dim">화면 3개 × 시안 3안. 이 폴더는 배포되지 않는다. 375·1440 모두 열어 본다.</p>
+<table><thead><tr><th scope="col">시안</th><th scope="col">환승 홀</th><th scope="col">자취 밥상</th><th scope="col">운영 노트</th></tr></thead><tbody><tr><th scope="row">A 순수 터미널<br><span class="dim">검은 바탕 · 단색 · 프롬프트 · 박스 문자 테두리</span></th><td><a class="lk" href="a-hall.html">보기</a></td><td><a class="lk" href="a-pantry.html">보기</a></td><td><a class="lk" href="a-notes.html">보기</a></td></tr><tr><th scope="row">B 레트로 역 안내판<br><span class="dim">노선색 점등 글자 · 노선색 머리띠 · 둥근 노선 배지</span></th><td><a class="lk" href="b-hall.html">보기</a></td><td><a class="lk" href="b-pantry.html">보기</a></td><td><a class="lk" href="b-notes.html">보기</a></td></tr><tr><th scope="row">C CRT<br><span class="dim">녹색(호박색) 인광 · 이중선 · 약한 스캔라인과 비네트</span></th><td><a class="lk" href="c-hall.html">보기</a></td><td><a class="lk" href="c-pantry.html">보기</a></td><td><a class="lk" href="c-notes.html">보기</a></td></tr></tbody></table>
+
+<h2>한글 고정폭 함정과 각 안의 대응</h2>
+<p>고정폭 글꼴에서 영문·박스 문자는 1칸, 한글은 2칸(또는 글꼴에 따라 1.6~2칸)이다. 글자 수로 줄을 맞추는 텍스트 박스는 한글이 섞이는 순간 오른쪽 <code>│</code>가 어긋난다. 글꼴이 달라지면(맥·윈도·모바일) 어긋나는 정도도 달라져서, 공백을 보정해도 한 환경에서만 맞는다.</p>
+<div class="demo">
+<div><p class="dim">나쁜 예 — 텍스트로 그린 박스 (이 화면 글꼴에서 오른쪽이 어긋난다)</p>
+<pre aria-label="어긋난 텍스트 박스 예시">┌────────────┐
+│ 환승 홀    │
+│ Advisor    │
+│ 자취 밥상  │
+└────────────┘</pre></div>
+<div><p class="dim">쓰는 예 — CSS 테두리 + 모서리 글자</p>
+<div class="good"><i class="tl" aria-hidden="true">┌</i><i class="tr" aria-hidden="true">┐</i><i class="bl" aria-hidden="true">└</i><i class="br" aria-hidden="true">┘</i><span class="bt">┤ 환승 홀 ├</span>Advisor · 자취 밥상 — 글자 수와 상관없이 테두리가 닫힌다.</div></div>
+</div>
+<ul>
+<li><b>A</b> — 테두리는 CSS <code>border</code>, 모서리 <code>┌ ┐ └ ┘</code>와 제목 둘레 <code>┤ ├</code>만 글자(전부 aria-hidden). 구분선·장식 행은 <code>─</code>를 넉넉히 깔고 <code>overflow:hidden</code>으로 자른다(폭 무관). 노선도의 <code>├─ └─</code>는 줄 왼쪽 끝에만 있어 한글 폭과 상관없다. 오른쪽 정렬이 필요한 값은 글자 수 맞춤이 아니라 flex 로 민다.</li>
+<li><b>B</b> — 박스 문자를 거의 쓰지 않는다. 노선색 머리띠·둥근 배지·CSS 선으로 안내판을 만들어 함정 자체가 없다. 대신 "터미널" 느낌은 가장 약하다.</li>
+<li><b>C</b> — A와 같은 원리인데 테두리를 <code>3px double</code>로 바꿔 이중선 느낌을 낸다. 스캔라인·비네트는 fixed 오버레이(pointer-events 없음). 자취 밥상은 호박색 변형.</li>
+<li>공통 — 한글이 들어가는 줄에는 열 맞춤용 공백을 쓰지 않는다. 표처럼 보이는 곳은 flex/grid 로 만든다. 실제 구현에서도 이 규칙을 지키면 글꼴 폴백(맥/윈도/안드로이드)에 안전하다.</li>
+</ul>
+<h2>[반박]</h2>
+<p>"고정폭 글꼴 + 한글"은 폭이 정확히 2칸이 되는 글꼴(D2Coding 등)이 있어야 터미널다운 격자가 나온다. 시스템 스택만 쓰면 기기마다 격자가 다르다. 그래서 어느 안도 "글자 격자"를 약속하지 않고 CSS 격자를 쓴다. 진짜 격자가 목표라면 웹폰트(외부 의존·용량)를 따로 결정해야 한다.</p>
+</div></body></html>
