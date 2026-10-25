@@ -257,3 +257,10 @@
 - **PM 해석(PO 정정 가능)**: "내려" = 비공개(삭제 아님). Writing Studio 는 블로그 본선의 화면이라 함께 내린다. 여행 기록(`/voyage`)은 기록선에 남는다.
 - **지도 원칙 유지**: r16 "노선 3개가 환승 홀을 직선으로 **통과**" 를 지키기 위해 기록선 왼쪽 구간은 역 없이 짧은 꼬리로 남긴다(TKT-189 에 좌표).
 - **효과**: Blog E2E·WritingStudio E2E 는 스위치가 꺼진 동안 skip(사유 D-031), 대신 "블로그 주소 → 환승 홀" E2E 를 둔다. README·feature-definition 의 블로그 서술은 PM 이 정리.
+
+## D-032 공개 사이트의 Claude API 호출은 `llm-gate` 한 곳으로 — 기본 꺼짐·두 겹 예산·등급제 · **제안됨** (PO 2026-10-25 「workaround.co.kr는 haiku나 sonnet의 api콜을 해야돼. 이것을 제한할 수 있는 설계도 해줘. 사용자가 없는 상태에서 release하게 될 경우 문제가 될거잖아?」)
+
+- **제안**: 설계 `docs/llm-gate.md`. ①Anthropic 키는 Cloudflare Worker `llm-gate` 시크릿에만(브라우저·번들·Advisor 서비스에 없음 — Advisor 는 서비스 토큰으로 게이트 호출) ②릴리스 기본 = 라이브 호출 0(익명은 일일 배치·캐시 결과만), 실시간은 T1 데모(Turnstile)·T2 PO·초대(Cloudflare Access)·T3 서비스 토큰 ③돈은 두 겹 — Anthropic 워크스페이스 월 상한(바깥, 게이트 버그와 무관) + 게이트 Durable Object 일일 예산 차단기(안쪽) ④요청 모양은 기능 표(모델 허용 목록·`max_tokens`·입력 상한·고정 템플릿), 자유 프롬프트 엔드포인트 없음 ⑤무인 운영: 꺼짐 기본·자동 차단·50/80/100% 알림·킬 스위치 KV 한 줄.
+- **D-009 와의 관계**: D-009(공개 LLM 은 정책 경로 경유·고정 템플릿·입력 상한)를 외부 API(Claude)로 확장. 경로가 집 gateway 가 아니라 엣지 Worker 인 이유 — 집 서버·회선이 죽어도 예산 통제는 살아 있어야 하고, GitHub Pages 에는 비밀값을 둘 곳이 없다.
+- **PO 결정 필요(ASK Q-023)**: 월 상한 금액, T1 데모 허용 시점, T2 초대 대상(명단은 Access 설정에만), 알림 채널, Anthropic 워크스페이스·Cloudflare 계정 작업.
+- **티켓**: TKT-191(게이트 골격, DRY_RUN·실키 없음) → 192(Advisor 경유) · 193(일일 배치) · 194(화면 3상태). 191 은 D-032 확정 뒤 디스패치.
