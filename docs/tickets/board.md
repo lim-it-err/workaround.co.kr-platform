@@ -38,11 +38,16 @@
 - `TKT-067` `P2` `v0.9.0` `v0.9.0 진행 시 가능` 취향 노선 - 10선택 규칙 기반 와인/커피 추천
 - `TKT-068` `P2` `infra` `진행 가능` `[INFRA]` RTX5070 Ollama 실제 구동 + 게이트웨이 연결 검증 (하드웨어 단계는 PO 협조 항목으로 분리 기록)
 - `TKT-074` `P1` `chore` `blocked/진행 불가` `[SIM]` S4 택시 지도 — 보드 SIM 배정과 PM 직접 수행 기록 충돌, 택시 단독 범위·5개 페이지 완료 기준 정렬 PM 대기 (스펙: `design/sim-taxi-spec.md`)
-- `TKT-075` `P2` `chore` `진행 가능` `[FE]` UI 재구현 S5 - App.vue 컴포넌트 분해 [시안 적용]
 
 ## Ready
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
+
+- `TKT-207` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 스플래시 (순서대로, 동작 변화 0)
+- `TKT-208` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 시뮬 (순서대로, 동작 변화 0)
+- `TKT-209` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 기지선 (순서대로, 동작 변화 0)
+- `TKT-210` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 블로그 (순서대로, 동작 변화 0)
+- `TKT-211` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 환승 홀·셸·레거시 라우트 제거 (순서대로, 동작 변화 0)
 
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
 
