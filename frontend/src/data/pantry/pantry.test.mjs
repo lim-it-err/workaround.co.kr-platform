@@ -73,13 +73,26 @@ test('해장 세트에는 무알코올 외의 술 태그가 없고, 무알코올
 })
 
 test('가까운 상은 고른 재료를 담은 세트에서만 고르고, 재료를 담은 세트가 없으면 null', () => {
-  const chicken = nearestSetFor(PANTRY_SETS, ['닭', '사케'])
-  assert.ok(chicken.set.tags.includes('닭'), '닭+사케 → 닭 세트')
+  const chicken = nearestSetFor(PANTRY_SETS, ['닭', '막걸리'])
+  assert.ok(chicken.set.tags.includes('닭'), '닭+막걸리 → 닭 세트')
   const fish = nearestSetFor(PANTRY_SETS, ['생선·회', '막걸리'])
   assert.ok(fish.set.tags.includes('생선·회'), '생선·회+막걸리 → 생선·회 세트')
-  assert.equal(filterSetsByTags(PANTRY_SETS, ['닭', '사케']).length, 0)
+  assert.equal(filterSetsByTags(PANTRY_SETS, ['닭', '막걸리']).length, 0)
+  assert.ok(filterSetsByTags(PANTRY_SETS, ['닭', '사케']).length >= 1, '닭+사케 세트가 있다 (TKT-215)')
   const none = nearestSetFor(PANTRY_SETS.filter((set) => !set.tags.includes('두부')), ['두부', '맥주'])
   assert.equal(none.set, null)
   assert.equal(none.missing, '두부')
   assert.ok(nearestSetFor(PANTRY_SETS, ['해장', '맥주']).set, '재료 없으면 겹침 최대')
+})
+
+test('새 메뉴 다양성 하한 (TKT-215)', () => {
+  assert.ok(PANTRY_SETS.length >= 30)
+  const count = (tag) => PANTRY_SETS.filter((set) => setTags(set).includes(tag)).length
+  for (const tag of PANTRY_TAG_GROUPS.flatMap((group) => group.tags)) {
+    if (['편의점', '냉장고털이', '도시락'].includes(tag)) continue
+    assert.ok(count(tag) >= 2, `${tag}: 세트 2개 이상 (현재 ${count(tag)})`)
+  }
+  for (const tag of ['돼지고기', '닭', '생선·회', '계란', '두부', '김치', '면', '채소', '국물']) assert.ok(count(tag) >= 3, `${tag} 3세트`)
+  assert.ok(PANTRY_SETS.filter((set) => set.cost <= 3000).length >= 3)
+  assert.ok(PANTRY_SETS.filter((set) => set.cost >= 10000).length >= 2)
 })

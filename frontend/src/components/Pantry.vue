@@ -328,7 +328,7 @@ function stampMeal() {
 
     <section class="pantry-alternatives" aria-label="빠른 대안">
       <button type="button" class="pantry-alternative" @click="chooseSet(recommendation.quick)">
-        <span>{{ recommendation.quickIsFallback ? '빠른 대안' : '10분 대안' }}</span>
+        <span>빠른 대안</span>
         <strong>{{ recommendation.quick?.title }}</strong>
         <small>{{ recommendation.quick?.minutes }}분 · 약 {{ recommendation.quick?.cost.toLocaleString('ko-KR') }}원</small>
       </button>

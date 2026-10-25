@@ -209,7 +209,7 @@ test('조건 칩은 시간·상황을 거르고 무알코올 화면에는 술 �
   await quickTag.click()
   assert.equal(await quickTag.getAttribute('aria-pressed'), 'true')
   assert.ok(titlesWithTag('15분 이내').includes(await title(page)))
-  assert.equal(await page.locator('.pantry-alternative span').first().textContent(), '10분 대안')
+  assert.equal(await page.locator('.pantry-alternative span').first().textContent(), '빠른 대안')
   await quickTag.click()
 
   const hangoverTag = page.getByRole('button', { name: '해장', exact: true })
@@ -316,7 +316,7 @@ test('일치하는 한 상이 없으면 고른 재료를 담은 가까운 상을
   await assertNoOverflow(page)
 })
 
-for (const [ingredient, drink, theme] of [['닭', '사케', 'dark'], ['생선·회', '막걸리', 'light']]) {
+for (const [ingredient, drink, theme] of [['닭', '막걸리', 'dark'], ['생선·회', '막걸리', 'light']]) {
   test(`${ingredient}+${drink} 는 0건이어도 ${ingredient} 세트를 가까운 상으로 보여 준다`, async t => {
     const page = await setup(t, { width: 375, height: 812, theme })
     await page.getByRole('button', { name: '태그 더 보기', exact: true }).click()
