@@ -12,7 +12,8 @@ import Ets2Live from './components/Ets2Live.vue'
 import Ets2Dev from './components/Ets2Dev.vue'
 import { SiteLoopSymbol } from './components/tone/index.js'
 import { BLOG_LINE_OPEN, LINES } from './data/lines.js'
-import { pickSplashTicker } from './data/splashTicker.js'
+import SplashView from './components/pages/SplashView.vue'
+import { SPLASH_DOOR_OPENING_MS, useSplash } from './composables/useSplash.js'
 import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
 import { VOYAGE } from './data/voyage.js'
 import { migrateLegacyVoyageStorage, voyageStorageKey } from './data/voyageStorage.js'
@@ -30,18 +31,8 @@ import {
   safeWriteJson
 } from './staticWritingState.js'
 
-const SPLASH_DURATION_MS = 5500
-const SPLASH_PHRASE_INTERVAL_MS = 1660
-const SPLASH_TICKER_INTERVAL_MS = 1500
-const SPLASH_RETURN_DURATION_MS = 2500
-const SPLASH_RETURN_SETTLE_LIMIT_MS = 1600
-const SPLASH_RETURN_READING_MS = 1000
-const SPLASH_RETURN_MAX_DURATION_MS = 2800
-const SPLASH_DOOR_OPENING_MS = 500
 const FIRST_ROUTE_DOOR_TIMING = Object.freeze({ closeMs: 450, holdMs: 200, openMs: 350 })
 const REPEAT_ROUTE_DOOR_TIMING = Object.freeze({ closeMs: 270, holdMs: 120, openMs: 210 })
-const SPLASH_SEEN_STORAGE_KEY = 'splash:seen'
-const SPLASH_SEEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 const APP_BASE_PATH = normalizeBasePath(import.meta.env.BASE_URL)
 const TEST_ROUTE_PATH = withBasePath('/test', APP_BASE_PATH)
 const VERSIONED_TEST_ROUTE_PATH = withBasePath('/test/v0-5-0', APP_BASE_PATH)
@@ -105,10 +96,6 @@ const WORK_ROADMAP_ITEMS = [
     summary: '툴체인, 호스팅, 문서/브랜치 정리'
   }
 ]
-
-const splashPhrases = ['WORKING AROUND', 'MIND THE GAP', 'DOORS OPENING']
-const splashCellCount = Math.max(...splashPhrases.map((phrase) => phrase.length))
-const splashLatinCharset = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 const fallbackHealth = {
   status: 'degraded',
@@ -322,14 +309,13 @@ const doorTransition = ref({
   lineClass: 'line-w',
   label: ''
 })
-const currentTicker = ref('')
-const currentSplashPhrase = ref(splashPhrases[0])
-const isReturnVisitSplash = ref(false)
-const splashDurationMs = ref(SPLASH_DURATION_MS)
-const splashBoardCells = ref(
-  Array.from({ length: splashCellCount }, (_, index) => createSplashCellState(`splash-${index}`))
-)
-const splashAutoTransitionLabel = computed(() => `${splashDurationMs.value / 1000}초 후 자동 전환`)
+// 스플래시 상태·타이머는 useSplash 가 소유한다. 문 열기/페이지 전환은 라우트 문 전환과 공유하므로 여기서 한다.
+const splash = useSplash({
+  prefersReducedMotion,
+  isActive: () => !isTestRoute.value && page.value === 'splash',
+  onTransition: handleSplashTransition
+})
+const { currentTicker, currentSplashPhrase, splashBoardCells, splashAutoTransitionLabel } = splash
 
 const orchestratorSlices = [
   {
@@ -1258,7 +1244,6 @@ const commandPresets = computed(() => workBoardState.value.actions?.commandPrese
 const activityFeed = computed(() => workBoardState.value.activityFeed || [])
 const commandHistory = computed(() => workBoardState.value.commandHistory || [])
 
-let splashTimer
 let portalRefreshTimer
 let elevatorRefreshTimer
 let taxiSimulationTimer
@@ -1269,12 +1254,6 @@ let studioAutosaveTimer
 let studioSavedSnapshot = ''
 let reducedMotionMediaQuery
 let reducedMotionMediaListener
-let splashAnimationRunId = 0
-let splashAnimationTimers = []
-const splashTickerShown = new Set()
-let splashRunStartedAtMs = 0
-let splashTickerIndex = 0
-let settledSplashRunId = 0
 let doorTransitionRunId = 0
 let doorTransitionTimers = []
 let completedRouteDoorTransitions = 0
@@ -1411,263 +1390,6 @@ watch(
   { flush: 'post' }
 )
 
-function createSplashCellState(key) {
-  return {
-    key,
-    currentCharacter: ' ',
-    topStatic: displaySplashCharacter(' '),
-    bottomStatic: displaySplashCharacter(' '),
-    topFlip: displaySplashCharacter(' '),
-    bottomFlip: displaySplashCharacter(' '),
-    isRunning: false,
-    isSettling: false,
-    durationMs: '330ms'
-  }
-}
-
-function readRecentSplashVisit() {
-  if (typeof window === 'undefined') {
-    return false
-  }
-
-  try {
-    const seenAt = window.localStorage.getItem(SPLASH_SEEN_STORAGE_KEY)
-    if (!seenAt) {
-      return false
-    }
-    const seenAtMs = Date.parse(seenAt)
-    if (!Number.isFinite(seenAtMs) || Date.now() - seenAtMs >= SPLASH_SEEN_MAX_AGE_MS) {
-      window.localStorage.removeItem(SPLASH_SEEN_STORAGE_KEY)
-      return false
-    }
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-function markSplashVisitComplete() {
-  if (typeof window === 'undefined') {
-    return
-  }
-
-  try {
-    window.localStorage.setItem(SPLASH_SEEN_STORAGE_KEY, new Date().toISOString())
-  } catch (error) {
-    // 저장할 수 없는 환경은 다음 방문도 첫 방문 흐름으로 시작한다.
-  }
-}
-
-function setSplashVisitMode(returnVisit) {
-  isReturnVisitSplash.value = returnVisit
-  splashDurationMs.value = returnVisit ? SPLASH_RETURN_DURATION_MS : SPLASH_DURATION_MS
-}
-
-function displaySplashCharacter(character) {
-  return character === ' ' ? '\u00A0' : character
-}
-
-function centerSplashPhrase(phrase) {
-  const leftPadding = Math.floor((splashCellCount - phrase.length) / 2)
-  return `${' '.repeat(leftPadding)}${phrase}`.padEnd(splashCellCount, ' ')
-}
-
-function updateSplashCellDisplay(cell, character) {
-  const display = displaySplashCharacter(character)
-  cell.currentCharacter = character
-  cell.topStatic = display
-  cell.bottomStatic = display
-  cell.topFlip = display
-  cell.bottomFlip = display
-  cell.isRunning = false
-  cell.isSettling = false
-}
-
-function resetSplashBoard() {
-  splashBoardCells.value.forEach((cell) => updateSplashCellDisplay(cell, ' '))
-}
-
-function setSplashBoardToPhrase(phrase) {
-  const target = centerSplashPhrase(phrase)
-  splashBoardCells.value.forEach((cell, index) => {
-    updateSplashCellDisplay(cell, target.charAt(index) || ' ')
-  })
-  currentSplashPhrase.value = phrase
-}
-
-function buildSplashFlipSequence(targetCharacter, charIndex, compact = false) {
-  const spins =
-    targetCharacter === ' '
-      ? (Math.random() < 0.3 ? 1 : 0)
-      : compact
-        ? 1 + (charIndex % 2)
-        : 1 + (charIndex % 2) + Math.floor(Math.random() * 2)
-  const sequence = []
-  for (let spinIndex = 0; spinIndex < spins; spinIndex += 1) {
-    sequence.push(splashLatinCharset.charAt(1 + Math.floor(Math.random() * (splashLatinCharset.length - 1))))
-  }
-  sequence.push(targetCharacter)
-  return sequence
-}
-
-function queueSplashAnimation(callback, delayMs) {
-  const timer = window.setTimeout(() => {
-    splashAnimationTimers = splashAnimationTimers.filter((entry) => entry !== timer)
-    callback()
-  }, delayMs)
-  splashAnimationTimers.push(timer)
-}
-
-function clearSplashAnimationTimers() {
-  splashAnimationTimers.forEach((timer) => window.clearTimeout(timer))
-  splashAnimationTimers = []
-}
-
-function animateSplashCellFlip(cell, nextCharacter, durationMs, settle, runId, onComplete) {
-  if (runId !== splashAnimationRunId) {
-    return
-  }
-  if (nextCharacter === cell.currentCharacter) {
-    onComplete()
-    return
-  }
-
-  const currentDisplay = displaySplashCharacter(cell.currentCharacter)
-  const nextDisplay = displaySplashCharacter(nextCharacter)
-  cell.topStatic = nextDisplay
-  cell.bottomStatic = currentDisplay
-  cell.topFlip = currentDisplay
-  cell.bottomFlip = nextDisplay
-  cell.durationMs = `${Math.round(durationMs)}ms`
-  cell.isRunning = false
-  cell.isSettling = settle
-
-  queueSplashAnimation(() => {
-    if (runId !== splashAnimationRunId) {
-      return
-    }
-    cell.isRunning = true
-    queueSplashAnimation(() => {
-      if (runId !== splashAnimationRunId) {
-        return
-      }
-      updateSplashCellDisplay(cell, nextCharacter)
-      onComplete()
-    }, Math.round(durationMs * (settle ? 1.18 : 1.02)) + 20)
-  }, 0)
-}
-
-function playSplashCellSequence(cell, sequence, stepDurationMs, runId, index = 0, onComplete = () => {}) {
-  if (runId !== splashAnimationRunId) {
-    return
-  }
-  const nextCharacter = sequence[index]
-  const isLast = index === sequence.length - 1
-  const durationMs = isLast ? 180 : stepDurationMs
-
-  animateSplashCellFlip(cell, nextCharacter, durationMs, isLast, runId, () => {
-    if (!isLast) {
-      playSplashCellSequence(cell, sequence, stepDurationMs, runId, index + 1, onComplete)
-    } else {
-      onComplete()
-    }
-  })
-}
-
-function markReturnSplashSettled(runId) {
-  if (
-    runId !== splashAnimationRunId
-    || settledSplashRunId === runId
-    || !isReturnVisitSplash.value
-    || currentSplashPhrase.value !== splashPhrases.at(-1)
-  ) {
-    return
-  }
-  settledSplashRunId = runId
-  const settledAtMs = Math.max(0, Date.now() - splashRunStartedAtMs)
-  const transitionAtMs = Math.min(
-    SPLASH_RETURN_MAX_DURATION_MS,
-    Math.max(SPLASH_RETURN_DURATION_MS, settledAtMs + SPLASH_RETURN_READING_MS)
-  )
-  splashDurationMs.value = transitionAtMs
-  scheduleSplashTransition()
-}
-
-function animateSplashPhrase(phrase, runId) {
-  if (runId !== splashAnimationRunId) {
-    return
-  }
-  const target = centerSplashPhrase(phrase)
-  const compact = isReturnVisitSplash.value
-  let pendingCells = splashBoardCells.value.length
-  currentSplashPhrase.value = phrase
-  splashBoardCells.value.forEach((cell, charIndex) => {
-    const targetCharacter = target.charAt(charIndex) || ' '
-    const delayMs = compact
-      ? 80 + charIndex * 16
-      : 100 + charIndex * 22
-    const stepDurationMs = compact
-      ? 42
-      : 48
-    const sequence = buildSplashFlipSequence(targetCharacter, charIndex, compact)
-    queueSplashAnimation(() => {
-      playSplashCellSequence(cell, sequence, stepDurationMs, runId, 0, () => {
-        pendingCells -= 1
-        if (pendingCells === 0) markReturnSplashSettled(runId)
-      })
-    }, delayMs)
-  })
-}
-
-// 스플래시 티커 문구를 바꾸는 유일한 곳이다. 선택 규칙은 data/splashTicker.js 의 pickSplashTicker.
-function rotateSplashTicker(runId) {
-  if (runId !== splashAnimationRunId) {
-    return
-  }
-  currentTicker.value = pickSplashTicker(currentTicker.value, splashTickerShown, Math.random, splashTickerIndex, isReturnVisitSplash.value)
-  splashTickerIndex += 1
-  queueSplashAnimation(() => rotateSplashTicker(runId), SPLASH_TICKER_INTERVAL_MS)
-}
-
-function playSplashFlap() {
-  splashAnimationRunId += 1
-  const runId = splashAnimationRunId
-  splashRunStartedAtMs = Date.now()
-  settledSplashRunId = 0
-  clearSplashAnimationTimers()
-  const phraseEntries = isReturnVisitSplash.value
-    ? [{ phrase: splashPhrases.at(-1), delayMs: 0 }]
-    : splashPhrases.map((phrase, phraseIndex) => ({
-        phrase,
-        delayMs: phraseIndex * SPLASH_PHRASE_INTERVAL_MS
-      }))
-  // 티커는 플랩 문구와 분리해 회전한다. 모션이 아니라 텍스트 교체이므로 reduced-motion 에서도 돈다.
-  splashTickerShown.clear()
-  splashTickerIndex = 0
-  rotateSplashTicker(runId)
-
-  if (prefersReducedMotion.value) {
-    setSplashBoardToPhrase(phraseEntries[0].phrase)
-    return
-  }
-
-  resetSplashBoard()
-  if (isReturnVisitSplash.value) {
-    queueSplashAnimation(() => {
-      if (runId === splashAnimationRunId && settledSplashRunId !== runId) {
-        clearSplashAnimationTimers()
-        setSplashBoardToPhrase(splashPhrases.at(-1))
-        markReturnSplashSettled(runId)
-      }
-    }, SPLASH_RETURN_SETTLE_LIMIT_MS)
-  }
-  phraseEntries.forEach(({ phrase, delayMs }) => {
-    queueSplashAnimation(() => {
-      animateSplashPhrase(phrase, runId)
-    }, delayMs)
-  })
-}
-
 onMounted(async () => {
   migrateLegacyVoyageStorage(window.localStorage)
   window.addEventListener('beforeunload', handleStudioBeforeUnload)
@@ -1677,9 +1399,7 @@ onMounted(async () => {
     prefersReducedMotion.value = reducedMotionMediaQuery.matches
     reducedMotionMediaListener = (event) => {
       prefersReducedMotion.value = event.matches
-      if (!isTestRoute.value && page.value === 'splash') {
-        playSplashFlap()
-      }
+      splash.restartForMotionChange()
     }
     if (typeof reducedMotionMediaQuery.addEventListener === 'function') {
       reducedMotionMediaQuery.addEventListener('change', reducedMotionMediaListener)
@@ -1689,9 +1409,7 @@ onMounted(async () => {
   }
 
   if (!isTestRoute.value && page.value === 'splash') {
-    setSplashVisitMode(readRecentSplashVisit())
-    playSplashFlap()
-    scheduleSplashTransition()
+    splash.start()
   } else if (!isTestRoute.value) {
     syncLiveLocation({ replace: true })
     if (pendingBlogClosedNotice) {
@@ -1721,8 +1439,6 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  window.clearTimeout(splashTimer)
-  clearSplashAnimationTimers()
   clearDoorTransitionTimers()
   window.clearInterval(portalRefreshTimer)
   window.clearInterval(elevatorRefreshTimer)
@@ -2411,14 +2127,6 @@ function toggleTheme() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
 }
 
-function replaySplashFlap() {
-  setSplashVisitMode(false)
-  playSplashFlap()
-  if (!isTestRoute.value && page.value === 'splash') {
-    scheduleSplashTransition()
-  }
-}
-
 function showStaticSimNotice(event) {
   const rect = event?.currentTarget?.getBoundingClientRect()
   const isMobile = window.innerWidth < 900
@@ -2613,6 +2321,15 @@ function startRouteDoorTransition(nextPage) {
   })
 }
 
+function handleSplashTransition({ reducedMotion }) {
+  if (reducedMotion) {
+    applyPageChange('junction', { replace: true })
+    focusCurrentPageHeading()
+    return
+  }
+  startSplashDoorOpening()
+}
+
 function startSplashDoorOpening() {
   clearDoorTransitionTimers()
   doorTransitionRunId += 1
@@ -2650,23 +2367,6 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
   window.requestAnimationFrame(() => {
     document.querySelector('.page-scroller')?.scrollTo({ top: 0, behavior: 'smooth' })
   })
-}
-
-function scheduleSplashTransition() {
-  window.clearTimeout(splashTimer)
-  const elapsedMs = Math.max(0, Date.now() - splashRunStartedAtMs)
-  const doorOpeningMs = prefersReducedMotion.value ? 0 : SPLASH_DOOR_OPENING_MS
-  const remainingMs = Math.max(0, splashDurationMs.value - elapsedMs - doorOpeningMs)
-  splashTimer = window.setTimeout(() => {
-    clearSplashAnimationTimers()
-    markSplashVisitComplete()
-    if (prefersReducedMotion.value) {
-      applyPageChange('junction', { replace: true })
-      focusCurrentPageHeading()
-      return
-    }
-    startSplashDoorOpening()
-  }, remainingMs)
 }
 
 function directionGlyph(direction) {
@@ -3434,8 +3134,7 @@ function handleLocationPopState(event) {
     return
   }
 
-  window.clearTimeout(splashTimer)
-  clearSplashAnimationTimers()
+  splash.cancel()
   clearDoorTransitionTimers()
   doorTransitionRunId += 1
   resetDoorTransition()
@@ -3679,47 +3378,15 @@ function persistStudioPostId(postId) {
       <span v-if="doorTransition.label" class="door-flap-label" role="status">{{ doorTransition.label }}</span>
     </div>
 
-      <section v-if="page === 'splash'" class="splash-stage">
-        <div class="splash-panel">
-          <div class="splash-top">
-            <SiteLoopSymbol size="large" />
-            <div>
-              <h1>workaround.co.kr</h1>
-              <p class="splash-copy">곧 문이 열립니다</p>
-            </div>
-          </div>
-
-          <div class="flap-board splash-flap-board" :class="{ 'reduced-motion': prefersReducedMotion }">
-            <div class="flap-row splash-flap-row">
-              <div class="flap-values" role="img" :aria-label="currentSplashPhrase">
-                <span
-                  v-for="cell in splashBoardCells"
-                  :key="cell.key"
-                  class="flap-cell line-w"
-                  :class="{ run: cell.isRunning && !prefersReducedMotion, settle: cell.isSettling }"
-                  :style="{ '--flap-duration': cell.durationMs }"
-                  aria-hidden="true"
-                >
-                  <span class="flap-half flap-static flap-top"><b>{{ cell.topStatic }}</b></span>
-                  <span class="flap-half flap-static flap-bottom"><b>{{ cell.bottomStatic }}</b></span>
-                  <span class="flap-half flap-dynamic flap-top-flip"><b>{{ cell.topFlip }}</b></span>
-                  <span class="flap-half flap-dynamic flap-bottom-flip"><b>{{ cell.bottomFlip }}</b></span>
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div class="ticker-strip splash-ticker-strip" aria-live="off">
-            <span class="ticker-label">알림</span>
-            <span class="ticker-copy">{{ currentTicker }}</span>
-          </div>
-        </div>
-
-        <div class="splash-actions">
-          <p>{{ splashAutoTransitionLabel }}</p>
-          <button type="button" class="ghost-button" @click="replaySplashFlap">다시 재생</button>
-        </div>
-      </section>
+      <SplashView
+        v-if="page === 'splash'"
+        :cells="splashBoardCells"
+        :phrase="currentSplashPhrase"
+        :ticker="currentTicker"
+        :auto-transition-label="splashAutoTransitionLabel"
+        :prefers-reduced-motion="prefersReducedMotion"
+        @replay="splash.replay"
+      />
 
       <main v-else class="portal-stage" :class="{ 'writing-stage': page === 'writingStudio' }">
         <header class="station-topbar" :class="topbarLineClass">
