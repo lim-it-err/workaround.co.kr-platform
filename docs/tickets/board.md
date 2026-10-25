@@ -9,7 +9,6 @@
 - `TKT-175` `P2` `ets2` `backlog` `[INFRA]` 개발자 페이지 LAN 프록시 `/api/ets2/*` (SSH 포워드 대안 뒤)
 - `TKT-171` `P2` `ets2` `backlog` `[INFRA]` 유로트럭 실시간 스트리밍 MediaMTX WebRTC — 085 Tunnel 뒤
 
-
 - `TKT-010` `P1` `v0.1.2` `진행 불가` 빌드 툴 기준선 이후 런타임 정렬
 - `TKT-012` `P1` `v0.2.1` `진행 가능` `[BE]` 테스트 코드 확장과 커버리지 측정 기반 (PM 게이트 해제 2026-08-17)
 - `TKT-011` `P2` `v0.3.0` `진행 가능` 엘리베이터 시뮬레이터 통합 프리뷰 연결
@@ -38,8 +37,8 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-185` `P1` `pantry` `ready` `[FE]` 무알코올 칩 기본 행 상시 노출·한 줄 스크롤 (REV-180 I1)
-- `TKT-184` `P1` `tone` `ready` `[FE]` 소역 히트 원 r=26 — 1440 에서 40px (REV-179 I2)
+- `TKT-186` `P1` `tone` `ready` `[FE]` 스플래시 티커 멘트 복원 — 36개 풀 무작위 회전 1.3초 (PO 2026-10-25) — dev-1
+
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
 - `TKT-177` `P2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
@@ -52,9 +51,6 @@
 
 - `TKT-099` `P1` `advisor` `대기` `[PM]` Advisor 글쓰기 UX 전면 개선 — PM 실사용 관찰 후 상세화 (PO: "매우 불편")
 
-
-
-
 ## Started
 
 - `TKT-087` `P1` `v0.7.0` `blocked` `[BE]` advisor Haiku provider 구현·계약 테스트 완료 — PO 키 주입 실 full cycle 대기
@@ -63,9 +59,9 @@
 
 ## Need Review
 
-
-
 ## Finished
+- `TKT-184` `[FE]` 홈 노선도 소역 히트 원 r=26(1440 에서 41px) — r1 통과 (2026-10-25)
+- `TKT-185` `[FE]` 자취 밥상 무알코올 칩 기본 행 상시 노출·한 줄 스크롤 — r1 통과 (2026-10-25, [제안] 스크롤 단서)
 
 - `TKT-174` `[FE]` 유로트럭 개발자 `/ets2/dev` — 보호 구역·PoC 제어·감시·시뮬레이터, 면 제거·연결 잠금 — r2 통과 (2026-10-25)
 - `TKT-182` `[FE]` 문 닫힘/열림 애니메이션 — 5.5초·문구 유지·CSS 목업 — r2 통과 (2026-10-25)
