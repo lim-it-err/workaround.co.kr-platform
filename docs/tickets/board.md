@@ -43,8 +43,6 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-211` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 환승 홀·셸·레거시 라우트 제거 (순서대로, 동작 변화 0)
-
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
 
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
@@ -65,6 +63,8 @@
 ## Need Review
 
 ## Finished
+
+- `TKT-211` App.vue 분해 — 환승 홀·셸·라우팅·레거시 제거(App.vue 357줄) — r1 통과 (2026-10-25, v0.8.3)
 
 - `TKT-210` App.vue 분해 — 블로그 — r1 통과 (2026-10-25, v0.8.3)
 
