@@ -3,7 +3,6 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import StationHeader from './components/StationHeader.vue'
 import JunctionMap from './components/JunctionMap.vue'
 import WorkNotes from './components/WorkNotes.vue'
-import ElevatorCrossSection from './components/ElevatorCrossSection.vue'
 import StatusBadge from './components/StatusBadge.vue'
 import VoyageView from './components/VoyageView.vue'
 import WritingStudio from './components/WritingStudio.vue'
@@ -13,8 +12,12 @@ import Ets2Dev from './components/Ets2Dev.vue'
 import { SiteLoopSymbol } from './components/tone/index.js'
 import { BLOG_LINE_OPEN, LINES } from './data/lines.js'
 import SplashView from './components/pages/SplashView.vue'
+import SimHubView from './components/pages/SimHubView.vue'
+import ElevatorView from './components/pages/ElevatorView.vue'
+import TaxiView from './components/pages/TaxiView.vue'
 import { SPLASH_DOOR_OPENING_MS, useSplash } from './composables/useSplash.js'
-import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
+import { useElevatorSim } from './composables/useElevatorSim.js'
+import { useTaxiSim } from './composables/useTaxiSim.js'
 import { VOYAGE } from './data/voyage.js'
 import { migrateLegacyVoyageStorage, voyageStorageKey } from './data/voyageStorage.js'
 import {
@@ -227,18 +230,6 @@ const fallbackElevatorState = {
   }
 }
 
-const TAXI_ZONE_DEFINITIONS = [
-  { id: 'north', name: '연남', accent: 'line-w', demandLabel: '카페 환승', neighbors: ['center', 'west'] },
-  { id: 'west', name: '홍대입구', accent: 'line-e', demandLabel: '야간 회전', neighbors: ['north', 'center', 'southwest'] },
-  { id: 'center', name: '을지로', accent: 'line-r', demandLabel: '업무 밀집', neighbors: ['north', 'west', 'east', 'south', 'harbor', 'hill'] },
-  { id: 'east', name: '성수', accent: 'line-p', demandLabel: '창고형 픽업', neighbors: ['center', 'southeast', 'hill'] },
-  { id: 'southwest', name: '여의도', accent: 'line-w', demandLabel: '퇴근 러시', neighbors: ['west', 'south', 'harbor'] },
-  { id: 'south', name: '강남', accent: 'line-r', demandLabel: '과밀 수요', neighbors: ['southwest', 'center', 'southeast', 'hill'] },
-  { id: 'southeast', name: '잠실', accent: 'line-e', demandLabel: '행사장 유입', neighbors: ['east', 'south'] },
-  { id: 'harbor', name: '용산', accent: 'line-p', demandLabel: '역세권 환승', neighbors: ['center', 'southwest'] },
-  { id: 'hill', name: '한남', accent: 'line-r', demandLabel: '심야 이동', neighbors: ['center', 'east', 'south'] }
-]
-
 const BLOG_STATUS_LABELS = {
   draft: 'draft',
   published: 'published',
@@ -272,22 +263,12 @@ const metadataError = ref('')
 const isUnlockingWorkManager = ref(false)
 const isRunningCommand = ref(false)
 const isSavingMetadata = ref(false)
-const demandPreset = ref('normal')
-const demandIntensity = ref(55)
-const elevatorTickerOpen = ref(readElevatorTickerDefault())
 const dragTicketId = ref('')
 const readyTicketIds = ref(readReadyTicketIds())
 const healthState = ref(fallbackHealth)
 const runtimeState = ref(fallbackRuntime)
 const servicesState = ref([])
 const workBoardState = ref(fallbackWorkBoard)
-const elevatorState = ref(fallbackElevatorState)
-const elevatorCarCount = ref(fallbackElevatorState.elevators.length)
-const taxiState = ref(createInitialTaxiState())
-const taxiManualOrigin = ref(TAXI_ZONE_DEFINITIONS[0].id)
-const taxiManualDestination = ref(TAXI_ZONE_DEFINITIONS[5].id)
-const taxiManualPassengers = ref(2)
-const taxiMessage = ref('')
 const blogPosts = ref(readStoredBlogPosts())
 const activeBlogSlug = ref(readInitialBlogSlug() || readStoredBlogSlug())
 const studioViewMode = ref(readStoredStudioViewMode())
@@ -298,7 +279,6 @@ const studioLastSavedAt = ref('')
 const studioSavePhase = ref('saved')
 const writingBackupMessage = ref('')
 const staticModeMessage = ref('')
-const staticSimNotice = ref(null)
 const blogClosedNotice = ref('')
 const blogMessage = ref('')
 const prefersReducedMotion = ref(false)
@@ -316,6 +296,11 @@ const splash = useSplash({
   onTransition: handleSplashTransition
 })
 const { currentTicker, currentSplashPhrase, splashBoardCells, splashAutoTransitionLabel } = splash
+// 엘리베이터·택시 시뮬 상태/타이머는 각 composable 이 소유한다(화면과 무관하게 계속 돌고, 환승 홀 카드도 읽는다).
+const elevator = useElevatorSim({ fallbackState: fallbackElevatorState, fetchJson })
+const { elevatorState, elevatorCars, loadElevatorState, activateElevatorPage } = elevator
+const taxi = useTaxiSim({ createEntityId })
+const simHubView = ref(null)
 
 const orchestratorSlices = [
   {
@@ -821,122 +806,6 @@ const currentRoute = computed(() => {
   }
 })
 
-const elevatorSummary = computed(() => elevatorState.value.summary || fallbackElevatorState.summary)
-const elevatorDemand = computed(() => elevatorState.value.demand || fallbackElevatorState.demand)
-const elevatorCars = computed(() => elevatorState.value.elevators || fallbackElevatorState.elevators)
-const elevatorBuilding = computed(() => elevatorState.value.building || fallbackElevatorState.building)
-
-const elevatorFloorRows = computed(() => {
-  const building = elevatorState.value.building || fallbackElevatorState.building
-  const floorQueues = elevatorState.value.floorQueues || []
-  const queueMap = new Map(floorQueues.map((entry) => [Number(entry.floor), entry]))
-  const floors = []
-  for (let floor = building.maxFloor; floor >= building.minFloor; floor -= 1) {
-    const queue = queueMap.get(floor) || {
-      floor,
-      up: 0,
-      down: 0
-    }
-    floors.push({
-      floor,
-      up: queue.up ?? 0,
-      down: queue.down ?? 0
-    })
-  }
-  return floors
-})
-
-const elevatorAverageWaitSeconds = computed(() => {
-  const waitingPassengers = elevatorState.value.waitingPassengers || []
-  if (waitingPassengers.length === 0) {
-    return 0
-  }
-
-  const currentTick = Number(elevatorState.value.tick || 0)
-  const stepSeconds = Number(elevatorDemand.value.stepSeconds || 0.35)
-  const totalWaitSeconds = waitingPassengers.reduce((total, passenger) => {
-    return total + Math.max(currentTick - Number(passenger.requestedAtTick || currentTick), 0) * stepSeconds
-  }, 0)
-  return Math.round(totalWaitSeconds / waitingPassengers.length)
-})
-
-const elevatorEvents = computed(() => {
-  const boarded = elevatorCars.value.flatMap((car) => {
-    return (car.passengers || []).map((passenger) => ({
-      tick: Number(passenger.boardedAtTick || 0),
-      text: `${passenger.originFloor}F 탑승 → ${car.id}`
-    }))
-  })
-  const arrived = (elevatorState.value.completedPassengers || []).map((passenger) => ({
-    tick: Number(passenger.servedAtTick || 0),
-    text: `${passenger.servedByElevatorId || passenger.assignedElevatorId || 'E?'} ${passenger.destinationFloor}F 도착`
-  }))
-  const events = [...boarded, ...arrived]
-    .filter((event) => event.tick > 0)
-    .sort((left, right) => right.tick - left.tick)
-    .slice(0, 8)
-
-  if (events.length > 0) {
-    return events.map((event) => event.text)
-  }
-
-  return elevatorCars.value.slice(0, 4).map((car) => {
-    const floor = Number(car.position ?? car.currentFloor).toFixed(1)
-    return `${car.id} ${floor}F ${directionGlyph(car.direction) || '대기'}`
-  })
-})
-
-const simHubCards = computed(() => [
-  {
-    key: 'elevator',
-    page: 'elevator',
-    lineNo: 'E',
-    name: 'Elevator Station',
-    displayName: '멈춘 엘리베이터',
-    kicker: '추천 시나리오 · 시스템 설계',
-    summary: '재시도와 상태 복구를 설계합니다.',
-    status: elevatorState.value.mode === 'live-traffic-loop' ? '실시간 루프' : '저하 운행',
-    accent: 'line-e',
-    cta: '시작'
-  },
-  {
-    key: 'taxi',
-    page: 'taxi',
-    lineNo: 'T',
-    name: 'Taxi District Lab',
-    displayName: '심야 택시',
-    summary: '제한된 정보로 안전한 선택을 만듭니다.',
-    status: '제품 판단',
-    accent: 'line-t',
-    cta: '시작'
-  },
-  {
-    key: 'ets2',
-    page: 'ets2',
-    lineNo: 'S',
-    name: '유로트럭 관제',
-    displayName: '유로트럭 관제',
-    summary: '최근 주행 화면과 연결 상태를 읽습니다.',
-    status: '읽기 전용',
-    accent: 'line-s',
-    cta: '관제 보기'
-  },
-  {
-    key: 'ets2Dev',
-    page: 'ets2Dev',
-    lineNo: 'S',
-    name: '유로트럭 개발자',
-    displayName: '유로트럭 개발자',
-    summary: '로컬 PoC 제어와 정적 시뮬레이터를 점검합니다.',
-    status: '로컬 전용',
-    accent: 'line-s',
-    cta: '개발 도구 열기',
-    staticAccess: 'server'
-  }
-])
-const featuredSimCard = computed(() => simHubCards.value[0])
-const secondarySimCards = computed(() => simHubCards.value.slice(1))
-
 function runtimeStatusMeta(value) {
   const status = String(value || '').trim().toLowerCase()
   if (['online', 'available', 'ok', 'healthy'].includes(status)) {
@@ -994,56 +863,6 @@ const runtimeToneRows = computed(() => [
   }))
 ])
 const runtimeNeedsAttention = computed(() => runtimeToneRows.value.some((row) => row.warning))
-
-const taxiZones = computed(() => taxiState.value.zones)
-const taxiFleet = computed(() => taxiState.value.taxis)
-const taxiActiveRequests = computed(() => taxiState.value.activeRequests)
-const taxiCompletedRequests = computed(() =>
-  [...taxiState.value.completedRequests].slice(-8).reverse()
-)
-const taxiRewardSummary = computed(() => ({
-  reward: taxiState.value.score.reward,
-  penalty: taxiState.value.score.penalty,
-  net: taxiState.value.score.reward - taxiState.value.score.penalty
-}))
-const taxiDashboardMetrics = computed(() => {
-  const completed = taxiState.value.completedRequests
-  const averageWait =
-    completed.length > 0
-      ? completed.reduce((sum, item) => sum + (item.waitSeconds || 0), 0) / completed.length
-      : 0
-  return [
-    { label: '진행 중 호출', value: String(taxiState.value.activeRequests.length) },
-    { label: '완료 운행', value: String(completed.length) },
-    { label: '평균 대기', value: `${averageWait.toFixed(1)}초` },
-    { label: '운행 차량', value: String(taxiFleet.value.length) }
-  ]
-})
-const taxiZoneCards = computed(() =>
-  taxiZones.value.map((zone) => {
-    const pending = taxiActiveRequests.value.filter((request) => request.originId === zone.id).length
-    const nearbyFleet = taxiFleet.value.filter(
-      (taxi) => taxi.zoneId === zone.id || taxi.targetZoneId === zone.id
-    ).length
-    return {
-      ...zone,
-      pending,
-      nearbyFleet
-    }
-  })
-)
-const taxiRequestQueue = computed(() =>
-  [...taxiActiveRequests.value]
-    .sort((left, right) => {
-      const leftWeight = left.status === 'pending' ? 0 : 1
-      const rightWeight = right.status === 'pending' ? 0 : 1
-      if (leftWeight !== rightWeight) {
-        return leftWeight - rightWeight
-      }
-      return right.createdTick - left.createdTick
-    })
-    .slice(0, 6)
-)
 
 const publishedBlogPosts = computed(() =>
   [...blogPosts.value]
@@ -1245,9 +1064,6 @@ const activityFeed = computed(() => workBoardState.value.activityFeed || [])
 const commandHistory = computed(() => workBoardState.value.commandHistory || [])
 
 let portalRefreshTimer
-let elevatorRefreshTimer
-let taxiSimulationTimer
-let staticSimNoticeTimer
 let blogClosedNoticeTimer
 let workManagerExpiryTimer
 let studioAutosaveTimer
@@ -1295,28 +1111,6 @@ watch(studioViewMode, (nextMode) => {
 watch(studioPostId, (nextId) => {
   persistStudioPostId(nextId)
 })
-
-watch(
-  () => elevatorDemand.value,
-  (nextDemand) => {
-    if (!nextDemand) {
-      return
-    }
-    demandPreset.value = nextDemand.preset || 'normal'
-    demandIntensity.value = nextDemand.intensity ?? 55
-  },
-  { immediate: true, deep: true }
-)
-
-watch(
-  () => elevatorCars.value.length,
-  (nextCount) => {
-    if (nextCount > 0) {
-      elevatorCarCount.value = nextCount
-    }
-  },
-  { immediate: true }
-)
 
 watch(
   () => allWorkTickets.value.map((ticket) => ticket.id).join(','),
@@ -1429,21 +1223,14 @@ onMounted(async () => {
     portalRefreshTimer = window.setInterval(() => {
       loadPortalData({ refreshElevator: false })
     }, 8000)
-    elevatorRefreshTimer = window.setInterval(() => {
-      loadElevatorState()
-    }, 900)
+    elevator.startPolling()
   }
-  taxiSimulationTimer = window.setInterval(() => {
-    advanceTaxiSimulation()
-  }, 1200)
+  taxi.start()
 })
 
 onBeforeUnmount(() => {
   clearDoorTransitionTimers()
   window.clearInterval(portalRefreshTimer)
-  window.clearInterval(elevatorRefreshTimer)
-  window.clearInterval(taxiSimulationTimer)
-  window.clearTimeout(staticSimNoticeTimer)
   window.clearTimeout(blogClosedNoticeTimer)
   window.clearTimeout(workManagerExpiryTimer)
   window.clearTimeout(studioAutosaveTimer)
@@ -1501,62 +1288,6 @@ async function loadWorkBoardState() {
   }
 }
 
-async function loadElevatorState() {
-  try {
-    elevatorState.value = await fetchJson('/api/services/elevator-service/api/state')
-  } catch (error) {
-    elevatorState.value = fallbackElevatorState
-  }
-}
-
-async function updateElevatorCarCount(nextCount) {
-  const elevatorCount = Number(nextCount)
-  elevatorCarCount.value = elevatorCount
-  await postElevatorJson('/api/services/elevator-service/api/config', {
-    elevatorCount
-  })
-  await loadElevatorState()
-}
-
-async function applyDemandPreset(nextPreset) {
-  demandPreset.value = nextPreset
-  await postElevatorJson('/api/services/elevator-service/api/demand', {
-    preset: nextPreset,
-    intensity: demandIntensity.value,
-    autoMode: true
-  })
-  await loadElevatorState()
-}
-
-async function activateElevatorPage() {
-  const livePreset = ['quiet', 'normal', 'busy'].includes(elevatorDemand.value.preset)
-    ? elevatorDemand.value.preset
-    : 'normal'
-  await applyDemandPreset(livePreset)
-}
-
-async function updateDemandIntensity(nextValue) {
-  const intensity = Number(nextValue)
-  demandIntensity.value = intensity
-  await postElevatorJson('/api/services/elevator-service/api/demand', {
-    preset: demandPreset.value,
-    intensity
-  })
-}
-
-async function addPassengerAtFloor({ floor, direction }) {
-  await postElevatorJson('/api/services/elevator-service/api/passenger', {
-    floor,
-    direction
-  })
-  await loadElevatorState()
-}
-
-async function resetElevator() {
-  await postElevatorJson('/api/services/elevator-service/api/reset', {})
-  await loadElevatorState()
-}
-
 function initializeBlogWorkspace() {
   if (blogPosts.value.length === 0) {
     blogPosts.value = createSeedBlogPosts()
@@ -1580,45 +1311,6 @@ function initializeBlogWorkspace() {
   }
 
   createNewStudioPost(false)
-}
-
-function advanceTaxiSimulation() {
-  const nextState = cloneTaxiState(taxiState.value)
-  nextState.clock.elapsedSeconds += 1.2
-
-  if (shouldSpawnAutoTaxiRequest(nextState)) {
-    spawnTaxiRequest(nextState, { source: 'auto' })
-  }
-
-  taxiState.value = advanceTaxiFleet(nextState)
-}
-
-function submitManualTaxiRequest() {
-  if (taxiManualOrigin.value === taxiManualDestination.value) {
-    taxiMessage.value = '출발지와 도착지는 달라야 합니다.'
-    return
-  }
-
-  const nextState = cloneTaxiState(taxiState.value)
-  spawnTaxiRequest(nextState, {
-    originId: taxiManualOrigin.value,
-    destinationId: taxiManualDestination.value,
-    passengers: Number(taxiManualPassengers.value),
-    source: 'manual'
-  })
-  taxiState.value = assignPendingTaxiRequests(nextState)
-  taxiMessage.value = '수동 호출을 추가했습니다.'
-}
-
-function addTaxiFleetUnit() {
-  const nextState = cloneTaxiState(taxiState.value)
-  const homeZone = TAXI_ZONE_DEFINITIONS[nextState.taxis.length % TAXI_ZONE_DEFINITIONS.length]
-  nextState.taxis.push(createTaxiCab(nextState.taxis.length + 1, homeZone.id))
-  nextState.score.penalty += 12
-  nextState.eventLog.unshift(`차량 추가 배치 · ${homeZone.name} · penalty -12`)
-  nextState.eventLog = nextState.eventLog.slice(0, 12)
-  taxiState.value = assignPendingTaxiRequests(nextState)
-  taxiMessage.value = '차량을 추가했고 운영 패널티를 반영했습니다.'
 }
 
 function openBlogArchive() {
@@ -1914,20 +1606,6 @@ function handleStudioBeforeUnload(event) {
   event.returnValue = ''
 }
 
-async function postElevatorJson(url, body) {
-  try {
-    await fetchJson(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
-    })
-  } catch (error) {
-    // Keep the UI usable even when the live simulator is down.
-  }
-}
-
 async function unlockWorkManager() {
   if (!workManagerPassword.value.trim()) {
     workManagerError.value = '비밀번호를 입력해야 합니다.'
@@ -2127,29 +1805,6 @@ function toggleTheme() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
 }
 
-function showStaticSimNotice(event) {
-  const rect = event?.currentTarget?.getBoundingClientRect()
-  const isMobile = window.innerWidth < 900
-  staticSimNotice.value = {
-    message: '서버 시뮬 · 정적 공개본에서는 준비 중',
-    x: !isMobile && rect
-      ? `${Math.min(window.innerWidth - 150, Math.max(150, rect.left + rect.width / 2))}px`
-      : undefined,
-    y: !isMobile && rect
-      ? `${Math.min(window.innerHeight - 70, Math.max(18, rect.bottom + 10))}px`
-      : undefined
-  }
-  window.clearTimeout(staticSimNoticeTimer)
-  staticSimNoticeTimer = window.setTimeout(() => {
-    staticSimNotice.value = null
-  }, 2500)
-}
-
-function showEts2DevStaticNotice(event) {
-  showStaticSimNotice(event)
-  staticSimNotice.value.message = '개발자 페이지 · 로컬 전용'
-}
-
 // D-031: 내려간 블로그 주소로 들어오면 환승 홀에서 한 줄만 알린다(접근 토스트 패턴 재사용).
 function showBlogClosedNotice() {
   blogClosedNotice.value = BLOG_CLOSED_MESSAGE
@@ -2157,18 +1812,6 @@ function showBlogClosedNotice() {
   blogClosedNoticeTimer = window.setTimeout(() => {
     blogClosedNotice.value = ''
   }, BLOG_CLOSED_NOTICE_MS)
-}
-
-function openSimCard(card, event) {
-  if (isStaticMode && card.staticAccess === 'server') {
-    showEts2DevStaticNotice(event)
-    return
-  }
-  if (isStaticMode && card.page === 'elevator') {
-    showStaticSimNotice(event)
-    return
-  }
-  openPage(card.page)
 }
 
 function openPage(nextPage) {
@@ -2187,8 +1830,7 @@ function openPage(nextPage) {
     }
     return
   }
-  window.clearTimeout(staticSimNoticeTimer)
-  staticSimNotice.value = null
+  simHubView.value?.clearNotice()
   staticModeMessage.value = ''
   if (page.value === 'writingStudio' && nextPage !== 'writingStudio' && !prepareStudioTransition()) {
     return
@@ -2369,12 +2011,6 @@ function switchTestRouteMode(nextMode, nextPage = 'junction') {
   })
 }
 
-function directionGlyph(direction) {
-  if (direction === 'up') return '↑'
-  if (direction === 'down') return '↓'
-  return '·'
-}
-
 function startTicketDrag(ticketId) {
   dragTicketId.value = ticketId
 }
@@ -2397,119 +2033,6 @@ function dropIntoBacklog() {
   readyTicketIds.value = readyTicketIds.value.filter((ticketId) => ticketId !== dragTicketId.value)
   persistReadyTicketIds(readyTicketIds.value)
   dragTicketId.value = ''
-}
-
-function createInitialTaxiState() {
-  return {
-    clock: { elapsedSeconds: 0 },
-    sequence: 3,
-    autoSpawnCounter: 0,
-    zones: TAXI_ZONE_DEFINITIONS.map((zone) => ({ ...zone })),
-    taxis: [
-      createTaxiCab(1, 'center'),
-      createTaxiCab(2, 'south'),
-      createTaxiCab(3, 'west'),
-      createTaxiCab(4, 'east')
-    ],
-    activeRequests: [
-      createTaxiRequest({
-        id: 'REQ-001',
-        originId: 'north',
-        destinationId: 'south',
-        passengers: 2,
-        createdTick: 0,
-        source: 'seed'
-      }),
-      createTaxiRequest({
-        id: 'REQ-002',
-        originId: 'harbor',
-        destinationId: 'east',
-        passengers: 1,
-        createdTick: 2,
-        source: 'seed'
-      })
-    ],
-    completedRequests: [],
-    score: { reward: 48, penalty: 8 },
-    eventLog: ['시드 호출 2건 적재', '야간 시뮬레이터 코어 준비 완료']
-  }
-}
-
-function createTaxiCab(index, zoneId) {
-  return {
-    id: `Cab-${String(index).padStart(2, '0')}`,
-    zoneId,
-    targetZoneId: zoneId,
-    status: 'idle',
-    seats: 4,
-    passengerCount: 0,
-    assignedRequestId: '',
-    route: [],
-    progress: 0,
-    stepDuration: 1,
-    positionLabel: findTaxiZone(zoneId)?.name || zoneId
-  }
-}
-
-function createTaxiRequest({
-  id = createEntityId('REQ'),
-  originId,
-  destinationId,
-  passengers,
-  createdTick,
-  source
-}) {
-  return {
-    id,
-    originId,
-    destinationId,
-    passengers,
-    createdTick,
-    source,
-    status: 'pending',
-    assignedTaxiId: '',
-    pickedUpAt: 0
-  }
-}
-
-function clamp(value, minimum, maximum) {
-  return Math.max(minimum, Math.min(maximum, value))
-}
-
-function shouldSpawnAutoTaxiRequest(state) {
-  state.autoSpawnCounter += 1
-  return state.autoSpawnCounter % 4 === 0 && state.activeRequests.length < 7
-}
-
-function spawnTaxiRequest(state, options = {}) {
-  const originId = options.originId || pickTaxiZoneId(state, [])
-  const destinationId = options.destinationId || pickTaxiZoneId(state, [originId])
-  const passengers = clamp(Number(options.passengers || (1 + (state.sequence % 4))), 1, 4)
-  state.sequence += 1
-  const request = createTaxiRequest({
-    originId,
-    destinationId,
-    passengers,
-    createdTick: state.clock.elapsedSeconds,
-    source: options.source || 'auto'
-  })
-  state.activeRequests.push(request)
-  state.eventLog.unshift(
-    `${request.source === 'manual' ? '수동' : '자동'} 호출 · ${findTaxiZone(originId)?.name} -> ${findTaxiZone(destinationId)?.name} · ${passengers}명`
-  )
-  state.eventLog = state.eventLog.slice(0, 12)
-  return request
-}
-
-function pickTaxiZoneId(state, excludedIds = []) {
-  const excluded = new Set(excludedIds)
-  const candidates = state.zones.filter((zone) => !excluded.has(zone.id))
-  const sequence = state.sequence % candidates.length
-  return candidates[sequence]?.id || state.zones[0].id
-}
-
-function findTaxiZone(zoneId) {
-  return TAXI_ZONE_DEFINITIONS.find((zone) => zone.id === zoneId) || null
 }
 
 function createSeedBlogPosts() {
@@ -2879,28 +2402,6 @@ function countWords(text) {
     .filter(Boolean).length
 }
 
-function formatSignedValue(value) {
-  const numeric = Number(value || 0)
-  return `${numeric >= 0 ? '+' : ''}${numeric}`
-}
-
-function formatTaxiEvent(entry) {
-  return String(entry || '')
-    .replaceAll('reward', '보상')
-    .replaceAll('penalty', '패널티')
-    .replaceAll(' -> ', ' → ')
-}
-
-function taxiStatusLabel(status) {
-  return {
-    idle: '대기',
-    pending: '배차 대기',
-    assigned: '배차됨',
-    pickup: '승객에게 이동',
-    dropoff: '목적지로 이동'
-  }[status] || status
-}
-
 function formatDate(value) {
   if (!value) {
     return '없음'
@@ -2947,10 +2448,6 @@ function formatBlogLongDate(value) {
 
 function blogCategory(post) {
   return visibleBlogTags(post?.tags)[0] || '기록'
-}
-
-function readElevatorTickerDefault() {
-  return typeof window === 'undefined' || window.innerWidth > 760
 }
 
 function formatTimestamp(value) {
@@ -3827,53 +3324,13 @@ function persistStudioPostId(postId) {
             >{{ blogClosedNotice }}</p>
           </section>
 
-          <section v-else-if="page === 'simhub'" class="feature-shell tone-page tone-sim-page line-s">
-            <section
-              v-if="featuredSimCard"
-              class="tone-page-hero"
-              :class="[featuredSimCard.accent, { 'static-sim-locked': isStaticMode }]"
-            >
-              <small>{{ featuredSimCard.kicker }}</small>
-              <h1>{{ featuredSimCard.displayName }}</h1>
-              <p>{{ featuredSimCard.summary }}</p>
-              <button
-                type="button"
-                class="primary-button"
-                :aria-label="isStaticMode ? `${featuredSimCard.displayName} · 서버 시뮬 · 정적 공개본에서는 준비 중` : undefined"
-                @click="openSimCard(featuredSimCard, $event)"
-              >
-                {{ isStaticMode ? '준비 중' : featuredSimCard.cta }}
-              </button>
-            </section>
-
-            <div class="tone-service-list" aria-label="격납고">
-              <article
-                v-for="card in secondarySimCards"
-                :key="card.key"
-                class="tone-service-row"
-                :class="card.accent"
-              >
-                <span class="line-round" :class="card.accent" aria-hidden="true">{{ card.lineNo }}</span>
-                <div>
-                  <small>{{ card.status }}</small>
-                  <h2>{{ card.displayName }}</h2>
-                  <p>{{ card.summary }}</p>
-                </div>
-                <button type="button" class="ghost-button" @click="openSimCard(card, $event)">
-                  {{ card.cta }}
-                </button>
-              </article>
-            </div>
-
-            <p
-              v-if="staticSimNotice"
-              class="junction-access-toast"
-              :style="{ '--toast-x': staticSimNotice.x, '--toast-y': staticSimNotice.y }"
-              role="status"
-              aria-live="polite"
-              aria-atomic="true"
-            >{{ staticSimNotice.message }}</p>
-          </section>
+          <SimHubView
+            v-else-if="page === 'simhub'"
+            ref="simHubView"
+            :is-static-mode="isStaticMode"
+            :elevator-live="elevatorState.mode === 'live-traffic-loop'"
+            @open-page="openPage"
+          />
 
           <VoyageView v-else-if="page === 'voyage'" @exit="openPage('junction')" />
 
@@ -3883,312 +3340,22 @@ function persistStudioPostId(postId) {
 
           <Ets2Dev v-else-if="page === 'ets2Dev'" :static-mode="isStaticMode" />
 
-          <section v-else-if="page === 'elevator'" class="feature-shell sim-tone-page elevator-tone-page">
-            <p v-if="isStaticMode" class="static-preview-hairline" role="status">
-              정적 공개본 — 서버 시뮬은 준비 중, 화면만 봅니다
-            </p>
-            <StationHeader
-              line-class="line-e"
-              station-code="E01"
-              title="멈춘 엘리베이터"
-              :status="isStaticMode ? '화면 미리보기' : '실시간 운행'"
-              :status-tone="isStaticMode ? 'warn' : 'live'"
-              :summary="isStaticMode ? `23층 · 승강기 ${elevatorCars.length}대 · 정지 상태 미리보기` : `23층 · 승강기 ${elevatorCars.length}대 · 정원 20명`"
-              :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
-              :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
-              @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
-            />
+          <ElevatorView
+            v-else-if="page === 'elevator'"
+            :sim="elevator"
+            :is-static-mode="isStaticMode"
+            :is-test-route="isTestRoute"
+            :sim-hub-name="simHubLine.nameKo"
+            @open-page="openPage"
+          />
 
-            <section
-              class="section-block elevator-live-layout line-e"
-              :class="{ 'static-sim-preview': isStaticMode }"
-              :inert="isStaticMode ? '' : null"
-              :aria-disabled="isStaticMode ? 'true' : undefined"
-            >
-              <ElevatorCrossSection
-                :cars="elevatorCars"
-                :floors="elevatorFloorRows"
-                :min-floor="elevatorBuilding.minFloor"
-                :max-floor="elevatorBuilding.maxFloor"
-                @add-passenger="addPassengerAtFloor"
-              />
-
-              <aside class="elevator-control-panel">
-                <div class="elevator-metrics" aria-label="엘리베이터 실시간 지표">
-                  <article>
-                    <span>대기</span>
-                    <strong class="num">{{ elevatorSummary.waitingPassengers }}</strong>
-                  </article>
-                  <article>
-                    <span>탑승</span>
-                    <strong class="num">{{ elevatorSummary.onboardPassengers }}</strong>
-                  </article>
-                  <article>
-                    <span>이동 중</span>
-                    <strong class="num">{{ elevatorSummary.movingElevators }}</strong>
-                  </article>
-                  <article>
-                    <span>평균 대기</span>
-                    <strong class="num">{{ elevatorAverageWaitSeconds }}초</strong>
-                  </article>
-                </div>
-
-                <section class="elevator-demand-panel">
-                  <div class="section-head compact">
-                    <h3>수요</h3>
-                    <span>{{ elevatorDemand.presetLabel }}</span>
-                  </div>
-                  <div class="preset-row elevator-presets">
-                    <button
-                      v-for="preset in [
-                        { id: 'quiet', label: '한산' },
-                        { id: 'normal', label: '보통' },
-                        { id: 'busy', label: '혼잡' }
-                      ]"
-                      :key="preset.id"
-                      type="button"
-                      class="chip-button"
-                      :class="{ active: demandPreset === preset.id }"
-                      @click="applyDemandPreset(preset.id)"
-                    >
-                      {{ preset.label }}
-                    </button>
-                  </div>
-                </section>
-
-                <details class="elevator-advanced">
-                  <summary>고급 설정</summary>
-                  <div class="control-grid">
-                    <label class="input-block">
-                      <span>강도 {{ demandIntensity }}</span>
-                      <input
-                        class="range-input"
-                        type="range"
-                        min="0"
-                        max="100"
-                        :value="demandIntensity"
-                        @change="updateDemandIntensity($event.target.value)"
-                      />
-                    </label>
-                    <label class="input-block">
-                      <span>승강기 수 {{ elevatorCarCount }}</span>
-                      <input
-                        class="range-input"
-                        type="range"
-                        min="2"
-                        max="6"
-                        :value="elevatorCarCount"
-                        @change="updateElevatorCarCount($event.target.value)"
-                      />
-                    </label>
-                    <button type="button" class="ghost-button" @click="resetElevator">초기화</button>
-                  </div>
-                </details>
-
-                <details
-                  class="elevator-event-panel"
-                  :open="elevatorTickerOpen"
-                  @toggle="elevatorTickerOpen = $event.target.open"
-                >
-                  <summary>최근 운행 <span>최대 8건</span></summary>
-                  <div class="elevator-event-list">
-                    <article v-for="(entry, index) in elevatorEvents" :key="`${entry}-${index}`">
-                      <span class="live-dot" aria-hidden="true"></span>
-                      {{ entry }}
-                    </article>
-                  </div>
-                </details>
-              </aside>
-            </section>
-          </section>
-
-          <section v-else-if="page === 'taxi'" class="feature-shell sim-tone-page taxi-tone-page">
-            <StationHeader
-              line-class="line-t"
-              station-code="T01"
-              title="심야 택시"
-              status="실시간 운행"
-              status-tone="live"
-              summary="9구역 · 보상/패널티 누적"
-              :prev-label="isTestRoute ? '← 환승 홀' : `← ${simHubLine.nameKo}`"
-              :exit-label="isTestRoute ? '환승 홀로 나가기' : `${simHubLine.nameKo}으로 돌아가기`"
-              @exit="openPage(isTestRoute ? 'junction' : 'simhub')"
-            />
-            <section class="station-lead taxi-timetable" aria-label="택시 실시간 지표">
-              <div class="banner-stats">
-                <article v-for="metric in taxiDashboardMetrics" :key="metric.label">
-                  <span>{{ metric.label }}</span>
-                  <strong class="num">{{ metric.value }}</strong>
-                </article>
-              </div>
-            </section>
-
-            <section class="section-block split-layout">
-              <article class="surface-panel taxi-map-panel">
-                <div class="section-head">
-                  <div>
-                    <h3>구역별 수요 지도</h3>
-                  </div>
-                  <span>9구역 흐름을 한눈에 관찰합니다.</span>
-                </div>
-
-                <div class="district-grid" aria-label="9구역 수요 시뮬레이션 캔버스">
-                  <article
-                    v-for="zone in taxiZoneCards"
-                    :key="zone.id"
-                    class="district-card"
-                    :class="zone.accent"
-                  >
-                    <div class="district-top">
-                      <strong>{{ zone.name }}</strong>
-                      <span>호출 {{ zone.pending }}</span>
-                    </div>
-                    <p>{{ zone.demandLabel }}</p>
-                    <small>인근 차량 {{ zone.nearbyFleet }} · 연결 구역 {{ zone.neighbors.length }}</small>
-                  </article>
-                </div>
-              </article>
-
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <h3>수동 호출 입력</h3>
-                  </div>
-                </div>
-
-                <div class="control-grid">
-                  <label class="input-block">
-                    <span>출발지</span>
-                    <select v-model="taxiManualOrigin" class="select-input">
-                      <option v-for="zone in taxiZones" :key="`${zone.id}-origin`" :value="zone.id">
-                        {{ zone.name }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <label class="input-block">
-                    <span>도착지</span>
-                    <select v-model="taxiManualDestination" class="select-input">
-                      <option v-for="zone in taxiZones" :key="`${zone.id}-destination`" :value="zone.id">
-                        {{ zone.name }}
-                      </option>
-                    </select>
-                  </label>
-
-                  <label class="input-block">
-                    <span>인원수 {{ taxiManualPassengers }}</span>
-                    <input
-                      v-model="taxiManualPassengers"
-                      class="range-input"
-                      type="range"
-                      min="1"
-                      max="4"
-                    />
-                  </label>
-                </div>
-
-                <div class="queue-buttons">
-                  <button type="button" class="primary-button" @click="submitManualTaxiRequest">수동 호출 추가</button>
-                  <button type="button" class="ghost-button" @click="addTaxiFleetUnit">차량 1대 추가</button>
-                </div>
-
-                <div class="reward-grid">
-                  <article class="reward-card">
-                    <span>보상</span>
-                    <strong>{{ formatSignedValue(taxiRewardSummary.reward) }}</strong>
-                    <p>빠른 배차 = 보상</p>
-                  </article>
-                  <article class="reward-card">
-                    <span>패널티</span>
-                    <strong>{{ formatSignedValue(-taxiRewardSummary.penalty) }}</strong>
-                    <p>차량 추가 = 패널티</p>
-                  </article>
-                  <article class="reward-card">
-                    <span>순점수</span>
-                    <strong>{{ formatSignedValue(taxiRewardSummary.net) }}</strong>
-                    <p>보상 − 패널티 = 순점수</p>
-                  </article>
-                </div>
-
-                <p v-if="taxiMessage" class="status-copy ok">{{ taxiMessage }}</p>
-              </article>
-            </section>
-
-            <section class="section-block split-layout">
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <h3>차량 상태</h3>
-                  </div>
-                </div>
-
-                <div class="fleet-grid">
-                  <article v-for="cab in taxiFleet" :key="cab.id" class="fleet-card">
-                    <div class="fleet-top">
-                      <strong>{{ cab.id }}</strong>
-                      <span class="taxi-state-token" :data-label="taxiStatusLabel(cab.status)">{{ cab.status }}</span>
-                    </div>
-                    <p>{{ findTaxiZone(cab.zoneId)?.name }} → {{ findTaxiZone(cab.targetZoneId)?.name }}</p>
-                    <small>승객 {{ cab.passengerCount }} / {{ cab.seats }}명 · 남은 구간 {{ cab.route.length }}</small>
-                    <strong class="fleet-reward">{{ cab.assignedRequestId || '배차 대기' }}</strong>
-                  </article>
-                </div>
-              </article>
-
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <h3>진행 중 호출</h3>
-                  </div>
-                </div>
-
-                <div class="prototype-rule-list">
-                  <article v-for="request in taxiRequestQueue" :key="request.id" class="prototype-rule-card">
-                    <strong>
-                      {{ request.id }} ·
-                      <span class="taxi-state-token" :data-label="taxiStatusLabel(request.status)">{{ request.status }}</span>
-                    </strong>
-                    <p>
-                      {{ findTaxiZone(request.originId)?.name }} → {{ findTaxiZone(request.destinationId)?.name }}
-                      · {{ request.passengers }}명 · {{ request.assignedTaxiId || '배차 대기' }}
-                    </p>
-                  </article>
-                </div>
-              </article>
-            </section>
-
-            <section class="section-block split-layout">
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <h3>최근 완료 호출</h3>
-                  </div>
-                </div>
-
-                <div class="prototype-rule-list">
-                  <article v-for="request in taxiCompletedRequests" :key="request.id" class="prototype-rule-card">
-                    <strong>{{ request.id }} · 보상 {{ formatSignedValue(request.reward) }}</strong>
-                    <p>
-                      대기 {{ request.waitSeconds }}초 · 운행 {{ request.tripSeconds }}초 ·
-                      {{ findTaxiZone(request.originId)?.name }} → {{ findTaxiZone(request.destinationId)?.name }}
-                    </p>
-                  </article>
-                </div>
-              </article>
-
-              <article class="surface-panel">
-                <div class="section-head">
-                  <div>
-                    <h3>이벤트 로그</h3>
-                  </div>
-                </div>
-
-                <div class="arrival-log">
-                  <article v-for="entry in taxiState.eventLog" :key="entry">{{ formatTaxiEvent(entry) }}</article>
-                </div>
-              </article>
-            </section>
-          </section>
+          <TaxiView
+            v-else-if="page === 'taxi'"
+            :sim="taxi"
+            :is-test-route="isTestRoute"
+            :sim-hub-name="simHubLine.nameKo"
+            @open-page="openPage"
+          />
 
           <section v-else-if="page === 'bloghub'" class="feature-shell blog-shell">
             <section class="blog-tone-page blog-hub-page">
