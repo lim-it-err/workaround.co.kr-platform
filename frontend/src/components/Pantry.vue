@@ -13,6 +13,7 @@ const HISTORY_STORAGE_KEY = 'pantry:history'
 const TAG_STORAGE_KEY = 'pantry:tags'
 const tagGroups = pantryTags()
 const situationTagGroup = tagGroups.find((group) => group.id === 'situation')
+const primaryTags = ['무알코올', ...situationTagGroup.tags]
 const extraTagGroups = tagGroups.filter((group) => group.id !== 'situation')
 const validTags = new Set(tagGroups.flatMap((group) => group.tags))
 const drinkTags = new Set(tagGroups.find((group) => group.id === 'drink')?.tags || [])
@@ -45,7 +46,7 @@ const nearestSet = computed(() => [...PANTRY_SETS]
   .sort((a, b) => b.overlap - a.overlap || a.index - b.index)[0]?.set || PANTRY_SETS[0])
 const eligibleSets = computed(() => matchingSets.value.length ? matchingSets.value : [nearestSet.value])
 const hiddenSelectedTagCount = computed(() => selectedTags.value.filter((tag) => (
-  extraTagGroups.some((group) => group.tags.includes(tag))
+  tag !== '무알코올' && extraTagGroups.some((group) => group.tags.includes(tag))
 )).length)
 
 const recommendation = computed(() => {
@@ -166,7 +167,10 @@ function validAlternative(set, ...excludedSets) {
 }
 
 function visibleTags(group) {
-  if (group.id === 'drink' && alcoholFree.value) return ['무알코올']
+  if (group.id === 'drink') {
+    if (alcoholFree.value) return []
+    return group.tags.filter((tag) => tag !== '무알코올')
+  }
   return group.tags
 }
 
@@ -235,9 +239,9 @@ function stampMeal() {
   <main class="pantry-page line-p" aria-labelledby="pantry-title">
     <nav class="pantry-tag-picker" aria-label="한 상 태그">
       <div class="pantry-filter-primary">
-        <div class="pantry-filters" aria-label="상황 태그">
+        <div class="pantry-filters" aria-label="무알코올과 상황 태그">
           <button
-            v-for="tag in situationTagGroup.tags"
+            v-for="tag in primaryTags"
             :key="tag"
             type="button"
             class="pantry-chip"
@@ -258,7 +262,12 @@ function stampMeal() {
         </button>
       </div>
       <div v-if="tagsExpanded" class="pantry-tag-groups">
-        <section v-for="group in extraTagGroups" :key="group.id" class="pantry-tag-group">
+        <section
+          v-for="group in extraTagGroups"
+          v-show="visibleTags(group).length"
+          :key="group.id"
+          class="pantry-tag-group"
+        >
           <h2>{{ group.label }}</h2>
           <div class="pantry-filter-list" :aria-label="`${group.label} 태그`">
             <button

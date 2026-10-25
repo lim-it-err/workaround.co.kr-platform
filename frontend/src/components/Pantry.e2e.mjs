@@ -137,6 +137,42 @@ test('오늘의 한 상은 같은 날 유지되고 다른 상 세 번은 겹치�
   await assertNoOverflow(page)
 })
 
+test('무알코올은 기본 한 줄 맨 앞에서 바로 토글되고 첫 화면 밀도를 지킨다', async t => {
+  const page = await setup(t, { width: 375, height: 812, theme: 'dark' })
+  const primaryRow = page.getByLabel('무알코올과 상황 태그')
+  const primaryChips = primaryRow.locator('.pantry-chip')
+  const alcoholFreeChip = page.getByRole('button', { name: '무알코올', exact: true })
+
+  assert.equal((await primaryChips.first().textContent()).trim(), '무알코올', '선호 칩은 기본 행 맨 앞이어야 한다')
+  assert.equal(await alcoholFreeChip.count(), 1, '무알코올 칩은 펼침 묶음과 중복되면 안 된다')
+  const rowMetrics = await primaryRow.evaluate((row) => {
+    const tops = [...row.querySelectorAll('.pantry-chip')].map((chip) => chip.getBoundingClientRect().top)
+    return {
+      clientHeight: row.clientHeight,
+      scrollHeight: row.scrollHeight,
+      clientWidth: row.clientWidth,
+      scrollWidth: row.scrollWidth,
+      topSpread: Math.max(...tops) - Math.min(...tops)
+    }
+  })
+  assert.equal(rowMetrics.clientHeight, 40, '기본 행 높이는 칩 한 줄이어야 한다')
+  assert.ok(rowMetrics.scrollHeight <= rowMetrics.clientHeight, '기본 행은 세로로 줄바꿈되면 안 된다')
+  assert.ok(rowMetrics.scrollWidth > rowMetrics.clientWidth, '넘치는 상황 칩은 가로 스크롤로 탐색해야 한다')
+  assert.ok(rowMetrics.topSpread < 1, '모든 기본 칩은 같은 행에 있어야 한다')
+
+  await alcoholFreeChip.click()
+  assert.equal(await alcoholFreeChip.getAttribute('aria-pressed'), 'true')
+  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('pantry:tags'))), ['무알코올'])
+  assert.doesNotMatch(await page.locator('.pantry-page').innerText(), /소주|맥주|막걸리|하이볼|와인|사케|청하/)
+  const firstScreen = await page.locator('.pantry-alternatives').boundingBox()
+  assert.ok(firstScreen.y + firstScreen.height <= 812, '375 첫 화면에 한 상과 대안 2행이 보여야 한다')
+  await capture(page, 'pantry-nonalcohol-default-375-dark')
+
+  await alcoholFreeChip.click()
+  assert.equal(await alcoholFreeChip.getAttribute('aria-pressed'), 'false', '기본 행에서 선호를 다시 해제할 수 있어야 한다')
+  await assertNoOverflow(page)
+})
+
 test('차림·장보기 체크는 펼쳐지고 로컬 저장 뒤 새로고침에도 남는다', async t => {
   const page = await setup(t, { width: 375, height: 812, theme: 'light' })
   await capture(page, 'pantry-375-light')

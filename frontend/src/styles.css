@@ -5167,8 +5167,12 @@ a.junction-route-row:focus-visible {
 }
 
 .pantry-filter-primary > .pantry-filters {
+  align-items: center;
   flex: 1 1 auto;
   width: 0;
+  height: 40px;
+  flex-wrap: nowrap;
+  overscroll-behavior-inline: contain;
 }
 
 .pantry-filters,
