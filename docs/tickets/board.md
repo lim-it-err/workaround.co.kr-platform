@@ -6,6 +6,9 @@
 
 ## Backlog
 
+- `TKT-198` `v2.0` `pantry` `backlog` `[FE]` 밥상 조합 판정 다양화 — 어울리지 않아요·아직 없어요·조건 많아요
+- `TKT-199` `v2.0` `pantry` `backlog` `[INFRA]` 밥상 주인장 요청 — 엣지 저장(선택형)·집계 (filedb 원본 비권고)
+
 - `TKT-196` `P2` `archive` `backlog` `[FE]` 블로그 중단 후속 — 목업 제외·지도 구도·빠른 환승 클래스 (REV-189)
 
 - `TKT-192` `P2` `llm` `backlog` `[BE]` Advisor claude 프로필 → llm-gate 경유, 키 제거 (D-032)
