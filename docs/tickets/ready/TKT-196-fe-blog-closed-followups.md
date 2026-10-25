@@ -2,7 +2,7 @@
 
 # TKT-196 `[FE]` 블로그 중단 후속 — 목업 공개 제외 · 지도 구도 재조정 · 빠른 환승 클래스화
 
-- 상태: backlog(195 뒤 ready) · P2 · 담당: dev 서브에이전트(Sonnet) · 근거 REV-TKT-189-r1 I1·S1.
+- 상태: ready · **v0.8.2** · 브랜치 `codex/v0.8.2`(작업 트리 `/Users/imjeonghan/newProject/wa-082`) · P2 · 담당: dev 서브에이전트(Sonnet) · 근거 REV-TKT-189-r1 I1·S1.
 - scope: `infra/public-site/prepare-github-pages.mjs`(블로그·스튜디오 목업 제외), `frontend/src/data/lines.js`·`JunctionMap.vue`(지도 좌표·viewBox), `App.vue`(빠른 환승 인라인 style 제거), `styles.css`, 관련 E2E.
 
 ## 완료 조건

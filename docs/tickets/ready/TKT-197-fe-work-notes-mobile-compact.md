@@ -2,7 +2,7 @@
 
 # TKT-197 `[FE]` 운영 노트 375 압축 — 흐름 한 문장·절 접기·상단바 제목
 
-- 상태: ready · P1 · 담당: dev 서브에이전트(Sonnet) · 근거 REV-TKT-195-r1 I1. 브랜치 `codex/v0.8.0-live`.
+- 상태: ready · **v0.8.2** · P1 · 담당: dev 서브에이전트(Sonnet) · 근거 REV-TKT-195-r1 I1. 브랜치 **`codex/v0.8.2`**(작업 트리 `/Users/imjeonghan/newProject/wa-082`).
 - scope: `frontend/src/components/WorkNotes.vue`·`WorkNotes.e2e.mjs`, `frontend/src/styles.css`, `frontend/src/App.vue`(work 상단바 제목 한 곳).
 
 ## 완료 조건
