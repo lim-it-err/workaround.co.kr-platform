@@ -5177,6 +5177,11 @@ a.junction-route-row:focus-visible {
   -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
 }
 
+.pantry-filter-primary > .pantry-filters:focus-within {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
 .pantry-filters,
 .pantry-filter-list {
   display: flex;
