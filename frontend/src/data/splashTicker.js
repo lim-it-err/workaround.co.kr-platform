@@ -42,13 +42,31 @@ export const SPLASH_TICKER_POOL = Object.freeze([
   '직장인들 화가 취미로 오르는 중…'
 ])
 
+// 마지막(4번째) 티커의 고정 문구. 풀(20번)의 원문을 그대로 가져와 오타 방지 (TKT-205)
+export const FIXED_SPLASH_TICKER = SPLASH_TICKER_POOL[19]
+
 // 다음 티커 문구를 고른다. 직전 문구(previous)와 이번 방문에 이미 나온 문구(shown, Set)는 제외하고,
 // 후보가 바닥나면 shown 을 비워 다시 시작한다(그래도 직전 문구는 제외). 고른 문구는 shown 에 더한다.
-export function pickSplashTicker(previous, shown, random = Math.random) {
-  let candidates = SPLASH_TICKER_POOL.filter((message) => message !== previous && !shown.has(message))
+// 첫 방문: tickerIndex가 3(4번째)이면 고정 문구 강제, 0~2(1~3번째)에는 고정 문구 제외.
+// 재방문: 모든 티커가 무작위 (고정 문구도 포함).
+export function pickSplashTicker(previous, shown, random = Math.random, tickerIndex = -1, isReturnVisit = false) {
+  // 첫 방문의 4번째 티커(tickerIndex === 3)는 항상 고정 문구
+  if (tickerIndex === 3 && !isReturnVisit) {
+    shown.add(FIXED_SPLASH_TICKER)
+    return FIXED_SPLASH_TICKER
+  }
+
+  // 첫 방문의 1~3번째(0~2)에는 고정 문구 제외 (TKT-205)
+  const excludeFixed = !isReturnVisit && tickerIndex >= 0 && tickerIndex < 3
+
+  let candidates = SPLASH_TICKER_POOL.filter(
+    (message) => message !== previous && !shown.has(message) && (!excludeFixed || message !== FIXED_SPLASH_TICKER)
+  )
   if (candidates.length === 0) {
     shown.clear()
-    candidates = SPLASH_TICKER_POOL.filter((message) => message !== previous)
+    candidates = SPLASH_TICKER_POOL.filter(
+      (message) => message !== previous && (!excludeFixed || message !== FIXED_SPLASH_TICKER)
+    )
   }
   const message = candidates[Math.min(candidates.length - 1, Math.floor(random() * candidates.length))]
   shown.add(message)

@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - main   # 트렁크 (D-002 개정 2026-09-28, main 승격)
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      smoke_url:
+        description: 'Run only the post-deploy smoke against this URL (skips build/deploy). Empty = normal build and deploy.'
+        required: false
+        default: ''
+        type: string
 
 permissions:
   contents: read
@@ -18,6 +24,7 @@ env:
 
 jobs:
   build:
+    if: ${{ inputs.smoke_url == '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -78,6 +85,7 @@ jobs:
           path: frontend/dist
 
   deploy:
+    if: ${{ inputs.smoke_url == '' }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -90,3 +98,46 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+
+  smoke:
+    needs: deploy
+    # Runs after a successful deploy, or alone when smoke_url is given. Never rolls back the deploy.
+    if: ${{ !cancelled() && (needs.deploy.result == 'success' || inputs.smoke_url != '') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Smoke the live Pages site (3 attempts, 20s apart)
+        env:
+          SMOKE_URL: ${{ inputs.smoke_url }}
+          BUILD_SHA: ${{ github.sha }}
+          DEPLOYED: ${{ needs.deploy.result == 'success' }}
+        shell: bash
+        run: |
+          url="${SMOKE_URL:-https://lim-it-err.github.io/workaround.co.kr-platform/}"
+          sha_args=()
+          if [ "$DEPLOYED" = "true" ] && [ -z "$SMOKE_URL" ]; then
+            sha_args=(--sha "$BUILD_SHA")
+          fi
+          for attempt in 1 2 3; do
+            echo "::group::attempt ${attempt}/3"
+            if node infra/public-site/smoke-pages.mjs "$url" "${sha_args[@]}"; then
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "::endgroup::"
+            if [ "$attempt" -lt 3 ]; then
+              sleep 20
+            fi
+          done
+          echo "::error::Pages smoke failed after 3 attempts"
+          exit 1

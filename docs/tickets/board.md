@@ -9,8 +9,6 @@
 - `TKT-198` `v1.0+` `pantry` `backlog` `[FE]` 밥상 조합 판정 다양화 — 어울리지 않아요·아직 없어요·조건 많아요
 - `TKT-199` `v1.0+` `pantry` `backlog` `[INFRA]` 밥상 주인장 요청 — 엣지 저장(선택형)·집계 (filedb 원본 비권고)
 
-- `TKT-196` `P2` `archive` `backlog` `[FE]` 블로그 중단 후속 — 목업 제외·지도 구도·빠른 환승 클래스 (REV-189)
-
 - `TKT-192` `P2` `llm` `backlog` `[BE]` Advisor claude 프로필 → llm-gate 경유, 키 제거 (D-032)
 - `TKT-193` `P2` `llm` `backlog` `[INFRA]` 일일 배치(Batch API) 사전 생성 (D-032)
 - `TKT-194` `P2` `llm` `backlog` `[FE]` LLM 화면 3상태 공용 컴포넌트 (D-032)
@@ -46,17 +44,12 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
-- `TKT-197` `P1` `base` `ready` `[FE]` 운영 노트 375 압축·상단바 제목 (REV-195)
-
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
 
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
-- `TKT-177` `P2` `infra` `ready` `[INFRA]` Pages 딥링크 200 — 경로별 index.html 복제 (AS-R010 제안 1)
 - `TKT-115` `P2` `infra` `ready` `[INFRA]` Pages `/next/` 미리보기 — 톤 브랜치 동봉 배포 (09-15 P2 하향, U-38)
 - `TKT-107` `P1` `v0.7.0` `ready` `[FE]` 격납고에 화이트채플 캐비닛 — 078 need_review 후 착수
-- `TKT-159` `P1` `infra` `ready` `[INFRA]` 메인 E2E 통합 러너 `npm run e2e:all` (AS-R009 권고)
 - `TKT-078` `P1` `v0.7.0` `ready` `[INFRA]` 화이트채플 Pages 편입 — prepare-github-pages 병합 (09-15 승격, Pages 우선)
-- `TKT-160` `P2` `infra` `ready` `[INFRA]` Pages 배포 후 스모크 job
 - `TKT-161` `P2` `tone` `ready` `[UX]` 접근성 검수 — VoiceOver·키보드 (codex-8)
 - `TKT-092` `P3` `v0.4.1` `ready` `[BE]` Work Manager 반려 전이 API (09-15 승격)
 
@@ -71,6 +64,20 @@
 ## Need Review
 
 ## Finished
+
+- `TKT-205` `[FE]` 스플래시 티커 4번째 칸 고정(관리자 몰래) — r1 통과 (2026-10-25, v0.8.2, Haiku 5.5)
+
+- `TKT-206` `[콘텐츠]` 자취 밥상 세트별 태그 늘리기 — 조합 일치 25.5%→51.2% — r1 통과 (2026-10-25, v0.8.2)
+
+- `TKT-160` Pages 배포 후 스모크 job — r1 통과 (2026-10-25, v0.8.2)
+
+- `TKT-196` 블로그 중단 후속 — 목업 공개 제외·빠른 환승 클래스 — r1 통과 (2026-10-25, v0.8.2)
+
+- `TKT-159` 메인 E2E 통합 러너 `npm run e2e:all` — r1 통과 (2026-10-25, v0.8.2)
+
+- `TKT-177` Pages 깊은 주소 200 — 경로별 index.html 복제 — r1 통과 (2026-10-25, v0.8.2)
+
+- `TKT-197` 운영 노트 375 압축·상단바 제목 — r1 통과 (2026-10-25, v0.8.2)
 
 - `TKT-203` `[FE]` 노선도 작은 역 이름 복귀 — 작고 흐리게 항상 표시 — r1 통과 (2026-10-25, v0.8.1)
 
