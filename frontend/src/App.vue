@@ -11,6 +11,7 @@ import Ets2Live from './components/Ets2Live.vue'
 import Ets2Dev from './components/Ets2Dev.vue'
 import { SiteLoopSymbol } from './components/tone/index.js'
 import { LINES } from './data/lines.js'
+import { pickSplashTicker } from './data/splashTicker.js'
 import { advanceTaxiFleet, assignPendingTaxiRequests, cloneTaxiState } from './sim/taxiDispatch.js'
 import { VOYAGE } from './data/voyage.js'
 import { migrateLegacyVoyageStorage, voyageStorageKey } from './data/voyageStorage.js'
@@ -30,6 +31,7 @@ import {
 
 const SPLASH_DURATION_MS = 5500
 const SPLASH_PHRASE_INTERVAL_MS = 1660
+const SPLASH_TICKER_INTERVAL_MS = 1300
 const SPLASH_RETURN_DURATION_MS = 2500
 const SPLASH_RETURN_SETTLE_LIMIT_MS = 1600
 const SPLASH_RETURN_READING_MS = 1000
@@ -93,12 +95,6 @@ const WORK_ROADMAP_ITEMS = [
     title: '기반 정렬',
     summary: '툴체인, 호스팅, 문서/브랜치 정리'
   }
-]
-
-const splashTickerMessages = [
-  '에스컬레이터 방향 다수결로 정하는 중…',
-  '지연 시간을 정성껏 반올림하는 중…',
-  '출구 번호에 서열 매기는 중…'
 ]
 
 const splashPhrases = ['WORKING AROUND', 'MIND THE GAP', 'DOORS OPENING']
@@ -316,14 +312,13 @@ const doorTransition = ref({
   lineClass: 'line-w',
   label: ''
 })
-const currentTickerIndex = ref(0)
+const currentTicker = ref('')
 const currentSplashPhrase = ref(splashPhrases[0])
 const isReturnVisitSplash = ref(false)
 const splashDurationMs = ref(SPLASH_DURATION_MS)
 const splashBoardCells = ref(
   Array.from({ length: splashCellCount }, (_, index) => createSplashCellState(`splash-${index}`))
 )
-const currentTicker = computed(() => splashTickerMessages[currentTickerIndex.value])
 const splashAutoTransitionLabel = computed(() => `${splashDurationMs.value / 1000}초 후 자동 전환`)
 
 const orchestratorSlices = [
@@ -1265,6 +1260,7 @@ let reducedMotionMediaQuery
 let reducedMotionMediaListener
 let splashAnimationRunId = 0
 let splashAnimationTimers = []
+const splashTickerShown = new Set()
 let splashRunStartedAtMs = 0
 let settledSplashRunId = 0
 let doorTransitionRunId = 0
@@ -1611,6 +1607,15 @@ function animateSplashPhrase(phrase, runId) {
   })
 }
 
+// 스플래시 티커 문구를 바꾸는 유일한 곳이다. 선택 규칙은 data/splashTicker.js 의 pickSplashTicker.
+function rotateSplashTicker(runId) {
+  if (runId !== splashAnimationRunId) {
+    return
+  }
+  currentTicker.value = pickSplashTicker(currentTicker.value, splashTickerShown)
+  queueSplashAnimation(() => rotateSplashTicker(runId), SPLASH_TICKER_INTERVAL_MS)
+}
+
 function playSplashFlap() {
   splashAnimationRunId += 1
   const runId = splashAnimationRunId
@@ -1618,13 +1623,14 @@ function playSplashFlap() {
   settledSplashRunId = 0
   clearSplashAnimationTimers()
   const phraseEntries = isReturnVisitSplash.value
-    ? [{ phrase: splashPhrases.at(-1), tickerIndex: splashTickerMessages.length - 1, delayMs: 0 }]
+    ? [{ phrase: splashPhrases.at(-1), delayMs: 0 }]
     : splashPhrases.map((phrase, phraseIndex) => ({
         phrase,
-        tickerIndex: phraseIndex,
         delayMs: phraseIndex * SPLASH_PHRASE_INTERVAL_MS
       }))
-  currentTickerIndex.value = phraseEntries[0].tickerIndex
+  // 티커는 플랩 문구와 분리해 회전한다. 모션이 아니라 텍스트 교체이므로 reduced-motion 에서도 돈다.
+  splashTickerShown.clear()
+  rotateSplashTicker(runId)
 
   if (prefersReducedMotion.value) {
     setSplashBoardToPhrase(phraseEntries[0].phrase)
@@ -1641,9 +1647,8 @@ function playSplashFlap() {
       }
     }, SPLASH_RETURN_SETTLE_LIMIT_MS)
   }
-  phraseEntries.forEach(({ phrase, tickerIndex, delayMs }) => {
+  phraseEntries.forEach(({ phrase, delayMs }) => {
     queueSplashAnimation(() => {
-      currentTickerIndex.value = tickerIndex
       animateSplashPhrase(phrase, runId)
     }, delayMs)
   })
@@ -3659,7 +3664,7 @@ function persistStudioPostId(postId) {
             </div>
           </div>
 
-          <div class="ticker-strip splash-ticker-strip" aria-live="polite">
+          <div class="ticker-strip splash-ticker-strip" aria-live="off">
             <span class="ticker-label">알림</span>
             <span class="ticker-copy">{{ currentTicker }}</span>
           </div>

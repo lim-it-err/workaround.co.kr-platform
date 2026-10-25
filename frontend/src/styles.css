@@ -5692,10 +5692,12 @@ button.station-prev:hover {
 }
 
 .splash-ticker-strip .ticker-label {
+  flex: none;
   padding: 0;
   border-radius: 0;
   background: transparent;
   color: var(--safety);
+  white-space: nowrap;
 }
 
 .splash-actions p {
@@ -5747,6 +5749,15 @@ button.station-prev:hover {
 @media (max-width: 480px) {
   .splash-flap-board {
     --flap-height: clamp(26px, 7vw, 36px);
+  }
+
+  /* TKT-186 r2 — 긴 티커가 2줄이 돼도 제목·플랩이 밀리지 않게 strip 이 2줄 높이를 항상 예약한다(1줄 문구는 세로 가운데). */
+  .splash-ticker-strip .ticker-copy {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: calc(2 * 1.55em);
+    line-height: 1.55;
   }
 }
 

@@ -8,6 +8,7 @@ import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from './e2eContext.mjs'
+import { SPLASH_TICKER_POOL, pickSplashTicker } from './data/splashTicker.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -15,6 +16,7 @@ const distRoot = fileURLToPath(new URL('../dist/', import.meta.url))
 const testClockTime = new Date('2026-09-15T12:00:00.000Z')
 const firstVisitDurationMs = 5500
 const phraseIntervalMs = 1660
+const tickerIntervalMs = 1300
 const returnVisitDurationMs = 2500
 const returnVisitSettleLimitMs = 1600
 const returnVisitMaximumMs = 2800
@@ -89,9 +91,31 @@ async function setup(t, {
     assert.deepEqual(errors, [], 'no browser errors or warnings')
     assert.deepEqual(apiRequests, [], 'static splash makes no API requests')
   })
-  await page.addInitScript(({ selectedTheme, splashSeenAt, blockSplashStorage, fixedRandomValue }) => {
+  await page.addInitScript(({ selectedTheme, splashSeenAt, blockSplashStorage, fixedRandomValue, tickerMs }) => {
     // Keep the flip count and stagger representative but repeatable under parallel CPU load.
     if (fixedRandomValue !== null) Math.random = () => fixedRandomValue
+    // 티커 관측: 화면에 나타난 티커 문구를 가상 시계 시각과 함께 기록하고, 티커 주기 타이머가 남아 있는지 센다.
+    window.__tickerLog = []
+    new MutationObserver(() => {
+      const text = document.querySelector('.ticker-copy')?.textContent
+      if (text && text !== window.__tickerLog.at(-1)?.text) window.__tickerLog.push({ at: Date.now(), text })
+    }).observe(document, { subtree: true, childList: true, characterData: true })
+    window.__tickerTimers = new Set()
+    const nativeSetTimeout = window.setTimeout
+    const nativeClearTimeout = window.clearTimeout
+    window.setTimeout = function setTimeout(callback, delay, ...args) {
+      if (delay !== tickerMs) return nativeSetTimeout(callback, delay, ...args)
+      const id = nativeSetTimeout((...callbackArgs) => {
+        window.__tickerTimers.delete(id)
+        return callback(...callbackArgs)
+      }, delay, ...args)
+      window.__tickerTimers.add(id)
+      return id
+    }
+    window.clearTimeout = function clearTimeout(id) {
+      window.__tickerTimers.delete(id)
+      return nativeClearTimeout(id)
+    }
     window.localStorage.setItem('workaround-theme', selectedTheme)
     if (splashSeenAt) window.localStorage.setItem('splash:seen', splashSeenAt)
     if (blockSplashStorage) {
@@ -110,7 +134,8 @@ async function setup(t, {
     selectedTheme: theme,
     splashSeenAt: seenAt,
     blockSplashStorage: storageUnavailable,
-    fixedRandomValue: randomValue
+    fixedRandomValue: randomValue,
+    tickerMs: tickerIntervalMs
   })
   await page.goto(base)
   await page.locator('.splash-stage').waitFor()
@@ -119,6 +144,32 @@ async function setup(t, {
 
 function clockTime(offsetMs = 0) {
   return new Date(testClockTime.getTime() + offsetMs).toISOString()
+}
+
+async function tickerLog(page) {
+  return (await page.evaluate(() => window.__tickerLog))
+    .map(({ at, text }) => ({ atMs: at - testClockTime.getTime(), text }))
+}
+
+function assertTickerInPool(ticker, label) {
+  assert.ok(SPLASH_TICKER_POOL.includes(ticker), `${label}: 티커 "${ticker}" 는 풀(39개)에 있어야 한다`)
+}
+
+// 한 방문의 티커 관측 기록 검증: 풀 포함 · 서로 다른 티커 ≥minDistinct · 연속 동일 0 · 방문 안 중복 0 · 1.3초 간격.
+// 같은 문구가 연속으로 뽑히면 DOM 이 바뀌지 않아 기록에 남지 않으므로, "연속 동일 0" 은 간격이 정확히 1.3초씩인지로도 확인한다.
+function assertTickerRotation(log, label, { minCount = 4, maxCount = 5, minDistinct = 3 } = {}) {
+  const texts = log.map(entry => entry.text)
+  assert.ok(
+    log.length >= minCount && log.length <= maxCount,
+    `${label}: 티커 ${log.length}개 관측 (${minCount}~${maxCount}개 기대) ${JSON.stringify(log)}`
+  )
+  texts.forEach(text => assertTickerInPool(text, label))
+  assert.ok(new Set(texts).size >= minDistinct, `${label}: 서로 다른 티커 ${new Set(texts).size}개 (≥${minDistinct} 기대)`)
+  assert.equal(new Set(texts).size, texts.length, `${label}: 한 방문 안에서 이미 나온 티커가 다시 나오면 안 된다`)
+  log.slice(1).forEach((entry, index) => {
+    assert.notEqual(entry.text, log[index].text, `${label}: 연속 동일 티커`)
+    assert.equal(entry.atMs - log[index].atMs, tickerIntervalMs, `${label}: ${index + 1}→${index + 2}번째 티커 간격`)
+  })
 }
 
 async function finishSplashAt(page, remainingMs) {
@@ -225,6 +276,51 @@ async function splashPanelSurface(page) {
   })
 }
 
+test('티커 선택기: 직전 반복 0 · 방문 안 중복 0 · 39개를 다 쓰면 초기화한다', () => {
+  assert.equal(SPLASH_TICKER_POOL.length, 39)
+  assert.equal(new Set(SPLASH_TICKER_POOL).size, 39, '풀에 중복 문구가 없어야 한다')
+  assert.deepEqual(SPLASH_TICKER_POOL.slice(0, 3), [
+    '에스컬레이터 방향 다수결로 정하는 중…',
+    '지연 시간을 정성껏 반올림하는 중…',
+    '출구 번호에 서열 매기는 중…'
+  ], '기존 고정 문구 3개는 풀의 1~3번이다')
+  assert.deepEqual(SPLASH_TICKER_POOL.slice(36), [
+    '실없는 농담의 품질을 검수하는 중…',
+    '결심의 롤백 지점을 저장하는 중…',
+    '직장인들 화가 취미로 오르는 중…'
+  ], '이력의 마지막 3개(TKT-186 r2 I1)가 풀 끝에 있어야 한다')
+
+  const randoms = {
+    '실난수': Math.random,
+    '항상 0': () => 0,
+    '항상 1에 가까움': () => 0.9999999,
+    '정확히 1(경계)': () => 1
+  }
+  for (const [name, random] of Object.entries(randoms)) {
+    const shown = new Set()
+    let previous = ''
+    let sinceReset = []
+    for (let pick = 1; pick <= 150; pick += 1) {
+      const message = pickSplashTicker(previous, shown, random)
+      assertTickerInPool(message, `${name} ${pick}번째`)
+      assert.notEqual(message, previous, `${name} ${pick}번째: 직전 문구 반복`)
+      // 39개를 다 쓰면 shown 이 비워지고 새 사이클이 시작된다. 한 사이클 안에서는 중복이 없어야 한다.
+      if (shown.size === 1 && pick > 1) sinceReset = []
+      assert.ok(!sinceReset.includes(message), `${name} ${pick}번째: 같은 사이클 안 중복`)
+      sinceReset.push(message)
+      previous = message
+    }
+  }
+
+  const shown = new Set()
+  const firstCycle = []
+  for (let pick = 0; pick < 39; pick += 1) firstCycle.push(pickSplashTicker('', shown))
+  assert.equal(new Set(firstCycle).size, 39, '39번을 뽑으면 풀 전체가 한 번씩 나와야 한다')
+  const afterReset = pickSplashTicker(firstCycle.at(-1), shown)
+  assert.notEqual(afterReset, firstCycle.at(-1), '초기화 직후에도 직전 문구는 반복하지 않는다')
+  assert.deepEqual([...shown], [afterReset], '초기화 뒤 shown 에는 새로 뽑은 문구만 남는다')
+})
+
 test('375px: 반쪽 플랩 세 문구와 티커를 읽힌 뒤 5.5초에 전환한다', async t => {
   const page = await setup(t, { width: 375, height: 812 })
   assert.equal(await page.getByRole('heading', { name: 'workaround.co.kr', exact: true }).count(), 1)
@@ -273,7 +369,12 @@ test('375px: 반쪽 플랩 세 문구와 티커를 읽힌 뒤 5.5초에 전환�
   await page.clock.runFor(150)
   const first = await snapshot(page)
   assert.equal(first.phrase, 'WORKING AROUND')
-  assert.equal(first.ticker, '에스컬레이터 방향 다수결로 정하는 중…')
+  assertTickerInPool(first.ticker, '375 첫 방문 0.15초')
+  assert.equal(
+    await page.locator('.splash-ticker-strip').getAttribute('aria-live'),
+    'off',
+    '1.3초마다 바뀌는 티커를 스크린리더가 매번 읽지 않도록 aria-live=off'
+  )
   assert.ok(first.runningCells > 0, 'the retained half-panel engine is flipping')
   const firstSettledAtMs = 150 + await waitForPhraseToSettle(page, 'WORKING AROUND', 1000)
   assert.ok(phraseIntervalMs - firstSettledAtMs >= 700, `첫 문구 정지 노출 ${phraseIntervalMs - firstSettledAtMs}ms`)
@@ -282,25 +383,102 @@ test('375px: 반쪽 플랩 세 문구와 티커를 읽힌 뒤 5.5초에 전환�
   const secondSettledAtMs = phraseIntervalMs + await waitForPhraseToSettle(page, 'MIND THE GAP', 1000)
   const second = await snapshot(page)
   assert.equal(second.phrase, 'MIND THE GAP')
-  assert.equal(second.ticker, '지연 시간을 정성껏 반올림하는 중…')
+  assertTickerInPool(second.ticker, '375 첫 방문 둘째 문구')
+  assert.notEqual(second.ticker, first.ticker, '둘째 문구 시점에는 티커가 한 번 이상 바뀌어 있어야 한다')
   assert.ok(phraseIntervalMs * 2 - secondSettledAtMs >= 700, `둘째 문구 정지 노출 ${phraseIntervalMs * 2 - secondSettledAtMs}ms`)
 
   await page.clock.runFor(phraseIntervalMs * 2 - secondSettledAtMs)
   const openingSettledAtMs = phraseIntervalMs * 2 + await waitForOpeningToSettle(page, 1000)
   const third = await snapshot(page)
   assert.equal(third.phrase, 'DOORS OPENING')
-  assert.equal(third.ticker, '출구 번호에 서열 매기는 중…')
+  assertTickerInPool(third.ticker, '375 첫 방문 셋째 문구')
+  assert.notEqual(third.ticker, second.ticker, '셋째 문구 시점에는 티커가 다시 바뀌어 있어야 한다')
   assert.ok(firstVisitDurationMs - openingSettledAtMs >= 700, `마지막 문구 정지 노출 ${firstVisitDurationMs - openingSettledAtMs}ms`)
   assert.equal(third.overflow, 0)
   if (process.env.SPLASH_SCREENSHOT_DIR) {
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-opening.png` })
   }
   await finishSplashAt(page, firstVisitDurationMs - openingSettledAtMs)
+  assertTickerRotation(await tickerLog(page), '375 첫 방문 5.5초')
+  assert.equal(await page.evaluate(() => window.__tickerTimers.size), 0, '환승 홀 전환 뒤 티커 타이머가 남으면 안 된다')
   const seenAt = await page.evaluate(() => window.localStorage.getItem('splash:seen'))
   assert.ok(Number.isFinite(Date.parse(seenAt)), '첫 방문 완료 시 ISO 방문 시각을 저장해야 한다')
   assert.equal(await page.locator('.station-topbar h2').textContent(), '환승 홀')
   assert.equal(Math.round((await page.locator('.station-topbar .site-loop-symbol').boundingBox()).width), 24)
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0)
+})
+
+test('375/1440 다크·라이트: 티커 문구 길이가 달라도 제목·플랩이 밀리지 않고 알림 라벨은 한 줄이다', async t => {
+  const cases = [
+    { name: '375-dark', width: 375, height: 812, theme: 'dark' },
+    { name: '375-light', width: 375, height: 812, theme: 'light' },
+    { name: '1440-dark', width: 1440, height: 900, theme: 'dark' },
+    { name: '1440-light', width: 1440, height: 900, theme: 'light' }
+  ]
+  // 375 에서 2줄이 되는 가장 긴 두 문구(REV r1 B1). 풀 전체(39개)로도 같은 단언을 건다.
+  const longMessages = [
+    '갈아타기 최단경로가 삐지지 않게 계산하는 중…',
+    '승객들의 한숨을 열차 추진력으로 재활용하는 중…'
+  ]
+  longMessages.forEach(message => assertTickerInPool(message, '긴 문구'))
+  const messages = [...longMessages, ...SPLASH_TICKER_POOL.filter(message => !longMessages.includes(message))]
+
+  for (const environment of cases) {
+    const page = await setup(t, environment)
+    // 플랩이 마지막 문구로 정착한 뒤(문 열림 전) 시계를 세워 두고 티커 문구만 바꿔 가며 잰다.
+    await page.clock.runFor(4500)
+    const measured = []
+    for (const [index, message] of messages.entries()) {
+      const layout = await page.evaluate(text => {
+        document.querySelector('.ticker-copy').textContent = text
+        const rect = selector => document.querySelector(selector).getBoundingClientRect()
+        const label = document.querySelector('.ticker-label')
+        const labelStyle = getComputedStyle(label)
+        const strip = rect('.splash-ticker-strip')
+        const textRange = document.createRange()
+        textRange.selectNodeContents(document.querySelector('.ticker-copy'))
+        const textRect = textRange.getBoundingClientRect()
+        return {
+          titleY: rect('.splash-top h1').top,
+          boardY: rect('.splash-flap-board').top,
+          stripHeight: strip.height,
+          labelHeight: label.clientHeight,
+          labelLineHeight: parseFloat(labelStyle.lineHeight) || parseFloat(labelStyle.fontSize) * 1.6,
+          textCenterOffset: (textRect.top + textRect.bottom) / 2 - (strip.top + strip.bottom) / 2,
+          replayBottom: rect('.splash-actions .ghost-button').bottom,
+          overflow: document.documentElement.scrollWidth - innerWidth
+        }
+      }, message)
+      measured.push({ message, ...layout })
+      if (index < longMessages.length && process.env.SPLASH_SCREENSHOT_DIR) {
+        await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/r2-long${index + 1}-${environment.name}.png` })
+      }
+    }
+    const reference = measured.at(-1)
+    for (const layout of measured) {
+      const label = `${environment.name} "${layout.message}"`
+      assert.equal(layout.titleY, reference.titleY, `${label}: 제목 y 가 문구 길이에 따라 움직이면 안 된다`)
+      assert.equal(layout.boardY, reference.boardY, `${label}: 플랩 보드 y 가 움직이면 안 된다`)
+      assert.equal(layout.stripHeight, reference.stripHeight, `${label}: 티커 strip 높이는 문구와 무관하게 같아야 한다`)
+      assert.ok(layout.labelHeight <= Math.ceil(layout.labelLineHeight) + 1, `${label}: 알림 라벨이 한 줄이어야 한다 (${layout.labelHeight}px)`)
+      assert.ok(Math.abs(layout.textCenterOffset) <= 2, `${label}: 문구가 strip 세로 가운데여야 한다 (${layout.textCenterOffset}px)`)
+      assert.ok(layout.replayBottom <= environment.height, `${label}: 다시 재생 버튼이 화면(${environment.height}px) 안에 있어야 한다 (${layout.replayBottom}px)`)
+      assert.equal(layout.overflow, 0, `${label}: 가로 overflow`)
+    }
+    if (environment.width === 375) {
+      // 두 줄 예약: 한 줄(24px)짜리 strip 보다 한 줄 더 높다. 1440 은 기존 한 줄 높이를 유지한다.
+      assert.ok(reference.stripHeight >= 70, `${environment.name} strip 은 두 줄 높이를 예약해야 한다 (${reference.stripHeight}px)`)
+    } else {
+      assert.ok(reference.stripHeight <= 55, `${environment.name} strip 은 기존 한 줄 높이여야 한다 (${reference.stripHeight}px)`)
+    }
+    console.log(`ticker layout ${environment.name}: ${JSON.stringify({
+      titleY: reference.titleY,
+      boardY: reference.boardY,
+      stripHeight: reference.stripHeight,
+      replayBottom: reference.replayBottom,
+      messages: measured.length
+    })}`)
+  }
 })
 
 test('실난수 4환경: 첫 방문 각 문구 0.7초·재방문 최종 문구 1초를 확보한다', async t => {
@@ -319,6 +497,8 @@ test('실난수 4환경: 첫 방문 각 문구 0.7초·재방문 최종 문구 1
         ? `${process.env.SPLASH_SCREENSHOT_DIR}/splash-${environment.name}.png`
         : ''
     })
+    assertTickerRotation(await tickerLog(firstPage), `${environment.name} 첫 방문 실난수`)
+    assert.equal(await firstPage.evaluate(() => window.__tickerTimers.size), 0, `${environment.name} 티커 타이머 잔류`)
     for (const measurement of firstVisit) {
       assert.ok(
         measurement.readingMs >= 700,
@@ -345,6 +525,7 @@ test('실난수 4환경: 첫 방문 각 문구 0.7초·재방문 최종 문구 1
     assert.ok(settledAtMs <= returnVisitSettleLimitMs, `${environment.name} 재방문 정착 ${settledAtMs}ms`)
     assert.ok(transitionAtMs - settledAtMs >= 1000, `${environment.name} 재방문 정지 노출 ${transitionAtMs - settledAtMs}ms`)
     assert.equal((await snapshot(returnPage)).overflow, 0, `${environment.name} 재방문 overflow`)
+    assertTickerInPool((await snapshot(returnPage)).ticker, `${environment.name} 재방문`)
     report.push({
       environment: environment.name,
       firstVisit: firstVisit.map(({ phrase, readingMs }) => ({ phrase, readingMs })),
@@ -364,7 +545,7 @@ test('recent visit: DOORS OPENING 정착 뒤 1초 이상 읽히고 2.5초에 전
   await page.clock.runFor(150)
   const state = await snapshot(page)
   assert.equal(state.phrase, 'DOORS OPENING')
-  assert.equal(state.ticker, '출구 번호에 서열 매기는 중…')
+  assertTickerInPool(state.ticker, '재방문 0.15초')
   assert.ok(state.runningCells > 0, '재방문도 기존 반쪽 플랩 엔진으로 마지막 문구를 재생해야 한다')
   const settledAtMs = 150 + await waitForOpeningToSettle(page, returnVisitSettleLimitMs - 150)
   const transitionAtMs = Math.min(returnVisitMaximumMs, Math.max(returnDurationMs, settledAtMs + 1000))
@@ -373,6 +554,8 @@ test('recent visit: DOORS OPENING 정착 뒤 1초 이상 읽히고 2.5초에 전
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-return.png` })
   }
   await finishSplashAt(page, transitionAtMs - settledAtMs)
+  assertTickerRotation(await tickerLog(page), '재방문 2.5초', { minCount: 2, maxCount: 2, minDistinct: 2 })
+  assert.equal(await page.evaluate(() => window.__tickerTimers.size), 0, '재방문 전환 뒤 티커 타이머가 남으면 안 된다')
   const refreshedSeenAt = await page.evaluate(() => window.localStorage.getItem('splash:seen'))
   assert.ok(Date.parse(refreshedSeenAt) > Date.parse(previousSeenAt), '재방문 완료 시각을 갱신해야 한다')
 })
@@ -406,17 +589,20 @@ test('recent visit replay: 다시 재생 restores the full 5.5-second sequence',
   })
 
   assert.equal(await page.getByText('2.5초 후 자동 전환', { exact: true }).count(), 1)
+  const returnRunTickerCount = (await tickerLog(page)).length
   await page.getByRole('button', { name: '다시 재생', exact: true }).click()
   assert.equal(await page.getByText('5.5초 후 자동 전환', { exact: true }).count(), 1)
   await page.clock.runFor(1800)
   const middle = await snapshot(page)
   assert.equal(middle.phrase, 'MIND THE GAP')
-  assert.equal(middle.ticker, '지연 시간을 정성껏 반올림하는 중…')
+  assertTickerInPool(middle.ticker, '다시 재생 1.8초')
   assert.equal(await page.locator('.splash-stage').count(), 1, '재생 뒤에는 재방문 단축 타이머가 취소돼야 한다')
   if (process.env.SPLASH_SCREENSHOT_DIR) {
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-desktop-replay.png` })
   }
   await finishSplashAt(page, 3700)
+  assertTickerRotation((await tickerLog(page)).slice(returnRunTickerCount), '다시 재생 5.5초')
+  assert.equal(await page.evaluate(() => window.__tickerTimers.size), 0, '다시 재생 전환 뒤 티커 타이머가 남으면 안 된다')
 })
 
 test('expired or unavailable storage falls back to the first-visit flow', async t => {
@@ -450,10 +636,17 @@ test('1440px light reduced motion: static first phrase, loop symbol and zero ove
   const state = await snapshot(page)
   assert.equal(state.phrase, 'WORKING AROUND')
   assert.equal(state.renderedPhrase, 'WORKING AROUND')
-  assert.equal(state.ticker, '에스컬레이터 방향 다수결로 정하는 중…')
+  assertTickerInPool(state.ticker, '1440 라이트 reduced-motion 0초')
   assert.equal(state.runningCells, 0)
   assert.equal(state.overflow, 0)
   assert.equal(await page.locator('.site-loop-symbol').count(), 1)
+  // 티커 텍스트 교체는 모션이 아니므로 reduced-motion 에서도 1.3초마다 계속되고, 플랩은 정적 표시를 유지한다.
+  await page.clock.runFor(tickerIntervalMs * 3)
+  const rotated = await snapshot(page)
+  assert.equal(rotated.phrase, 'WORKING AROUND')
+  assert.equal(rotated.renderedPhrase, 'WORKING AROUND')
+  assert.equal(rotated.runningCells, 0)
+  assertTickerRotation(await tickerLog(page), '1440 라이트 reduced-motion 3.9초', { minCount: 4, maxCount: 4 })
   assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), 'light')
   assert.deepEqual(await splashPanelSurface(page), {
     backgroundColor: 'rgba(0, 0, 0, 0)',
