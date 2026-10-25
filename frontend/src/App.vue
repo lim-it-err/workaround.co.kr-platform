@@ -1273,6 +1273,7 @@ let splashAnimationRunId = 0
 let splashAnimationTimers = []
 const splashTickerShown = new Set()
 let splashRunStartedAtMs = 0
+let splashTickerIndex = 0
 let settledSplashRunId = 0
 let doorTransitionRunId = 0
 let doorTransitionTimers = []
@@ -1623,7 +1624,8 @@ function rotateSplashTicker(runId) {
   if (runId !== splashAnimationRunId) {
     return
   }
-  currentTicker.value = pickSplashTicker(currentTicker.value, splashTickerShown)
+  currentTicker.value = pickSplashTicker(currentTicker.value, splashTickerShown, Math.random, splashTickerIndex, isReturnVisitSplash.value)
+  splashTickerIndex += 1
   queueSplashAnimation(() => rotateSplashTicker(runId), SPLASH_TICKER_INTERVAL_MS)
 }
 
@@ -1641,6 +1643,7 @@ function playSplashFlap() {
       }))
   // 티커는 플랩 문구와 분리해 회전한다. 모션이 아니라 텍스트 교체이므로 reduced-motion 에서도 돈다.
   splashTickerShown.clear()
+  splashTickerIndex = 0
   rotateSplashTicker(runId)
 
   if (prefersReducedMotion.value) {

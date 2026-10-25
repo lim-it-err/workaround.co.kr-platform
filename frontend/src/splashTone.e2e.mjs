@@ -8,7 +8,7 @@ import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from './e2eContext.mjs'
-import { SPLASH_TICKER_POOL, pickSplashTicker } from './data/splashTicker.js'
+import { SPLASH_TICKER_POOL, pickSplashTicker, FIXED_SPLASH_TICKER } from './data/splashTicker.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -399,7 +399,13 @@ test('375px: 반쪽 플랩 세 문구와 티커를 읽힌 뒤 5.5초에 전환�
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-opening.png` })
   }
   await finishSplashAt(page, firstVisitDurationMs - openingSettledAtMs)
-  assertTickerRotation(await tickerLog(page), '375 첫 방문 5.5초')
+  const firstVisitLog = await tickerLog(page)
+  assertTickerRotation(firstVisitLog, '375 첫 방문 5.5초')
+  // TKT-205: 첫 방문의 4번째 티커는 고정 문구, 1~3번째는 고정이 아님
+  assert.equal(firstVisitLog[3]?.text, FIXED_SPLASH_TICKER, '첫 방문 4번째 티커는 고정 문구여야 한다')
+  assert.notEqual(firstVisitLog[0]?.text, FIXED_SPLASH_TICKER, '첫 방문 1번째 티커는 고정 문구가 아니어야 한다')
+  assert.notEqual(firstVisitLog[1]?.text, FIXED_SPLASH_TICKER, '첫 방문 2번째 티커는 고정 문구가 아니어야 한다')
+  assert.notEqual(firstVisitLog[2]?.text, FIXED_SPLASH_TICKER, '첫 방문 3번째 티커는 고정 문구가 아니어야 한다')
   assert.equal(await page.evaluate(() => window.__tickerTimers.size), 0, '환승 홀 전환 뒤 티커 타이머가 남으면 안 된다')
   const seenAt = await page.evaluate(() => window.localStorage.getItem('splash:seen'))
   assert.ok(Number.isFinite(Date.parse(seenAt)), '첫 방문 완료 시 ISO 방문 시각을 저장해야 한다')
@@ -555,7 +561,12 @@ test('recent visit: DOORS OPENING 정착 뒤 1초 이상 읽히고 2.5초에 전
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-mobile-return.png` })
   }
   await finishSplashAt(page, transitionAtMs - settledAtMs)
-  assertTickerRotation(await tickerLog(page), '재방문 2.5초', { minCount: 2, maxCount: 2, minDistinct: 2 })
+  const returnLog = await tickerLog(page)
+  assertTickerRotation(returnLog, '재방문 2.5초', { minCount: 2, maxCount: 2, minDistinct: 2 })
+  // TKT-205: 재방문은 고정 문구 없음 (모든 티커가 무작위)
+  returnLog.forEach((entry, index) => {
+    assert.notEqual(entry.text, FIXED_SPLASH_TICKER, `재방문 ${index + 1}번째 티커는 고정 문구가 아니어야 한다`)
+  })
   assert.equal(await page.evaluate(() => window.__tickerTimers.size), 0, '재방문 전환 뒤 티커 타이머가 남으면 안 된다')
   const refreshedSeenAt = await page.evaluate(() => window.localStorage.getItem('splash:seen'))
   assert.ok(Date.parse(refreshedSeenAt) > Date.parse(previousSeenAt), '재방문 완료 시각을 갱신해야 한다')
@@ -602,7 +613,13 @@ test('recent visit replay: 다시 재생 restores the full 5.5-second sequence',
     await page.screenshot({ path: `${process.env.SPLASH_SCREENSHOT_DIR}/splash-desktop-replay.png` })
   }
   await finishSplashAt(page, 3700)
-  assertTickerRotation((await tickerLog(page)).slice(returnRunTickerCount), '다시 재생 5.5초')
+  const replayLog = (await tickerLog(page)).slice(returnRunTickerCount)
+  assertTickerRotation(replayLog, '다시 재생 5.5초')
+  // TKT-205: 다시 재생의 4번째 티커는 고정 문구, 1~3번째는 고정이 아님
+  assert.equal(replayLog[3]?.text, FIXED_SPLASH_TICKER, '다시 재생 4번째 티커는 고정 문구여야 한다')
+  assert.notEqual(replayLog[0]?.text, FIXED_SPLASH_TICKER, '다시 재생 1번째 티커는 고정 문구가 아니어야 한다')
+  assert.notEqual(replayLog[1]?.text, FIXED_SPLASH_TICKER, '다시 재생 2번째 티커는 고정 문구가 아니어야 한다')
+  assert.notEqual(replayLog[2]?.text, FIXED_SPLASH_TICKER, '다시 재생 3번째 티커는 고정 문구가 아니어야 한다')
   assert.equal(await page.evaluate(() => window.__tickerTimers.size), 0, '다시 재생 전환 뒤 티커 타이머가 남으면 안 된다')
 })
 
@@ -647,7 +664,13 @@ test('1440px light reduced motion: static first phrase, loop symbol and zero ove
   assert.equal(rotated.phrase, 'WORKING AROUND')
   assert.equal(rotated.renderedPhrase, 'WORKING AROUND')
   assert.equal(rotated.runningCells, 0)
-  assertTickerRotation(await tickerLog(page), '1440 라이트 reduced-motion 4.5초', { minCount: 4, maxCount: 4 })
+  const reducedMotionLog = await tickerLog(page)
+  assertTickerRotation(reducedMotionLog, '1440 라이트 reduced-motion 4.5초', { minCount: 4, maxCount: 4 })
+  // TKT-205: reduced-motion의 4번째 티커도 고정 문구, 1~3번째는 고정이 아님
+  assert.equal(reducedMotionLog[3]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 4번째 티커는 고정 문구여야 한다')
+  assert.notEqual(reducedMotionLog[0]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 1번째 티커는 고정 문구가 아니어야 한다')
+  assert.notEqual(reducedMotionLog[1]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 2번째 티커는 고정 문구가 아니어야 한다')
+  assert.notEqual(reducedMotionLog[2]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 3번째 티커는 고정 문구가 아니어야 한다')
   assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), 'light')
   assert.deepEqual(await splashPanelSurface(page), {
     backgroundColor: 'rgba(0, 0, 0, 0)',
