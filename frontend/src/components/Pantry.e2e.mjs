@@ -6,7 +6,10 @@ import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from '../e2eContext.mjs'
+import { PANTRY_SETS } from '../data/pantry/sets.js'
 
+// 태그 필터 기대값은 콘텐츠에서 계산한다(세트가 늘어도 깨지지 않게 — TKT-206)
+const titlesWithTag = (tag, excludeIds = []) => PANTRY_SETS.filter((set) => set.tags.includes(tag) && !excludeIds.includes(set.id)).map((set) => set.title)
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
 const distRoot = fileURLToPath(new URL('../../dist/', import.meta.url))
@@ -204,13 +207,13 @@ test('조건 칩은 시간·상황을 거르고 무알코올 화면에는 술 �
   const quickTag = page.getByRole('button', { name: '10분', exact: true })
   await quickTag.click()
   assert.equal(await quickTag.getAttribute('aria-pressed'), 'true')
-  assert.ok(['10분 계란 볶음밥', '더운 날 비빔국수', '가벼운 저녁 샐러드'].includes(await title(page)))
+  assert.ok(titlesWithTag('10분').includes(await title(page)))
   assert.equal(await page.locator('.pantry-alternative span').first().textContent(), '10분 대안')
   await quickTag.click()
 
   const hangoverTag = page.getByRole('button', { name: '해장', exact: true })
   await hangoverTag.click()
-  assert.ok(['해장 한 상', '순두부찌개 15분'].includes(await title(page)))
+  assert.ok(titlesWithTag('해장').includes(await title(page)))
 
   await page.evaluate(() => {
     const today = new Date()
@@ -226,7 +229,7 @@ test('조건 칩은 시간·상황을 거르고 무알코올 화면에는 술 �
   await hangoverTag.click()
   const guestTag = page.getByRole('button', { name: '손님', exact: true })
   await guestTag.click()
-  assert.ok(['월급날 삼겹살', '친구 온 날 닭갈비'].includes(await title(page)))
+  assert.ok(titlesWithTag('손님', ['hwe-payday']).includes(await title(page)))
   assert.equal(await page.locator('.pantry-alternative span').first().textContent(), '빠른 대안')
 
   await guestTag.click()
