@@ -43,6 +43,10 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
+- `TKT-212` `v0.8.3` `pantry` `ready` `[FE]` 자취 밥상 태그 정리(36칩·시간 자동)·가까운 상 버그 — Sonnet
+- `TKT-213` `v0.8.3` `infra` `ready` `[INFRA]` 배포 경로 규칙 공용 모듈 — Haiku 5.5
+- `TKT-214` `v0.8.3` `tone` `ready` `[FE]` 티커 고정 문구 문자열 참조·스플래시 E2E 시드 — Haiku 5.5, 207 뒤
+
 - `TKT-207` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 스플래시 (순서대로, 동작 변화 0)
 - `TKT-208` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 시뮬 (순서대로, 동작 변화 0)
 - `TKT-209` `v0.8.3` `refactor` `ready` `[FE]` App.vue 분해 — 기지선 (순서대로, 동작 변화 0)
