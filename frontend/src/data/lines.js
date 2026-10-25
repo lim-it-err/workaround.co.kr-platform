@@ -6,6 +6,32 @@ import { pickPantrySets } from './pantry/index.js'
 
 export const JUNCTION = { x: 360, y: 360 }
 
+// 블로그 본선(B) 운행 스위치 — D-031 (PO 2026-10-25 "블로그는 다시 내려").
+// false 인 동안 홈 노선도의 B 역·소역 3·노선 목록 행이 사라지고, 기록선은 환승 홀 → 여행 이 된다.
+// /blog · /blog/* · /blog-district · /studio 직접 진입은 App.vue 가 환승 홀로 돌려보낸다.
+// 복귀: true 로 바꾸고 블로그·스튜디오 E2E 의 skip 이 풀리는지 확인한다. 컴포넌트·데이터는 지우지 않는다.
+export const BLOG_LINE_OPEN = false
+
+const BLOG_STATION = {
+  code: 'B',
+  nameKo: '블로그 본선',
+  mapName: '블로그',
+  lineClass: 'line-b',
+  page: 'blogArchive',
+  status: '읽고 쓰는 기록',
+  map: { x: 250, y: 360, labelX: 250, labelY: 336, anchor: 'middle' },
+  mapStops: [
+    { x: 200, y: 360, labelX: 200, labelY: 384, label: '아카이브', anchor: 'middle' },
+    { x: 160, y: 360, labelX: 160, labelY: 344, label: '글 상세', anchor: 'middle' },
+    { x: 120, y: 360, labelX: 120, labelY: 384, label: '스튜디오', anchor: 'middle' }
+  ],
+  sublinks: [
+    { label: '공개 아카이브', page: 'blogArchive' },
+    { label: '글 상세', page: 'blogPost' },
+    { label: 'Writing Studio', page: 'writingStudio' }
+  ]
+}
+
 const currentVoyage = VOYAGES.find((voyage) => voyage.status === 'boarding') || VOYAGES[0]
 const pantryDate = new Date()
 const pantryDateKey = `${pantryDate.getFullYear()}-${String(pantryDate.getMonth() + 1).padStart(2, '0')}-${String(pantryDate.getDate()).padStart(2, '0')}`
@@ -17,29 +43,12 @@ export const JUNCTION_LINES = [
     nameKo: '기록선',
     colorToken: 'junction-archive',
     textColorToken: 'line-b-text',
-    order: '환승 홀 → 블로그 → 여행',
+    order: BLOG_LINE_OPEN ? '환승 홀 → 블로그 → 여행' : '환승 홀 → 여행',
     label: { x: 640, y: 364, anchor: 'start' },
-    paths: ['M90 360 L630 360'],
+    // 블로그가 내려가 있어도 노선은 환승 홀을 직선으로 통과한다(r16). 왼쪽은 역 없는 짧은 꼬리.
+    paths: [BLOG_LINE_OPEN ? 'M90 360 L630 360' : 'M290 360 L630 360'],
     stations: [
-      {
-        code: 'B',
-        nameKo: '블로그 본선',
-        mapName: '블로그',
-        lineClass: 'line-b',
-        page: 'blogArchive',
-        status: '읽고 쓰는 기록',
-        map: { x: 250, y: 360, labelX: 250, labelY: 336, anchor: 'middle' },
-        mapStops: [
-          { x: 200, y: 360, labelX: 200, labelY: 384, label: '아카이브', anchor: 'middle' },
-          { x: 160, y: 360, labelX: 160, labelY: 344, label: '글 상세', anchor: 'middle' },
-          { x: 120, y: 360, labelX: 120, labelY: 384, label: '스튜디오', anchor: 'middle' }
-        ],
-        sublinks: [
-          { label: '공개 아카이브', page: 'blogArchive' },
-          { label: '글 상세', page: 'blogPost' },
-          { label: 'Writing Studio', page: 'writingStudio' }
-        ]
-      },
+      ...(BLOG_LINE_OPEN ? [BLOG_STATION] : []),
       {
         code: 'V',
         nameKo: '여행 노선',

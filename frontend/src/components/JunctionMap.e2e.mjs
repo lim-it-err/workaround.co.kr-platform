@@ -6,10 +6,19 @@ import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from '../e2eContext.mjs'
+import { BLOG_LINE_OPEN } from '../data/lines.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
 const distRoot = fileURLToPath(new URL('../../dist/', import.meta.url))
+// 기대 개수는 블로그 본선(B) 스위치 상태에서 손으로 센 값이다 (구현이 내놓는 숫자를 따라 적지 않는다).
+//   큰 역  : 기록선 B·V + 실험선 A·S·D·P + 기지선 W·R = 8 → B 를 빼면 7
+//   소역   : B 3(아카이브·글 상세·스튜디오) + V 1 + A 1 + S 6 + W 1 + R 1 = 13 → B 를 빼면 10
+//   노선 선: 기록선 1 + 실험선 3 + 기지선 1 = 5 — 기록선은 환승 홀 직선 통과(r16)를 위해 꼬리로 남으므로 그대로
+//   제한 역: D(예정) + W·R(보호) = 3 — B 와 무관
+// D-031(PO 2026-10-25): 스위치가 꺼진 동안 B 행·B 역·B 소역 3개가 홈에 없어야 한다.
+const STATION_COUNT = BLOG_LINE_OPEN ? 8 : 7
+const SUBSTOP_COUNT = BLOG_LINE_OPEN ? 13 : 10
 let base = process.env.JUNCTION_TEST_URL || ''
 let browser
 let server
@@ -70,7 +79,8 @@ async function setup(t, scenario) {
     await context.close()
     assert.deepEqual(errors, [], '브라우저 오류나 경고가 없어야 한다')
   })
-  await page.goto(`${base}blog`)
+  // 블로그 주소는 D-031 로 환승 홀에 바로 닿고 접근 토스트를 띄운다(blogClosed.e2e.mjs). 이 스위트는 토스트 개수를 세므로 다른 화면에서 환승 홀로 들어간다.
+  await page.goto(`${base}voyage`)
   await page.getByRole('button', { name: '환승 홀', exact: true }).click()
   await page.locator('.junction-overview').waitFor()
   return page
@@ -192,22 +202,39 @@ for (const scenario of [
     const page = await setup(t, scenario)
 
     assert.equal(await page.locator('.junction-route-group').count(), 3)
-    assert.equal(await page.locator('.junction-route-row').count(), 8)
-    assert.equal(await page.locator('.junction-route-row:is(a, button)').count(), 8)
+    assert.equal(await page.locator('.junction-route-row').count(), STATION_COUNT)
+    assert.equal(await page.locator('.junction-route-row:is(a, button)').count(), STATION_COUNT)
     assert.equal(await page.locator('.junction-branch').count(), 5)
-    assert.equal(await page.locator('.junction-station').count(), 8)
-    assert.equal(await page.locator('.junction-station-hit').count(), 8)
-    assert.equal(await page.locator('.junction-page-stop-hit').count(), 13)
+    assert.equal(await page.locator('.junction-station').count(), STATION_COUNT)
+    assert.equal(await page.locator('.junction-station-hit').count(), STATION_COUNT)
+    assert.equal(await page.locator('.junction-page-stop-hit').count(), SUBSTOP_COUNT)
     assert.equal(await page.locator('.junction-station.restricted').count(), 3)
     assert.equal(await page.locator('.junction-route-row.restricted').count(), 3)
     assert.equal(await page.getByText('Archive Line', { exact: true }).count(), 0)
+    if (!BLOG_LINE_OPEN) {
+      const archiveBranch = page.locator('.junction-branch[data-line-id="archive"]')
+      assert.equal(await archiveBranch.count(), 1)
+      assert.equal(await archiveBranch.getAttribute('d'), 'M290 360 L630 360', '기록선은 왼쪽 꼬리만 남기고 환승 홀을 직선으로 통과한다')
+      assert.equal(await page.locator('[data-station-code="B"]').count(), 0)
+      assert.deepEqual(
+        await page.locator('.junction-route-group').first().locator('h3, p').allTextContents(),
+        ['기록선', '환승 홀 → 여행']
+      )
+      assert.equal(
+        await page.getByRole('img', { name: /일곱 정류장/ }).count(),
+        1,
+        '지도 설명은 정류장 수(일곱)를 따라야 한다'
+      )
+      const overviewText = await page.locator('.junction-overview').innerText()
+      assert.doesNotMatch(overviewText, /블로그|Writing Studio|스튜디오|아카이브/, '내려간 블로그 노선 문구가 홈에 남으면 안 된다')
+    }
 
     const mapBox = await page.locator('.junction-map-box').boundingBox()
     const listBox = await page.locator('.junction-lines').boundingBox()
     if (scenario.width < 900) {
       assert.ok(mapBox.y < listBox.y, '모바일에서는 지도 다음에 목록이 와야 한다')
       assert.equal(await page.locator('.junction-page-stop:visible').count(), 0)
-      assert.equal(await page.locator('.junction-station-name:visible').count(), 8)
+      assert.equal(await page.locator('.junction-station-name:visible').count(), STATION_COUNT)
     } else {
       assert.ok(mapBox.x < listBox.x && Math.abs(mapBox.y - listBox.y) < 10, '데스크톱에서는 지도와 목록이 나란해야 한다')
     }
@@ -317,7 +344,7 @@ for (const scenario of [
         pointerEvents: hitCircle ? getComputedStyle(hitCircle).pointerEvents : ''
       }
     }))
-    assert.equal(svgStationHitTargets.length, 8)
+    assert.equal(svgStationHitTargets.length, STATION_COUNT)
     assert.ok(
       svgStationHitTargets.every(({ width, height }) => width >= 40 && height >= 40),
       `SVG 역 hit area는 모두 40px 이상이어야 한다: ${JSON.stringify(svgStationHitTargets)}`
@@ -337,7 +364,7 @@ for (const scenario of [
         pointerEvents: getComputedStyle(hitCircle).pointerEvents
       }
     }))
-    assert.equal(detailStopHitTargets.length, 13)
+    assert.equal(detailStopHitTargets.length, SUBSTOP_COUNT)
     assert.ok(
       detailStopHitTargets.every(({ radius, pointerEvents }) => radius >= 26 && pointerEvents === 'all'),
       `모든 소역은 투명 hit 원(r≥26, pointer-events: all)을 가져야 한다: ${JSON.stringify(detailStopHitTargets)}`

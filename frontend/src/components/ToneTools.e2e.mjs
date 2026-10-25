@@ -6,6 +6,11 @@ import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from '../e2eContext.mjs'
+import { BLOG_LINE_OPEN } from '../data/lines.js'
+
+// D-031 블로그 운행 중단: Studio 화면 검증은 스위치가 꺼진 동안 skip 한다(테스트 코드는 보존).
+// 블로그 주소가 환승 홀로 돌아오는지는 blogClosed.e2e.mjs 가 맡는다.
+const STUDIO_SKIP = BLOG_LINE_OPEN ? false : 'D-031 블로그 운행 중단'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const distRoot = fileURLToPath(new URL('../../dist/', import.meta.url))
@@ -358,7 +363,7 @@ for (const scenario of scenarios) {
     }
   })
 
-  test(`${scenario.width}px ${scenario.theme}: Studio는 720px 본문과 우측/시트 도구를 유지한다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: Studio는 720px 본문과 우측/시트 도구를 유지한다`, { skip: STUDIO_SKIP }, async t => {
     const page = await setup(t, scenario, 'studio')
     await page.getByRole('textbox', { name: '본문', exact: true }).waitFor()
     const editor = await page.locator('.writer-page').boundingBox()
@@ -381,7 +386,8 @@ for (const scenario of scenarios) {
   })
 
   test(`${scenario.width}px ${scenario.theme}: 전 정적 경로의 렌더 영어 대문자 간판은 0건이다`, async t => {
-    const page = await setup(t, scenario, 'blog')
+    // 블로그가 내려가 있으면 /blog 로 시작할 수 없다(환승 홀로 바로 닿아 '환승 홀' 버튼이 없다) — 여행 화면에서 시작한다.
+    const page = await setup(t, scenario, BLOG_LINE_OPEN ? 'blog' : 'voyage')
     const routes = [
       { path: '/', enter: async () => {
         await page.getByRole('button', { name: '환승 홀', exact: true }).click()
