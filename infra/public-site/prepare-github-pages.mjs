@@ -1,12 +1,15 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import {
+  BLOG_MOCKUP_FILES,
+  copiedPaths,
+  isBlogMockupFile,
+  readBlogLineOpen,
+} from './route-rules.mjs'
 
 const EXPECTED_BASE = '/workaround.co.kr-platform/'
 const EXPECTED_ADVISOR_BASE = `${EXPECTED_BASE}advisor/`
 const LOCAL_REFERENCE_PATTERN = /\b(?:href|src)=(['"])(.*?)\1/gi
-const __dirname = fileURLToPath(new URL('.', import.meta.url))
-const projectRoot = resolve(__dirname, '../../')
 
 function readArguments(argv) {
   const parsed = new Map()
@@ -74,54 +77,6 @@ function verifyIndex(indexPath, distDirectory, base, label) {
   return { html, references }
 }
 
-function extractMainRoutePaths() {
-  const staticRoutingPath = resolve(projectRoot, 'frontend/src/staticRouting.js')
-  const content = readFileSync(staticRoutingPath, 'utf8')
-
-  // Extract LIVE_PAGE_PATHS object
-  const match = content.match(/const LIVE_PAGE_PATHS = \{([\s\S]*?)\}/)
-  if (!match) {
-    throw new Error('Cannot find LIVE_PAGE_PATHS in staticRouting.js')
-  }
-
-  const paths = []
-  const pathsContent = match[1]
-  // Match lines like: key: '/path',
-  for (const line of pathsContent.split('\n')) {
-    const pathMatch = line.match(/:\s*['"]([^'"]+)['"]/)
-    if (pathMatch) {
-      paths.push(pathMatch[1])
-    }
-  }
-
-  return paths
-}
-
-function extractAdvisorRoutePaths() {
-  const routesPath = resolve(projectRoot, 'services/advisor/frontend/src/modules/missions/routes.js')
-  const content = readFileSync(routesPath, 'utf8')
-
-  // Extract top-level route paths from missionRoutes
-  const paths = new Set()
-
-  // Match route definitions with path property
-  const routeMatches = content.matchAll(/path:\s*['"]([^'"]+)['"]/g)
-  for (const match of routeMatches) {
-    const path = match[1]
-    // Only include top-level paths (no params or deep nesting)
-    if (!path.includes(':') && !path.includes('/')) {
-      paths.add(`/${path}`)
-    } else if (path.startsWith('/') && !path.slice(1).includes('/')) {
-      // Include paths like '/today', '/learn' but not '/courses/:courseId/sim/:missionId'
-      if (!path.includes(':')) {
-        paths.add(path)
-      }
-    }
-  }
-
-  return Array.from(paths)
-}
-
 function createFallbackHtml(base, advisorBase) {
   return `<!doctype html>
 <html lang="ko">
@@ -154,58 +109,39 @@ function createFallbackHtml(base, advisorBase) {
 `
 }
 
-// Check BLOG_LINE_OPEN flag and delete mockup files if closed
+// 블로그 스위치가 닫혀 있으면 dist/mockups 의 블로그 목업을 지운다 (판단은 route-rules.mjs)
 function checkBlogLineOpenAndCleanupMockups(distDirectory) {
-  const linesFilePath = resolve(projectRoot, 'frontend/src/data/lines.js')
-  const linesContent = readFileSync(linesFilePath, 'utf8')
-
-  // Match the export statement: export const BLOG_LINE_OPEN = false|true
-  const blogLineOpenMatch = linesContent.match(/export\s+const\s+BLOG_LINE_OPEN\s*=\s*(true|false)/)
-  if (!blogLineOpenMatch) {
-    throw new Error('Cannot find BLOG_LINE_OPEN in lines.js')
+  if (readBlogLineOpen()) {
+    return
   }
 
-  const isBlogLineOpen = blogLineOpenMatch[1] === 'true'
+  const mockupsDir = resolve(distDirectory, 'mockups')
+  const deletedFiles = []
 
-  if (!isBlogLineOpen) {
-    // Delete blog mockup files from dist/mockups
-    const mockupsDir = resolve(distDirectory, 'mockups')
-    const deletedFiles = []
-
-    // Delete specific mockup files
-    const filesToDelete = [
-      'blog-archive.html',
-      'blog-post.html',
-      'writing-studio.html'
-    ]
-
-    for (const fileName of filesToDelete) {
-      const filePath = resolve(mockupsDir, fileName)
-      if (existsSync(filePath)) {
-        rmSync(filePath)
-        deletedFiles.push(filePath)
-      }
+  for (const fileName of BLOG_MOCKUP_FILES) {
+    const filePath = resolve(mockupsDir, fileName)
+    if (existsSync(filePath)) {
+      rmSync(filePath)
+      deletedFiles.push(filePath)
     }
+  }
 
-    // Also delete any blog-*.html pattern files
-    if (existsSync(mockupsDir)) {
-      const allFiles = readdirSync(mockupsDir)
-      for (const fileName of allFiles) {
-        if (fileName.startsWith('blog-') && fileName.endsWith('.html')) {
-          const filePath = resolve(mockupsDir, fileName)
-          if (!deletedFiles.includes(filePath)) {
-            rmSync(filePath)
-            deletedFiles.push(filePath)
-          }
+  if (existsSync(mockupsDir)) {
+    for (const fileName of readdirSync(mockupsDir)) {
+      if (isBlogMockupFile(fileName)) {
+        const filePath = resolve(mockupsDir, fileName)
+        if (!deletedFiles.includes(filePath)) {
+          rmSync(filePath)
+          deletedFiles.push(filePath)
         }
       }
     }
+  }
 
-    if (deletedFiles.length > 0) {
-      console.log('Blog line closed - deleted mockup files:')
-      for (const file of deletedFiles) {
-        console.log(`  ${file}`)
-      }
+  if (deletedFiles.length > 0) {
+    console.log('Blog line closed - deleted mockup files:')
+    for (const file of deletedFiles) {
+      console.log(`  ${file}`)
     }
   }
 }
@@ -253,33 +189,8 @@ const copiedAdvisor = verifyIndex(
 writeFileSync(resolve(advisorTargetDirectory, '404.html'), copiedAdvisor.html, 'utf8')
 const fallbackHtml = createFallbackHtml(base, EXPECTED_ADVISOR_BASE)
 
-// Extract route paths from source files (single source of truth)
-const mainPaths = extractMainRoutePaths()
-const advisorPaths = extractAdvisorRoutePaths()
-
-// Determine which paths should have index.html copies
-// Skip: root (/), blog paths (/blog, /blog-district), /studio (writing), /runtime, /ets2/dev
-const pathsToCopy = new Set()
-
-for (const path of mainPaths) {
-  // Skip protected and offline paths
-  if (
-    path === '/' ||
-    path === '' ||
-    path.startsWith('/blog') ||  // Both /blog and /blog-district
-    path === '/studio' ||
-    path === '/runtime' ||
-    path === '/ets2/dev'
-  ) {
-    continue
-  }
-  pathsToCopy.add(path)
-}
-
-// Add Advisor paths (these go under /advisor/)
-for (const path of advisorPaths) {
-  pathsToCopy.add(`/advisor${path}`)
-}
+// 복제 대상 경로 (route-rules.mjs 가 원천 파일에서 추출·제외 규칙 적용)
+const pathsToCopy = copiedPaths()
 
 // Create index.html copies for each path
 const createdCopies = []

@@ -1,16 +1,13 @@
 // GitHub Pages post-deploy smoke (TKT-160).
 // Usage: node smoke-pages.mjs [baseUrl] [--sha <commit>] [--expect-copies=true|false]
 // Path lists are read from the same sources as prepare-github-pages.mjs
-// (frontend/src/staticRouting.js, Advisor missions/routes.js) - no hardcoding.
-import { appendFileSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+// (infra/public-site/route-rules.mjs - frontend/src/staticRouting.js, Advisor missions/routes.js) - no hardcoding.
+import { appendFileSync } from 'node:fs'
+import { LOCKED_PATHS, copiedMainPaths, extractAdvisorRoutePaths } from './route-rules.mjs'
 
 const DEFAULT_URL = 'https://lim-it-err.github.io/workaround.co.kr-platform/'
 const SHELL_MARKER = 'SPA entry request failed'
-const LOCKED_PATHS = ['/runtime', '/ets2/dev', '/blog', '/studio']
 const ADVISOR_MAIN_PATHS = ['/today', '/learn', '/history']
-const projectRoot = resolve(fileURLToPath(new URL('.', import.meta.url)), '../../')
 
 function parseArgs(argv) {
   const out = { url: DEFAULT_URL, sha: '', expectCopies: true }
@@ -23,33 +20,6 @@ function parseArgs(argv) {
   }
   out.url = out.url.endsWith('/') ? out.url : `${out.url}/`
   return out
-}
-
-function mainPaths() {
-  const src = readFileSync(resolve(projectRoot, 'frontend/src/staticRouting.js'), 'utf8')
-  const block = src.match(/const LIVE_PAGE_PATHS = \{([\s\S]*?)\}/)
-  if (!block) throw new Error('LIVE_PAGE_PATHS not found in staticRouting.js')
-  const paths = []
-  for (const line of block[1].split('\n')) {
-    const m = line.match(/:\s*['"]([^'"]+)['"]/)
-    if (m) paths.push(m[1])
-  }
-  return paths
-}
-
-function advisorPaths() {
-  const src = readFileSync(resolve(projectRoot, 'services/advisor/frontend/src/modules/missions/routes.js'), 'utf8')
-  const found = new Set()
-  for (const m of src.matchAll(/path:\s*['"]([^'"]+)['"]/g)) {
-    const p = m[1]
-    if (!p.includes(':') && p.startsWith('/') && !p.slice(1).includes('/')) found.add(p)
-  }
-  return [...found]
-}
-
-// Same exclusion rule as prepare-github-pages.mjs (blog*, /studio, /runtime, /ets2/dev, root).
-function copiedMainPaths() {
-  return mainPaths().filter((p) => p !== '/' && !p.startsWith('/blog') && !LOCKED_PATHS.includes(p))
 }
 
 async function get(url) {
@@ -84,7 +54,7 @@ await check('루트', '/', '200 HTML', isPage)
 const root = await get(opts.url).catch(() => ({ status: 0, body: '' }))
 for (const p of copiedMainPaths()) await check('공개 경로', p, expectPageLabel, expectPage, `${opts.url}${p.slice(1)}/`)
 await check('Advisor', '/advisor/', '200 HTML', isPage)
-for (const p of ADVISOR_MAIN_PATHS.filter((x) => advisorPaths().includes(x))) {
+for (const p of ADVISOR_MAIN_PATHS.filter((x) => extractAdvisorRoutePaths().includes(x))) {
   await check('Advisor 경로', `/advisor${p}`, expectPageLabel, expectPage, `${opts.url}advisor${p}/`)
 }
 const icon = root.body.match(/<link[^>]+rel=["'][^"']*icon[^"']*["'][^>]*href=["']([^"']+)["']/i)

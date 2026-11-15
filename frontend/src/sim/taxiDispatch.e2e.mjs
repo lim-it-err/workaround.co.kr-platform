@@ -1,17 +1,12 @@
 // Run against an isolated root-base preview. All API traffic uses local fixtures.
 import assert from 'node:assert/strict'
 import { before, after, test } from 'node:test'
-import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import vm from 'node:vm'
 import { newSeoulContext } from '../e2eContext.mjs'
+import { fallbackElevatorState, fallbackHealth, fallbackRuntime, fallbackWorkBoard } from '../data/fallbacks.js'
 const { chromium } = createRequire(import.meta.url)('playwright')
 const base = process.env.TAXI_TEST_URL || 'http://127.0.0.1:4175'
-const source = await readFile(new URL('../App.vue', import.meta.url), 'utf8')
-const fixtures = Object.fromEntries(['fallbackHealth', 'fallbackRuntime', 'fallbackWorkBoard', 'fallbackElevatorState'].map(name => {
-  const expression = source.split(`const ${name} = `)[1].split('\n\nconst ')[0]
-  return [name, vm.runInNewContext(`(${expression})`)]
-}))
+const fixtures = { fallbackHealth, fallbackRuntime, fallbackWorkBoard, fallbackElevatorState }
 let browser
 before(async () => { browser = await chromium.launch({ headless: true }) })
 after(async () => { await browser?.close() })

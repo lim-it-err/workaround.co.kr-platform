@@ -4,6 +4,7 @@ import assert from 'node:assert/strict'
 import { after, before, test } from 'node:test'
 import { createRequire } from 'node:module'
 import { createServer } from 'node:http'
+import { randomInt } from 'node:crypto'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -21,6 +22,9 @@ const returnVisitDurationMs = 2500
 const returnVisitSettleLimitMs = 1600
 const returnVisitMaximumMs = 2800
 const doorOpeningMs = 500
+// 실난수 테스트의 시드. 기본은 실행마다 새로 뽑고, SPLASH_SEED 가 있으면 그 값을 쓴다.
+// 실패 메시지에 시드를 적으므로 `SPLASH_SEED=<값>` 으로 같은 난수열을 재현할 수 있다.
+const splashSeed = resolveSplashSeed()
 let base = process.env.SPLASH_TEST_URL || ''
 let browser
 let server
@@ -91,9 +95,21 @@ async function setup(t, {
     assert.deepEqual(errors, [], 'no browser errors or warnings')
     assert.deepEqual(apiRequests, [], 'static splash makes no API requests')
   })
-  await page.addInitScript(({ selectedTheme, splashSeenAt, blockSplashStorage, fixedRandomValue, tickerMs }) => {
+  await page.addInitScript(({ selectedTheme, splashSeenAt, blockSplashStorage, fixedRandomValue, tickerMs, seed }) => {
     // Keep the flip count and stagger representative but repeatable under parallel CPU load.
-    if (fixedRandomValue !== null) Math.random = () => fixedRandomValue
+    if (fixedRandomValue !== null) {
+      Math.random = () => fixedRandomValue
+    } else {
+      // 실난수 경로: 브라우저 Math.random 을 시드 난수로 바꿔 실패를 SPLASH_SEED 로 재현할 수 있게 한다.
+      let state = seed >>> 0
+      Math.random = () => {
+        state = (state + 0x6d2b79f5) >>> 0
+        let t = state
+        t = Math.imul(t ^ (t >>> 15), t | 1)
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+      }
+    }
     // 티커 관측: 화면에 나타난 티커 문구를 가상 시계 시각과 함께 기록하고, 티커 주기 타이머가 남아 있는지 센다.
     window.__tickerLog = []
     new MutationObserver(() => {
@@ -135,11 +151,44 @@ async function setup(t, {
     splashSeenAt: seenAt,
     blockSplashStorage: storageUnavailable,
     fixedRandomValue: randomValue,
-    tickerMs: tickerIntervalMs
+    tickerMs: tickerIntervalMs,
+    seed: splashSeed
   })
   await page.goto(base)
   await page.locator('.splash-stage').waitFor()
   return page
+}
+
+function resolveSplashSeed() {
+  const raw = process.env.SPLASH_SEED
+  if (raw === undefined || raw === '') return randomInt(2 ** 32)
+  const seed = Number(raw)
+  if (!Number.isInteger(seed) || seed < 0 || seed >= 2 ** 32) {
+    throw new Error(`SPLASH_SEED 는 0 이상 2^32 미만의 정수여야 합니다 (받은 값: ${raw})`)
+  }
+  return seed
+}
+
+// mulberry32: 같은 시드면 같은 난수열. 브라우저 init script 에도 같은 식을 문자열로 넣어 쓴다.
+function seededRandom(seed) {
+  let state = seed >>> 0
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0
+    let t = state
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+// 실패 메시지에 재현용 시드를 붙인다.
+async function withSeedReport(run) {
+  try {
+    return await run()
+  } catch (error) {
+    error.message = `${error.message}\n재현: SPLASH_SEED=${splashSeed}`
+    throw error
+  }
 }
 
 function clockTime(offsetMs = 0) {
@@ -276,7 +325,7 @@ async function splashPanelSurface(page) {
   })
 }
 
-test('티커 선택기: 직전 반복 0 · 방문 안 중복 0 · 39개를 다 쓰면 초기화한다', () => {
+test('티커 선택기: 직전 반복 0 · 방문 안 중복 0 · 39개를 다 쓰면 초기화한다', async () => {
   assert.equal(SPLASH_TICKER_POOL.length, 39)
   assert.equal(new Set(SPLASH_TICKER_POOL).size, 39, '풀에 중복 문구가 없어야 한다')
   assert.deepEqual(SPLASH_TICKER_POOL.slice(0, 3), [
@@ -291,26 +340,28 @@ test('티커 선택기: 직전 반복 0 · 방문 안 중복 0 · 39개를 다 �
   ], '이력의 마지막 3개(TKT-186 r2 I1)가 풀 끝에 있어야 한다')
 
   const randoms = {
-    '실난수': Math.random,
+    '실난수': seededRandom(splashSeed),
     '항상 0': () => 0,
     '항상 1에 가까움': () => 0.9999999,
     '정확히 1(경계)': () => 1
   }
-  for (const [name, random] of Object.entries(randoms)) {
-    const shown = new Set()
-    let previous = ''
-    let sinceReset = []
-    for (let pick = 1; pick <= 150; pick += 1) {
-      const message = pickSplashTicker(previous, shown, random)
-      assertTickerInPool(message, `${name} ${pick}번째`)
-      assert.notEqual(message, previous, `${name} ${pick}번째: 직전 문구 반복`)
-      // 39개를 다 쓰면 shown 이 비워지고 새 사이클이 시작된다. 한 사이클 안에서는 중복이 없어야 한다.
-      if (shown.size === 1 && pick > 1) sinceReset = []
-      assert.ok(!sinceReset.includes(message), `${name} ${pick}번째: 같은 사이클 안 중복`)
-      sinceReset.push(message)
-      previous = message
+  await withSeedReport(async () => {
+    for (const [name, random] of Object.entries(randoms)) {
+      const shown = new Set()
+      let previous = ''
+      let sinceReset = []
+      for (let pick = 1; pick <= 150; pick += 1) {
+        const message = pickSplashTicker(previous, shown, random)
+        assertTickerInPool(message, `${name} ${pick}번째`)
+        assert.notEqual(message, previous, `${name} ${pick}번째: 직전 문구 반복`)
+        // 39개를 다 쓰면 shown 이 비워지고 새 사이클이 시작된다. 한 사이클 안에서는 중복이 없어야 한다.
+        if (shown.size === 1 && pick > 1) sinceReset = []
+        assert.ok(!sinceReset.includes(message), `${name} ${pick}번째: 같은 사이클 안 중복`)
+        sinceReset.push(message)
+        previous = message
+      }
     }
-  }
+  })
 
   const shown = new Set()
   const firstCycle = []
@@ -487,7 +538,7 @@ test('375/1440 다크·라이트: 티커 문구 길이가 달라도 제목·플�
   }
 })
 
-test('실난수 4환경: 첫 방문 각 문구 0.7초·재방문 최종 문구 1초를 확보한다', async t => {
+test('실난수 4환경: 첫 방문 각 문구 0.7초·재방문 최종 문구 1초를 확보한다', async t => withSeedReport(async () => {
   const cases = [
     { name: '375-dark', width: 375, height: 812, theme: 'dark' },
     { name: '375-light', width: 375, height: 812, theme: 'light' },
@@ -539,8 +590,8 @@ test('실난수 4환경: 첫 방문 각 문구 0.7초·재방문 최종 문구 1
       returnVisit: { settledAtMs, readingMs: transitionAtMs - settledAtMs }
     })
   }
-  console.log(`splash real-random timing: ${JSON.stringify(report)}`)
-})
+  console.log(`splash real-random timing (SPLASH_SEED=${splashSeed}): ${JSON.stringify(report)}`)
+}))
 
 test('recent visit: DOORS OPENING 정착 뒤 1초 이상 읽히고 2.5초에 전환한다', async t => {
   const previousSeenAt = clockTime(-60_000)
