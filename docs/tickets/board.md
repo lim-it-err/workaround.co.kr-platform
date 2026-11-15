@@ -6,6 +6,8 @@
 
 ## Backlog
 
+- `TKT-217` `P2` `v0.10.0` `backlog` `[FE]` 격납고 「차선변경 시뮬」 — lane_change_sumo 재생 플레이어 (Q-026 대기)
+
 - `TKT-198` `v1.0+` `pantry` `backlog` `[FE]` 밥상 조합 판정 다양화 — 어울리지 않아요·아직 없어요·조건 많아요
 - `TKT-199` `v1.0+` `pantry` `backlog` `[INFRA]` 밥상 주인장 요청 — 엣지 저장(선택형)·집계 (filedb 원본 비권고)
 
