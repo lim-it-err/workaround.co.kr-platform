@@ -351,3 +351,58 @@ test('P 역은 자취 밥상으로 열리고 스탬프는 기록되어 다음 �
   assert.notEqual(await title(page), eatenTitle, '최근 7일에 먹은 상은 다음 추천에서 피해야 한다')
   await assertNoOverflow(page)
 })
+
+// TKT-216 I3 — 키보드로 칩 행 끝까지 가도 포커스 칩이 행 안에 완전히 들어오고 중심이 그 칩이다(`mask:none` 단언 아님)
+for (const width of [375, 1440]) {
+  test(`${width}px: Tab·Shift+Tab 으로 칩 행을 오가도 포커스 칩이 행 안에 완전히 보인다`, async t => {
+    const page = await setup(t, { width, height: width === 375 ? 812 : 900 })
+    const chips = page.locator('.pantry-filters .pantry-chip')
+    const count = await chips.count()
+    assert.ok(count >= 10, '기본 칩 행에 칩이 여럿 있어야 한다')
+    const measure = () => page.evaluate(() => {
+      const chip = document.activeElement
+      const row = chip.closest('.pantry-filters')
+      const c = chip.getBoundingClientRect()
+      const r = row.getBoundingClientRect()
+      const hit = document.elementFromPoint(c.x + c.width / 2, c.y + c.height / 2)
+      return {
+        label: chip.textContent.trim(),
+        isChip: chip.classList.contains('pantry-chip'),
+        inside: c.left >= r.left - 0.5 && c.right <= r.right + 0.5 && c.top >= r.top - 0.5 && c.bottom <= r.bottom + 0.5,
+        centerHit: hit === chip || chip.contains(hit),
+        chip: [c.left, c.right].map(Math.round),
+        row: [r.left, r.right].map(Math.round)
+      }
+    })
+    const check = async (step, settle) => {
+      await page.waitForTimeout(settle)
+      const state = await measure()
+      assert.equal(state.isChip, true, `${step}: 포커스가 칩에 있어야 한다`)
+      assert.equal(state.inside, true, `${step}: ${state.label} 칩 ${state.chip} 이 행 ${state.row} 안에 완전히 들어와야 한다`)
+      assert.equal(state.centerHit, true, `${step}: ${state.label} 칩 중심이 다른 요소에 가려지면 안 된다`)
+      return state
+    }
+    await chips.first().focus()
+    await check('처음 칩', 500)
+    for (let index = 1; index < count; index += 1) {
+      await page.keyboard.press('Tab')
+      await check(`Tab ${index}`, index === count - 1 ? 500 : 60)
+    }
+    const last = await measure()
+    assert.equal(last.label, (await chips.last().textContent()).trim(), 'Tab 으로 마지막 칩까지 도달해야 한다')
+    for (let index = count - 2; index >= 0; index -= 1) {
+      await page.keyboard.press('Shift+Tab')
+      await check(`Shift+Tab ${index}`, index === 0 ? 500 : 60)
+    }
+    assert.equal((await measure()).label, (await chips.first().textContent()).trim())
+  })
+}
+
+// TKT-216 S2 — 밥상은 App 의 main 안에 있으므로 자체 main 을 두지 않는다
+test('밥상 화면의 main 은 1개이고 밥상 제목에 묶인다', async t => {
+  const page = await setup(t, { width: 375, height: 812 })
+  assert.equal(await page.locator('main, [role="main"]').count(), 1)
+  assert.equal(await page.locator('.pantry-page').getAttribute('aria-labelledby'), 'pantry-title')
+  assert.equal(await page.locator('main .pantry-page').count(), 1)
+  assert.equal(await page.locator('#pantry-title').count(), 1)
+})

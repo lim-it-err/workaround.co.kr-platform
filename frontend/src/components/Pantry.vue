@@ -208,6 +208,19 @@ function clearTags() {
   persist(TAG_STORAGE_KEY, selectedTags.value)
 }
 
+// 키보드로 칩에 포커스가 가면 스크롤 행 안에 칩이 완전히 들어오게 맞춘다(Chromium 은 일부만 보이는 칩을 그대로 둔다 — TKT-216 I3).
+// 마우스 클릭은 건드리지 않는다: mousedown 도중 행이 밀리면 click 이 어긋난다.
+function keepFocusedChipVisible(event) {
+  const chip = event.target instanceof Element ? event.target.closest('.pantry-chip') : null
+  if (!chip || !chip.matches(':focus-visible')) return
+  const row = event.currentTarget
+  const chipBox = chip.getBoundingClientRect()
+  const rowBox = row.getBoundingClientRect()
+  const inset = 6
+  if (chipBox.left < rowBox.left + inset) row.scrollLeft -= rowBox.left + inset - chipBox.left
+  else if (chipBox.right > rowBox.right - inset) row.scrollLeft += chipBox.right - (rowBox.right - inset)
+}
+
 function toggleTag(tag) {
   if (selectedTags.value.includes(tag)) {
     selectedTags.value = selectedTags.value.filter((selected) => selected !== tag)
@@ -254,10 +267,10 @@ function stampMeal() {
 </script>
 
 <template>
-  <main class="pantry-page line-p" aria-labelledby="pantry-title">
+  <section class="pantry-page line-p" aria-labelledby="pantry-title">
     <nav class="pantry-tag-picker" aria-label="한 상 태그">
       <div class="pantry-filter-primary">
-        <div class="pantry-filters" aria-label="무알코올과 상황 태그">
+        <div class="pantry-filters" aria-label="무알코올과 상황 태그" @focusin="keepFocusedChipVisible">
           <button
             v-for="tag in primaryTags"
             :key="tag"
@@ -380,5 +393,5 @@ function stampMeal() {
         <p v-if="stampMessage" role="status">{{ stampMessage }}</p>
       </footer>
     </details>
-  </main>
+  </section>
 </template>

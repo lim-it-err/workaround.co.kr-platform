@@ -124,7 +124,55 @@ const currentStatus = computed(() => {
   if (todayIndex.value >= props.voyage.days.length) return '운행 종료'
   return `DAY ${todayIndex.value + 1} / ${props.voyage.days.length}`
 })
-const projectedCities = computed(() => props.voyage.cities.map((city) => {
+// 모바일 도시 조작 영역(TKT-216 I2): 점·글자는 그대로 두고, 도시마다 투명 다각형을 깐다.
+// 상자(세로 120 단위 ≈ 375px 에서 47px)를 이웃 도시와의 수직이등분선으로 잘라 도시끼리 겹치지 않게 한다.
+// 같은 좌표의 두 정차역(프라하·프라하 복귀)은 위·아래로 갈라 각자 세로 40px 이상을 가진다.
+const HIT_HALF_WIDTH = 56
+const HIT_HALF_HEIGHT = 60
+const HIT_COINCIDENT_SHIFT = { first: -52, later: 44 }
+
+function stationHitPaths(points) {
+  const centers = points.map((point, index) => {
+    const twin = points.findIndex((other, otherIndex) => otherIndex !== index && Math.hypot(other.x - point.x, other.y - point.y) < 1)
+    if (twin < 0) return { x: point.x, y: point.y }
+    return { x: point.x, y: point.y + (index < twin ? HIT_COINCIDENT_SHIFT.first : HIT_COINCIDENT_SHIFT.later) }
+  })
+  return centers.map((center, index) => {
+    let polygon = [
+      [center.x - HIT_HALF_WIDTH, center.y - HIT_HALF_HEIGHT],
+      [center.x + HIT_HALF_WIDTH, center.y - HIT_HALF_HEIGHT],
+      [center.x + HIT_HALF_WIDTH, center.y + HIT_HALF_HEIGHT],
+      [center.x - HIT_HALF_WIDTH, center.y + HIT_HALF_HEIGHT]
+    ]
+    centers.forEach((other, otherIndex) => {
+      if (otherIndex === index) return
+      const nx = other.x - center.x
+      const ny = other.y - center.y
+      const limit = (nx * (center.x + other.x) + ny * (center.y + other.y)) / 2
+      const side = ([x, y]) => nx * x + ny * y - limit
+      const clipped = []
+      polygon.forEach((current, at) => {
+        const next = polygon[(at + 1) % polygon.length]
+        const a = side(current)
+        const b = side(next)
+        if (a <= 0) clipped.push(current)
+        if ((a < 0 && b > 0) || (a > 0 && b < 0)) {
+          const t = a / (a - b)
+          clipped.push([current[0] + (next[0] - current[0]) * t, current[1] + (next[1] - current[1]) * t])
+        }
+      })
+      polygon = clipped
+    })
+    return polygon.length ? `M ${polygon.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join(' L ')} Z` : ''
+  })
+}
+
+const projectedCities = computed(() => {
+  const hitPaths = stationHitPaths(props.voyage.cities.map((city) => projectCity(city)))
+  return props.voyage.cities.map((city, index) => projectStation(city, hitPaths[index]))
+})
+
+function projectStation(city, hitPath) {
   const indexes = cityDayIndexes(props.voyage, city)
   const label = cityLabelPlacement(city.id)
   const current = city.id === activeCityId.value
@@ -135,9 +183,10 @@ const projectedCities = computed(() => props.voyage.cities.map((city) => {
     state: current ? 'current' : routeItemState(props.voyage, indexes[0] ?? props.voyage.days.length, todayIndex.value),
     current,
     selected: indexes.includes(selectedDayIndex.value),
-    label
+    label,
+    hitPath
   }
-}))
+}
 const daySpendText = computed(() => {
   const total = selectedDay.value?.actual?.spend?.total ?? selectedDay.value?.spend?.total
   return total ? formatWon(total) : '기록 없음'
@@ -813,6 +862,7 @@ function stopRecordMarker(record) {
               :aria-label="stationAria(city)"
               @click.prevent="openCity(city, $event)"
             >
+              <path class="route-station__hit" :d="city.hitPath" />
               <circle v-if="city.current" class="route-station__pulse" :cx="city.x" :cy="city.y" r="15" />
               <circle class="route-station__dot" :cx="city.x" :cy="city.y" :r="city.id === 'prague-return' ? 18 : 10" />
               <circle v-if="city.selected && city.id !== 'prague-return'" class="route-station__ring" :cx="city.x" :cy="city.y" r="17" />
@@ -982,7 +1032,7 @@ function stopRecordMarker(record) {
               <div class="route-record__actions">
                 <button type="button" class="ghost-button" @click="backupRecords">내 기록 백업</button>
                 <button type="button" class="ghost-button" @click="requestRestore">백업 복원</button>
-                <input ref="restoreInput" class="route-file-input" type="file" accept="application/json,.json" @change="restoreRecords" />
+                <input ref="restoreInput" class="route-file-input" type="file" tabindex="-1" aria-hidden="true" accept="application/json,.json" @change="restoreRecords" />
               </div>
               <small role="status" aria-live="polite">{{ backupMessage || '이 브라우저에 자동 저장됩니다.' }}</small>
             </footer>
@@ -1144,7 +1194,7 @@ function stopRecordMarker(record) {
                   <div>
                     <h4 id="route-photo-title">사진</h4>
                     <button type="button" class="ghost-button" @click="choosePhoto">사진 첨부</button>
-                    <input ref="photoInput" class="route-file-input" type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif" @change="addPhoto" />
+                    <input ref="photoInput" class="route-file-input" type="file" tabindex="-1" aria-hidden="true" accept="image/png,image/jpeg,image/gif,image/webp,image/avif" @change="addPhoto" />
                   </div>
                   <p>사진은 최대 4장, 장당 1.5MB까지 이 브라우저에 저장됩니다.</p>
                   <div v-if="detailPhotos.length" class="route-detail__photos">
@@ -1452,6 +1502,33 @@ function stopRecordMarker(record) {
   fill: var(--text);
   font-size: 17px;
   font-weight: 700;
+}
+
+.route-station__hit {
+  fill: transparent;
+  stroke: none;
+  pointer-events: all;
+}
+
+/* 모바일: bounding-box 는 이웃 도시와 겹치므로 끄고, 이등분선으로 자른 hit 다각형 + 점·글자 자체만 눌리게 한다.
+   데스크톱(≥900)은 기존 bounding-box 동작 그대로. */
+@media (min-width: 900px) {
+  .route-station__hit {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .route-stations .route-station {
+    pointer-events: none;
+  }
+
+  .route-stations .route-station__hit,
+  .route-stations .route-station__dot,
+  .route-stations .route-station__name,
+  .route-stations .route-station__days {
+    pointer-events: auto;
+  }
 }
 
 .route-station__dot {
