@@ -1,0 +1,1097 @@
+[
+  {
+    "engine": "chromium",
+    "width": 375,
+    "expand": {
+      "tag": "BUTTON",
+      "name": "노선도 펼치기",
+      "class": "ghost-button",
+      "type": "button",
+      "inDialog": false,
+      "box": {
+        "x": 25,
+        "y": 423.296875,
+        "width": 321,
+        "height": 53.8125
+      }
+    },
+    "expanded": "true",
+    "city": {
+      "tag": "a",
+      "name": "프라하 · DAY 1–2 정차역 상세",
+      "class": "route-station route-station--completed",
+      "type": "",
+      "inDialog": false,
+      "box": {
+        "x": 115.85240936279297,
+        "y": 548.0419311523438,
+        "width": 42.824317932128906,
+        "height": 19.28887939453125
+      }
+    },
+    "cityAX": "- dialog \"프라하\":\n  - button \"상세 닫기\": ×\n  - paragraph: DAY 1–2 · 도시\n  - heading \"프라하\" [level=3]\n  - term: 숙박\n  - definition: 프라하\n  - term: 먹은 것\n  - definition: Bageterie Boulevard · 샌드위치 ×2 / Dvorek pod Hradem · 콜레뇨\n  - link \"구글 지도에서 열기 ↗\":\n    - /url: https://maps.google.com/?q=%ED%94%84%EB%9D%BC%ED%95%98\n  - paragraph: 사진이 아직 없습니다.",
+    "cityChain": [
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 320,
+          "y": 594.546875,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "A",
+        "name": "구글 지도에서 열기 ↗",
+        "class": "route-detail__primary",
+        "type": "",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 797.8125,
+          "width": 163.46875,
+          "height": 45.59375
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 320,
+          "y": 594.546875,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "A",
+        "name": "구글 지도에서 열기 ↗",
+        "class": "route-detail__primary",
+        "type": "",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 797.8125,
+          "width": 163.46875,
+          "height": 45.59375
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 320,
+          "y": 594.546875,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "A",
+        "name": "구글 지도에서 열기 ↗",
+        "class": "route-detail__primary",
+        "type": "",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 797.8125,
+          "width": 163.46875,
+          "height": 45.59375
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 320,
+          "y": 594.546875,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "A",
+        "name": "구글 지도에서 열기 ↗",
+        "class": "route-detail__primary",
+        "type": "",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 797.8125,
+          "width": 163.46875,
+          "height": 45.59375
+        }
+      }
+    ],
+    "cityReverse": {
+      "tag": "BUTTON",
+      "name": "상세 닫기",
+      "class": "route-detail__close",
+      "type": "button",
+      "inDialog": true,
+      "box": {
+        "x": 320,
+        "y": 594.546875,
+        "width": 44,
+        "height": 44
+      }
+    },
+    "cityRestored": {
+      "tag": "a",
+      "name": "프라하 · DAY 1–2 정차역 상세",
+      "class": "route-station route-station--completed route-station--selected",
+      "type": "",
+      "inDialog": false,
+      "box": {
+        "x": 112.89685821533203,
+        "y": 547.4950561523438,
+        "width": 45.779869079589844,
+        "height": 22.24444580078125
+      }
+    },
+    "cityRemaining": 0,
+    "day11": {
+      "tag": "BUTTON",
+      "name": "11일차 인천",
+      "class": "is-completed",
+      "type": "button",
+      "inDialog": false,
+      "box": {
+        "x": 304,
+        "y": 428.65625,
+        "width": 42,
+        "height": 42
+      }
+    },
+    "stop": {
+      "tag": "BUTTON",
+      "name": "13:10 인천 도착",
+      "class": null,
+      "type": "button",
+      "inDialog": false,
+      "box": {
+        "x": 150,
+        "y": 619.40625,
+        "width": 192,
+        "height": 44
+      }
+    },
+    "stopAX": "- dialog \"13:10 인천 도착\":\n  - button \"상세 닫기\": ×\n  - paragraph: 11일차 · 오후\n  - heading \"13:10 인천 도착\" [level=3]\n  - text: 먹은 것\n  - textbox \"먹은 것\":\n    - /placeholder: 메뉴나 주문한 것\n  - text: 원화 금액\n  - spinbutton \"원화 금액\"\n  - text: 메모\n  - textbox \"메모\":\n    - /placeholder: 맛, 분위기, 다시 갈 이유\n  - group: 더 적기 +\n  - status: 저장 전에는 현재 화면에서만 보입니다.\n  - button \"정차역 저장\"",
+    "stopChain": [
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 320,
+          "y": 368.90625,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "INPUT",
+        "name": "",
+        "class": null,
+        "type": "text",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 496.328125,
+          "width": 333,
+          "height": 41.171875
+        }
+      },
+      {
+        "tag": "INPUT",
+        "name": "",
+        "class": null,
+        "type": "number",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 575.4375,
+          "width": 333,
+          "height": 41.171875
+        }
+      },
+      {
+        "tag": "TEXTAREA",
+        "name": "",
+        "class": null,
+        "type": "textarea",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 654.546875,
+          "width": 333,
+          "height": 75.515625
+        }
+      },
+      {
+        "tag": "SUMMARY",
+        "name": "더 적기",
+        "class": null,
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 743.0625,
+          "width": 333,
+          "height": 44
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "정차역 저장",
+        "class": null,
+        "type": "submit",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 840,
+          "width": 333,
+          "height": 48
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 320,
+          "y": 368.90625,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "INPUT",
+        "name": "",
+        "class": null,
+        "type": "text",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 496.328125,
+          "width": 333,
+          "height": 41.171875
+        }
+      },
+      {
+        "tag": "INPUT",
+        "name": "",
+        "class": null,
+        "type": "number",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 575.4375,
+          "width": 333,
+          "height": 41.171875
+        }
+      },
+      {
+        "tag": "TEXTAREA",
+        "name": "",
+        "class": null,
+        "type": "textarea",
+        "inDialog": true,
+        "box": {
+          "x": 21,
+          "y": 654.546875,
+          "width": 333,
+          "height": 75.515625
+        }
+      }
+    ],
+    "stopRestored": {
+      "tag": "BUTTON",
+      "name": "13:10 인천 도착",
+      "class": null,
+      "type": "button",
+      "inDialog": false,
+      "box": {
+        "x": 150,
+        "y": 619.40625,
+        "width": 192,
+        "height": 44
+      }
+    },
+    "stopRemaining": 0,
+    "file": {
+      "tag": "INPUT",
+      "name": "",
+      "class": "route-file-input",
+      "type": "file",
+      "inDialog": false,
+      "box": {
+        "x": 25,
+        "y": 1073.171875,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "summary": [
+      {
+        "text": "한눈에 보는 구조확정",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "누가 일하나확정",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "티켓이 배포되기까지확정",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "방문자 요청이 집 PC 에 닿는 길제안",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "데이터 처리는 어디서확정",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "LLM 호출 원칙제안",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "집 PC 가 꺼졌을 때할 일",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "집 PC 로 배포하는 법제안",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "카페에서 집 PC 에 들어가는 법제안",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "결정 대기와 PO 할 일할 일",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "engine": "chromium",
+    "width": 1440,
+    "city": {
+      "tag": "a",
+      "name": "프라하 · DAY 1–2 정차역 상세",
+      "class": "route-station route-station--completed",
+      "type": "",
+      "inDialog": false,
+      "box": {
+        "x": 212.50701904296875,
+        "y": 498.8504943847656,
+        "width": 89.6270751953125,
+        "height": 42.783355712890625
+      }
+    },
+    "cityAX": "- dialog \"프라하\":\n  - button \"상세 닫기\": ×\n  - paragraph: DAY 1–2 · 도시\n  - heading \"프라하\" [level=3]\n  - term: 숙박\n  - definition: 프라하\n  - term: 먹은 것\n  - definition: Bageterie Boulevard · 샌드위치 ×2 / Dvorek pod Hradem · 콜레뇨\n  - link \"구글 지도에서 열기 ↗\":\n    - /url: https://maps.google.com/?q=%ED%94%84%EB%9D%BC%ED%95%98\n  - paragraph: 사진이 아직 없습니다.",
+    "cityChain": [
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 1386,
+          "y": 18,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "A",
+        "name": "구글 지도에서 열기 ↗",
+        "class": "route-detail__primary",
+        "type": "",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 254.265625,
+          "width": 163.46875,
+          "height": 45.59375
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 1386,
+          "y": 18,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "A",
+        "name": "구글 지도에서 열기 ↗",
+        "class": "route-detail__primary",
+        "type": "",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 254.265625,
+          "width": 163.46875,
+          "height": 45.59375
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 1386,
+          "y": 18,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "A",
+        "name": "구글 지도에서 열기 ↗",
+        "class": "route-detail__primary",
+        "type": "",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 254.265625,
+          "width": 163.46875,
+          "height": 45.59375
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 1386,
+          "y": 18,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "A",
+        "name": "구글 지도에서 열기 ↗",
+        "class": "route-detail__primary",
+        "type": "",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 254.265625,
+          "width": 163.46875,
+          "height": 45.59375
+        }
+      }
+    ],
+    "cityReverse": {
+      "tag": "BUTTON",
+      "name": "상세 닫기",
+      "class": "route-detail__close",
+      "type": "button",
+      "inDialog": true,
+      "box": {
+        "x": 1386,
+        "y": 18,
+        "width": 44,
+        "height": 44
+      }
+    },
+    "cityRestored": {
+      "tag": "a",
+      "name": "프라하 · DAY 1–2 정차역 상세",
+      "class": "route-station route-station--completed route-station--selected",
+      "type": "",
+      "inDialog": false,
+      "box": {
+        "x": 206.3236846923828,
+        "y": 498.8504943847656,
+        "width": 95.81040954589844,
+        "height": 46.616668701171875
+      }
+    },
+    "cityRemaining": 0,
+    "day11": {
+      "tag": "BUTTON",
+      "name": "11일차 인천",
+      "class": "is-completed",
+      "type": "button",
+      "inDialog": false,
+      "box": {
+        "x": 1282,
+        "y": 404.78125,
+        "width": 42,
+        "height": 42
+      }
+    },
+    "stop": {
+      "tag": "BUTTON",
+      "name": "13:10 인천 도착",
+      "class": null,
+      "type": "button",
+      "inDialog": false,
+      "box": {
+        "x": 879,
+        "y": 573.546875,
+        "width": 430,
+        "height": 44
+      }
+    },
+    "stopAX": "- dialog \"13:10 인천 도착\":\n  - button \"상세 닫기\": ×\n  - paragraph: 11일차 · 오후\n  - heading \"13:10 인천 도착\" [level=3]\n  - text: 먹은 것\n  - textbox \"먹은 것\":\n    - /placeholder: 메뉴나 주문한 것\n  - text: 원화 금액\n  - spinbutton \"원화 금액\"\n  - text: 메모\n  - textbox \"메모\":\n    - /placeholder: 맛, 분위기, 다시 갈 이유\n  - group: 더 적기 +\n  - status: 저장 전에는 현재 화면에서만 보입니다.\n  - button \"정차역 저장\"",
+    "stopChain": [
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 1386,
+          "y": 18,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "INPUT",
+        "name": "",
+        "class": null,
+        "type": "text",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 178.421875,
+          "width": 337,
+          "height": 41.171875
+        }
+      },
+      {
+        "tag": "INPUT",
+        "name": "",
+        "class": null,
+        "type": "number",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 257.53125,
+          "width": 337,
+          "height": 41.171875
+        }
+      },
+      {
+        "tag": "TEXTAREA",
+        "name": "",
+        "class": null,
+        "type": "textarea",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 336.640625,
+          "width": 337,
+          "height": 75.515625
+        }
+      },
+      {
+        "tag": "SUMMARY",
+        "name": "더 적기",
+        "class": null,
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 425.15625,
+          "width": 337,
+          "height": 44
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "정차역 저장",
+        "class": null,
+        "type": "submit",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 522.09375,
+          "width": 337,
+          "height": 48
+        }
+      },
+      {
+        "tag": "BUTTON",
+        "name": "상세 닫기",
+        "class": "route-detail__close",
+        "type": "button",
+        "inDialog": true,
+        "box": {
+          "x": 1386,
+          "y": 18,
+          "width": 44,
+          "height": 44
+        }
+      },
+      {
+        "tag": "INPUT",
+        "name": "",
+        "class": null,
+        "type": "text",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 178.421875,
+          "width": 337,
+          "height": 41.171875
+        }
+      },
+      {
+        "tag": "INPUT",
+        "name": "",
+        "class": null,
+        "type": "number",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 257.53125,
+          "width": 337,
+          "height": 41.171875
+        }
+      },
+      {
+        "tag": "TEXTAREA",
+        "name": "",
+        "class": null,
+        "type": "textarea",
+        "inDialog": true,
+        "box": {
+          "x": 1077,
+          "y": 336.640625,
+          "width": 337,
+          "height": 75.515625
+        }
+      }
+    ],
+    "stopRestored": {
+      "tag": "BUTTON",
+      "name": "13:10 인천 도착",
+      "class": null,
+      "type": "button",
+      "inDialog": false,
+      "box": {
+        "x": 879,
+        "y": 573.546875,
+        "width": 430,
+        "height": 44
+      }
+    },
+    "stopRemaining": 0,
+    "file": {
+      "tag": "INPUT",
+      "name": "",
+      "class": "route-file-input",
+      "type": "file",
+      "inDialog": false,
+      "box": {
+        "x": 742,
+        "y": 949.3125,
+        "width": 1,
+        "height": 1
+      }
+    },
+    "summary": [
+      {
+        "text": "한눈에 보는 구조확정",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "누가 일하나확정",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "티켓이 배포되기까지확정",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "방문자 요청이 집 PC 에 닿는 길제안",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "데이터 처리는 어디서확정",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "LLM 호출 원칙제안",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "집 PC 가 꺼졌을 때할 일",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "집 PC 로 배포하는 법제안",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "카페에서 집 PC 에 들어가는 법제안",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      },
+      {
+        "text": "결정 대기와 PO 할 일할 일",
+        "width": 942,
+        "height": 24.84375,
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "engine": "webkit",
+    "width": 375,
+    "expand": null,
+    "expanded": "false",
+    "expandedAfterSpace": "false",
+    "city": null,
+    "day11": null,
+    "stop": null,
+    "file": null,
+    "summary": [
+      {
+        "text": "한눈에 보는 구조확정",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "누가 일하나확정",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "티켓이 배포되기까지확정",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "방문자 요청이 집 PC 에 닿는 길제안",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "데이터 처리는 어디서확정",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "LLM 호출 원칙제안",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "집 PC 가 꺼졌을 때할 일",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "집 PC 로 배포하는 법제안",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "카페에서 집 PC 에 들어가는 법제안",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      },
+      {
+        "text": "결정 대기와 PO 할 일할 일",
+        "width": 303,
+        "height": 44,
+        "padding": "0px"
+      }
+    ]
+  },
+  {
+    "engine": "webkit",
+    "width": 1440,
+    "city": {
+      "tag": "a",
+      "name": "프라하 · DAY 1–2 정차역 상세",
+      "class": "route-station route-station--completed",
+      "type": "",
+      "inDialog": false,
+      "box": {
+        "x": 212.50701904296875,
+        "y": 499.1333312988281,
+        "width": 89.63803100585938,
+        "height": 41.972137451171875
+      }
+    },
+    "cityAX": "- dialog \"프라하\":\n  - button \"상세 닫기\": ×\n  - paragraph: DAY 1–2 · 도시\n  - heading \"프라하\" [level=3]\n  - term: 숙박\n  - definition: 프라하\n  - term: 먹은 것\n  - definition: Bageterie Boulevard · 샌드위치 ×2 / Dvorek pod Hradem · 콜레뇨\n  - link \"구글 지도에서 열기 ↗\":\n    - /url: https://maps.google.com/?q=%ED%94%84%EB%9D%BC%ED%95%98\n  - paragraph: 사진이 아직 없습니다.",
+    "cityChain": [
+      {
+        "tag": "TEXTAREA",
+        "name": "",
+        "class": null,
+        "type": "textarea",
+        "inDialog": false,
+        "box": {
+          "x": 742,
+          "y": 1353.8125,
+          "width": 653,
+          "height": 117.640625
+        }
+      },
+      {
+        "tag": "BODY",
+        "name": "V여행 노선 환승 홀 ☀← 여행 목록홈으로V중부유럽 순환선노선도운행 종료 · 9월 8일 · 프라하달린 거리1,515km / 약 1,515km지출777만원 / 계획 856만원노선도 접기순환선DAY 3 · 프라하→체스키크룸로프 · 운전 2시간 · 170kmDAY 3 · 2시간 · 170kmDAY 4 · 체스키크룸로프→할슈타트 · 운전 2시간 10분 · 200kmDAY 4 · 2시간 10분 · 200kmDAY 4 · 할슈타트→잘츠부르크 · 운전 1시간 20분 · 75kmDAY 4 · 1시간 20분 · 75kmDAY 5 · 잘츠부르크→바하우 · 운전 2시간 15분 · 205kmDAY 5 · 2시간 15분 · 205kmDAY 5 · 바하우→비엔나 · 운전 1시간 · 90kmDAY 5 · 1시간 · 90kmDAY 7 · 비엔나→부다페스트 · 운전 2시간 40분 · 245kmDAY 7 · 2시간 40분 · 245kmDAY 9 · 부다페스트→브르노 · 운전 3시간 20분 · 326kmDAY 9 · 3시간 20분 · 326kmDAY 9 · 브르노→프라하 · 운전 2시간 15분 · 204kmDAY 9 · 2시간 15분 · 204km프라하DAY 1–2체스키크룸로프DAY 3–4할슈타트DAY 4잘츠부르크DAY 4–5바하우DAY 5비엔나DAY 5–7부다페스트DAY 7–9브르노DAY 9 0준비1234567891011DAY 1 · 실제 기록도착·회복9월 8일 · 프라하무리 없이 숙소에 도착하고 다음 날 쓸 컨디션을 남긴다.도착출발실제 기록요금16:45프라하 도착입국 심사와 수하물 수령. 서두르지 않는다.—17:4518:30택시 이동확인한 승차 지점에서 신시가 숙소 주소를 보여준다.—18:3019:00체크인차량 진입 가능한 입구에서 짐부터 객실로 옮긴다.—19:00 이후가벼운 저녁·수면숙소 가까운 곳만 이용한다. 야경은 기본안에서 뺀다.—정상 → 체크인 후 가까운 저녁, 바로 휴식.—수하물 지연 → 분실 접수번호를 받고 필수품만 구입. 야외 일정 없음.—입국 지연 → 숙소에 도착 시각을 알리고 저녁은 공항이나 숙소에서 단축.—피로 누적 → 식사는 포장·룸서비스로 바꾸고 산책은 취소.—이 날 지출45,000원야경 욕심은 내지 않는다. 첫날 일찍 자는 것이 나머지 8일을 산다.기록이 날의 기록다녀옴 표시기억 메모내 기록 백업백업 복원이 브라우저에 자동 저장됩니다.결산영수증 기준 실제 지출777.1만원· 1인 388.6만원사전 확정650.0만원현지 지출127.1만원카테고리별 현지 지출식비 — 외식·장보기·팁85.7만원교통 — 주차·시내교통·비네트11.9만원입장료·액티비티 (확인분)11.4만원주유6.2만원통신 — 이심 + 유심6.7만원카페2.7만원디저트2.5만원합계127.1만원지역별 현지 지출체코 — Day 1·2·3·941.0만원오스트리아 — Day 4·5·644.7만원헝가리 — Day 7·8·9(일부)41.4만원합계127.1만원합계에서 제외벨베데레·쇤부른 궁전 입장권 (영수증 미확보, 2인 €50~70 추정)토카이 와인 4병·기념품 약 18,895 Ft (장바구니 기준 추정 약 7.2만원)Day 10–11 프라하 잔여 지출×DAY 1–2 · 도시프라하숙박프라하먹은 것Bageterie Boulevard · 샌드위치 ×2 / Dvorek pod Hradem · 콜레뇨구글 지도에서 열기 ↗사진이 아직 없습니다.노선도 승강장",
+        "class": null,
+        "inDialog": false,
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 2415.015625
+        }
+      },
+      {
+        "tag": "TEXTAREA",
+        "name": "",
+        "class": null,
+        "type": "textarea",
+        "inDialog": false,
+        "box": {
+          "x": 742,
+          "y": 1353.8125,
+          "width": 653,
+          "height": 117.640625
+        }
+      },
+      {
+        "tag": "BODY",
+        "name": "V여행 노선 환승 홀 ☀← 여행 목록홈으로V중부유럽 순환선노선도운행 종료 · 9월 8일 · 프라하달린 거리1,515km / 약 1,515km지출777만원 / 계획 856만원노선도 접기순환선DAY 3 · 프라하→체스키크룸로프 · 운전 2시간 · 170kmDAY 3 · 2시간 · 170kmDAY 4 · 체스키크룸로프→할슈타트 · 운전 2시간 10분 · 200kmDAY 4 · 2시간 10분 · 200kmDAY 4 · 할슈타트→잘츠부르크 · 운전 1시간 20분 · 75kmDAY 4 · 1시간 20분 · 75kmDAY 5 · 잘츠부르크→바하우 · 운전 2시간 15분 · 205kmDAY 5 · 2시간 15분 · 205kmDAY 5 · 바하우→비엔나 · 운전 1시간 · 90kmDAY 5 · 1시간 · 90kmDAY 7 · 비엔나→부다페스트 · 운전 2시간 40분 · 245kmDAY 7 · 2시간 40분 · 245kmDAY 9 · 부다페스트→브르노 · 운전 3시간 20분 · 326kmDAY 9 · 3시간 20분 · 326kmDAY 9 · 브르노→프라하 · 운전 2시간 15분 · 204kmDAY 9 · 2시간 15분 · 204km프라하DAY 1–2체스키크룸로프DAY 3–4할슈타트DAY 4잘츠부르크DAY 4–5바하우DAY 5비엔나DAY 5–7부다페스트DAY 7–9브르노DAY 9 0준비1234567891011DAY 1 · 실제 기록도착·회복9월 8일 · 프라하무리 없이 숙소에 도착하고 다음 날 쓸 컨디션을 남긴다.도착출발실제 기록요금16:45프라하 도착입국 심사와 수하물 수령. 서두르지 않는다.—17:4518:30택시 이동확인한 승차 지점에서 신시가 숙소 주소를 보여준다.—18:3019:00체크인차량 진입 가능한 입구에서 짐부터 객실로 옮긴다.—19:00 이후가벼운 저녁·수면숙소 가까운 곳만 이용한다. 야경은 기본안에서 뺀다.—정상 → 체크인 후 가까운 저녁, 바로 휴식.—수하물 지연 → 분실 접수번호를 받고 필수품만 구입. 야외 일정 없음.—입국 지연 → 숙소에 도착 시각을 알리고 저녁은 공항이나 숙소에서 단축.—피로 누적 → 식사는 포장·룸서비스로 바꾸고 산책은 취소.—이 날 지출45,000원야경 욕심은 내지 않는다. 첫날 일찍 자는 것이 나머지 8일을 산다.기록이 날의 기록다녀옴 표시기억 메모내 기록 백업백업 복원이 브라우저에 자동 저장됩니다.결산영수증 기준 실제 지출777.1만원· 1인 388.6만원사전 확정650.0만원현지 지출127.1만원카테고리별 현지 지출식비 — 외식·장보기·팁85.7만원교통 — 주차·시내교통·비네트11.9만원입장료·액티비티 (확인분)11.4만원주유6.2만원통신 — 이심 + 유심6.7만원카페2.7만원디저트2.5만원합계127.1만원지역별 현지 지출체코 — Day 1·2·3·941.0만원오스트리아 — Day 4·5·644.7만원헝가리 — Day 7·8·9(일부)41.4만원합계127.1만원합계에서 제외벨베데레·쇤부른 궁전 입장권 (영수증 미확보, 2인 €50~70 추정)토카이 와인 4병·기념품 약 18,895 Ft (장바구니 기준 추정 약 7.2만원)Day 10–11 프라하 잔여 지출×DAY 1–2 · 도시프라하숙박프라하먹은 것Bageterie Boulevard · 샌드위치 ×2 / Dvorek pod Hradem · 콜레뇨구글 지도에서 열기 ↗사진이 아직 없습니다.노선도 승강장",
+        "class": null,
+        "inDialog": false,
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 2415.015625
+        }
+      },
+      {
+        "tag": "TEXTAREA",
+        "name": "",
+        "class": null,
+        "type": "textarea",
+        "inDialog": false,
+        "box": {
+          "x": 742,
+          "y": 1353.8125,
+          "width": 653,
+          "height": 117.640625
+        }
+      },
+      {
+        "tag": "BODY",
+        "name": "V여행 노선 환승 홀 ☀← 여행 목록홈으로V중부유럽 순환선노선도운행 종료 · 9월 8일 · 프라하달린 거리1,515km / 약 1,515km지출777만원 / 계획 856만원노선도 접기순환선DAY 3 · 프라하→체스키크룸로프 · 운전 2시간 · 170kmDAY 3 · 2시간 · 170kmDAY 4 · 체스키크룸로프→할슈타트 · 운전 2시간 10분 · 200kmDAY 4 · 2시간 10분 · 200kmDAY 4 · 할슈타트→잘츠부르크 · 운전 1시간 20분 · 75kmDAY 4 · 1시간 20분 · 75kmDAY 5 · 잘츠부르크→바하우 · 운전 2시간 15분 · 205kmDAY 5 · 2시간 15분 · 205kmDAY 5 · 바하우→비엔나 · 운전 1시간 · 90kmDAY 5 · 1시간 · 90kmDAY 7 · 비엔나→부다페스트 · 운전 2시간 40분 · 245kmDAY 7 · 2시간 40분 · 245kmDAY 9 · 부다페스트→브르노 · 운전 3시간 20분 · 326kmDAY 9 · 3시간 20분 · 326kmDAY 9 · 브르노→프라하 · 운전 2시간 15분 · 204kmDAY 9 · 2시간 15분 · 204km프라하DAY 1–2체스키크룸로프DAY 3–4할슈타트DAY 4잘츠부르크DAY 4–5바하우DAY 5비엔나DAY 5–7부다페스트DAY 7–9브르노DAY 9 0준비1234567891011DAY 1 · 실제 기록도착·회복9월 8일 · 프라하무리 없이 숙소에 도착하고 다음 날 쓸 컨디션을 남긴다.도착출발실제 기록요금16:45프라하 도착입국 심사와 수하물 수령. 서두르지 않는다.—17:4518:30택시 이동확인한 승차 지점에서 신시가 숙소 주소를 보여준다.—18:3019:00체크인차량 진입 가능한 입구에서 짐부터 객실로 옮긴다.—19:00 이후가벼운 저녁·수면숙소 가까운 곳만 이용한다. 야경은 기본안에서 뺀다.—정상 → 체크인 후 가까운 저녁, 바로 휴식.—수하물 지연 → 분실 접수번호를 받고 필수품만 구입. 야외 일정 없음.—입국 지연 → 숙소에 도착 시각을 알리고 저녁은 공항이나 숙소에서 단축.—피로 누적 → 식사는 포장·룸서비스로 바꾸고 산책은 취소.—이 날 지출45,000원야경 욕심은 내지 않는다. 첫날 일찍 자는 것이 나머지 8일을 산다.기록이 날의 기록다녀옴 표시기억 메모내 기록 백업백업 복원이 브라우저에 자동 저장됩니다.결산영수증 기준 실제 지출777.1만원· 1인 388.6만원사전 확정650.0만원현지 지출127.1만원카테고리별 현지 지출식비 — 외식·장보기·팁85.7만원교통 — 주차·시내교통·비네트11.9만원입장료·액티비티 (확인분)11.4만원주유6.2만원통신 — 이심 + 유심6.7만원카페2.7만원디저트2.5만원합계127.1만원지역별 현지 지출체코 — Day 1·2·3·941.0만원오스트리아 — Day 4·5·644.7만원헝가리 — Day 7·8·9(일부)41.4만원합계127.1만원합계에서 제외벨베데레·쇤부른 궁전 입장권 (영수증 미확보, 2인 €50~70 추정)토카이 와인 4병·기념품 약 18,895 Ft (장바구니 기준 추정 약 7.2만원)Day 10–11 프라하 잔여 지출×DAY 1–2 · 도시프라하숙박프라하먹은 것Bageterie Boulevard · 샌드위치 ×2 / Dvorek pod Hradem · 콜레뇨구글 지도에서 열기 ↗사진이 아직 없습니다.노선도 승강장",
+        "class": null,
+        "inDialog": false,
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 2415.015625
+        }
+      },
+      {
+        "tag": "TEXTAREA",
+        "name": "",
+        "class": null,
+        "type": "textarea",
+        "inDialog": false,
+        "box": {
+          "x": 742,
+          "y": 1353.8125,
+          "width": 653,
+          "height": 117.640625
+        }
+      },
+      {
+        "tag": "BODY",
+        "name": "V여행 노선 환승 홀 ☀← 여행 목록홈으로V중부유럽 순환선노선도운행 종료 · 9월 8일 · 프라하달린 거리1,515km / 약 1,515km지출777만원 / 계획 856만원노선도 접기순환선DAY 3 · 프라하→체스키크룸로프 · 운전 2시간 · 170kmDAY 3 · 2시간 · 170kmDAY 4 · 체스키크룸로프→할슈타트 · 운전 2시간 10분 · 200kmDAY 4 · 2시간 10분 · 200kmDAY 4 · 할슈타트→잘츠부르크 · 운전 1시간 20분 · 75kmDAY 4 · 1시간 20분 · 75kmDAY 5 · 잘츠부르크→바하우 · 운전 2시간 15분 · 205kmDAY 5 · 2시간 15분 · 205kmDAY 5 · 바하우→비엔나 · 운전 1시간 · 90kmDAY 5 · 1시간 · 90kmDAY 7 · 비엔나→부다페스트 · 운전 2시간 40분 · 245kmDAY 7 · 2시간 40분 · 245kmDAY 9 · 부다페스트→브르노 · 운전 3시간 20분 · 326kmDAY 9 · 3시간 20분 · 326kmDAY 9 · 브르노→프라하 · 운전 2시간 15분 · 204kmDAY 9 · 2시간 15분 · 204km프라하DAY 1–2체스키크룸로프DAY 3–4할슈타트DAY 4잘츠부르크DAY 4–5바하우DAY 5비엔나DAY 5–7부다페스트DAY 7–9브르노DAY 9 0준비1234567891011DAY 1 · 실제 기록도착·회복9월 8일 · 프라하무리 없이 숙소에 도착하고 다음 날 쓸 컨디션을 남긴다.도착출발실제 기록요금16:45프라하 도착입국 심사와 수하물 수령. 서두르지 않는다.—17:4518:30택시 이동확인한 승차 지점에서 신시가 숙소 주소를 보여준다.—18:3019:00체크인차량 진입 가능한 입구에서 짐부터 객실로 옮긴다.—19:00 이후가벼운 저녁·수면숙소 가까운 곳만 이용한다. 야경은 기본안에서 뺀다.—정상 → 체크인 후 가까운 저녁, 바로 휴식.—수하물 지연 → 분실 접수번호를 받고 필수품만 구입. 야외 일정 없음.—입국 지연 → 숙소에 도착 시각을 알리고 저녁은 공항이나 숙소에서 단축.—피로 누적 → 식사는 포장·룸서비스로 바꾸고 산책은 취소.—이 날 지출45,000원야경 욕심은 내지 않는다. 첫날 일찍 자는 것이 나머지 8일을 산다.기록이 날의 기록다녀옴 표시기억 메모내 기록 백업백업 복원이 브라우저에 자동 저장됩니다.결산영수증 기준 실제 지출777.1만원· 1인 388.6만원사전 확정650.0만원현지 지출127.1만원카테고리별 현지 지출식비 — 외식·장보기·팁85.7만원교통 — 주차·시내교통·비네트11.9만원입장료·액티비티 (확인분)11.4만원주유6.2만원통신 — 이심 + 유심6.7만원카페2.7만원디저트2.5만원합계127.1만원지역별 현지 지출체코 — Day 1·2·3·941.0만원오스트리아 — Day 4·5·644.7만원헝가리 — Day 7·8·9(일부)41.4만원합계127.1만원합계에서 제외벨베데레·쇤부른 궁전 입장권 (영수증 미확보, 2인 €50~70 추정)토카이 와인 4병·기념품 약 18,895 Ft (장바구니 기준 추정 약 7.2만원)Day 10–11 프라하 잔여 지출×DAY 1–2 · 도시프라하숙박프라하먹은 것Bageterie Boulevard · 샌드위치 ×2 / Dvorek pod Hradem · 콜레뇨구글 지도에서 열기 ↗사진이 아직 없습니다.노선도 승강장",
+        "class": null,
+        "inDialog": false,
+        "box": {
+          "x": 0,
+          "y": 0,
+          "width": 1440,
+          "height": 2415.015625
+        }
+      }
+    ],
+    "cityReverse": {
+      "tag": "TEXTAREA",
+      "name": "",
+      "class": null,
+      "type": "textarea",
+      "inDialog": false,
+      "box": {
+        "x": 742,
+        "y": 1353.8125,
+        "width": 653,
+        "height": 117.640625
+      }
+    },
+    "cityRestored": {
+      "tag": "TEXTAREA",
+      "name": "",
+      "class": null,
+      "type": "textarea",
+      "inDialog": false,
+      "box": {
+        "x": 742,
+        "y": 427.8125,
+        "width": 653,
+        "height": 117.640625
+      }
+    },
+    "cityRemaining": 1,
+    "day11": null,
+    "stop": null,
+    "file": null,
+    "summary": [
+      {
+        "text": "한눈에 보는 구조확정",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "누가 일하나확정",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "티켓이 배포되기까지확정",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "방문자 요청이 집 PC 에 닿는 길제안",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "데이터 처리는 어디서확정",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "LLM 호출 원칙제안",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "집 PC 가 꺼졌을 때할 일",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "집 PC 로 배포하는 법제안",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "카페에서 집 PC 에 들어가는 법제안",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      },
+      {
+        "text": "결정 대기와 PO 할 일할 일",
+        "width": 942,
+        "height": 24.8125,
+        "padding": "0px"
+      }
+    ]
+  }
+]

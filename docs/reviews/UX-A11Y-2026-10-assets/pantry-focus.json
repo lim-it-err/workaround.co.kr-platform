@@ -1,0 +1,44 @@
+[
+  {
+    "width": 375,
+    "found": true,
+    "active": "집밥",
+    "box": {
+      "x": 240.546875,
+      "y": 107,
+      "w": 54.703125,
+      "h": 40
+    },
+    "row": {
+      "x": 25,
+      "y": 107,
+      "w": 223.34375,
+      "h": 40
+    },
+    "scrollLeft": 1231,
+    "mask": "none",
+    "centerHit": "태그 더 보기 ",
+    "hitMatches": false
+  },
+  {
+    "width": 1440,
+    "found": true,
+    "active": "집밥",
+    "box": {
+      "x": 941.546875,
+      "y": 123,
+      "w": 54.703125,
+      "h": 40
+    },
+    "row": {
+      "x": 338,
+      "y": 123,
+      "w": 658.34375,
+      "h": 40
+    },
+    "scrollLeft": 843,
+    "mask": "none",
+    "centerHit": "집밥",
+    "hitMatches": true
+  }
+]

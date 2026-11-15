@@ -43,6 +43,8 @@
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
+- `TKT-216` `P1` `v0.8.4` `ready` `[FE]` 접근성 패치 — 숨은 파일 입력·모바일 지도 도시 타깃·밥상 끝 칩 (UX-A11Y-2026-10 I1~I3, Sonnet)
+
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
 
 - `TKT-167` `P1` `ets2` `ready` `[INFRA]` 유로트럭 PoC 편입 마감 + 배포/운용 스크립트(SSH→.100) + R2 퍼블리셔(DRY_RUN) — codex-2
