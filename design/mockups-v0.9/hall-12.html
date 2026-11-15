@@ -56,6 +56,21 @@ figcaption b{color:var(--fg);font-weight:400}
 .meter{display:inline-block;width:9ch;color:var(--line2)}
 .inv{background:var(--hi);color:var(--bg);padding:0 4px}
 .scr.crt .inv{background:var(--crt-fg);color:var(--crt-bg);text-shadow:none}
+.pick{margin-top:22px;border:1px solid var(--line2);padding:14px;background:var(--bg)}
+.pick h2{font-size:16px;margin:0;color:var(--hi)}
+.pickgrid{display:grid;gap:20px;margin-top:14px;grid-template-columns:1fr}
+@media(min-width:900px){.pickgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.mini{margin-left:auto;min-height:36px;padding:0 10px;background:transparent;border:1px solid var(--line2);color:var(--fg);font:inherit;font-size:12px;cursor:pointer}
+.mini+.mini{margin-left:0}
+.mini:focus-visible,.sel:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+.sel{list-style:none;margin:12px 0 0;padding:0}
+.sel li{display:flex;align-items:center;min-height:44px;padding:0 8px;cursor:pointer;font-size:16px}
+.sel li::before{content:"  ";white-space:pre;width:2ch}
+.sel li[aria-selected=true]{background:var(--crt-fg);color:var(--crt-bg);text-shadow:none}
+.sel li[aria-selected=true]::before{content:"▶ "}
+.fadein{animation:fi .35s ease-out}
+@keyframes fi{from{opacity:.2}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.fadein{animation:none}}
 .note{margin-top:28px;border-top:1px solid var(--line);padding-top:12px;color:var(--dim);font-size:13px;max-width:80ch}
 .note b{color:var(--fg);font-weight:400}
 </style>
@@ -67,6 +82,27 @@ figcaption b{color:var(--fg);font-weight:400}
   <p>노선은 Q-025 제안안 5개입니다. 마음에 드는 기본안 하나와 lite안 하나를 번호로 골라 주세요. 섞어도 됩니다(예: A-04 + C-02).</p>
   <div class="legend"><span class="rec">기록선</span><span class="learn">배움선</span><span class="play">놀이선</span><span class="life">생활선</span><span class="base">기지선</span></div>
 </header>
+
+<section class="pick" aria-labelledby="pick-t">
+  <h2 id="pick-t">선택안 미리보기 · A-08 → A-04 + lite 화살표</h2>
+  <p class="d" style="margin:4px 0 0;max-width:70ch">기본은 문이 열린 뒤 부팅 로그가 약 1초 흐르고 출발 안내판으로 바뀝니다. 재방문에는 로그 없이 안내판부터 나옵니다. lite는 글자 입력 없이 ↑↓로 고르고 Enter로 들어갑니다. 폰에서는 줄을 누르면 됩니다.</p>
+  <div class="pickgrid">
+    <figure>
+      <div class="lab"><span class="code">기본</span><span class="nm">A-08 → A-04</span>
+        <button type="button" class="mini" id="replay">다시 재생</button>
+        <button type="button" class="mini" id="revisit">재방문으로 보기</button></div>
+      <div class="scr" id="seq" style="height:380px"></div>
+    </figure>
+    <figure>
+      <div class="lab"><span class="code c">lite</span><span class="nm">C-01 + 화살표 이동</span></div>
+      <div class="scr crt" style="height:380px">
+        <div class="h" id="lite-t">환승 홀</div>
+        <ul class="sel" id="sel" role="listbox" tabindex="0" aria-labelledby="lite-t" aria-activedescendant="o0"></ul>
+        <p class="d" id="lite-msg" aria-live="polite" style="margin:10px 0 0">↑↓ 고르기 · Enter 들어가기</p>
+      </div>
+    </figure>
+  </div>
+</section>
 
 <div class="grid">
 
@@ -295,6 +331,73 @@ Advisor 코스 2단계
 </figure>
 
 </div>
+
+<script>
+(function(){
+  var seq=document.getElementById('seq');
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var LOG=[
+    ['d','[ 0.000] workaround 0.9.0 기동'],
+    ['','[ 0.012] 문 열림 ................ <span class="ok">[ 완료 ]</span>'],
+    ['','[ 0.040] <span class="rec">기록선</span> 여행 ............ <span class="ok">[ 운행 ]</span>'],
+    ['','[ 0.052] <span class="learn">배움선</span> Advisor ......... <span class="ok">[ 운행 ]</span>'],
+    ['','[ 0.053] <span class="learn">배움선</span> 일일 5지 ........ <span class="w">[ 준비 ]</span>'],
+    ['','[ 0.061] <span class="play">놀이선</span> 격납고 .......... <span class="ok">[ 운행 ]</span>'],
+    ['','[ 0.062] <span class="play">놀이선</span> 유로트럭 ........ <span class="ok">[ 샘플 ]</span>'],
+    ['','[ 0.070] <span class="life">생활선</span> 자취 밥상 ....... <span class="ok">[ 운행 ]</span>'],
+    ['','[ 0.081] <span class="base">기지선</span> 운영 노트 ....... <span class="ok">[ 공개 ]</span>'],
+    ['h','환승 홀에 도착했습니다.']
+  ];
+  var BOARD='<div class="h">환승 홀 · 출발 안내 <span class="d" style="font-weight:400">11-15 17:30</span></div>'+
+  '<div style="overflow-x:auto;margin-top:8px"><table class="board"><tr><th>노선</th><th>행선지</th><th>상태</th></tr>'+
+  '<tr><td class="rec">기록선</td><td>여행</td><td class="ok">운행</td></tr>'+
+  '<tr><td class="learn">배움선</td><td>Advisor</td><td class="ok">운행</td></tr>'+
+  '<tr><td class="learn">배움선</td><td>일일 5지</td><td class="w">개통 준비</td></tr>'+
+  '<tr><td class="play">놀이선</td><td>격납고</td><td class="ok">운행</td></tr>'+
+  '<tr><td class="play">놀이선</td><td>유로트럭</td><td class="ok">운행</td></tr>'+
+  '<tr><td class="life">생활선</td><td>자취 밥상</td><td class="ok">운행</td></tr>'+
+  '<tr><td class="base">기지선</td><td>운영 노트</td><td class="ok">운행</td></tr>'+
+  '<tr><td class="d">기록선</td><td class="d">블로그</td><td class="d">운행 중단</td></tr></table></div>';
+  var timers=[];
+  function clear(){timers.forEach(clearTimeout);timers=[]}
+  function board(){seq.innerHTML='<div class="fadein">'+BOARD+'</div>'}
+  function play(){
+    clear();
+    if(reduce){board();return}
+    var pre=document.createElement('pre');seq.innerHTML='';seq.appendChild(pre);
+    LOG.forEach(function(l,i){timers.push(setTimeout(function(){
+      pre.insertAdjacentHTML('beforeend','<span class="'+l[0]+'">'+l[1]+'</span>\n');
+    },i*90))});
+    timers.push(setTimeout(board,LOG.length*90+500));
+  }
+  document.getElementById('replay').onclick=play;
+  document.getElementById('revisit').onclick=function(){clear();board()};
+  play();
+
+  var items=['여행','Advisor','격납고','유로트럭','자취 밥상','운영 노트'];
+  var sel=document.getElementById('sel'),msg=document.getElementById('lite-msg'),cur=0;
+  sel.innerHTML=items.map(function(t,i){return '<li role="option" id="o'+i+'" aria-selected="'+(i===0)+'">'+t+'</li>'}).join('');
+  function pick(i){
+    cur=(i+items.length)%items.length;
+    Array.prototype.forEach.call(sel.children,function(li,j){li.setAttribute('aria-selected',String(j===cur))});
+    sel.setAttribute('aria-activedescendant','o'+cur);
+  }
+  function go(){msg.textContent=items[cur]+'(으)로 들어갑니다 · 시안이라 이동하지 않음'}
+  sel.addEventListener('keydown',function(e){
+    if(e.key==='ArrowDown'){pick(cur+1);e.preventDefault()}
+    else if(e.key==='ArrowUp'){pick(cur-1);e.preventDefault()}
+    else if(e.key==='Home'){pick(0);e.preventDefault()}
+    else if(e.key==='End'){pick(items.length-1);e.preventDefault()}
+    else if(e.key==='Enter'){go();e.preventDefault()}
+  });
+  sel.addEventListener('click',function(e){
+    var li=e.target.closest('li');if(!li)return;
+    var i=Array.prototype.indexOf.call(sel.children,li);
+    if(i===cur)go();else pick(i);
+    sel.focus();
+  });
+})();
+</script>
 
 <div class="note">
 <p><b>PM 추천: A-04 출발 안내판 + C-01 역 이름만.</b> A-04는 스플래시의 플랩 안내판과 같은 세계라 문이 열린 뒤에도 흐름이 끊기지 않고, 상태 열이 있어 "어디가 열려 있나"가 가장 분명합니다. C-01은 지난 결정(lite = 주인공 하나)에 가장 충실합니다.</p>
