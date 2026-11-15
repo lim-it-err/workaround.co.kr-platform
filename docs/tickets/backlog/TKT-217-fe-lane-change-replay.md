@@ -3,7 +3,7 @@
 # TKT-217 `[FE]` 격납고 「차선변경 시뮬」 — lane_change_sumo 재생 파일 플레이어
 
 - 상태: backlog · **P2 · v0.10.0(제안)** · 담당: dev 서브에이전트(Sonnet 5.5) · 착수 조건: ASK **Q-026** PO 답.
-- 근거: 외부 프로젝트 `~/Project/lane_change_sumo` 의뢰. 계약서 `docs/replay-contract.md`(`lane-change-replay` 1.0), 스키마 `docs/replay.schema.json`, 샘플 `replays/singal/`.
+- 근거: `newProject/lane_change_sumo`(U-46 편입, 개발 codex-9) 제공. 계약서 `docs/replay-contract.md`(`lane-change-replay` 1.0), 스키마 `docs/replay.schema.json`, 샘플 `replays/singal/`.
 - scope(안): 신규 `frontend/src/components/sim/LaneChangeReplay.vue`, `frontend/public/replays/lane-change/singal/*`(PM 복사본), 격납고 목록 데이터, 라우트 1개, E2E 1파일.
 
 ## 목표
