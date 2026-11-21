@@ -43,6 +43,8 @@
 
 ## Ready
 
+- `TKT-221` `P1` `v0.9.0` `ready` `[FE]` v0.9 환승 홀 손질 — 블로그 행 제거·부팅 로그 버전 (Haiku)
+
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
