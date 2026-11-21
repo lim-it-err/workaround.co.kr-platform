@@ -1,0 +1,49 @@
+# 집 PC 웹 — 정적 사이트 + SPA 폴백 + /api 프록시.
+# TLS·도메인은 Cloudflare Tunnel 이 맡으므로 여기서는 평문 :80 만 연다.
+{
+	admin off
+	auto_https off
+}
+
+:80 {
+	encode zstd gzip
+	root * /srv/site
+
+	# 파일 확장자가 붙은 요청(자산)은 폴백하지 않는다 — 없으면 404 그대로.
+	@spaPage {
+		not path_regexp \.[A-Za-z0-9]+$
+	}
+	@advisorPage {
+		path /advisor /advisor/*
+		not path_regexp \.[A-Za-z0-9]+$
+	}
+	@longCache path /assets/* /advisor/assets/*
+
+	header @longCache Cache-Control "public, max-age=31536000, immutable"
+	header ?Cache-Control "no-cache"
+	header X-Content-Type-Options nosniff
+
+	handle /health {
+		header Content-Type text/plain
+		respond "ok" 200
+	}
+
+	# 게이트웨이가 꺼져 있으면 502 그대로 — 화면은 정적 폴백으로 동작한다.
+	handle /api/* {
+		reverse_proxy gateway:8080
+	}
+
+	handle @advisorPage {
+		try_files {path} /advisor/index.html
+		file_server
+	}
+
+	handle @spaPage {
+		try_files {path} /index.html
+		file_server
+	}
+
+	handle {
+		file_server
+	}
+}
