@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from '../e2eContext.mjs'
 
 // TKT-219 (D-036): 환승 홀 v0.9 — 출발 안내판(기본) · 화살표 선택 목록(lite) · 첫 방문 부팅 로그.
+// TKT-221: 블로그 행 제거(7행) · 유로트럭 「샘플」 · 운영 노트 「공개」 · 부팅 로그 버전은 RELEASE_VERSION 과 같다.
 // 시간은 Playwright 가상 시계로 흘린다(호스트가 느려도 90ms·500ms 가 흔들리지 않는다).
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -61,10 +62,9 @@ const EXPECTED_ROWS = [
   ['배움선', 'Advisor', '운행'],
   ['배움선', '일일 5지', '개통 준비'],
   ['놀이선', '격납고', '운행'],
-  ['놀이선', '유로트럭', '운행'],
+  ['놀이선', '유로트럭', '샘플'],
   ['생활선', '자취 밥상', '운행'],
-  ['기지선', '운영 노트', '운행'],
-  ['기록선', '블로그', '운행 중단']
+  ['기지선', '운영 노트', '공개']
 ]
 const LITE_LABELS = ['여행', 'Advisor', '격납고', '유로트럭', '자취 밥상', '운영 노트']
 
@@ -161,7 +161,12 @@ for (const viewport of VIEWPORTS) {
     const average = (stamps.at(-1) - stamps[0]) / (stamps.length - 1)
     assert.ok(average >= 85 && average <= 95, `줄당 90ms 안팎: 평균 ${average}ms (${stamps.join(',')})`)
     const logText = await page.locator('[data-hall-log] pre').textContent()
-    assert.match(logText, /\[ 0\.000\] workaround [\d.]+ 기동/)
+    // RELEASE_VERSION 이 있으면 버전을 붙이고, 없으면 버전 없이 「기동」만 쓴다 (빌드와 같은 환경값을 읽는다).
+    const releaseVersion = (process.env.RELEASE_VERSION || '').trim()
+    assert.match(logText, releaseVersion
+      ? new RegExp(`\\[ 0\\.000\\] workaround ${releaseVersion.replace(/\./g, '\\.')} 기동`)
+      : /\[ 0\.000\] workaround 기동/)
+    if (!releaseVersion) assert.doesNotMatch(logText, /workaround \d/, '버전이 없을 때 버전 문자열이 없어야 한다')
     assert.match(logText, /기록선 여행 \.+ \[ 운행 \]/)
     assert.match(logText, /일일 5지 \.+ \[ 준비 \]/)
     assert.match(logText, /유로트럭 \.+ \[ 샘플 \]/)
@@ -202,7 +207,7 @@ for (const viewport of VIEWPORTS) {
       }, { x: viewport.width / 2, y: 400 })
       await page.locator('[data-hall-board]').waitFor()
       assert.equal(await page.locator('[data-hall-log]').count(), 0, `${method}: 로그가 사라진다`)
-      assert.equal(await page.locator('.hall-row').count(), 8)
+      assert.equal(await page.locator('.hall-row').count(), 7)
       // 이미 본 로그는 환승 홀을 다시 열어도 돌지 않는다.
       await page.getByRole('button', { name: '기본', exact: true }).waitFor()
     }
@@ -221,11 +226,11 @@ for (const viewport of VIEWPORTS) {
       }
       await page.locator('[data-hall-board]').waitFor()
       assert.ok(seenLog.every(value => value === 0), `${JSON.stringify(opts)}: 로그가 한 번도 없어야 한다`)
-      assert.equal(await page.locator('.hall-row').count(), 8)
+      assert.equal(await page.locator('.hall-row').count(), 7)
     }
   })
 
-  test(`${tag} 기본: 안내판 표·44px 행·노선색·행 이동·개통 준비 안내·블로그 닫힘`, async t => {
+  test(`${tag} 기본: 안내판 표·44px 행·노선색·행 이동·개통 준비 안내`, async t => {
     const page = await setup(t, viewport, { reducedMotion: true })
     await enterHall(page)
     const rows = await page.locator('.hall-row').evaluateAll(elements => elements.map(element => (
@@ -233,7 +238,7 @@ for (const viewport of VIEWPORTS) {
     )))
     assert.deepEqual(rows, EXPECTED_ROWS, '시안과 같은 8행·순서')
     assert.deepEqual(await page.locator('.hall-head span').allTextContents(), ['노선', '행선지', '상태'])
-    assert.equal(await page.locator('.hall-row:is(a, button)').count(), 8, '행 전체가 버튼/링크')
+    assert.equal(await page.locator('.hall-row:is(a, button)').count(), 7, '행 전체가 버튼/링크')
     assert.equal(await page.locator('.hall-board .hall-title').textContent().then(text => text.replace(/\s+/g, ' ').trim()).then(text => text.startsWith('환승 홀 · 출발 안내')), true)
     const boxes = await page.locator('.hall-row').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
     assert.ok(boxes.every(height => height >= 44), `행 높이 ≥ 44px: ${boxes.join(',')}`)
@@ -241,7 +246,6 @@ for (const viewport of VIEWPORTS) {
     const [record, learn, play, life, depot] = [colors[0], colors[1], colors[3], colors[5], colors[6]]
     assert.equal(new Set([record, learn, play, life, depot]).size, 5, '노선 5개는 서로 다른 글자색')
     assert.equal(colors[1], colors[2], '같은 노선은 같은 색')
-    assert.equal(await page.locator('.hall-row.is-dim').count(), 1)
     assert.equal(await page.getByRole('link', { name: /Advisor/ }).getAttribute('href'), `${publicBase}advisor/`)
     await noOverflow(page)
     await assertNoEnglishSignage(page)
@@ -254,12 +258,6 @@ for (const viewport of VIEWPORTS) {
     assert.equal(page.url(), home, '개통 준비 행은 이동하지 않는다')
     await page.waitForTimeout(2700)
     assert.equal(await page.locator('.junction-access-toast').count(), 0, '안내는 2.5초 뒤 사라진다')
-
-    await page.locator('.hall-row').filter({ hasText: '블로그' }).click()
-    const closed = page.locator('[data-blog-closed-notice]')
-    await closed.waitFor()
-    assert.equal(await closed.textContent(), '블로그 노선은 운행을 멈췄습니다')
-    assert.equal(page.url(), home)
 
     const targets = [
       ['여행', /\/voyage$/, '여행 노선'],

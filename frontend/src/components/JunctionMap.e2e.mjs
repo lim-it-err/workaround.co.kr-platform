@@ -6,7 +6,6 @@ import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { newSeoulContext } from '../e2eContext.mjs'
-import { BLOG_LINE_OPEN } from '../data/lines.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const publicBase = '/workaround.co.kr-platform/'
@@ -117,10 +116,10 @@ for (const scenario of [
   test(`${scenario.width}px: 안내판 행 8개·노선도 없음·40px 대상·글자 대비·넘침 0`, async t => {
     const page = await setup(t, scenario)
 
-    // 큰 역 7(블로그 제외) + 개통 준비 1 + 흐린 블로그 1 = 8행. 블로그 스위치가 켜지면 흐린 행이 사라진다.
-    assert.equal(await page.locator('.hall-row').count(), 8)
-    assert.equal(await page.locator('.hall-row:is(a, button)').count(), 8)
-    assert.equal(await page.locator('.hall-row.is-dim').count(), BLOG_LINE_OPEN ? 0 : 1)
+    // TKT-221: 큰 역 6 + 개통 준비 1 = 7행. 블로그 행은 안내판에서 뺐다(흐린 행 없음).
+    assert.equal(await page.locator('.hall-row').count(), 7)
+    assert.equal(await page.locator('.hall-row:is(a, button)').count(), 7)
+    assert.equal(await page.locator('.hall-row.is-dim').count(), 0)
     assert.equal(await page.locator('.junction-map, .junction-station, .junction-branch, .junction-page-stop').count(), 0, '노선도(SVG)는 홀에 없다')
     assert.equal(await page.locator('.hall-row').filter({ hasText: 'Runtime' }).count(), 0, '보호 구역은 안내판에 없다')
     assert.equal(await page.getByText('Archive Line', { exact: true }).count(), 0)

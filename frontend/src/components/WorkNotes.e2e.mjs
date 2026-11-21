@@ -171,9 +171,9 @@ for (const scenario of [
     await page.locator('.junction-overview').waitFor()
     assert.equal(new URL(page.url()).pathname, publicBase, 'Runtime 직접 주소는 환승 홀로 돌아간다')
 
-    // TKT-219: 환승 홀은 출발 안내판 — Runtime(보호 구역)은 행이 없다. 운영 노트 행은 잠금 표시 없이 「운행」.
+    // TKT-219: 환승 홀은 출발 안내판 — Runtime(보호 구역)은 행이 없다. 운영 노트 행은 잠금 표시 없이 「공개」(TKT-221).
     const workRow = page.locator('.hall-row').filter({ hasText: '운영 노트' })
-    assert.equal(await workRow.locator('.hall-status').textContent(), '운행')
+    assert.equal(await workRow.locator('.hall-status').textContent(), '공개')
     assert.equal(await workRow.evaluate(element => element.classList.contains('is-dim')), false)
     assert.equal(await page.locator('.hall-row').filter({ hasText: 'Runtime' }).count(), 0)
 

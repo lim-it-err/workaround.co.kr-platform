@@ -107,13 +107,11 @@ async function setup(t, build, viewport) {
 }
 
 // 렌더 텍스트와 접근 이름·링크 주소를 모아 안내 토스트 문구만 빼고 돌려준다.
-// TKT-219 (D-036): 출발 안내판에는 흐린 「운행 중단」 블로그 행이 하나 있다 — 시안이 정한 유일한 예외.
-// 그 행은 링크가 아닌 버튼이고, 누르면 닫힘 안내만 뜬다(아래 assertClosedBlogRow). 그 밖의 표면에는 블로그가 없어야 한다.
+// TKT-221: 출발 안내판에서 블로그 행을 뺐다 — 예외 없이 블로그 문구가 없어야 한다(닫힘 안내 토스트만 제외).
 async function renderedSurface(page) {
   return page.evaluate(closedMessage => {
     const root = document.body.cloneNode(true)
     root.querySelectorAll('[data-blog-closed-notice]').forEach(element => element.remove())
-    root.querySelectorAll('[data-hall-row="blog"]').forEach(element => element.remove())
     const names = [...root.querySelectorAll('[aria-label], [title], [alt]')]
       .flatMap(element => [element.getAttribute('aria-label'), element.getAttribute('title'), element.getAttribute('alt')])
       .filter(Boolean)
@@ -149,14 +147,6 @@ async function assertJunctionWithNotice(page, build, label) {
   assert.ok(lines < 1.5, `${label}: 토스트는 한 줄이어야 한다 (${lines.toFixed(2)}줄)`)
 }
 
-async function assertClosedBlogRow(page, label) {
-  const row = page.locator('[data-hall-row="blog"]')
-  assert.equal(await row.count(), 1, `${label}: 흐린 블로그 행은 하나`)
-  assert.equal(await row.evaluate(element => element.tagName), 'BUTTON', `${label}: 링크가 아니다`)
-  assert.equal(await row.getAttribute('href'), null)
-  assert.match(await row.innerText(), /운행 중단/)
-}
-
 async function assertNoBlogSurface(page, label) {
   const { text, names, hrefs } = await renderedSurface(page)
   assert.doesNotMatch(text, BANNED, `${label}: 렌더 텍스트에 블로그/스튜디오가 없어야 한다`)
@@ -180,8 +170,8 @@ for (const build of builds) {
         await page.goto(`${home}${address}`)
         await assertJunctionWithNotice(page, build, label)
         await assertNoBlogSurface(page, label)
-        assert.equal(await page.locator('.hall-row').count(), 8, `${label}: 안내판 행은 여덟 개`)
-        await assertClosedBlogRow(page, label)
+        assert.equal(await page.locator('.hall-row').count(), 7, `${label}: 안내판 행은 일곱 개`)
+        assert.equal(await page.locator('[data-hall-row="blog"]').count(), 0, `${label}: 안내판에 블로그 행이 없어야 한다`)
         assert.equal(await page.locator('[data-station-code="B"]').count(), 0)
         assert.equal(await page.locator('.writer-page, .blog-shell, .writing-room').count(), 0, `${label}: 블로그 화면이 렌더되면 안 된다`)
         if (address === BLOG_ADDRESSES[0] && process.env.BLOG_CLOSED_SCREENSHOT_DIR) {
@@ -251,7 +241,7 @@ for (const build of builds) {
       await page.locator('.junction-overview').waitFor()
       await assertNoBlogSurface(page, `${title} 환승 홀`)
       assert.equal(await page.locator('[data-blog-closed-notice]').count(), 0, '환승 홀에서 정상 이동할 때는 안내가 뜨지 않는다')
-      await assertClosedBlogRow(page, `${title} 환승 홀`)
+      assert.equal(await page.locator('[data-hall-row="blog"]').count(), 0, `${title} 환승 홀: 블로그 행 없음`)
       assert.deepEqual(
         await page.locator('.hall-row').first().locator(':scope > span').allTextContents(),
         ['기록선', '여행', '운행'],

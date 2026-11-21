@@ -153,10 +153,10 @@ for (const scenario of [
     await page.locator('.junction-overview').waitFor()
     assert.equal(new URL(page.url()).pathname, publicBase)
 
-    // TKT-219: 환승 홀은 출발 안내판(여덟 행)이다. 정적 공개본에서도 서버 시뮬 소역·노선도는 홀에 없고, 격납고·유로트럭 행은 그대로 열린다.
-    assert.equal(await page.locator('.hall-row').count(), 8)
+    // TKT-219·TKT-221: 환승 홀은 출발 안내판(일곱 행, 흐린 행 없음)이다. 정적 공개본에서도 서버 시뮬 소역·노선도는 홀에 없고, 격납고·유로트럭 행은 그대로 열린다.
+    assert.equal(await page.locator('.hall-row').count(), 7)
     assert.equal(await page.locator('.junction-map, .junction-station, .junction-sublinks').count(), 0, '노선도·소역은 없다')
-    assert.equal(await page.locator('.hall-row.is-dim').count(), 1, '흐린 행은 블로그 하나뿐')
+    assert.equal(await page.locator('.hall-row.is-dim').count(), 0, '흐린 행 없음(블로그 행 제거)')
     assert.equal(await page.locator('.hall-row').filter({ hasText: '유로트럭' }).evaluate(element => getComputedStyle(element).opacity), '1')
     assert.equal(await page.locator('.hall-row').filter({ hasText: 'Runtime' }).count(), 0, '보호 구역은 안내판에 없다')
     const initialUrl = page.url()

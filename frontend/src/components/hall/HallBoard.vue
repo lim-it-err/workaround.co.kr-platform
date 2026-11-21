@@ -97,7 +97,6 @@ function press(row) {
           <component
             :is="row.entryPath ? 'a' : 'button'"
             class="hall-row"
-            :class="{ 'is-dim': row.tone === 'dim' }"
             :href="entryHref(row)"
             :type="row.entryPath ? undefined : 'button'"
             :data-hall-row="row.id"
@@ -159,7 +158,6 @@ function press(row) {
 .t-h { color: var(--text); font-weight: 700; }
 .t-ok { color: #7ef0a8; }
 .t-warn { color: var(--safety); }
-.t-dim { color: var(--muted); }
 .t-rec { color: var(--line-b-text); }
 .t-learn { color: var(--line-r-text); }
 .t-play { color: var(--line-t-text); }
@@ -221,11 +219,6 @@ function press(row) {
 .hall-row:focus-visible {
   outline: 2px solid var(--text);
   outline-offset: -2px;
-}
-
-.hall-row.is-dim .hall-line,
-.hall-row.is-dim .hall-dest {
-  color: var(--muted);
 }
 
 .hall-dest {
