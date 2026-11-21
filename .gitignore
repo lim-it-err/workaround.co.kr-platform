@@ -50,3 +50,6 @@ services/ets2-adas/.env
 .DS_Store
 frontend/dist-root/
 frontend/dist-base/
+
+# 집 PC 웹 (TKT-220)
+infra/home/.env

@@ -43,6 +43,7 @@
 
 ## Ready
 
+
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
@@ -67,6 +68,7 @@
 
 ## Finished
 
+- `TKT-220` `[INFRA]` 집 PC(.100) 웹 컨테이너 — Docker Compose + Cloudflare Tunnel — r1 통과 (2026-11-21, v1.0.0, Sonnet 5.5)
 - `TKT-216` `[FE]` 접근성 패치 — 숨은 파일 입력·모바일 지도 도시 타깃·밥상 끝 칩 — r1 통과 (2026-11-15, v0.8.4, Sonnet 5.5)
 
 - `TKT-211` App.vue 분해 — 환승 홀·셸·라우팅·레거시 제거(App.vue 357줄) — r1 통과 (2026-10-25, v0.8.3)

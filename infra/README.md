@@ -107,6 +107,10 @@ powershell -ExecutionPolicy Bypass -File infra/rtx5070-host/ollama-runtime.ps1 -
 - 같은 PC 안의 컨테이너에서 접근: `http://host.docker.internal:11434`
 - 별도 RTX5070 장비로 분리했을 때: `http://rtx5070-host:11434`
 
+## 집 PC 웹
+
+- `.100` 에서 사이트를 직접 서빙하고 Cloudflare Tunnel 로 내보내는 구성은 [`home/README.md`](home/README.md) 를 본다 (D-037).
+
 ## 참고
 
 - 현재 저장소는 게이트웨이가 아직 인메모리 티켓 저장소를 쓰더라도 Redis를 워커 런타임 인프라로 유지한다.

@@ -305,3 +305,9 @@
 - lite: 역 이름 6개 목록, 글자 입력 없음. ↑↓·Home·End 로 고르고 Enter 로 진입, 폰은 줄 탭(선택 → 한 번 더 탭 진입). `listbox` + `aria-activedescendant`.
 - PM 의문: 스플래시 5.5초 뒤 로그 1초가 더해져 첫 방문 대기가 약 6.5초 — 로그는 클릭·키 입력으로 건너뛰기 가능하게 할 것을 권고(v0.9 스펙에 반영).
 
+## D-037 웹을 집 PC(.100) Docker + Cloudflare Tunnel 로 직접 서빙 · **확정(당분간)** (PO 2026-11-21 「일단은 100서버에서 cloudflare tunnel로 직접 웹을 보여줄수있잖아. 그런 형태로.」)
+
+- D-011 의 「정적 화면은 Cloudflare Pages, .100 은 API 만」 대신, 당분간 **사이트 전체를 .100 의 Docker(web + gateway + cloudflared)** 에서 서빙한다. lab 실시간 화면이 같은 기계라 R2 없이 바로 붙는다.
+- 대가: .100 이 꺼지면 사이트도 꺼진다. GitHub Pages 배포는 비상 주소로 유지.
+- PO 몫: Cloudflare 계정·도메인 네임서버 이전·터널 생성·토큰을 .100 `.env` 에(채팅·저장소 금지). 구현 TKT-220.
+
