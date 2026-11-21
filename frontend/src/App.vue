@@ -22,7 +22,7 @@ import { useElevatorSim } from './composables/useElevatorSim.js'
 import { useTaxiSim } from './composables/useTaxiSim.js'
 import { useWorkManager } from './composables/useWorkManager.js'
 import { useBlogStore } from './composables/useBlogStore.js'
-import { useTheme } from './composables/useTheme.js'
+import { useView } from './composables/useTheme.js'
 import { usePageRouting } from './composables/usePageRouting.js'
 import { fallbackElevatorState, fallbackHealth, fallbackRuntime, fallbackWorkBoard } from './data/fallbacks.js'
 import { VOYAGE } from './data/voyage.js'
@@ -43,7 +43,7 @@ let fallbackEntityIdCounter = 0
 
 const prefersReducedMotion = ref(false)
 const simHubView = ref(null)
-const { theme, toggleTheme } = useTheme()
+const { view, setView } = useView()
 // 페이지 전환·주소 동기화·문 전환·D-031 블로그 가드는 usePageRouting 이 소유한다.
 // 블로그 저장소·스플래시·엘리베이터·격납고 화면은 아래에서 만들고 ctx() 로 나중에 건넨다(순환 의존).
 const routing = usePageRouting({
@@ -210,7 +210,7 @@ async function fetchJson(url, options = {}) {
   <div
     class="app-shell"
     :class="{ 'door-transitioning': doorTransition.active }"
-    :data-theme="theme"
+    :data-view="view"
     :aria-busy="doorTransition.active ? 'true' : undefined"
   >
     <div
@@ -249,9 +249,10 @@ async function fetchJson(url, options = {}) {
             >
               환승 홀
             </button>
-            <button type="button" class="ghost-button" @click="toggleTheme" :aria-label="theme === 'dark' ? '라이트 모드' : '다크 모드'">
-              {{ theme === 'dark' ? '☀' : '☾' }}
-            </button>
+            <div class="view-toggle" role="group" aria-label="보기">
+              <button type="button" :aria-pressed="view === 'base'" @click="setView('base')">기본</button>
+              <button type="button" :aria-pressed="view === 'lite'" @click="setView('lite')">lite</button>
+            </div>
           </div>
         </header>
 

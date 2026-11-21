@@ -722,7 +722,9 @@ test('1440px light reduced motion: static first phrase, loop symbol and zero ove
   assert.notEqual(reducedMotionLog[0]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 1번째 티커는 고정 문구가 아니어야 한다')
   assert.notEqual(reducedMotionLog[1]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 2번째 티커는 고정 문구가 아니어야 한다')
   assert.notEqual(reducedMotionLog[2]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 3번째 티커는 고정 문구가 아니어야 한다')
-  assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), 'light')
+  // TKT-218: 라이트 없음 — 저장값 light 여도 data-theme 가 없고 기본 보기로 열린다
+  assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), null)
+  assert.equal(await page.locator('.app-shell').getAttribute('data-view'), 'base')
   assert.deepEqual(await splashPanelSurface(page), {
     backgroundColor: 'rgba(0, 0, 0, 0)',
     backgroundImage: 'none',

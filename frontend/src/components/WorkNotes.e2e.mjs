@@ -197,3 +197,39 @@ for (const scenario of [
     }
   })
 }
+
+// TKT-218 (D-035 보완): 라이트 테마 없음 · 보기 전환 `기본 | lite`
+test('라이트 없음: 저장값 light 도 검은 기본으로 열리고, 기본/lite 전환이 기억된다', async t => {
+  const page = await setup(t, { width: 375, height: 812, theme: 'light' })
+  await page.goto(`${base}work`)
+  const shell = page.locator('.app-shell')
+  await shell.waitFor()
+  assert.equal(await shell.getAttribute('data-theme'), null)
+  assert.equal(await shell.getAttribute('data-view'), 'base')
+  assert.equal(await page.getByRole('button', { name: /라이트 모드|다크 모드/ }).count(), 0)
+  assert.equal(await shell.evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(12, 12, 12)')
+
+  const baseButton = page.getByRole('button', { name: '기본', exact: true })
+  const liteButton = page.getByRole('button', { name: 'lite', exact: true })
+  for (const button of [baseButton, liteButton]) {
+    assert.ok((await button.boundingBox()).height >= 40, '보기 토글 40px')
+  }
+  assert.equal(await baseButton.getAttribute('aria-pressed'), 'true')
+  await liteButton.click()
+  assert.equal(await shell.getAttribute('data-view'), 'lite')
+  assert.equal(await liteButton.getAttribute('aria-pressed'), 'true')
+  assert.equal(await shell.evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(3, 16, 8)')
+  assert.equal(await shell.evaluate(el => getComputedStyle(el, '::after').pointerEvents), 'none')
+  assert.equal(await page.evaluate(() => localStorage.getItem('workaround-view')), 'lite')
+  await assertNoOverflow(page)
+
+  await page.reload()
+  assert.equal(await page.locator('.app-shell').getAttribute('data-view'), 'lite')
+  await page.locator('.app-shell').getByRole('button', { name: '기본', exact: true }).click()
+  assert.equal(await page.evaluate(() => localStorage.getItem('workaround-view')), 'base')
+
+  // ?view=lite 는 저장값보다 우선하되 저장값을 바꾸지 않는다
+  await page.goto(`${base}work?view=lite`)
+  assert.equal(await page.locator('.app-shell').getAttribute('data-view'), 'lite')
+  assert.equal(await page.evaluate(() => localStorage.getItem('workaround-view')), 'base')
+})

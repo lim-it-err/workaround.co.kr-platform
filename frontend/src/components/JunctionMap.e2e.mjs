@@ -510,7 +510,7 @@ for (const scenario of [
     assert.equal(restrictedOpacity, 1)
     assert.equal(
       await page.locator('[data-station-code="R"]').evaluate(element => Number.parseFloat(getComputedStyle(element).opacity)),
-      scenario.theme === 'light' ? 0.8 : 0.55,
+      0.55, // TKT-218: 라이트 없음 — 저장값 light 도 검은 화면(같은 값)
       'Runtime 역은 여전히 흐리다'
     )
 

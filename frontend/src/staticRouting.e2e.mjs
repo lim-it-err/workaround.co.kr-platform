@@ -159,7 +159,7 @@ for (const scenario of [
     assert.equal(await page.locator('.junction-sublinks > .planned').textContent(), '화이트채플')
     assert.equal(await page.locator('.junction-page-stop.static-server').count(), 2)
     assert.equal(await page.locator('.junction-page-stop.planned[data-stop-label="화이트채플"]').count(), 1)
-    const expectedDimOpacity = scenario.theme === 'light' ? '0.8' : '0.55'
+    const expectedDimOpacity = '0.55' // TKT-218: 저장값 light 여도 라이트 없음
     assert.equal(
       await page.locator('.junction-page-stop.static-server').first().evaluate(element => getComputedStyle(element).opacity),
       expectedDimOpacity

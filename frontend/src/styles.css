@@ -18,56 +18,58 @@
   --fs-caption: 0.74rem;
   --fs-eyebrow: 0.72rem;
   /* 구조/표면/텍스트/액센트 (스펙 §1.1, 다크 기본) */
-  --bg: #0D131C;
-  --bg-2: #111721;
-  --panel: #1A212D;
-  --panel-2: #212A38;
+  /* v0.9 (TKT-218·D-035): 검은 바탕 하나 — design/mockups-v0.9/hall-12.html :root 기준. 라이트 테마 없음. */
+  --bg: #0c0c0c;
+  --bg-2: #121212;
+  --panel: #161616;
+  --panel-2: #1e1e1e;
   --panel-soft: rgba(255, 255, 255, 0.045);
-  --line: rgba(255, 255, 255, 0.09);
-  --line-strong: rgba(255, 255, 255, 0.16);
+  --line: #3e3e3e;
+  --line-strong: #7a7a7a;
   --border: var(--line); /* 구 토큰 별칭 — 기존 규칙 호환 */
-  --text: #F3F6FB;
-  --text-2: #AEB8C8;
-  --muted: #7C8AA0;
-  --safety: #F3C544;
-  --safety-ink: #201A05;
+  --text: #d6d6d6;
+  --text-2: #b4b4b4;
+  --muted: #8e8e8e;
+  --safety: #ffd25a;
+  --safety-ink: #1a1400;
   --exit: #17A757;
   --exit-hover: #129149;
   --warning: #f0a02d;
   --danger: #E06A7A;
   --shadow: 0 18px 44px rgba(2, 6, 12, 0.42);
-  --head-bg: rgba(13, 19, 28, 0.86);
-  --map-node: #0D131C;
-  --code-bg: #10161F;
+  --head-bg: rgba(12, 12, 12, 0.88);
+  --map-node: #0c0c0c;
+  --code-bg: #101010;
   --quote-bg: rgba(243, 197, 68, 0.06);
   --radius: 14px;
   --radius-lg: 20px;
   /* 노선 코어/텍스트 틴트 (스펙 §1.2, 다크) — §1.3 리매핑: 금색=T, P=틸(Palate), V→D(Discovery) */
-  --line-b: #E14D78;
-  --line-b-text: #F07CA0;
-  --line-e: #3FC1FF;
-  --line-e-text: #7BD4FF;
-  --line-t: #F0B33C;
-  --line-t-text: #F5C86E;
-  --line-s: #9AA8B5;
-  --line-s-text: #BCC7D1;
-  --line-w: #35C275;
-  --line-w-text: #6BD59B;
-  --line-r: #5B8DEF;
-  --line-r-text: #8FB0F5;
-  --line-d: #9B6BF2;
-  --line-d-text: #BCA1F7;
-  --line-p: #22C3A7;
-  --line-p-text: #5AD9C2;
-  --line-v: #55738F;
-  --line-v-text: #9CB8D2;
-  --junction-archive: #E14D78;
-  --junction-lab: #7C89F0;
-  --junction-depot: #35C275;
+  /* 노선 5색(Q-025): 기록 b·pink / 배움 r·periwinkle / 놀이 t·amber / 생활 w·green / 기지 e·cyan. 나머지 노선은 가까운 색 또는 중립으로 수렴 */
+  --line-b: #ff8fb0;
+  --line-b-text: #ff8fb0;
+  --line-e: #7fd6e6;
+  --line-e-text: #7fd6e6;
+  --line-t: #ffb86b;
+  --line-t-text: #ffb86b;
+  --line-s: #8e8e8e;
+  --line-s-text: #b4b4b4;
+  --line-w: #9be36b;
+  --line-w-text: #9be36b;
+  --line-r: #a9b3ff;
+  --line-r-text: #a9b3ff;
+  --line-d: #a9b3ff;
+  --line-d-text: #a9b3ff;
+  --line-p: #7fd6e6;
+  --line-p-text: #7fd6e6;
+  --line-v: #8e8e8e;
+  --line-v-text: #b4b4b4;
+  --junction-archive: #ff8fb0;
+  --junction-lab: #a9b3ff;
+  --junction-depot: #9be36b;
   /* 상태 색 (스펙 §1.4 — 정의만, 배지 실렌더는 S3) */
-  --status-draft: #7C8AA0;
-  --status-pub: #35C275;
-  --status-arch: #C69A54;
+  --status-draft: #8e8e8e;
+  --status-pub: #9be36b;
+  --status-arch: #ffb86b;
 }
 
 * {
@@ -84,10 +86,7 @@ body,
 body {
   min-height: 100vh;
   line-height: 1.6;
-  background:
-    radial-gradient(circle at top left, rgba(63, 193, 255, 0.10), transparent 24%),
-    radial-gradient(circle at top right, rgba(53, 194, 117, 0.08), transparent 24%),
-    linear-gradient(180deg, #0b1118 0%, #101723 48%, #0c1218 100%);
+  background: #0c0c0c;
 }
 
 button {
@@ -101,51 +100,79 @@ button {
   background: var(--bg);
 }
 
-.app-shell[data-theme='light'] {
-  color-scheme: light;
-  --bg: #EDF1F6;
-  --bg-2: #E4EAF2;
-  --panel: #FFFFFF;
-  --panel-2: #F5F8FC;
-  --panel-soft: rgba(16, 24, 38, 0.045);
-  --line: rgba(16, 24, 38, 0.09);
-  --line-strong: rgba(16, 24, 38, 0.18);
-  --text: #16202E;
-  --text-2: #45536A;
-  --muted: #59677C;
-  --safety: #895F00;
-  --exit: #0E8A46;
-  --exit-hover: #0B7038;
-  --danger: #C24557;
-  --shadow: 0 16px 40px rgba(53, 77, 114, 0.14);
-  --head-bg: rgba(237, 241, 246, 0.88);
-  --map-node: #FFFFFF;
-  --code-bg: #101724;
-  --quote-bg: rgba(233, 185, 43, 0.10);
-  --line-b: #C0264F;
-  --line-b-text: #A81F43;
-  --line-e: #0090C8;
-  --line-e-text: #006E99;
-  --line-t: #C8830E;
-  --line-t-text: #8A5B08;
-  --line-s: #657385;
-  --line-s-text: #485869;
-  --line-w: #00863E;
-  --line-w-text: #00793A;
-  --line-r: #0052A4;
-  --line-r-text: #0052A4;
-  --line-d: #6E3FC0;
-  --line-d-text: #5A2FA8;
-  --line-p: #0E9C86;
-  --line-p-text: #087363;
-  --line-v: #36566F;
-  --line-v-text: #36566F;
-  --junction-archive: #C0264F;
-  --junction-lab: #3D4EC0;
-  --junction-depot: #00863E;
-  --status-draft: #59677C;
-  --status-pub: #00863E;
-  --status-arch: #9A6E2E;
+/* TKT-218 — lite 보기(D-035 보완): 녹색 인광 CRT. 노선색은 모두 인광 녹색 하나, 주사선은 정적(모션 아님). */
+.app-shell[data-view='lite'] {
+  --bg: #031008;
+  --bg-2: #04170c;
+  --panel: #05190e;
+  --panel-2: #072212;
+  --panel-soft: rgba(141, 255, 176, 0.05);
+  --line: #2c8a52;
+  --line-strong: #4fae73;
+  --border: var(--line);
+  --text: #8dffb0;
+  --text-2: #8dffb0;
+  --muted: #4fae73;
+  --safety: #c4ffd6;
+  --safety-ink: #031008;
+  --exit: #8dffb0;
+  --exit-hover: #c4ffd6;
+  --head-bg: rgba(3, 16, 8, 0.9);
+  --map-node: #031008;
+  --code-bg: #04170c;
+  --quote-bg: rgba(141, 255, 176, 0.06);
+  --line-b: #8dffb0;
+  --line-b-text: #8dffb0;
+  --line-e: #8dffb0;
+  --line-e-text: #8dffb0;
+  --line-t: #8dffb0;
+  --line-t-text: #8dffb0;
+  --line-s: #4fae73;
+  --line-s-text: #8dffb0;
+  --line-w: #8dffb0;
+  --line-w-text: #8dffb0;
+  --line-r: #8dffb0;
+  --line-r-text: #8dffb0;
+  --line-d: #8dffb0;
+  --line-d-text: #8dffb0;
+  --line-p: #8dffb0;
+  --line-p-text: #8dffb0;
+  --line-v: #4fae73;
+  --line-v-text: #8dffb0;
+  --junction-archive: #8dffb0;
+  --junction-lab: #8dffb0;
+  --junction-depot: #8dffb0;
+  --status-draft: #4fae73;
+  --status-pub: #8dffb0;
+  --status-arch: #4fae73;
+  text-shadow: 0 0 5px rgba(80, 255, 140, 0.35);
+}
+
+.app-shell[data-view='lite'] .primary-button,
+.app-shell[data-view='lite'] .line-cta,
+.app-shell[data-view='lite'] .chip-button.active,
+.app-shell[data-view='lite'] .btn-exit {
+  color: #031008;
+  text-shadow: none;
+}
+
+.app-shell[data-view='lite']::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.18) 0, rgba(0, 0, 0, 0.18) 1px, transparent 1px, transparent 3px);
+}
+
+@media (forced-colors: active) {
+  .app-shell[data-view='lite'] {
+    text-shadow: none;
+  }
+
+  .app-shell[data-view='lite']::after {
+    display: none;
+  }
 }
 
 /* 노선 modifier — 코어/틴트 주입 (스펙 §1.3). 배너/카드/헤더는 --accent 만 참조한다. */
@@ -254,10 +281,6 @@ button {
   letter-spacing: 0.16em;
   text-align: center;
   transform: translateX(-50%);
-}
-
-.app-shell[data-theme='light'] .door-transition {
-  --door-surface: #edf1f6;
 }
 
 .app-shell.door-transitioning .fade-enter-active,
@@ -729,18 +752,6 @@ button {
   place-items: center;
 }
 
-.app-shell[data-theme='light'] .roundel.line-e {
-  color: #081825;
-}
-
-.app-shell[data-theme='light'] .roundel.line-t {
-  color: #201A05;
-}
-
-.app-shell[data-theme='light'] .roundel.line-p {
-  color: #1F1A09;
-}
-
 .roundel.sm {
   width: 24px;
   height: 24px;
@@ -1002,10 +1013,6 @@ button {
   color: #DCBB7E;
   border-color: color-mix(in srgb, var(--status-arch) 45%, transparent);
   background: color-mix(in srgb, var(--status-arch) 12%, transparent);
-}
-
-.app-shell[data-theme='light'] .badge-arch {
-  color: #7C5A24;
 }
 
 .line-copy h4 {
@@ -2703,10 +2710,6 @@ button {
   background: color-mix(in srgb, var(--status-arch) 9%, transparent);
 }
 
-.app-shell[data-theme='light'] .studio-archive-button {
-  color: #7C5A24;
-}
-
 .mobile-quick-nav {
   display: none;
 }
@@ -3533,17 +3536,6 @@ button {
   opacity: 0.55;
 }
 
-.app-shell[data-theme='light'] .junction-map-line.protected,
-.app-shell[data-theme='light'] .junction-map-line:not(.protected) .junction-branch.upcoming,
-.app-shell[data-theme='light'] .junction-map-line:not(.protected) .junction-station.restricted,
-.app-shell[data-theme='light'] .junction-map-line:not(.protected) .junction-page-stop.restricted,
-.app-shell[data-theme='light'] .junction-route-group.protected > h3,
-.app-shell[data-theme='light'] .junction-route-group.protected > p,
-.app-shell[data-theme='light'] .junction-route-row.restricted,
-.app-shell[data-theme='light'] .junction-sublinks > .restricted {
-  opacity: 0.8;
-}
-
 .junction-station-dot {
   fill: var(--map-node);
   stroke: var(--route-color);
@@ -4161,10 +4153,6 @@ a.junction-route-row:focus-visible {
   opacity: 0.55;
 }
 
-.app-shell[data-theme='light'] .tone-page-hero.static-sim-locked {
-  opacity: 0.8;
-}
-
 .static-preview-hairline {
   margin: 0 0 18px;
   padding: 9px 0;
@@ -4507,6 +4495,33 @@ a.junction-route-row:focus-visible {
   display: flex;
   gap: 8px;
   flex: none;
+}
+
+/* 보기 전환 `기본 | lite` — 2칸 세그먼트 (TKT-218) */
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--line-strong);
+}
+
+.view-toggle button {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 0 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.view-toggle button + button {
+  border-left: 1px solid var(--line-strong);
+}
+
+.view-toggle button[aria-pressed='true'] {
+  background: var(--text);
+  color: var(--bg);
+  text-shadow: none;
 }
 
 .topbar-actions .ghost-button {
@@ -5632,7 +5647,6 @@ button.station-prev:hover {
 
 /* Line A (Developer Advisor) — 연결 준비 중 표시용 (TKT-079 에서 개통) */
 :root { --line-a: #7C89F0; --line-a-text: #A5AEF5; }
-.app-shell[data-theme='light'] { --line-a: #3D4EC0; --line-a-text: #32409E; }
 .line-a { --accent: var(--line-a); --accent-text: var(--line-a-text); }
 .line-round.line-a, .station-badge.line-a { background: var(--line-a); color: #f2f4ff; }
 
@@ -5717,30 +5731,6 @@ button.station-prev:hover {
 
 .splash-actions p {
   margin: 0;
-}
-
-.app-shell[data-theme='light'] .splash-stage {
-  background:
-    radial-gradient(circle at 10% 10%, rgba(233, 185, 43, 0.12), transparent 22%),
-    radial-gradient(circle at 90% 12%, rgba(0, 82, 164, 0.08), transparent 20%),
-    linear-gradient(180deg, #f8fafc 0%, #edf1f6 52%, #e4eaf2 100%);
-}
-
-.app-shell[data-theme='light'] .splash-panel {
-  border: 0 solid transparent;
-  background: transparent;
-}
-
-.app-shell[data-theme='light'] .ticker-strip {
-  border-color: var(--line);
-}
-
-.app-shell[data-theme='light'] .splash-ticker-strip {
-  background: transparent;
-}
-
-.app-shell[data-theme='light'] .flap-board {
-  border-color: var(--line-strong);
 }
 
 @media (max-width: 720px) {
