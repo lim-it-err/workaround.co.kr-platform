@@ -162,7 +162,7 @@ for (const scenario of [
     assert.equal(new URL(page.url()).pathname, `${publicBase}work`)
   })
 
-  test(`${scenario.width}px ${scenario.theme}: W 역은 잠금 없이 열리고 Runtime 은 잠금을 유지한다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: 운영 노트 행은 잠금 없이 열리고 Runtime 은 안내판에 없다`, async t => {
     const page = await setup(t, scenario)
 
     await page.goto(`${base}sim`)
@@ -171,11 +171,11 @@ for (const scenario of [
     await page.locator('.junction-overview').waitFor()
     assert.equal(new URL(page.url()).pathname, publicBase, 'Runtime 직접 주소는 환승 홀로 돌아간다')
 
-    const workRow = page.locator('.junction-route-row').filter({ hasText: 'Work Manager' })
-    assert.equal(await workRow.locator('.junction-route-status').textContent(), '운영 노트')
-    assert.equal(await workRow.evaluate(element => element.classList.contains('protected') || element.classList.contains('restricted')), false)
-    assert.equal(await page.locator('.junction-station[data-station-code="W"]').evaluate(element => element.classList.contains('restricted')), false)
-    assert.equal(await page.locator('.junction-station[data-station-code="R"]').evaluate(element => element.classList.contains('restricted')), true)
+    // TKT-219: 환승 홀은 출발 안내판 — Runtime(보호 구역)은 행이 없다. 운영 노트 행은 잠금 표시 없이 「운행」.
+    const workRow = page.locator('.hall-row').filter({ hasText: '운영 노트' })
+    assert.equal(await workRow.locator('.hall-status').textContent(), '운행')
+    assert.equal(await workRow.evaluate(element => element.classList.contains('is-dim')), false)
+    assert.equal(await page.locator('.hall-row').filter({ hasText: 'Runtime' }).count(), 0)
 
     await workRow.click()
     await page.locator('.work-notes').waitFor()
@@ -183,11 +183,10 @@ for (const scenario of [
     assert.equal(await page.locator('.junction-access-toast').count(), 0)
     await assertNoOverflow(page)
 
-    // 뒤로가기 → 환승 홀, 거기서 Runtime 은 여전히 토스트
+    // 뒤로가기 → 환승 홀, 거기서도 Runtime 행은 없다
     await page.goBack()
     await page.locator('.junction-overview').waitFor()
-    await page.locator('.junction-route-row').filter({ hasText: 'Runtime Board' }).click()
-    assert.equal(await page.locator('.junction-access-toast').textContent(), '보호 구역 · 준비 중')
+    assert.equal(await page.locator('.hall').innerText().then(text => /Runtime/.test(text)), false)
     assert.equal(new URL(page.url()).pathname, publicBase)
     if (process.env.WORK_NOTES_SCREENSHOT_DIR) {
       await page.screenshot({

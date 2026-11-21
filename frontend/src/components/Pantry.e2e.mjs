@@ -333,9 +333,9 @@ test('P 역은 자취 밥상으로 열리고 스탬프는 기록되어 다음 �
   const page = await setup(t, { width: 1440, height: 900, theme: 'light' })
   await capture(page, 'pantry-1440-light')
   await page.getByRole('button', { name: '환승 홀', exact: true }).click()
-  const pantryStation = page.locator('.junction-route-row').filter({ hasText: '자취 밥상' })
+  const pantryStation = page.locator('.hall-row').filter({ hasText: '자취 밥상' })
   assert.equal(await pantryStation.count(), 1)
-  assert.equal(await page.locator('[data-station-code="P"].upcoming').count(), 0)
+  assert.equal(await page.locator('.hall-row.is-dim').filter({ hasText: '자취 밥상' }).count(), 0)
   await pantryStation.click()
   assert.match(new URL(page.url()).pathname, /\/pantry$/)
 

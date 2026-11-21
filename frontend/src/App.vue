@@ -261,6 +261,7 @@ async function fetchJson(url, options = {}) {
             v-if="page === 'junction'"
             :disabled-pages="staticUnavailablePages"
             :static-mode="isStaticMode"
+            :view="view"
             :static-mode-message="staticModeMessage"
             :blog-closed-notice="blogClosedNotice"
             @open="openPage"
