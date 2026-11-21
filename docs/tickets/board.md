@@ -43,7 +43,6 @@
 
 ## Ready
 
-- `TKT-222` `P1` `v1.0.0` `ready` `[INFRA]` 집 PC 공개 전 보안 보강 — /api 허용 목록·게이트웨이 기본값 제거 (Sonnet)
 
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
@@ -69,6 +68,8 @@
 
 
 ## Finished
+
+- `TKT-222` `[INFRA]` 집 PC 공개 전 보안 보강 — /api 허용 목록·게이트웨이 기본값 제거 — r2 통과 (2026-11-21, v1.0.0, Sonnet 5.5)
 
 - `TKT-220` `[INFRA]` 집 PC(.100) 웹 컨테이너 — Docker Compose + Cloudflare Tunnel — r1 통과 (2026-11-21, v1.0.0, Sonnet 5.5)
 - `TKT-216` `[FE]` 접근성 패치 — 숨은 파일 입력·모바일 지도 도시 타깃·밥상 끝 칩 — r1 통과 (2026-11-15, v0.8.4, Sonnet 5.5)
