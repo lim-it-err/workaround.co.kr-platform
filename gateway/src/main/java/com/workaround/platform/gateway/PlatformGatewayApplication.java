@@ -61,6 +61,7 @@ class PlatformApiController {
 
   @Autowired
   PlatformApiController(
+      @Value("${app.env:dev}") String appEnv,
       @Value("${app.platform.api-key:dev-key}") String platformApiKey,
       @Value("${app.ollama.base-url:}") String ollamaBaseUrl,
       @Value("${app.platform.elevator-service-url:http://localhost:8003}") String elevatorServiceUrl,
@@ -72,6 +73,7 @@ class PlatformApiController {
       @Value("${app.work-manager.lock-minutes:5}") int workManagerLockMinutes,
       @Value("${app.work-manager.trusted-proxies:}") String trustedWorkManagerProxies) {
     this(
+        validateProductionSecrets(appEnv, platformApiKey, workManagerPasswordHash),
         platformApiKey,
         ollamaBaseUrl,
         new PlatformStore(
@@ -85,6 +87,15 @@ class PlatformApiController {
         trustedWorkManagerProxies);
   }
 
+  private PlatformApiController(
+      boolean validated,
+      String platformApiKey,
+      String ollamaBaseUrl,
+      PlatformStore store,
+      String trustedWorkManagerProxies) {
+    this(platformApiKey, ollamaBaseUrl, store, trustedWorkManagerProxies);
+  }
+
   PlatformApiController(
       String platformApiKey,
       String ollamaBaseUrl,
@@ -94,6 +105,24 @@ class PlatformApiController {
     this.ollamaBaseUrl = ollamaBaseUrl;
     this.trustedWorkManagerProxies = parseTrustedProxyAddresses(trustedWorkManagerProxies);
     this.store = store;
+  }
+
+  /** 운영(APP_ENV=home|prod)에서 공개 저장소 기본 키·해시나 빈 값이면 기동을 막는다. dev 는 그대로. */
+  static boolean validateProductionSecrets(String appEnv, String apiKey, String passwordSha256) {
+    String env = appEnv == null ? "" : appEnv.trim().toLowerCase();
+    if (!"home".equals(env) && !"prod".equals(env) && !"production".equals(env)) {
+      return true;
+    }
+    if (apiKey == null || apiKey.isBlank() || "dev-key".equals(apiKey)) {
+      throw new IllegalStateException(
+          "운영(APP_ENV=" + env + ")에서는 PLATFORM_API_KEY 가 비었거나 기본값(dev-key)일 수 없습니다. 기동을 중단합니다.");
+    }
+    if (passwordSha256 == null || passwordSha256.isBlank()
+        || DEFAULT_WORK_MANAGER_PASSWORD_SHA256.equalsIgnoreCase(passwordSha256.trim())) {
+      throw new IllegalStateException(
+          "운영(APP_ENV=" + env + ")에서는 WORK_MANAGER_PASSWORD_SHA256 이 비었거나 저장소 기본값일 수 없습니다. 기동을 중단합니다.");
+    }
+    return true;
   }
 
   @GetMapping("/health")
@@ -220,7 +249,7 @@ class PlatformApiController {
   }
 
   private void requireApiKey(String requestKey) {
-    if (!Objects.equals(platformApiKey, requestKey)) {
+    if (platformApiKey == null || platformApiKey.isBlank() || !Objects.equals(platformApiKey, requestKey)) {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid X-Platform-Key");
     }
   }

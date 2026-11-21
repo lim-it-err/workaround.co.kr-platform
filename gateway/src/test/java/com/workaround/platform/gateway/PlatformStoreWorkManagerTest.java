@@ -210,6 +210,40 @@ class PlatformStoreWorkManagerTest {
         repoRoot);
   }
 
+  private static final String REPO_DEFAULT_HASH =
+      "8e0894262a5710556e3a186ff6476306c62c8c91f9853249fb878bf4f2826176";
+
+  @Test
+  void productionRejectsEmptyOrDefaultApiKey() {
+    for (String key : new String[] {"", "  ", "dev-key", null}) {
+      assertThrows(IllegalStateException.class,
+          () -> PlatformApiController.validateProductionSecrets("home", key, WORK_MANAGER_PASSWORD_SHA256));
+    }
+  }
+
+  @Test
+  void productionRejectsEmptyOrDefaultPasswordHash() {
+    for (String hash : new String[] {"", REPO_DEFAULT_HASH, REPO_DEFAULT_HASH.toUpperCase()}) {
+      assertThrows(IllegalStateException.class,
+          () -> PlatformApiController.validateProductionSecrets("home", "some-random-key", hash));
+    }
+  }
+
+  @Test
+  void productionAcceptsCustomSecretsAndDevKeepsDefaults() {
+    assertThat(PlatformApiController.validateProductionSecrets("home", "some-random-key", WORK_MANAGER_PASSWORD_SHA256)).isTrue();
+    assertThat(PlatformApiController.validateProductionSecrets("dev", "dev-key", REPO_DEFAULT_HASH)).isTrue();
+    assertThat(PlatformApiController.validateProductionSecrets("", "", "")).isTrue();
+  }
+
+  @Test
+  void blankConfiguredKeyRejectsEmptyHeader() {
+    PlatformApiController controller = new PlatformApiController("", "", createStore(5), "");
+    ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+        () -> controller.createTicket("", null));
+    assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusCode());
+  }
+
   private PlatformApiController createController(int maxFailedAttempts, String trustedProxies) {
     return new PlatformApiController(
         "dev-key",

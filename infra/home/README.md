@@ -10,7 +10,11 @@
 | `gateway` | 기존 `gateway/` 빌드. `/api/*` 대상 | 꺼짐 (`--profile api`) |
 | `cloudflared` | 터널 커넥터 (이미지 태그 고정) | 꺼짐 (`--profile tunnel`) |
 
-gateway 가 꺼져 있으면 `/api/*` 는 502 이고, 화면은 정적 폴백으로 동작한다. lab 실시간 API 는 이 구성 밖이다.
+gateway 가 꺼져 있으면 허용된 `/api` 경로는 502 이고, 화면은 정적 폴백으로 동작한다.
+
+### `/api` 공개 범위 (TKT-222)
+
+Caddy 는 `GET`·`HEAD` 의 `/api/health`·`/api/services`·`/api/runtime` 만 게이트웨이로 보내고, 나머지 `/api/*`(모든 POST, `work-manager`, `tickets`, `services/{id}/**` 프록시)는 **403** 이다. Work Manager·티켓 API 가 필요해지면 Cloudflare Access 뒤 별도 호스트로 분리한다(이번 범위 밖). `api` 프로필을 켜기 전에 `.env` 의 `PLATFORM_API_KEY`·`WORK_MANAGER_PASSWORD_SHA256` 두 값이 필수이며, 없으면 gateway 컨테이너만 기동 실패한다(web 은 그대로 산다). 게이트웨이는 `APP_ENV=home` 에서 기본 키·기본 해시면 시작 단계에서 실패한다. `X-Forwarded-For` 는 web 컨테이너 고정 IP(`172.31.80.10`)가 보낸 것만 신뢰한다. lab 실시간 API 는 이 구성 밖이다.
 
 ## 사전조건
 

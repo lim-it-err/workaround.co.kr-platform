@@ -28,9 +28,18 @@
 		respond "ok" 200
 	}
 
-	# 게이트웨이가 꺼져 있으면 502 그대로 — 화면은 정적 폴백으로 동작한다.
-	handle /api/* {
+	# /api 는 허용 목록 방식(TKT-222) — 공개 화면이 읽는 GET 3개만 게이트웨이로 보내고
+	# 나머지(POST·work-manager·tickets·services 프록시)는 전부 403.
+	# 게이트웨이가 꺼져 있으면 허용 경로도 502 — 화면은 정적 폴백으로 동작한다.
+	@apiPublic {
+		method GET HEAD
+		path /api/health /api/services /api/runtime
+	}
+	handle @apiPublic {
 		reverse_proxy gateway:8080
+	}
+	handle /api/* {
+		respond "forbidden" 403
 	}
 
 	handle @advisorPage {
