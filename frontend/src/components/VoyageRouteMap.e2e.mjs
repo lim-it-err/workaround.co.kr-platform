@@ -337,3 +337,74 @@ for (const scenario of [
     await page.getByRole('heading', { name: '여행 목록', exact: true }).waitFor()
   })
 }
+
+// TKT-216 I1 — 숨은 파일 입력은 Tab 순서에 없고, 보이는 버튼이 유일한 진입점이다
+test('375px: 숨은 파일 입력은 Tab 순서에 없다', async t => {
+  const page = await setup(t, { width: 375, height: 812, theme: 'dark' })
+  const restoreButton = page.getByRole('button', { name: '백업 복원', exact: true })
+  await restoreButton.scrollIntoViewIfNeeded()
+  const fileInputs = page.locator('input[type="file"]')
+  assert.ok(await fileInputs.count() >= 1)
+  for (const input of await fileInputs.all()) {
+    assert.equal(await input.getAttribute('tabindex'), '-1', '숨은 파일 입력은 tabindex -1 이어야 한다')
+  }
+  await restoreButton.focus()
+  await page.keyboard.press('Tab')
+  assert.equal(await page.evaluate(() => document.activeElement?.matches('input[type="file"]') ?? false), false, '백업 복원 다음 Tab 이 파일 입력이면 안 된다')
+  const chooser = page.waitForEvent('filechooser')
+  await restoreButton.click()
+  assert.ok(await chooser, '백업 복원 버튼으로 파일 선택이 열려야 한다')
+})
+
+// TKT-216 I2 — 375px 도시 조작 영역은 세로 40px 이상이고 서로 겹치지 않는다
+test('375px: 지도 도시 링크 조작 영역은 세로 40px 이상이고 겹치지 않는다', async t => {
+  const page = await setup(t, { width: 375, height: 812, theme: 'dark' })
+  await page.getByRole('button', { name: '노선도 펼치기', exact: true }).click()
+  await page.locator('.route-map-panel').waitFor({ state: 'visible' })
+  const cities = await page.evaluate(() => [...document.querySelectorAll('.route-station')].map((link) => {
+    const hit = link.querySelector('.route-station__hit')
+    const box = hit.getBoundingClientRect()
+    const dot = link.querySelector('.route-station__dot').getBoundingClientRect()
+    return { label: link.getAttribute('aria-label'), height: box.height, dotWidth: dot.width }
+  }))
+  assert.equal(cities.length, 9)
+  for (const city of cities) {
+    assert.ok(city.height >= 40, `${city.label} 조작 영역 세로 ${city.height}px 는 40px 이상이어야 한다`)
+    assert.ok(city.dotWidth <= 40, '표시 점 크기는 그대로여야 한다')
+  }
+  // 겹침 0 — 도시 hit 다각형을 격자 표본으로 훑어 두 곳 이상에 속하는 점이 없어야 한다
+  const overlaps = await page.evaluate(() => {
+    const hits = [...document.querySelectorAll('.route-station__hit')]
+    let count = 0
+    for (let x = 0; x <= 720; x += 3) {
+      for (let y = 0; y <= 540; y += 3) {
+        const point = new DOMPoint(x, y)
+        if (hits.filter((hit) => hit.isPointInFill(point)).length > 1) count += 1
+      }
+    }
+    return count
+  })
+  assert.equal(overlaps, 0, '도시 조작 영역이 서로 겹치면 안 된다')
+  // 각 도시 조작 영역 중심을 눌러 자기 도시 상세가 열린다
+  for (let index = 0; index < cities.length; index += 1) {
+    const { label } = cities[index]
+    await page.evaluate(() => document.querySelector('.route-map-panel').scrollIntoView({ block: 'start' }))
+    const live = await page.evaluate((i) => {
+      const hit = document.querySelectorAll('.route-station__hit')[i]
+      const pts = hit.getAttribute('d').match(/-?\d+(\.\d+)?/g).map(Number)
+      let sx = 0
+      let sy = 0
+      for (let j = 0; j < pts.length; j += 2) { sx += pts[j]; sy += pts[j + 1] }
+      const p = new DOMPoint(sx / (pts.length / 2), sy / (pts.length / 2)).matrixTransform(hit.getScreenCTM())
+      return { x: p.x, y: p.y }
+    }, index)
+    const hitId = await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.closest('.route-station')?.getAttribute('aria-label'), live)
+    assert.equal(hitId, label, `${label} 영역 중심은 자기 도시 링크여야 한다`)
+    await page.mouse.click(live.x, live.y)
+    const dialog = page.getByRole('dialog')
+    await dialog.waitFor()
+    assert.equal(await dialog.getByRole('heading', { level: 3 }).first().textContent(), label.split(' · ')[0].replace(/ 복귀$/, ''), `${label} 중심 클릭이 자기 도시를 열어야 한다`)
+    await dialog.getByRole('button', { name: '상세 닫기', exact: true }).click()
+    await dialog.waitFor({ state: 'hidden' })
+  }
+})
