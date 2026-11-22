@@ -66,7 +66,7 @@ const EXPECTED_ROWS = [
   ['생활선', '자취 밥상', '운행'],
   ['기지선', '운영 노트', '공개']
 ]
-const LITE_LABELS = ['여행', '유로트럭', '자취 밥상', '운영 노트']
+const LITE_LABELS = ['여행', '자취 밥상', '운영 노트']
 
 // opts: reducedMotion · seen(재방문 표시) · lite · clock(가상 시계)
 async function setup(t, viewport, opts = {}) {
@@ -287,7 +287,7 @@ for (const viewport of VIEWPORTS) {
     assert.equal(await hall.locator('#hall-lite-title').textContent(), '환승 홀')
     const list = hall.getByRole('listbox')
     assert.equal(await list.count(), 1)
-    assert.deepEqual(await hall.getByRole('option').allTextContents(), LITE_LABELS, '항목 4개 — Advisor·격납고 없음')
+    assert.deepEqual(await hall.getByRole('option').allTextContents(), LITE_LABELS, '항목 3개 — 유로트럭(TKT-233)·Advisor·격납고 없음')
     assert.equal(await page.locator('.hall-board, .hall-row').count(), 0, 'lite 에는 안내판이 없다')
     assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-0', '처음부터 첫 항목 선택')
     assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '여행')
@@ -301,28 +301,28 @@ for (const viewport of VIEWPORTS) {
     // 클릭 없이, 포커스가 보기 전환 버튼에 있어도 ↑↓ 가 먹는다.
     await page.locator('.view-toggle button').last().focus()
     await page.keyboard.press('ArrowUp')
-    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-3', '맨 위에서 ↑ 는 맨 아래로 순환')
+    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-2', '맨 위에서 ↑ 는 맨 아래로 순환')
     assert.equal(await list.evaluate(element => element === document.activeElement), true, '키 처리 뒤 포커스는 목록으로')
     await page.keyboard.press('ArrowDown')
     assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-0', '맨 아래에서 ↓ 는 맨 위로 순환')
     await page.keyboard.press('End')
-    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-3')
+    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-2')
     await page.keyboard.press('Home')
     assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-0')
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('ArrowDown')
-    assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '자취 밥상')
+    assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '운영 노트')
     await shot(page, `lite-selected-${viewport.width}`)
   })
 
-  test(`${tag} lite: 아무것도 누르지 않고 ↓ Enter 로 진입 (유로트럭), 보기 전환 버튼 위 Enter 는 버튼 동작`, async t => {
+  test(`${tag} lite: 아무것도 누르지 않고 ↓ Enter 로 진입 (자취 밥상), 보기 전환 버튼 위 Enter 는 버튼 동작`, async t => {
     const page = await setup(t, viewport, { reducedMotion: true, lite: true })
     await enterHall(page)
     await page.keyboard.press('ArrowDown')
-    assert.equal(await page.locator('.hall[data-hall="lite"] [aria-selected="true"]').textContent(), '유로트럭')
+    assert.equal(await page.locator('.hall[data-hall="lite"] [aria-selected="true"]').textContent(), '자취 밥상')
     await page.keyboard.press('Enter')
-    await page.locator('.station-topbar h2', { hasText: '유로트럭' }).waitFor()
-    assert.match(new URL(page.url()).pathname, /\/ets2$/)
+    await page.locator('[data-lite-screen]').waitFor()
+    assert.match(new URL(page.url()).pathname, /\/pantry$/)
 
     // 보기 전환 버튼에 포커스가 있을 때 Enter 는 목록 진입이 아니라 버튼 동작(기본 보기로 전환).
     await page.getByRole('button', { name: '환승 홀', exact: true }).click()

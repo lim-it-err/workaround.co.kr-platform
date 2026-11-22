@@ -48,10 +48,9 @@ export const HALL_MAP = {
   }
 }
 
-// lite: 역 이름 6개만(글자 입력 칸 없음).
+// lite: 역 이름 3개만(여행·자취 밥상·운영 노트, 글자 입력 칸 없음).
 export const HALL_LITE_ITEMS = [
   { id: 'voyage', label: '여행', page: 'voyage' },
-  { id: 'ets2', label: '유로트럭', page: 'ets2' },
   { id: 'pantry', label: '자취 밥상', page: 'pantry' },
   { id: 'work', label: '운영 노트', page: 'work' }
 ]
