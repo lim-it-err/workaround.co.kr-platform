@@ -1,0 +1,65 @@
+# 집 PC(.100) 웹 — web(Caddy 정적) + 선택 gateway + 선택 cloudflared 터널.
+# 사용법은 README.md. 실행 위치: 이 폴더(infra/home) 또는 -f infra/home/docker-compose.yml.
+name: home-web
+
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/home/web.Dockerfile
+    image: home-web:local
+    networks:
+      home:
+        ipv4_address: 172.31.80.10
+    # 호스트에는 루프백으로만 연다 — LAN 노출 금지. 바깥 공개는 cloudflared 가 맡는다.
+    ports:
+      - "127.0.0.1:${HOME_WEB_PORT:-8090}:80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:80/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # /api/* 대상. 기본은 꺼짐 — `--profile api` 로 켠다. 꺼져 있으면 web 은 /api 에 502 를 돌려주고
+  # 화면은 정적 폴백으로 동작한다.
+  gateway:
+    profiles: ["api"]
+    build:
+      context: ../../gateway
+    image: home-gateway:local
+    networks: [home]
+    environment:
+      # 두 값이 비면 APP_ENV=home 검증이 gateway 만 기동 실패시킨다(web 은 영향 없음).
+      APP_ENV: home
+      PLATFORM_API_KEY: ${PLATFORM_API_KEY:-}
+      WORK_MANAGER_PASSWORD_SHA256: ${WORK_MANAGER_PASSWORD_SHA256:-}
+      # X-Forwarded-For 는 web(Caddy) 컨테이너가 보낸 것만 믿는다 — 아래 networks 의 고정 IP.
+      WORK_MANAGER_TRUSTED_PROXIES: 172.31.80.10
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+    expose:
+      - "8080"
+    restart: unless-stopped
+
+  # 바깥 공개 = 아웃바운드 터널만. 공개 포트를 열지 않는다. `--profile tunnel` 로 켠다.
+  cloudflared:
+    profiles: ["tunnel"]
+    image: cloudflare/cloudflared:2025.11.1
+    networks: [home]
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # lab 실시간 API(lab-api) 자리 — 범위 밖(TKT-220). 필요해지면 여기에 서비스를 추가하고
+  # Caddyfile 에 reverse_proxy 를 더한다.
+
+networks:
+  home:
+    ipam:
+      config:
+        - subnet: 172.31.80.0/24

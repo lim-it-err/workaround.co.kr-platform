@@ -6,6 +6,8 @@ spring:
     name: workaround-gateway
 
 app:
+  # home|prod 이면 기본 키·기본 비밀번호 해시로는 기동하지 않는다(TKT-222). dev 는 그대로.
+  env: ${APP_ENV:dev}
   platform:
     api-key: ${PLATFORM_API_KEY:dev-key}
     elevator-service-url: ${ELEVATOR_SERVICE_URL:http://localhost:8003}
