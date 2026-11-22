@@ -162,7 +162,7 @@ for (const scenario of [
     assert.equal(new URL(page.url()).pathname, `${publicBase}work`)
   })
 
-  test(`${scenario.width}px ${scenario.theme}: W 역은 잠금 없이 열리고 Runtime 은 잠금을 유지한다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: 운영 노트 행은 잠금 없이 열리고 Runtime 은 안내판에 없다`, async t => {
     const page = await setup(t, scenario)
 
     await page.goto(`${base}sim`)
@@ -171,11 +171,11 @@ for (const scenario of [
     await page.locator('.junction-overview').waitFor()
     assert.equal(new URL(page.url()).pathname, publicBase, 'Runtime 직접 주소는 환승 홀로 돌아간다')
 
-    const workRow = page.locator('.junction-route-row').filter({ hasText: 'Work Manager' })
-    assert.equal(await workRow.locator('.junction-route-status').textContent(), '운영 노트')
-    assert.equal(await workRow.evaluate(element => element.classList.contains('protected') || element.classList.contains('restricted')), false)
-    assert.equal(await page.locator('.junction-station[data-station-code="W"]').evaluate(element => element.classList.contains('restricted')), false)
-    assert.equal(await page.locator('.junction-station[data-station-code="R"]').evaluate(element => element.classList.contains('restricted')), true)
+    // TKT-219: 환승 홀은 출발 안내판 — Runtime(보호 구역)은 행이 없다. 운영 노트 행은 잠금 표시 없이 「공개」(TKT-221).
+    const workRow = page.locator('.hall-row').filter({ hasText: '운영 노트' })
+    assert.equal(await workRow.locator('.hall-status').textContent(), '공개')
+    assert.equal(await workRow.evaluate(element => element.classList.contains('is-dim')), false)
+    assert.equal(await page.locator('.hall-row').filter({ hasText: 'Runtime' }).count(), 0)
 
     await workRow.click()
     await page.locator('.work-notes').waitFor()
@@ -183,11 +183,10 @@ for (const scenario of [
     assert.equal(await page.locator('.junction-access-toast').count(), 0)
     await assertNoOverflow(page)
 
-    // 뒤로가기 → 환승 홀, 거기서 Runtime 은 여전히 토스트
+    // 뒤로가기 → 환승 홀, 거기서도 Runtime 행은 없다
     await page.goBack()
     await page.locator('.junction-overview').waitFor()
-    await page.locator('.junction-route-row').filter({ hasText: 'Runtime Board' }).click()
-    assert.equal(await page.locator('.junction-access-toast').textContent(), '보호 구역 · 준비 중')
+    assert.equal(await page.locator('.hall').innerText().then(text => /Runtime/.test(text)), false)
     assert.equal(new URL(page.url()).pathname, publicBase)
     if (process.env.WORK_NOTES_SCREENSHOT_DIR) {
       await page.screenshot({
@@ -197,3 +196,39 @@ for (const scenario of [
     }
   })
 }
+
+// TKT-218 (D-035 보완): 라이트 테마 없음 · 보기 전환 `기본 | lite`
+test('라이트 없음: 저장값 light 도 검은 기본으로 열리고, 기본/lite 전환이 기억된다', async t => {
+  const page = await setup(t, { width: 375, height: 812, theme: 'light' })
+  await page.goto(`${base}work`)
+  const shell = page.locator('.app-shell')
+  await shell.waitFor()
+  assert.equal(await shell.getAttribute('data-theme'), null)
+  assert.equal(await shell.getAttribute('data-view'), 'base')
+  assert.equal(await page.getByRole('button', { name: /라이트 모드|다크 모드/ }).count(), 0)
+  assert.equal(await shell.evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(12, 12, 12)')
+
+  const baseButton = page.getByRole('button', { name: '기본', exact: true })
+  const liteButton = page.getByRole('button', { name: 'lite', exact: true })
+  for (const button of [baseButton, liteButton]) {
+    assert.ok((await button.boundingBox()).height >= 40, '보기 토글 40px')
+  }
+  assert.equal(await baseButton.getAttribute('aria-pressed'), 'true')
+  await liteButton.click()
+  assert.equal(await shell.getAttribute('data-view'), 'lite')
+  assert.equal(await liteButton.getAttribute('aria-pressed'), 'true')
+  assert.equal(await shell.evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(3, 16, 8)')
+  assert.equal(await shell.evaluate(el => getComputedStyle(el, '::after').pointerEvents), 'none')
+  assert.equal(await page.evaluate(() => localStorage.getItem('workaround-view')), 'lite')
+  await assertNoOverflow(page)
+
+  await page.reload()
+  assert.equal(await page.locator('.app-shell').getAttribute('data-view'), 'lite')
+  await page.locator('.app-shell').getByRole('button', { name: '기본', exact: true }).click()
+  assert.equal(await page.evaluate(() => localStorage.getItem('workaround-view')), 'base')
+
+  // ?view=lite 는 저장값보다 우선하되 저장값을 바꾸지 않는다
+  await page.goto(`${base}work?view=lite`)
+  assert.equal(await page.locator('.app-shell').getAttribute('data-view'), 'lite')
+  assert.equal(await page.evaluate(() => localStorage.getItem('workaround-view')), 'base')
+})

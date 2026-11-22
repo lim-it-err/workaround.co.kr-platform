@@ -7,6 +7,9 @@ services:
     build:
       context: ../..
       dockerfile: infra/home/web.Dockerfile
+      args:
+        # 부팅 로그 버전(TKT-221). 비우면 「workaround 기동」.
+        RELEASE_VERSION: ${RELEASE_VERSION:-}
     image: home-web:local
     networks:
       home:

@@ -46,6 +46,12 @@ docker compose up -d --build
 
 (PowerShell·bash 동일.) 첫 빌드는 npm 설치 때문에 몇 분 걸린다. API 까지 켜려면 `docker compose --profile api up -d --build`.
 
+### 빌드 — 정적 모드와 버전 (TKT-223)
+
+web 이미지의 메인 프런트는 base 가 `/` 인데도 **`VITE_STATIC_MODE=true` 로 빌드**한다. 앞 화면은 base 가 `/` 면 라이브 모드(`/api/*` 호출)로 켜지는데, 기본 구성에는 게이트웨이가 없어 Caddy 가 403·502 만 돌려주기 때문이다. 정적 모드로 빌드하면 GitHub Pages 와 같은 화면이 된다(게이트웨이를 화면에 연결하는 일은 별도 결정). 블로그 스위치가 닫혀 있으면 이미지 빌드 중 `mockups/` 의 블로그 목업도 Pages 처럼 지운다.
+
+부팅 로그의 버전은 `.env` 의 `RELEASE_VERSION`(예: `0.9.0`)을 넣고 `docker compose build web` 으로 다시 빌드하면 바뀐다. 비워 두면 「workaround 기동」만 나온다.
+
 ## 3. 상태 확인
 
 PowerShell:

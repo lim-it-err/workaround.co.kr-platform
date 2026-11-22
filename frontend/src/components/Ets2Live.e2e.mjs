@@ -157,7 +157,7 @@ test('프레임 로드가 세 번 연속 실패하면 같은 페이지에서 관
   await assertNoOverflow(page)
 })
 
-test('격납고와 환승 홀 소역에서 진입하고 정적 주소 새로고침을 유지한다', async t => {
+test('격납고와 환승 홀 안내판에서 진입하고 정적 주소 새로고침을 유지한다', async t => {
   const page = await setup(t, { width: 1440, height: 900, theme: 'dark' })
   await page.goto(`${base}sim`)
   const ets2Row = page.locator('.tone-service-row').filter({ hasText: '유로트럭 관제' })
@@ -168,9 +168,10 @@ test('격납고와 환승 홀 소역에서 진입하고 정적 주소 새로고�
   await page.locator('.ets2-live-page').waitFor()
 
   await page.getByRole('button', { name: '환승 홀', exact: true }).click()
-  const smallStop = page.locator('.junction-page-stop[data-stop-label="유로트럭"]')
-  assert.equal(await smallStop.count(), 1)
-  await smallStop.locator('.junction-page-stop-dot').click()
+  // TKT-219: 노선도의 소역은 사라졌다 — 출발 안내판의 「유로트럭」 행이 같은 진입점이다.
+  const ets2Board = page.locator('.hall-row').filter({ hasText: '유로트럭' })
+  assert.equal(await ets2Board.count(), 1)
+  await ets2Board.click()
   await page.locator('.ets2-live-page').waitFor()
   assert.match(new URL(page.url()).pathname, /\/ets2$/)
   await capture(page, 'ets2-1440-dark')

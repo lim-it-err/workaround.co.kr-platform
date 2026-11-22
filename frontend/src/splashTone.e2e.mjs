@@ -722,7 +722,9 @@ test('1440px light reduced motion: static first phrase, loop symbol and zero ove
   assert.notEqual(reducedMotionLog[0]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 1번째 티커는 고정 문구가 아니어야 한다')
   assert.notEqual(reducedMotionLog[1]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 2번째 티커는 고정 문구가 아니어야 한다')
   assert.notEqual(reducedMotionLog[2]?.text, FIXED_SPLASH_TICKER, 'reduced-motion 3번째 티커는 고정 문구가 아니어야 한다')
-  assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), 'light')
+  // TKT-218: 라이트 없음 — 저장값 light 여도 data-theme 가 없고 기본 보기로 열린다
+  assert.equal(await page.locator('.app-shell').getAttribute('data-theme'), null)
+  assert.equal(await page.locator('.app-shell').getAttribute('data-view'), 'base')
   assert.deepEqual(await splashPanelSurface(page), {
     backgroundColor: 'rgba(0, 0, 0, 0)',
     backgroundImage: 'none',
@@ -760,7 +762,7 @@ test('375/1440 다크·라이트: 출발 문 3단계와 이후 0.6초 상태 머
       element.scrollTo({ top: target })
       return element.scrollTop
     })
-    const pantryRow = page.locator('.junction-route-row').filter({ hasText: '자취 밥상' })
+    const pantryRow = page.locator('.hall-row').filter({ hasText: '자취 밥상' })
     await pantryRow.click()
     await page.clock.runFor(225)
     assert.equal(await page.locator('.door-transition.closing').count(), 1)
@@ -791,7 +793,7 @@ test('375/1440 다크·라이트: 출발 문 3단계와 이후 0.6초 상태 머
       if (moveIndex % 2 === 1) {
         await page.getByRole('button', { name: '환승 홀', exact: true }).click()
       } else {
-        await page.locator('.junction-route-row').filter({ hasText: '자취 밥상' }).click()
+        await page.locator('.hall-row').filter({ hasText: '자취 밥상' }).click()
       }
       await page.clock.runFor(599)
       assert.equal(await page.locator('.door-transition').count(), 1, `${moveIndex + 1}번째 이동 0.6초 직전 문짝`)
@@ -949,7 +951,7 @@ test('16px·32px·SVG 파비콘은 Pages base와 열린 기점 형태를 보존�
   }
 })
 
-test('TKT-201 문 열림 중간(250ms): 뒤에 환승 홀 노선도가 있고 스플래시 플랩은 없다', async t => {
+test('TKT-201 문 열림 중간(250ms): 뒤에 환승 홀 안내판이 있고 스플래시 플랩은 없다', async t => {
   const cases = [
     { name: '375', width: 375, height: 812 },
     { name: '1440', width: 1440, height: 900 }
@@ -965,11 +967,11 @@ test('TKT-201 문 열림 중간(250ms): 뒤에 환승 홀 노선도가 있고 �
     assert.equal(await page.locator('.door-transition.opening').count(), 1, '250ms 시점에도 문 열림 중')
     assert.equal(await page.locator('.splash-stage').count(), 0, '스플래시 플랩이 DOM 에 없어야 한다')
     assert.equal(await page.getByText('DOORS OPENING', { exact: true }).count(), 0, 'DOORS OPENING 문구가 보이면 안 된다')
-    assert.ok(await page.locator('.junction-map').count() >= 1, '환승 홀 노선도가 문 뒤에 있어야 한다')
+    assert.ok(await page.locator('[data-hall-board]').count() >= 1, '환승 홀 출발 안내판이 문 뒤에 있어야 한다')
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0)
     const layering = await page.evaluate(() => {
       const door = getComputedStyle(document.querySelector('.door-transition')).zIndex
-      const map = document.querySelector('.junction-map')
+      const map = document.querySelector('[data-hall-board]')
       return { door: Number(door), mapZ: Number(getComputedStyle(map).zIndex) || 0 }
     })
     assert.ok(layering.door > layering.mapZ, '문 레이어가 페이지 위에 있어야 한다')

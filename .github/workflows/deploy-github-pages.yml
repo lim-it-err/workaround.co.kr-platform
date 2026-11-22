@@ -52,6 +52,8 @@ jobs:
         run: npm --prefix services/advisor/frontend ci
 
       - name: Build frontend for the project Pages base
+        env:
+          RELEASE_VERSION: ${{ vars.RELEASE_VERSION }}   # TKT-221: 부팅 로그 버전 (저장소 변수, 없으면 빈 값)
         run: npm --prefix frontend run build -- --base="$GITHUB_PAGES_BASE"
 
       - name: Build advisor frontend for the nested Pages base

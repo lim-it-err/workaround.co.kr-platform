@@ -153,28 +153,16 @@ for (const scenario of [
     await page.locator('.junction-overview').waitFor()
     assert.equal(new URL(page.url()).pathname, publicBase)
 
-    assert.equal(await page.locator('.junction-sublinks').filter({ has: page.getByText('격납고', { exact: true }) }).locator(':scope > *').count(), 6)
-    assert.equal(await page.locator('.junction-sublinks').getByRole('button', { name: '유로트럭', exact: true }).count(), 1)
-    assert.deepEqual(await page.locator('.junction-sublinks > .static-server').allTextContents(), ['유로트럭 개발자', '엘리베이터'])
-    assert.equal(await page.locator('.junction-sublinks > .planned').textContent(), '화이트채플')
-    assert.equal(await page.locator('.junction-page-stop.static-server').count(), 2)
-    assert.equal(await page.locator('.junction-page-stop.planned[data-stop-label="화이트채플"]').count(), 1)
-    const expectedDimOpacity = scenario.theme === 'light' ? '0.8' : '0.55'
-    assert.equal(
-      await page.locator('.junction-page-stop.static-server').first().evaluate(element => getComputedStyle(element).opacity),
-      expectedDimOpacity
-    )
-    assert.equal(
-      await page.locator('.junction-page-stop[data-stop-label="택시"]').evaluate(element => getComputedStyle(element).opacity),
-      '1'
-    )
+    // TKT-219·TKT-221: 환승 홀은 출발 안내판(일곱 행, 흐린 행 없음)이다. 정적 공개본에서도 서버 시뮬 소역·노선도는 홀에 없고, 격납고·유로트럭 행은 그대로 열린다.
+    assert.equal(await page.locator('.hall-row').count(), 7)
+    assert.equal(await page.locator('.junction-map, .junction-station, .junction-sublinks').count(), 0, '노선도·소역은 없다')
+    assert.equal(await page.locator('.hall-row.is-dim').count(), 0, '흐린 행 없음(블로그 행 제거)')
+    assert.equal(await page.locator('.hall-row').filter({ hasText: '유로트럭' }).evaluate(element => getComputedStyle(element).opacity), '1')
+    assert.equal(await page.locator('.hall-row').filter({ hasText: 'Runtime' }).count(), 0, '보호 구역은 안내판에 없다')
     const initialUrl = page.url()
-    await page.locator('.junction-sublinks > .static-server').filter({ hasText: '엘리베이터' }).click()
+    await page.locator('.hall-row').filter({ hasText: '일일 5지' }).click()
     assert.equal(page.url(), initialUrl)
-    assert.equal(await page.locator('.junction-access-toast').textContent(), '서버 시뮬 · 정적 공개본에서는 준비 중')
-    await page.locator('.junction-sublinks > .static-server').filter({ hasText: '유로트럭 개발자' }).click()
-    assert.equal(page.url(), initialUrl)
-    assert.equal(await page.locator('.junction-access-toast').textContent(), '개발자 페이지 · 로컬 전용')
+    assert.match(await page.locator('.junction-access-toast').textContent(), /일일 5지 · 개통 준비 중/)
 
     await page.goto(`${base}ets2/dev`)
     await page.locator('.ets2-dev-page.is-static-preview').waitFor()

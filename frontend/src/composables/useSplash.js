@@ -12,6 +12,28 @@ export const SPLASH_DOOR_OPENING_MS = 500
 const SPLASH_SEEN_STORAGE_KEY = 'splash:seen'
 const SPLASH_SEEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000
 
+// TKT-219: 환승 홀 부팅 로그도 같은 재방문 판정을 쓴다.
+export function readRecentSplashVisit() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  try {
+    const seenAt = window.localStorage.getItem(SPLASH_SEEN_STORAGE_KEY)
+    if (!seenAt) {
+      return false
+    }
+    const seenAtMs = Date.parse(seenAt)
+    if (!Number.isFinite(seenAtMs) || Date.now() - seenAtMs >= SPLASH_SEEN_MAX_AGE_MS) {
+      window.localStorage.removeItem(SPLASH_SEEN_STORAGE_KEY)
+      return false
+    }
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
 const splashPhrases = ['WORKING AROUND', 'MIND THE GAP', 'DOORS OPENING']
 const splashCellCount = Math.max(...splashPhrases.map((phrase) => phrase.length))
 const splashLatinCharset = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -52,27 +74,6 @@ export function useSplash({ prefersReducedMotion, isActive, onTransition }) {
       isRunning: false,
       isSettling: false,
       durationMs: '330ms'
-    }
-  }
-
-  function readRecentSplashVisit() {
-    if (typeof window === 'undefined') {
-      return false
-    }
-
-    try {
-      const seenAt = window.localStorage.getItem(SPLASH_SEEN_STORAGE_KEY)
-      if (!seenAt) {
-        return false
-      }
-      const seenAtMs = Date.parse(seenAt)
-      if (!Number.isFinite(seenAtMs) || Date.now() - seenAtMs >= SPLASH_SEEN_MAX_AGE_MS) {
-        window.localStorage.removeItem(SPLASH_SEEN_STORAGE_KEY)
-        return false
-      }
-      return true
-    } catch (error) {
-      return false
     }
   }
 
