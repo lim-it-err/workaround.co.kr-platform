@@ -66,7 +66,7 @@ const EXPECTED_ROWS = [
   ['생활선', '자취 밥상', '운행'],
   ['기지선', '운영 노트', '공개']
 ]
-const LITE_LABELS = ['여행', 'Advisor', '격납고', '유로트럭', '자취 밥상', '운영 노트']
+const LITE_LABELS = ['여행', '유로트럭', '자취 밥상', '운영 노트']
 
 // opts: reducedMotion · seen(재방문 표시) · lite · clock(가상 시계)
 async function setup(t, viewport, opts = {}) {
@@ -278,7 +278,7 @@ for (const viewport of VIEWPORTS) {
     }
   })
 
-  test(`${tag} lite: 입력 칸 없는 listbox — 첫 로드 포커스 없음, Tab 으로 첫 항목, ↑↓ 순환·Home/End`, async t => {
+  test(`${tag} lite: 입력 칸 없는 listbox — 첫 항목 선택 상태로 시작, ↑↓ 순환·Home/End (포커스 무관)`, async t => {
     const page = await setup(t, viewport, { reducedMotion: true, lite: true })
     await enterHall(page)
     const hall = page.locator('.hall[data-hall="lite"]')
@@ -287,48 +287,61 @@ for (const viewport of VIEWPORTS) {
     assert.equal(await hall.locator('#hall-lite-title').textContent(), '환승 홀')
     const list = hall.getByRole('listbox')
     assert.equal(await list.count(), 1)
-    assert.deepEqual(await hall.getByRole('option').allTextContents(), LITE_LABELS)
+    assert.deepEqual(await hall.getByRole('option').allTextContents(), LITE_LABELS, '항목 4개 — Advisor·격납고 없음')
     assert.equal(await page.locator('.hall-board, .hall-row').count(), 0, 'lite 에는 안내판이 없다')
-    assert.equal(await list.getAttribute('aria-activedescendant'), null, '처음엔 선택 없음')
-    assert.equal(await hall.locator('[aria-selected="true"]').count(), 0)
-    assert.equal(await list.evaluate(element => element === document.activeElement), false, '첫 로드에 목록 포커스를 주지 않는다')
+    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-0', '처음부터 첫 항목 선택')
+    assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '여행')
+    assert.equal(await hall.locator('.hall-lite-msg').textContent(), '여행 선택 · Enter 들어가기')
     const optionBoxes = await hall.getByRole('option').evaluateAll(elements => elements.map(element => element.getBoundingClientRect().height))
     assert.ok(optionBoxes.every(height => height >= 44), `항목 높이 ≥ 44px: ${optionBoxes.join(',')}`)
     await noOverflow(page)
     await assertNoEnglishSignage(page)
+    await shot(page, `lite-first-${viewport.width}`)
 
-    // Tab 으로 들어오면 첫 항목이 선택된다.
+    // 클릭 없이, 포커스가 보기 전환 버튼에 있어도 ↑↓ 가 먹는다.
     await page.locator('.view-toggle button').last().focus()
-    await page.keyboard.press('Tab')
-    assert.equal(await list.evaluate(element => element === document.activeElement), true)
-    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-0')
-    assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '여행')
-    assert.equal(await hall.getByRole('option').first().evaluate(element => getComputedStyle(element, '::before').content), '"▶ "')
-
     await page.keyboard.press('ArrowUp')
-    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-5', '맨 위에서 ↑ 는 맨 아래로 순환')
+    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-3', '맨 위에서 ↑ 는 맨 아래로 순환')
+    assert.equal(await list.evaluate(element => element === document.activeElement), true, '키 처리 뒤 포커스는 목록으로')
     await page.keyboard.press('ArrowDown')
     assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-0', '맨 아래에서 ↓ 는 맨 위로 순환')
     await page.keyboard.press('End')
-    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-5')
+    assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-3')
     await page.keyboard.press('Home')
     assert.equal(await list.getAttribute('aria-activedescendant'), 'hall-lite-opt-0')
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('ArrowDown')
-    assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '격납고')
+    assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '자취 밥상')
     await shot(page, `lite-selected-${viewport.width}`)
   })
 
-  test(`${tag} lite: ↓↓Enter 로 세 번째 역(격납고) 진입`, async t => {
+  test(`${tag} lite: 아무것도 누르지 않고 ↓ Enter 로 진입 (유로트럭), 보기 전환 버튼 위 Enter 는 버튼 동작`, async t => {
     const page = await setup(t, viewport, { reducedMotion: true, lite: true })
     await enterHall(page)
-    await page.locator('.view-toggle button').last().focus()
-    await page.keyboard.press('Tab')
     await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
+    assert.equal(await page.locator('.hall[data-hall="lite"] [aria-selected="true"]').textContent(), '유로트럭')
     await page.keyboard.press('Enter')
-    await page.locator('.station-topbar h2', { hasText: '미스터리 트레인' }).waitFor()
-    assert.match(new URL(page.url()).pathname, /\/sim$/)
+    await page.locator('.station-topbar h2', { hasText: '유로트럭' }).waitFor()
+    assert.match(new URL(page.url()).pathname, /\/ets2$/)
+
+    // 보기 전환 버튼에 포커스가 있을 때 Enter 는 목록 진입이 아니라 버튼 동작(기본 보기로 전환).
+    await page.getByRole('button', { name: '환승 홀', exact: true }).click()
+    await page.locator('.hall[data-hall="lite"]').waitFor()
+    const home = page.url()
+    await page.locator('.view-toggle button').first().focus()
+    await page.keyboard.press('Enter')
+    assert.equal(page.url(), home, '버튼 Enter 는 화면 이동을 만들지 않는다')
+    assert.equal(await page.locator('.hall[data-hall="lite"]').count(), 0, '버튼 동작으로 보기가 바뀐다')
+  })
+
+  test(`${tag} lite: 보기 전환 버튼을 누른 직후에도 ↓ 가 목록을 움직인다`, async t => {
+    const page = await setup(t, viewport, { reducedMotion: true })
+    await enterHall(page)
+    await page.locator('.view-toggle button').last().click()
+    const hall = page.locator('.hall[data-hall="lite"]')
+    await hall.waitFor()
+    await page.keyboard.press('ArrowDown')
+    assert.equal(await hall.getByRole('listbox').getAttribute('aria-activedescendant'), 'hall-lite-opt-1')
   })
 
   test(`${tag} lite: 탭/클릭 한 번 = 선택, 선택된 줄 다시 = 진입 (첫 줄도 첫 탭은 선택만)`, async t => {
@@ -340,6 +353,7 @@ for (const viewport of VIEWPORTS) {
     await hall.getByRole('option', { name: '여행' }).click()
     assert.equal(page.url(), home, '첫 탭은 선택만')
     assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '여행')
+    assert.equal(await hall.locator('.hall-lite-msg').textContent(), '여행 선택 · 한 번 더 누르면 들어갑니다')
     await hall.getByRole('option', { name: '자취 밥상' }).click()
     assert.equal(page.url(), home)
     assert.equal(await hall.locator('[aria-selected="true"]').textContent(), '자취 밥상')
@@ -347,14 +361,79 @@ for (const viewport of VIEWPORTS) {
     await page.locator('.station-topbar h2', { hasText: '자취 밥상' }).waitFor()
     assert.match(new URL(page.url()).pathname, /\/pantry$/)
   })
-
-  test(`${tag} lite: Advisor 는 Pages base 의 advisor 주소로 들어간다`, async t => {
-    const page = await setup(t, viewport, { reducedMotion: true, lite: true })
-    await enterHall(page)
-    await page.route(`**${publicBase}advisor/**`, route => route.fulfill({ status: 200, contentType: 'text/html', body: '<title>advisor</title>' }))
-    const hall = page.locator('.hall[data-hall="lite"]')
-    await hall.getByRole('option', { name: 'Advisor' }).click()
-    await hall.getByRole('option', { name: 'Advisor' }).click()
-    await page.waitForURL(`**${publicBase}advisor/`)
-  })
 }
+
+// TKT-226: 환승 홀 노선도.
+test('노선도: 1440 에서 안내판 위에 보이고 역 7+허브 1·역 클릭 이동·강조 연동·한 화면', async t => {
+  const page = await setup(t, { width: 1440, height: 900 }, { reducedMotion: true })
+  await enterHall(page)
+  const map = page.locator('[data-hall-map]')
+  await map.waitFor()
+  assert.equal(await map.locator('svg').getAttribute('role'), 'img')
+  assert.match(await map.locator('svg').getAttribute('aria-label'), /^노선도: 환승 홀에서/)
+  assert.equal(await map.locator('[data-map-station]').count(), 7, '역 7개')
+  assert.equal(await map.locator('[data-map-hub]').count(), 1, '환승 홀 1개')
+  assert.equal(await map.locator('[tabindex]').count(), 0, '역은 포커스 대상이 아니다')
+  const names = await map.locator('.name').allTextContents()
+  assert.deepEqual(names, ['여행', 'Advisor', '일일 5지', '격납고', '유로트럭', '자취 밥상', '운영 노트'])
+  const mapBox = await map.boundingBox()
+  const boardBox = await page.locator('[data-hall-board]').boundingBox()
+  assert.ok(mapBox.y + mapBox.height <= boardBox.y + 1, '지도는 안내판 위')
+  assert.ok(boardBox.y + boardBox.height <= 900, `지도+안내판이 한 화면(900px)에 들어간다: ${boardBox.y + boardBox.height}`)
+  assert.equal(await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight), true, '세로 스크롤 없음')
+  await noOverflow(page)
+  await assertNoEnglishSignage(page)
+  // 안내판 행과 같은 색
+  const [rowColor, stationColor] = await Promise.all([
+    page.locator('.hall-line').first().evaluate(el => getComputedStyle(el).color),
+    map.locator('[data-map-station="voyage"]').evaluate(el => getComputedStyle(el).color)
+  ])
+  assert.equal(stationColor, rowColor, '기록선 색 = 안내판 노선 글자색')
+
+  // 강조 연동
+  await map.locator('[data-map-station="ets2"]').hover()
+  assert.equal(await page.locator('[data-hall-row="ets2"]').evaluate(el => el.classList.contains('is-active')), true, '역 hover → 행 강조')
+  await page.waitForTimeout(250)
+  await shot(page, 'map-hover-1440')
+  await page.locator('[data-hall-row="pantry"]').hover()
+  assert.equal(await map.locator('[data-map-station="pantry"]').evaluate(el => el.classList.contains('is-active')), true, '행 hover → 역 강조')
+  await page.locator('[data-hall-row="work"]').focus()
+  assert.equal(await map.locator('[data-map-station="work"]').evaluate(el => el.classList.contains('is-active')), true, '행 포커스 → 역 강조')
+
+  // planned 역은 이동 없음
+  const home = page.url()
+  await map.locator('[data-map-station="daily5"]').click()
+  await page.locator('.junction-access-toast').waitFor()
+  assert.equal(page.url(), home)
+  // 여행 역 클릭 → 여행 화면
+  await map.locator('[data-map-station="voyage"]').click()
+  await page.locator('.station-topbar h2', { hasText: '여행 노선' }).waitFor()
+  assert.match(new URL(page.url()).pathname, /\/voyage$/)
+})
+
+test('노선도: 900 에서는 보이고 899·375 에서는 없다', async t => {
+  for (const [width, visible] of [[900, true], [899, false], [375, false]]) {
+    const page = await setup(t, { width, height: 900 }, { reducedMotion: true })
+    await enterHall(page)
+    assert.equal(await page.locator('[data-hall-map]').isVisible(), visible, `${width}px 지도 표시=${visible}`)
+    await noOverflow(page)
+    await shot(page, `map-${width}`)
+  }
+})
+
+test('노선도: 선 그리기는 한 번, 모션 줄이기에는 애니메이션이 없다', async t => {
+  const calm = await setup(t, { width: 1440, height: 900 }, { reducedMotion: true })
+  await enterHall(calm)
+  const names = await calm.locator('[data-hall-map] svg *').evaluateAll(els => els.map(el => getComputedStyle(el).animationName).filter(name => name !== 'none'))
+  assert.deepEqual(names, [], '모션 줄이기: 애니메이션 없음')
+
+  const lively = await setup(t, { width: 1440, height: 900 }, { seen: true })
+  await enterHall(lively)
+  const drawn = await lively.locator('[data-hall-map] .route-draw').evaluateAll(els => els.map(el => {
+    const style = getComputedStyle(el)
+    return [style.animationName, style.animationIterationCount]
+  }))
+  assert.ok(drawn.length >= 4)
+  assert.ok(drawn.every(([name, count]) => name.startsWith('map-draw') && count === '1'), '선 그리기 1회 ' + JSON.stringify(drawn))
+  await shot(lively, 'map-1440')
+})

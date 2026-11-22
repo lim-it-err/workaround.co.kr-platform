@@ -10,6 +10,7 @@ import {
   takeBootLog
 } from '../../data/hallBoard.js'
 import { withBasePath } from '../../staticRouting.js'
+import HallRouteMap from './HallRouteMap.vue'
 
 // TKT-219 (D-036): 기본 보기의 환승 홀 — 첫 방문엔 부팅 로그(줄당 90ms)가 흐른 뒤 출발 안내판,
 // 재방문·모션 줄이기엔 안내판부터. 로그 중 클릭·탭·키 입력이면 바로 안내판.
@@ -26,6 +27,8 @@ const playingLog = takeBootLog({ reducedMotion })
 const phase = ref(playingLog ? 'log' : 'board')
 const shownLines = ref(0)
 const cameFromLog = ref(false)
+// TKT-226: 노선도 역·안내판 행이 함께 쓰는 강조 상태(행 id).
+const activeId = ref('')
 let timers = []
 
 function two(value) {
@@ -72,6 +75,11 @@ function entryHref(row) {
   return row.entryPath ? withBasePath(row.entryPath, import.meta.env.BASE_URL) : undefined
 }
 
+function selectFromMap(row) {
+  if (row.entryPath) window.location.assign(entryHref(row))
+  else press(row)
+}
+
 function press(row) {
   const action = resolveHallTarget(row, props.disabledPages)
   if (action.type === 'notice') emit('notice', action.message)
@@ -87,7 +95,14 @@ function press(row) {
 </template></pre>
     </div>
 
-    <div v-else class="hall-screen hall-board" :class="{ 'hall-fade': cameFromLog }" data-hall-board>
+    <template v-else>
+    <HallRouteMap
+      :active="activeId"
+      :disabled-pages="disabledPages"
+      @hover="activeId = $event"
+      @select="selectFromMap"
+    />
+    <div class="hall-screen hall-board" :class="{ 'hall-fade': cameFromLog }" data-hall-board>
       <h3 class="hall-title">환승 홀 · 출발 안내 <span class="hall-stamp">{{ stamp }}</span></h3>
       <div class="hall-head" aria-hidden="true">
         <span>노선</span><span>행선지</span><span>상태</span>
@@ -100,6 +115,11 @@ function press(row) {
             :href="entryHref(row)"
             :type="row.entryPath ? undefined : 'button'"
             :data-hall-row="row.id"
+            :class="{ 'is-active': activeId === row.id }"
+            @mouseenter="activeId = row.id"
+            @mouseleave="activeId = ''"
+            @focus="activeId = row.id"
+            @blur="activeId = ''"
             @click="row.entryPath ? undefined : press(row)"
           >
             <span class="hall-line" :class="`t-${HALL_LINES[row.line].tone}`">{{ HALL_LINES[row.line].name }}</span>
@@ -109,6 +129,7 @@ function press(row) {
         </li>
       </ul>
     </div>
+    </template>
   </section>
 </template>
 
@@ -212,7 +233,8 @@ function press(row) {
   cursor: pointer;
 }
 
-.hall-row:hover {
+.hall-row:hover,
+.hall-row.is-active {
   background: var(--panel-soft);
 }
 
