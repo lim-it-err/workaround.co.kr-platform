@@ -13,11 +13,13 @@ RUN npm --prefix frontend ci --no-audit --no-fund \
 COPY frontend frontend
 COPY services/advisor/frontend services/advisor/frontend
 COPY infra/public-site/route-rules.mjs infra/public-site/route-rules.mjs
+# TKT-224: 버전은 저장소 루트 VERSION 파일이 단일 출처다. vite.config 가 ../VERSION 으로 읽는다(/repo/VERSION).
+COPY VERSION VERSION
 
 # TKT-223: 메인은 Pages 와 같은 정적 모드로 빌드한다 (base 가 / 라서 VITE_STATIC_MODE 로 강제).
 # 게이트웨이 없이 /api/* 를 부르지 않게 하려는 것 — 이유는 README 「빌드」.
 ARG STATIC_MODE=true
-# TKT-221: 부팅 로그 버전. 비면 「workaround 기동」.
+# TKT-221·TKT-224: 부팅 로그 버전 덮어쓰기용. 기본은 빈 값 → VERSION 파일 사용. 비우면 VERSION 파일, 그것도 없으면 「workaround 기동」.
 ARG RELEASE_VERSION=
 ENV VITE_STATIC_MODE=${STATIC_MODE} \
     RELEASE_VERSION=${RELEASE_VERSION}

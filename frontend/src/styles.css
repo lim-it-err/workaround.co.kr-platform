@@ -192,6 +192,12 @@ button {
   outline-offset: 2px;
 }
 
+/* 프로그램 포커스 대상(라우트 전환 시 제목 h2 등)은 조작 요소가 아니므로 포커스 링을 그리지 않는다. 포커스 이동(JS)은 그대로 둔다. */
+[tabindex="-1"]:focus,
+[tabindex="-1"]:focus-visible {
+  outline: none;
+}
+
 /* 숫자 정렬 (스펙 §2) */
 .num,
 .banner-stats strong,

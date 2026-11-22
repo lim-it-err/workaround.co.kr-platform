@@ -1,10 +1,10 @@
 <script setup>
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { HALL_LITE_ITEMS, LITE_HINT, resolveHallTarget, takeBootLog } from '../../data/hallBoard.js'
 import { withBasePath } from '../../staticRouting.js'
 
 // TKT-219 (D-036): lite 보기의 환승 홀 — 역 이름 6개만, 글자 입력 칸 없음.
-// 화살표로 고르고 Enter 로 들어간다. 탭/클릭은 한 번 = 선택, 선택된 줄 다시 = 진입.
+// 화살표로 고르고 Enter 로 들어간다. 탭/클릭은 한 번 = 선택, 선택된 줄 다시 = 진입. (TKT-227: 포커스 무관 전역 키 처리)
 const props = defineProps({
   disabledPages: { type: Array, default: () => [] }
 })
@@ -15,14 +15,17 @@ const emit = defineEmits(['open', 'notice'])
 takeBootLog({ reducedMotion: true })
 
 const items = HALL_LITE_ITEMS
-const active = ref(-1) // 화면을 처음 열 땐 선택 없음 — Tab 으로 들어오면 첫 항목이 선택된다.
+const active = ref(0) // TKT-227: 들어오면 첫 항목이 이미 선택돼 있다.
+const armed = ref(false) // 마우스·터치로 고른 줄만 true — 이때만 같은 줄을 다시 누르면 진입
 const listRef = ref(null)
-let pointerFocus = false
 
 const activeId = computed(() => (active.value >= 0 ? optionId(active.value) : undefined))
-const message = computed(() => (
-  active.value >= 0 ? `${items[active.value].label} 선택 · 한 번 더 누르면 들어갑니다` : LITE_HINT
-))
+const message = computed(() => {
+  if (active.value < 0) return LITE_HINT
+  return armed.value
+    ? `${items[active.value].label} 선택 · 한 번 더 누르면 들어갑니다`
+    : `${items[active.value].label} 선택 · Enter 들어가기`
+})
 
 function optionId(index) {
   return `hall-lite-opt-${index}`
@@ -42,27 +45,50 @@ function enter(index = active.value) {
   else emit('open', action.page)
 }
 
-function onFocus() {
-  if (pointerFocus) return // 눌러서 들어온 포커스는 아래 클릭 처리가 선택한다
-  if (active.value < 0) active.value = 0
+function isTypingTarget(target) {
+  if (!(target instanceof Element)) return false
+  return Boolean(target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])'))
 }
 
+// 전역 keydown — 포커스가 제목·보기 전환 버튼·body 어디에 있든 목록이 움직인다. 마운트된 동안만 등록.
 function onKeydown(event) {
-  if (event.key === 'ArrowDown') pick(active.value + 1)
-  else if (event.key === 'ArrowUp') pick(active.value < 0 ? items.length - 1 : active.value - 1)
-  else if (event.key === 'Home') pick(0)
-  else if (event.key === 'End') pick(items.length - 1)
-  else if (event.key === 'Enter') enter()
-  else return
+  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return
+  if (isTypingTarget(event.target)) return
+  const key = event.key
+  if (key === 'Enter') {
+    // 버튼·링크에 포커스가 있으면 원래 동작. 목록·제목·body 에서만 진입.
+    if (event.target instanceof Element && event.target.closest('button, a[href], summary')) return
+    if (active.value < 0) return
+    enter()
+  } else if (key === 'ArrowDown') {
+    armed.value = false
+    pick(active.value < 0 ? 0 : active.value + 1)
+  } else if (key === 'ArrowUp') {
+    armed.value = false
+    pick(active.value < 0 ? items.length - 1 : active.value - 1)
+  } else if (key === 'Home') {
+    armed.value = false
+    pick(0)
+  } else if (key === 'End') {
+    armed.value = false
+    pick(items.length - 1)
+  } else return
   event.preventDefault()
+  if (document.activeElement !== listRef.value) listRef.value?.focus({ preventScroll: true })
 }
 
 function onClick(index) {
-  pointerFocus = false
-  if (index === active.value) enter(index)
-  else pick(index)
+  if (index === active.value && armed.value) {
+    enter(index)
+  } else {
+    pick(index)
+    armed.value = true
+  }
   listRef.value?.focus({ preventScroll: true })
 }
+
+onMounted(() => document.addEventListener('keydown', onKeydown))
+onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
@@ -76,9 +102,6 @@ function onClick(index) {
         tabindex="0"
         aria-labelledby="hall-lite-title"
         :aria-activedescendant="activeId"
-        @focus="onFocus"
-        @keydown="onKeydown"
-        @pointerdown="pointerFocus = true"
       >
         <li
           v-for="(item, index) in items"

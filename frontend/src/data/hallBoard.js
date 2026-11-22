@@ -24,11 +24,33 @@ export const HALL_ROWS = [
   { id: 'work', line: 'base', destination: '운영 노트', status: '공개', tone: 'ok', page: 'work' }
 ]
 
+// 환승 홀 노선도(TKT-226) — viewBox 720×200 좌표만. 역 이름·상태·tone 은 HALL_ROWS/HALL_LINES 에서 읽는다.
+// 옥틸리니어: 가로·세로·45° 선만. label = 역 이름을 점 위(above)·아래(below) 어디에 둘지.
+export const HALL_MAP = {
+  viewBox: { width: 720, height: 200 },
+  hub: { x: 360, y: 100, label: '환승 홀' },
+  routes: [
+    { line: 'record', d: 'M360 100 H70' },
+    { line: 'learn', d: 'M360 100 L420 40 H520' },
+    { line: 'learn', d: 'M520 40 H660', planned: true },
+    { line: 'play', d: 'M360 100 H660' },
+    { line: 'life', d: 'M360 100 L300 160 H150' },
+    { line: 'base', d: 'M360 100 L420 160 H570' }
+  ],
+  stations: {
+    voyage: { x: 70, y: 100, label: 'above' },
+    advisor: { x: 520, y: 40, label: 'above' },
+    daily5: { x: 660, y: 40, label: 'above' },
+    simhub: { x: 500, y: 100, label: 'below' },
+    ets2: { x: 660, y: 100, label: 'below' },
+    pantry: { x: 150, y: 160, label: 'below' },
+    work: { x: 570, y: 160, label: 'below' }
+  }
+}
+
 // lite: 역 이름 6개만(글자 입력 칸 없음).
 export const HALL_LITE_ITEMS = [
   { id: 'voyage', label: '여행', page: 'voyage' },
-  { id: 'advisor', label: 'Advisor', entryPath: '/advisor/' },
-  { id: 'simhub', label: '격납고', page: 'simhub' },
   { id: 'ets2', label: '유로트럭', page: 'ets2' },
   { id: 'pantry', label: '자취 밥상', page: 'pantry' },
   { id: 'work', label: '운영 노트', page: 'work' }

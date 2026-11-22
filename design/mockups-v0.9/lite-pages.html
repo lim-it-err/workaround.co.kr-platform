@@ -1,0 +1,228 @@
+<title>lite 화면 시안</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{
+  --bg:#031008; --fg:#8dffb0; --dim:#5fcf8a; --hi:#c4ffd6; --line:#2c8a52; --line2:#4fbf7a; --warn:#ffd25a; --sel-bg:#c4ffd6; --sel-fg:#031008;
+  --paper:#0b0f0c; --paper-fg:#d7e2da; --paper-dim:#8a9a8f;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--paper-fg);font:14px/1.6 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.doc{max-width:980px;margin:0 auto}
+.doc h1{font-size:20px;margin:0 0 6px;text-wrap:balance}
+.doc p{margin:6px 0;color:var(--paper-dim);max-width:68ch}
+.doc b{color:var(--paper-fg)}
+.layout{display:grid;gap:20px;margin-top:16px}
+@media(min-width:900px){.layout{grid-template-columns:minmax(0,1fr) 300px;align-items:start}}
+.notes{min-width:0;border:1px solid #26332a;padding:14px 16px;font-size:13px}
+.notes h2{font-size:14px;margin:0 0 8px}
+.notes dl{margin:0}.notes dt{font-weight:700;margin-top:10px}.notes dd{margin:2px 0 0;color:var(--paper-dim)}
+.jump{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.jump button{font:inherit;font-size:13px;min-height:36px;padding:0 12px;background:transparent;color:var(--paper-fg);border:1px solid #33453a;cursor:pointer}
+.jump button[aria-pressed=true]{background:var(--paper-fg);color:var(--paper)}
+
+/* ---- CRT 화면 ---- */
+.crt{position:relative;min-width:0;background:var(--bg);color:var(--fg);border:1px solid #13351f;
+  font:15px/1.7 ui-monospace,"SF Mono",Menlo,Consolas,"D2Coding","Noto Sans Mono CJK KR",monospace;word-break:keep-all;overflow-wrap:anywhere;
+  text-shadow:0 0 5px rgba(80,255,140,.35);height:560px;display:flex;flex-direction:column;outline:none}
+.crt:focus-visible{box-shadow:0 0 0 2px var(--hi)}
+.crt::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.16) 0 1px,transparent 1px 3px)}
+.crt::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.5) 100%)}
+.bar{display:flex;gap:10px;align-items:center;padding:10px 16px;border-bottom:1px dashed var(--line);color:var(--dim);font-size:13px;min-height:44px}
+.bar .crumb{color:var(--hi)}
+.bar .back{margin-left:auto;font:inherit;color:var(--dim);background:none;border:1px solid var(--line);min-height:32px;padding:0 10px;cursor:pointer}
+.scr{flex:1;overflow:auto;padding:16px 18px;min-height:0}
+.keys{border-top:1px dashed var(--line);padding:8px 16px;color:var(--dim);font-size:12px;min-height:36px}
+.keys kbd{font:inherit;color:var(--hi)}
+.ttl{color:var(--hi);font-weight:700;margin:0 0 10px}
+.sub{color:var(--dim);font-size:13px;margin:-6px 0 12px}
+ul.sel{list-style:none;margin:0;padding:0}
+ul.sel li{display:flex;gap:12px;align-items:baseline;min-height:40px;padding:6px 10px;cursor:pointer;border-bottom:1px dashed rgba(44,138,82,.45)}
+ul.sel li .r{margin-left:auto;color:var(--dim);font-size:13px;white-space:nowrap}
+ul.sel li.on{background:var(--sel-bg);color:var(--sel-fg);text-shadow:none}
+ul.sel li.on .r{color:var(--sel-fg)}
+ul.sel li.on::before{content:"▶";margin-right:-4px}
+ul.sel li.off{color:var(--dim)}
+.big{font-size:22px;color:var(--hi);margin:6px 0 2px}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 16px;margin:12px 0}
+.kv dt{color:var(--dim)}.kv dd{margin:0}
+.route{margin:8px 0 0;padding:0;list-style:none}
+.route li{display:flex;gap:10px;min-height:34px;align-items:baseline;cursor:pointer}
+.route li .d{color:var(--dim);width:4.5em;flex:none}
+.route li .s{color:var(--line2)}
+.route li.on{color:var(--sel-fg);background:var(--sel-bg);text-shadow:none}
+.route li.on .d,.route li.on .s{color:var(--sel-fg)}
+.foot{margin-top:14px;color:var(--hi)}
+.warn{color:var(--warn)}
+.cur{display:inline-block;width:.6em;height:1.1em;vertical-align:text-bottom;background:var(--hi);margin-left:4px;animation:bl 1.1s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+.step{color:var(--dim);font-size:13px}
+.prose{max-width:60ch}
+.prose p{margin:0 0 10px}
+@media(prefers-reduced-motion:reduce){.cur{animation:none}}
+@media(max-width:560px){.crt{height:600px;font-size:14px}.scr{padding:14px}}
+</style>
+
+<div class="doc">
+  <h1>lite 화면 시안 — 환승 홀 + 4개 화면</h1>
+  <p>lite 는 <b>키보드만으로</b> 돌아다니는 녹색 CRT 화면입니다. 화면마다 주인공은 하나이고, 조작은 어디서나 같습니다: <b>↑↓ 고르기 · Enter 들어가기 · Esc 뒤로</b>. 폰에서는 한 번 누르면 고르고, 한 번 더 누르면 들어갑니다.</p>
+  <p>Advisor·격납고는 lite 에서 뺐습니다(PO 지시). 아래 화면을 한 번 클릭하거나 바로 화살표를 눌러 보세요.</p>
+  <div class="jump" role="group" aria-label="화면 바로 가기">
+    <button data-go="hall">환승 홀</button><button data-go="voyage">여행</button><button data-go="ets2">유로트럭</button><button data-go="pantry">자취 밥상</button><button data-go="work">운영 노트</button>
+  </div>
+  <div class="layout">
+    <div class="crt" id="crt" tabindex="0" aria-label="lite 화면 미리보기">
+      <div class="bar"><span>workaround lite</span><span class="crumb" id="crumb">환승 홀</span><button class="back" id="back" hidden>‹ 뒤로</button></div>
+      <div class="scr" id="scr"></div>
+      <div class="keys" id="keys"></div>
+    </div>
+    <aside class="notes">
+      <h2>화면별 주인공</h2>
+      <dl>
+        <dt>환승 홀</dt><dd>역 이름 4개. 열자마자 첫 역이 골라져 있어 바로 ↓ 또는 Enter.</dd>
+        <dt>여행</dt><dd>여행 목록 → 고른 여행의 <b>노선 한 줄</b>. ↑↓ 로 역을 따라 내려가며 그날의 한 줄 기록, 맨 아래 결산.</dd>
+        <dt>유로트럭</dt><dd><b>마지막 주행 한 건</b>을 크게. ↑↓ 로 이전 주행(샘플). 지도·사진은 기본 보기에만.</dd>
+        <dt>자취 밥상</dt><dd>칩 여러 개 대신 <b>질문 세 개를 하나씩</b> → 답에 맞는 메뉴 하나.</dd>
+        <dt>운영 노트</dt><dd>목차 10개 → 한 절씩 읽기. ←→ 로 앞뒤 절.</dd>
+      </dl>
+      <h2 style="margin-top:14px">기본 보기와의 관계</h2>
+      <p style="color:var(--paper-dim);margin:0">데이터는 기본 보기와 같은 것을 쓰고, 덜어 내기만 합니다. 지도·사진·차트는 lite 에 없습니다 — 필요하면 상단 「기본」으로 바꿔 봅니다.</p>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+const HALL = [
+  {id:'voyage', label:'여행', r:'기록선'},
+  {id:'ets2', label:'유로트럭', r:'놀이선 · 샘플'},
+  {id:'pantry', label:'자취 밥상', r:'생활선'},
+  {id:'work', label:'운영 노트', r:'기지선'}
+];
+const TRIPS = [
+  {name:'중부유럽 순환선', year:'2026', total:'777.1만원', stops:[
+    ['DAY 1','프라하','도착, 구시가지 광장까지 걸어서'],
+    ['DAY 2','체스키크룸로프','성 정원과 강변, 비가 그침'],
+    ['DAY 3','할슈타트','호수 아침 산책, 소금광산'],
+    ['DAY 3','잘츠부르크','미라벨 정원 저녁'],
+    ['DAY 4','바하우','멜크 수도원, 강 따라 자전거'],
+    ['DAY 4','비엔나','오페라 입석'],
+    ['DAY 5','부다페스트','국회의사당 야경'],
+    ['DAY 6','브르노','경유, 점심만'],
+    ['DAY 6','프라하','순환 끝, 귀국 준비']]},
+  {name:'아이슬란드', year:'2025', total:'기록 정리 중', stops:[['DAY 1','레이캬비크','도착'],['DAY 2','골든 서클','게이시르']]},
+  {name:'스페인', year:'2024', total:'기록 정리 중', stops:[['DAY 1','바르셀로나','도착'],['DAY 2','바르셀로나','사그라다 파밀리아']]}
+];
+const RUNS = [
+  {from:'베를린', to:'프라하', km:'352 km', cargo:'기계 부품', time:'4시간 41분', st:'도착'},
+  {from:'함부르크', to:'베를린', km:'289 km', cargo:'냉동 식품', time:'3시간 55분', st:'도착'},
+  {from:'로테르담', to:'함부르크', km:'471 km', cargo:'건축 자재', time:'6시간 12분', st:'도착'}
+];
+const QS = [
+  {q:'시간은 얼마나?', a:['10분','20분','40분 이상']},
+  {q:'냉장고에 뭐가 있어?', a:['계란','김치','돼지고기','두부']},
+  {q:'오늘은 어떤 날?', a:['든든하게','가볍게','해장']}
+];
+const DISH = {
+  '계란':['계란 파 라면','계란말이','계란 볶음밥'],
+  '김치':['김치전','두부김치','돼지고기 김치찌개'],
+  '돼지고기':['제육볶음','삼겹살 구이 + 파무침','돼지고기 김치찌개'],
+  '두부':['두부김치','된장찌개','된장찌개']
+};
+const NOTES = [
+  ['한눈에 보는 구조','정적 화면은 GitHub Pages, 움직이는 기능은 Cloudflare 에서 돈다. 집 PC 는 테스트 서버이고, 바깥으로 결과를 내보내기만 한다.'],
+  ['누가 일하나','PO 가 결정하고, PM(Claude)이 설계·판정·커밋한다. 구현은 PM 세션의 서브에이전트가, 교차검증은 Codex 가 맡는다.'],
+  ['티켓이 배포되기까지','티켓 → 서브에이전트 구현 → PM 직접 검증과 리뷰 → 작업 브랜치 PR → PO 머지 → Pages 자동 배포.'],
+  ['방문자 요청이 집 PC 에 닿는 길','닿지 않는다. 방문자가 부르는 곳은 전부 Cloudflare 위에 있다.'],
+  ['데이터 처리는 어디서','학습과 시뮬레이션은 집 PC, 결과 JSON 만 바깥 저장소로 올린다.'],
+  ['LLM 호출 원칙','키는 Worker 비밀값에만. 화면은 LLM 이 없어도 돌아가야 한다.'],
+  ['집 PC 가 꺼졌을 때','사이트는 마지막 결과를 계속 보여 준다. 실험 화면만 「잠시 멈춤」.'],
+  ['집 PC 로 배포하는 법','main 을 받고 infra/home 에서 docker compose up. 버전은 VERSION 파일.'],
+  ['카페에서 집 PC 에 들어가는 법','공개 포트는 열지 않는다. 리포트는 git 으로 받는다.'],
+  ['결정 대기와 PO 할 일','ASK.md 한 곳에 모은다.']
+];
+
+const crt = document.getElementById('crt'), scr = document.getElementById('scr'), keysEl = document.getElementById('keys');
+const crumb = document.getElementById('crumb'), backBtn = document.getElementById('back');
+let st = {v:'hall', i:0};
+let stack = [];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function go(v, extra = {}, push = true){ if(push) stack.push(st); st = {v, i:0, ...extra}; render(); }
+function back(){ if(stack.length){ st = stack.pop(); render(); } }
+function list(items, i, cls=''){ return `<ul class="sel ${cls}" role="listbox">${items.map((t,k)=>`<li role="option" data-k="${k}" class="${k===i?'on':''} ${t.off?'off':''}" aria-selected="${k===i}"><span>${esc(t.label)}</span>${t.r?`<span class="r">${esc(t.r)}</span>`:''}</li>`).join('')}</ul>`; }
+
+const V = {
+  hall:{ crumb:'환승 홀', n:()=>HALL.length, keys:'<kbd>↑↓</kbd> 고르기 · <kbd>Enter</kbd> 들어가기',
+    html:()=>`<p class="ttl">환승 홀<span class="cur"></span></p>${list(HALL, st.i)}<p class="sub" style="margin-top:12px">${esc(HALL[st.i].label)} 선택 · Enter 들어가기</p>`,
+    enter:()=>go(HALL[st.i].id)},
+  voyage:{ crumb:'환승 홀 › 여행', n:()=>TRIPS.length, keys:'<kbd>↑↓</kbd> 고르기 · <kbd>Enter</kbd> 노선 보기 · <kbd>Esc</kbd> 뒤로',
+    html:()=>`<p class="ttl">여행 — 기록선</p>${list(TRIPS.map(t=>({label:t.name, r:t.year})), st.i)}`,
+    enter:()=>go('trip', {t:st.i})},
+  trip:{ crumb:'환승 홀 › 여행 › 노선', n:()=>TRIPS[st.t].stops.length, keys:'<kbd>↑↓</kbd> 역 따라가기 · <kbd>Esc</kbd> 여행 목록',
+    html:()=>{ const t=TRIPS[st.t], s=t.stops[st.i];
+      return `<p class="ttl">${esc(t.name)} ${esc(t.year)}</p><p class="sub">역 ${st.i+1}/${t.stops.length}</p>
+      <ol class="route">${t.stops.map((x,k)=>`<li data-k="${k}" class="${k===st.i?'on':''}"><span class="d">${esc(x[0])}</span><span class="s">${k===0?'●':k===t.stops.length-1?'●':'┃'}</span><span>${esc(x[1])}</span></li>`).join('')}</ol>
+      <p class="foot">› ${esc(s[1])} — ${esc(s[2])}</p><p class="sub" style="margin-top:8px">결산 ${esc(t.total)}</p>`; },
+    enter:()=>{}},
+  ets2:{ crumb:'환승 홀 › 유로트럭', n:()=>RUNS.length, keys:'<kbd>↑↓</kbd> 이전·다음 주행 · <kbd>Esc</kbd> 뒤로',
+    html:()=>{ const r=RUNS[st.i];
+      return `<p class="ttl">유로트럭 <span class="warn">[ 샘플 ]</span></p><p class="sub">${st.i===0?'마지막 주행':`${st.i}건 전 주행`} · ${st.i+1}/${RUNS.length}</p>
+      <p class="big">${esc(r.from)} → ${esc(r.to)}</p>
+      <dl class="kv"><dt>거리</dt><dd>${esc(r.km)}</dd><dt>화물</dt><dd>${esc(r.cargo)}</dd><dt>걸린 시간</dt><dd>${esc(r.time)}</dd><dt>상태</dt><dd>${esc(r.st)}</dd></dl>
+      <p class="sub">지도·스크린샷은 기본 보기에서</p>`; },
+    enter:()=>{}},
+  pantry:{ crumb:'환승 홀 › 자취 밥상', n:()=>QS[st.q||0].a.length, keys:'<kbd>↑↓</kbd> 고르기 · <kbd>Enter</kbd> 다음 · <kbd>Esc</kbd> 앞 질문',
+    html:()=>{ const q=st.q||0, Q=QS[q];
+      return `<p class="ttl">자취 밥상 — 생활선</p><p class="step">질문 ${q+1}/3</p><p class="big" style="font-size:18px">${esc(Q.q)}</p>${list(Q.a.map(a=>({label:a})), st.i)}`; },
+    enter:()=>{ const q=st.q||0, ans=[...(st.ans||[]), QS[q].a[st.i]];
+      if(q<2) go('pantry', {q:q+1, ans}); else go('dish', {ans}); }},
+  dish:{ crumb:'환승 홀 › 자취 밥상 › 오늘', n:()=>1, keys:'<kbd>Enter</kbd> 다시 고르기 · <kbd>Esc</kbd> 앞 질문',
+    html:()=>{ const [t,ing,mood]=st.ans, k=['든든하게','가볍게','해장'].indexOf(mood), d=DISH[ing][Math.max(0,k)];
+      return `<p class="ttl">오늘의 밥상</p><p class="big">${esc(d)}</p><p class="sub">${esc(t)} · ${esc(ing)} · ${esc(mood)}</p><p>재료와 순서는 기본 보기에서 크게 봅니다.</p>`; },
+    enter:()=>{ stack=stack.filter(s=>!['pantry','dish'].includes(s.v)); go('pantry', {q:0, ans:[]}); }},
+  work:{ crumb:'환승 홀 › 운영 노트', n:()=>NOTES.length, keys:'<kbd>↑↓</kbd> 고르기 · <kbd>Enter</kbd> 읽기 · <kbd>Esc</kbd> 뒤로',
+    html:()=>`<p class="ttl">운영 노트 — 기지선</p>${list(NOTES.map((n,k)=>({label:`${String(k+1).padStart(2,'0')}  ${n[0]}`})), st.i)}`,
+    enter:()=>go('note', {k:st.i})},
+  note:{ crumb:'환승 홀 › 운영 노트 › 읽기', n:()=>1, keys:'<kbd>←→</kbd> 앞뒤 절 · <kbd>Esc</kbd> 목차',
+    html:()=>{ const n=NOTES[st.k]; return `<p class="step">${st.k+1}/${NOTES.length}</p><p class="ttl">${esc(n[0])}</p><div class="prose"><p>${esc(n[1])}</p></div>`; },
+    enter:()=>{}}
+};
+
+function render(){
+  const v = V[st.v];
+  scr.innerHTML = v.html(); keysEl.innerHTML = v.keys; crumb.textContent = v.crumb;
+  backBtn.hidden = st.v === 'hall';
+  document.querySelectorAll('[data-go]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.go === rootOf(st.v))));
+  scr.querySelector('.on')?.scrollIntoView({block:'nearest'});
+}
+function rootOf(v){ return ({trip:'voyage', dish:'pantry', note:'work'})[v] || v; }
+
+function key(e){
+  if (e.target.closest && e.target.closest('input,textarea,[contenteditable]')) return;
+  if (e.target.closest && e.target.closest('.jump') && e.key === 'Enter') return;
+  const v = V[st.v], n = v.n();
+  let used = true;
+  if (e.key === 'ArrowDown') st.i = (st.i + 1) % n;
+  else if (e.key === 'ArrowUp') st.i = (st.i - 1 + n) % n;
+  else if (e.key === 'Home') st.i = 0;
+  else if (e.key === 'End') st.i = n - 1;
+  else if (e.key === 'Enter') { v.enter(); return e.preventDefault(); }
+  else if (e.key === 'Escape' || (e.key === 'Backspace')) { back(); return e.preventDefault(); }
+  else if (st.v === 'note' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { st.k = (st.k + (e.key === 'ArrowRight' ? 1 : NOTES.length - 1)) % NOTES.length; }
+  else used = false;
+  if (used) { e.preventDefault(); render(); crt.focus({preventScroll:true}); }
+}
+document.addEventListener('keydown', key);
+scr.addEventListener('click', e => {
+  const li = e.target.closest('[data-k]'); if (!li) { crt.focus({preventScroll:true}); return; }
+  const k = +li.dataset.k;
+  if (k === st.i && V[st.v].n() > 1) V[st.v].enter(); else { st.i = k; render(); }
+  crt.focus({preventScroll:true});
+});
+backBtn.addEventListener('click', () => { back(); crt.focus({preventScroll:true}); });
+document.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => { stack = b.dataset.go === 'hall' ? [] : [{v:'hall', i:HALL.findIndex(h=>h.id===b.dataset.go)}]; st = {v:b.dataset.go, i:0}; render(); crt.focus({preventScroll:true}); }));
+render();
+})();
+</script>
