@@ -52,7 +52,6 @@ async function serveStaticBuild(request, response) {
 const VIEWPORTS = [{ width: 375, height: 812 }, { width: 1440, height: 900 }]
 const SCREENS = [
   ['voyage', '여행'],
-  ['ets2', '유로트럭'],
   ['pantry', '자취 밥상'],
   ['work', '운영 노트']
 ]
@@ -87,18 +86,15 @@ const selected = page => page.locator('.hall[data-hall="lite"] [aria-selected="t
 for (const viewport of VIEWPORTS) {
   const tag = `${viewport.width}px`
 
-  test(`${tag} lite: 환승 홀 ↓ Enter → 유로트럭 자리표시(기본 화면 요소 없음), Esc → 환승 홀 목록이 키로 움직인다`, async t => {
+  test(`${tag} lite: 환승 홀 ↓ Enter → 자취 밥상 lite 틀(LiteScreen)이 그려짐, Esc → 환승 홀 목록이 키로 움직인다`, async t => {
     const page = await setup(t, viewport)
     await toHall(page)
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
     await page.locator('[data-lite-screen]').waitFor()
-    assert.match(new URL(page.url()).pathname, /\/ets2$/)
-    assert.equal(await page.locator('[data-lite-crumb]').textContent(), '유로트럭')
-    assert.equal(await page.locator('[data-lite-placeholder]').textContent(), '준비 중 · 상단 기본으로 보기')
-    assert.equal(await page.locator('.ets2-frame, .ets2-live, [class*="ets2"] img').count(), 0, '기본 화면 요소가 없다')
-    assert.equal(await page.locator('.junction-overview img, .page-scroller img').count(), 0, '프레임 이미지가 없다')
-    assert.equal(await page.locator('[data-lite-keys]').textContent(), 'Esc 뒤로')
+    assert.match(new URL(page.url()).pathname, /\/pantry$/)
+    assert.equal(await page.locator('[data-lite-back]').count(), 1, 'lite 틀의 뒤로 버튼이 있다')
+    assert.equal(await page.locator('[data-lite-keys]').count(), 1, 'lite 틀의 키 안내 줄이 있다')
     assert.ok((await page.locator('[data-lite-back]').boundingBox()).height >= 44, '뒤로 버튼 44px 이상')
     for (const sel of ['html', 'body', '.page-scroller', '.lite-screen']) {
       assert.equal(await page.evaluate(s => { const e = document.querySelector(s); return Math.max(0, e.scrollWidth - e.clientWidth) }, sel), 0, `${sel} 가로 넘침 없음`)
@@ -115,16 +111,24 @@ for (const viewport of VIEWPORTS) {
     assert.notEqual(await selected(page), first, '환승 홀 목록이 다시 키로 움직인다')
   })
 
-  test(`${tag} lite: 4개 화면 각각 자리표시 렌더, ‹ 뒤로 = 환승 홀`, async t => {
+  test(`${tag} lite: 3개 화면 각각 lite 틀(LiteScreen)이 그려짐, ‹ 뒤로 = 환승 홀`, async t => {
     const page = await setup(t, viewport)
     for (const [id, label] of SCREENS) {
       await page.goto(`${base}${id}`)
       await page.locator('[data-lite-screen]').waitFor()
       assert.equal(await page.locator('[data-lite-crumb]').textContent(), label, id)
-      assert.equal(await page.locator('[data-lite-placeholder]').count(), 1, id)
+      assert.equal(await page.locator('[data-lite-screen] [data-lite-back]').count(), 1, id)
     }
     await page.locator('[data-lite-back]').click()
     await page.locator('.hall[data-hall="lite"]').waitFor()
+  })
+
+  test(`${tag} lite: 유로트럭(/ets2)은 lite 틀이 아니라 기본 유로트럭 화면 그대로 (TKT-233)`, async t => {
+    const page = await setup(t, viewport)
+    await page.goto(`${base}ets2`)
+    await page.locator('.station-topbar').waitFor()
+    assert.equal(await page.locator('[data-lite-screen]').count(), 0, '유로트럭은 lite 틀이 없다')
+    assert.equal(await page.locator('[data-lite-placeholder]').count(), 0)
   })
 
   test(`${tag} 기본 보기: 기존 화면 그대로 · lite 에서도 비대상 페이지는 기존 화면`, async t => {
