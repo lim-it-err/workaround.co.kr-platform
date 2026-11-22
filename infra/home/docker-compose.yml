@@ -8,7 +8,7 @@ services:
       context: ../..
       dockerfile: infra/home/web.Dockerfile
       args:
-        # 부팅 로그 버전(TKT-221). 비우면 「workaround 기동」.
+        # 부팅 로그 버전 덮어쓰기(TKT-221·TKT-224). 기본은 빈 값 → 루트 VERSION 파일 사용.
         RELEASE_VERSION: ${RELEASE_VERSION:-}
     image: home-web:local
     networks:

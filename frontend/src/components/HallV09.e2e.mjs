@@ -161,12 +161,15 @@ for (const viewport of VIEWPORTS) {
     const average = (stamps.at(-1) - stamps[0]) / (stamps.length - 1)
     assert.ok(average >= 85 && average <= 95, `줄당 90ms 안팎: 평균 ${average}ms (${stamps.join(',')})`)
     const logText = await page.locator('[data-hall-log] pre').textContent()
-    // RELEASE_VERSION 이 있으면 버전을 붙이고, 없으면 버전 없이 「기동」만 쓴다 (빌드와 같은 환경값을 읽는다).
-    const releaseVersion = (process.env.RELEASE_VERSION || '').trim()
-    assert.match(logText, releaseVersion
-      ? new RegExp(`\\[ 0\\.000\\] workaround ${releaseVersion.replace(/\./g, '\\.')} 기동`)
-      : /\[ 0\.000\] workaround 기동/)
-    if (!releaseVersion) assert.doesNotMatch(logText, /workaround \d/, '버전이 없을 때 버전 문자열이 없어야 한다')
+    // TKT-224: VERSION 파일 단일 출처. 빌드와 같은 규칙으로 기대 버전을 계산한다 (RELEASE_VERSION 우선, 없으면 루트 VERSION 첫 줄).
+    const rootVersion = await readFile(fileURLToPath(new URL('../../../VERSION', import.meta.url)), 'utf8').then(s => s.split('\n')[0].trim(), () => '')
+    const expectedVersion = (process.env.RELEASE_VERSION || '').trim() || rootVersion
+    if (expectedVersion) {
+      assert.match(logText, new RegExp('\\[ 0\\.000\\] workaround ' + expectedVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ' 기동'))
+    } else {
+      assert.match(logText, /\[ 0\.000\] workaround 기동/)
+      assert.doesNotMatch(logText, /workaround \d/, '버전이 없을 때 버전 문자열이 없어야 한다')
+    }
     assert.match(logText, /기록선 여행 \.+ \[ 운행 \]/)
     assert.match(logText, /일일 5지 \.+ \[ 준비 \]/)
     assert.match(logText, /유로트럭 \.+ \[ 샘플 \]/)
