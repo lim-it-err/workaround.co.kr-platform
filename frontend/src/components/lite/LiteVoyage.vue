@@ -261,12 +261,28 @@ function onClick(index) {
 }
 
 .lv-extra {
-  padding: 2px 0 6px calc(5.2em + 8px + 1ch + 8px);
+  padding: 2px 0 6px;
   font-size: 0.85rem;
 }
 
 .lv-extra p {
   margin: 0;
+}
+
+/* 펼친 기록은 요약과 같은 열에서 시작한다 (TKT-234, REV-TKT-229-r2 [중요]).
+   넓은 화면: 요약 열(4번째 칸)에 맞춘 같은 그리드. 좁은 화면: 요약의 들여쓰기와 같은 값. */
+@media (min-width: 481px) {
+  .lv-extra {
+    display: grid;
+    grid-template-columns: 5.2em 1ch 14em minmax(0, 1fr);
+    column-gap: 8px;
+    font-size: inherit;
+  }
+
+  .lv-extra p {
+    grid-column: 4;
+    font-size: 0.85rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -286,7 +302,7 @@ function onClick(index) {
   }
 
   .lv-extra {
-    padding-left: 0;
+    padding-left: calc(5.2em + 8px + 1ch + 8px);
   }
 }
 </style>

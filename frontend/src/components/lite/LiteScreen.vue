@@ -46,7 +46,7 @@ const emit = defineEmits(['back'])
 
 .lite-bar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 4px 10px;
   min-height: 44px;
@@ -56,11 +56,30 @@ const emit = defineEmits(['back'])
   font-size: 0.85rem;
 }
 
+.lite-brand {
+  flex: none;
+  white-space: nowrap;
+}
+
 .lite-crumb {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: 44px;
   color: var(--safety);
 }
 
+/* 375 폭: 윗줄은 crumb 한 줄만 남기고 「‹ 뒤로」는 같은 줄 오른쪽에 둔다 (TKT-234). */
+@media (max-width: 559px) {
+  .lite-brand {
+    display: none;
+  }
+}
+
 .lite-back {
+  flex: none;
   min-height: 44px;
   min-width: 44px;
   margin-left: auto;

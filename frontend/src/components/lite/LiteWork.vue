@@ -234,6 +234,12 @@ function onClick(index) {
   color: var(--text);
 }
 
+/* 선택 줄은 반전 배경(글자색 = --bg)이라 배지도 같은 색으로 따라간다 (TKT-234). */
+.nt-list li[aria-selected='true'] .nt-badge {
+  color: var(--bg);
+  border-color: var(--bg);
+}
+
 .nt-badge.is-proposed {
   color: var(--safety);
 }

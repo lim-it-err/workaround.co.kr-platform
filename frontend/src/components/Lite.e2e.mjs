@@ -118,6 +118,11 @@ for (const viewport of VIEWPORTS) {
       await page.locator('[data-lite-screen]').waitFor()
       assert.equal(await page.locator('[data-lite-crumb]').textContent(), label, id)
       assert.equal(await page.locator('[data-lite-screen] [data-lite-back]').count(), 1, id)
+      if (viewport.width === 375) {
+        const backTop = (await page.locator('[data-lite-back]').boundingBox()).y
+        const crumbTop = (await page.locator('[data-lite-crumb]').boundingBox()).y
+        assert.ok(Math.abs(backTop - crumbTop) < 1, `${id}: 375 에서 뒤로 버튼과 crumb 가 같은 줄 (back ${backTop}, crumb ${crumbTop})`)
+      }
     }
     await page.locator('[data-lite-back]').click()
     await page.locator('.hall[data-hall="lite"]').waitFor()
