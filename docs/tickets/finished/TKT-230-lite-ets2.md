@@ -2,7 +2,7 @@
 
 # TKT-230 `[FE]` lite 유로트럭 — 지금 주행 한 장면을 크게
 
-- 상태: ready · **P2 · v0.9.2** · 담당: dev 서브에이전트(Haiku 5.5) · 브랜치 `codex/v0.9.2`.
+- 상태: **폐기** (PO 2026-11-22 「유로트럭은 lite에 맞지 않아. 빼.」 → TKT-233) · 원래 상태: ready · **P2 · v0.9.2** · 담당: dev 서브에이전트(Haiku 5.5) · 브랜치 `codex/v0.9.2`.
 - 근거: 시안 「유로트럭」 (PO 2026-11-22 승인). **시안과 다른 점(PM 판단)**: 시안의 「출발지→도착지·화물」은 실데이터에 없다. 실제 meta(`public/mockups/ets2-sample/meta-*.json`, 라이브는 `VITE_ETS2_FRAME_URL/meta.json`)에 있는 값만 쓴다.
 - 의존: TKT-228.
 - scope: `frontend/src/components/lite/LiteEts2.vue`(자리표시 교체), 신규 `frontend/src/components/LiteEts2.e2e.mjs`, 캡처. `Ets2Live.vue`·public 샘플 수정 금지(읽기·fetch 규칙만 참고 — meta 정규화 함수가 필요하면 LiteEts2 안에 같은 규칙으로 둔다).

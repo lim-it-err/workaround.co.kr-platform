@@ -1,11 +1,12 @@
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import VoyageView from './components/VoyageView.vue'
 import WritingStudio from './components/WritingStudio.vue'
 import Pantry from './components/Pantry.vue'
 import Ets2Live from './components/Ets2Live.vue'
 import Ets2Dev from './components/Ets2Dev.vue'
 import { SiteLoopSymbol } from './components/tone/index.js'
+import { LITE_PAGES } from './components/lite/index.js'
 import { BLOG_LINE_OPEN, LINES } from './data/lines.js'
 import SplashView from './components/pages/SplashView.vue'
 import JunctionView from './components/pages/JunctionView.vue'
@@ -62,6 +63,8 @@ const {
   pageTitle,
   openPage
 } = routing
+// lite 보기에서 voyage·ets2·pantry·work 는 전용 lite 화면(TKT-228). 그 외 페이지는 기본 화면 그대로.
+const liteComponent = computed(() => (view.value === 'lite' ? LITE_PAGES[page.value] || null : null))
 // 기지선(Work Manager·Runtime) 상태·인증 세션·타이머는 useWorkManager 가 소유한다(TKT-209).
 const workManager = useWorkManager({
   fetchJson,
@@ -257,8 +260,10 @@ async function fetchJson(url, options = {}) {
         </header>
 
         <div class="page-scroller">
+          <component :is="liteComponent" v-if="liteComponent" @back="openPage('junction')" />
+
           <JunctionView
-            v-if="page === 'junction'"
+            v-else-if="page === 'junction'"
             :disabled-pages="staticUnavailablePages"
             :static-mode="isStaticMode"
             :view="view"

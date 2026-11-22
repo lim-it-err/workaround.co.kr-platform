@@ -1,5 +1,6 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
+import { useLiteKeys } from '../../composables/useLiteKeys.js'
 import { HALL_LITE_ITEMS, LITE_HINT, resolveHallTarget, takeBootLog } from '../../data/hallBoard.js'
 import { withBasePath } from '../../staticRouting.js'
 
@@ -16,7 +17,6 @@ takeBootLog({ reducedMotion: true })
 
 const items = HALL_LITE_ITEMS
 const active = ref(0) // TKT-227: 들어오면 첫 항목이 이미 선택돼 있다.
-const armed = ref(false) // 마우스·터치로 고른 줄만 true — 이때만 같은 줄을 다시 누르면 진입
 const listRef = ref(null)
 
 const activeId = computed(() => (active.value >= 0 ? optionId(active.value) : undefined))
@@ -45,50 +45,21 @@ function enter(index = active.value) {
   else emit('open', action.page)
 }
 
-function isTypingTarget(target) {
-  if (!(target instanceof Element)) return false
-  return Boolean(target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])'))
-}
-
-// 전역 keydown — 포커스가 제목·보기 전환 버튼·body 어디에 있든 목록이 움직인다. 마운트된 동안만 등록.
-function onKeydown(event) {
-  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return
-  if (isTypingTarget(event.target)) return
-  const key = event.key
-  if (key === 'Enter') {
-    // 버튼·링크에 포커스가 있으면 원래 동작. 목록·제목·body 에서만 진입.
-    if (event.target instanceof Element && event.target.closest('button, a[href], summary')) return
-    if (active.value < 0) return
-    enter()
-  } else if (key === 'ArrowDown') {
-    armed.value = false
-    pick(active.value < 0 ? 0 : active.value + 1)
-  } else if (key === 'ArrowUp') {
-    armed.value = false
-    pick(active.value < 0 ? items.length - 1 : active.value - 1)
-  } else if (key === 'Home') {
-    armed.value = false
-    pick(0)
-  } else if (key === 'End') {
-    armed.value = false
-    pick(items.length - 1)
-  } else return
-  event.preventDefault()
-  if (document.activeElement !== listRef.value) listRef.value?.focus({ preventScroll: true })
-}
+const { armed, pointerPick } = useLiteKeys({
+  onMove: (delta) => pick(active.value < 0 ? (delta > 0 ? 0 : items.length - 1) : active.value + delta),
+  onHome: () => pick(0),
+  onEnd: () => pick(items.length - 1),
+  // 버튼·링크에 포커스가 있으면 composable 이 원래 동작에 맡긴다. 목록·제목·body 에서만 진입.
+  onEnter: () => (active.value < 0 ? false : enter()),
+  onHandled: () => {
+    if (document.activeElement !== listRef.value) listRef.value?.focus({ preventScroll: true })
+  }
+})
 
 function onClick(index) {
-  if (index === active.value && armed.value) {
-    enter(index)
-  } else {
-    pick(index)
-    armed.value = true
-  }
+  pointerPick(index, { current: active.value, select: pick, enter })
   listRef.value?.focus({ preventScroll: true })
 }
-
-onMounted(() => document.addEventListener('keydown', onKeydown))
-onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
