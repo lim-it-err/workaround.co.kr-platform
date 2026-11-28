@@ -332,3 +332,9 @@
 - 이지/하드: 미션 콘텐츠에 선택 필드 `starterTests`(PM 작성)를 더하고, 받기에서 「이지 — 테스트 포함」/「하드 — 테스트 직접」 zip 을 고른다. 기존 `difficulty`(규칙 복잡도)와 별개 축. 정적 미션 전용 필드라 백엔드 `MissionContent`(LLM 생성 미션) 계약은 그대로 — 콘텐츠 스키마 **추가만**.
 - UI 연동 미션(PM 안): 외부 의존성 없이 JDK 내장 `com.sun.net.httpserver` 엔진이 `ui/index.html` 을 같은 오리진으로 서빙하고, 학습자가 구현한 도메인·핸들러가 그 화면에 숫자를 채운다. 브라우저에서 내 코드가 움직이는 화면을 본다.
 - 이지 테스트는 PM 이 쓰고, 뼈대 상태에서 컴파일되고(실패는 OK) 정답 코드에서 전부 통과하는 것을 PM 이 mvn 으로 확인한 미션만 연다.
+
+## D-041 Advisor 온라인 리뷰(Cloudflare Worker)는 만들지 않는다 — 당분간 로컬 전용 · **확정** (PO 2026-11-28)
+
+- 경위: PM 이 「온라인에서 하기」를 LLM 리뷰(Worker)·코드 실행(Codespaces / 브라우저 JVM / 채점 서버)으로 나눠 권고 → PO 「cloudflare worker는 구성하지 않아. 일단 로컬로」.
+- 내용: LLM 리뷰는 `./local.sh claude`(또는 `tools/local-start.sh advisor --profile claude`)로 내 맥에서만. 배포 버전은 연습 리뷰 그대로(D-039 의 「나중에 Worker 주소만 바꾸면」은 보류). 공개 페이지는 방문자 localhost 를 부르지 않는다(TKT-239) — 유지.
+- 다시 열 조건: PO 지시.
