@@ -56,6 +56,25 @@ cd service && ./run.sh demo    # 트랙→미션→제출→리뷰 full cycle �
 
 프런트 빌드의 지원 기준은 Node.js `>=20.12.0`이다. `frontend/package.json`의 `engines.node`가 같은 기준을 선언한다.
 
+### 로컬 모드 · 배포 버전 (D-039)
+
+같은 화면이 어디에 붙었는지에 따라 모드가 갈리고, 미션·리뷰 화면 오른쪽 위 배지가 항상 알려준다.
+
+| 모드 | 백엔드 | 리뷰 | 배지 |
+| --- | --- | --- | --- |
+| 로컬 · LLM | 내 맥 `./local.sh claude` / `ollama` | 실제 LLM | `로컬 · Claude 리뷰` / `로컬 · Ollama 리뷰` |
+| 로컬 · 연습 | 내 맥 `./local.sh` (mock) | 백엔드 mock | `로컬 · 연습 리뷰` |
+| 배포 | 없음(Pages 정적 빌드) | 브라우저 안 샘플 | `배포 · 연습 리뷰` |
+
+```bash
+cd services/advisor
+./local.sh              # mock — 키 불필요
+export ANTHROPIC_API_KEY=...   # 이 터미널에서만. 파일에 저장하지 않는다
+./local.sh claude       # 실제 Claude 리뷰. Ctrl-C 로 백엔드·프런트 함께 종료
+```
+
+판별은 화면 진입 시 `VITE_ADVISOR_API` 오리진의 `/health`(`profile`: mock|claude|ollama)를 1.5초 안에 조회한 결과다(이후 탭이 보일 때 60초마다). 나중에 Cloudflare Worker 가 생기면 배포 빌드의 `VITE_ADVISOR_API` 만 그 주소로 바꾸면 배포 버전도 LLM 모드가 된다(별도 티켓).
+
 ### 기내 오프라인 실행
 
 인터넷이 있을 때 한 번 `npm install`과 빌드를 마친 뒤 출발한다. 비행 중에는 백엔드나 외부 LLM 없이 정적 콘텐츠와 로컬 진행 기록만 사용한다.

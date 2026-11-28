@@ -5,7 +5,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { newSeoulContext } from '../e2eContext.mjs'
+import { newSeoulContext, readDistKind } from '../e2eContext.mjs'
 import { BLOG_LINE_OPEN } from '../data/lines.js'
 
 // D-031 블로그 운행 중단: Studio 화면 검증은 스위치가 꺼진 동안 skip 한다(테스트 코드는 보존).
@@ -15,6 +15,11 @@ const STUDIO_SKIP = BLOG_LINE_OPEN ? false : 'D-031 블로그 운행 중단'
 const { chromium } = createRequire(import.meta.url)('playwright')
 const distRoot = fileURLToPath(new URL('../../dist/', import.meta.url))
 let base = process.env.TONE_TOOLS_TEST_URL || ''
+// 이 파일은 root-base 빌드(`/`)를 기대한다 — Runtime·Work 등 서버 모드 화면은 Pages-base(정적 공개본)에서 열리지 않는다.
+// 맞지 않는 dist 면 이유를 적어 skip 한다. 전체 게이트는 `npm --prefix frontend run e2e:all` 이 root 빌드를 맞춰 준다.
+const DIST_SKIP = base || (await readDistKind(distRoot)) === 'root'
+  ? false
+  : 'root-base dist 가 아니다(Pages-base 빌드에서는 서버 모드 화면이 열리지 않는다) — e2e:all 로 실행'
 let browser
 let server
 
@@ -234,13 +239,14 @@ async function findRenderedUppercaseEnglishLeaves(page) {
     .filter(element => /\b[A-Z]{4,}\b/.test(element.text)))
 }
 
+// 라이트 테마는 TKT-218(D-036)에서 없앴다(저장값이 light 여도 검은 화면 — useTheme). 폭 두 개만 본다.
 const scenarios = [
   { width: 375, height: 812, theme: 'dark' },
-  { width: 1440, height: 900, theme: 'light' }
+  { width: 1440, height: 900, theme: 'dark' }
 ]
 
 for (const scenario of scenarios) {
-  test(`${scenario.width}px ${scenario.theme}: 격납고는 한 히어로와 세 시뮬레이션 행으로 읽힌다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: 격납고는 한 히어로와 세 시뮬레이션 행으로 읽힌다`, { skip: DIST_SKIP }, async t => {
     const page = await setup(t, scenario, 'sim')
     await page.getByRole('heading', { name: '멈춘 엘리베이터', exact: true }).waitFor()
     assert.equal(await page.locator('.tone-page-hero').count(), 1)
@@ -267,7 +273,7 @@ for (const scenario of scenarios) {
     }
   })
 
-  test(`${scenario.width}px ${scenario.theme}: Work는 검토 히어로 뒤에 기능 보드를 보존한다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: Work는 검토 히어로 뒤에 기능 보드를 보존한다`, { skip: DIST_SKIP }, async t => {
     const page = await setup(t, scenario, 'work')
     await page.getByRole('heading', { name: '검토 대기 1건', exact: true }).waitFor()
     assert.equal(await page.locator('.tone-page-hero').count(), 1)
@@ -331,7 +337,7 @@ for (const scenario of scenarios) {
     }
   })
 
-  test(`${scenario.width}px ${scenario.theme}: Runtime은 경고 히어로와 상태 행을 먼저 보인다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: Runtime은 경고 히어로와 상태 행을 먼저 보인다`, { skip: DIST_SKIP }, async t => {
     const page = await setup(t, scenario, 'runtime')
     await page.getByRole('heading', { name: '응답 지연이 평소보다 깁니다', exact: true }).waitFor()
     assert.equal(await page.locator('.tone-page-hero').count(), 1)
@@ -363,7 +369,7 @@ for (const scenario of scenarios) {
     }
   })
 
-  test(`${scenario.width}px ${scenario.theme}: Studio는 720px 본문과 우측/시트 도구를 유지한다`, { skip: STUDIO_SKIP }, async t => {
+  test(`${scenario.width}px ${scenario.theme}: Studio는 720px 본문과 우측/시트 도구를 유지한다`, { skip: STUDIO_SKIP || DIST_SKIP }, async t => {
     const page = await setup(t, scenario, 'studio')
     await page.getByRole('textbox', { name: '본문', exact: true }).waitFor()
     const editor = await page.locator('.writer-page').boundingBox()
@@ -385,7 +391,7 @@ for (const scenario of scenarios) {
     }
   })
 
-  test(`${scenario.width}px ${scenario.theme}: 전 정적 경로의 렌더 영어 대문자 간판은 0건이다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: 전 정적 경로의 렌더 영어 대문자 간판은 0건이다`, { skip: DIST_SKIP }, async t => {
     // 블로그가 내려가 있으면 /blog 로 시작할 수 없다(환승 홀로 바로 닿아 '환승 홀' 버튼이 없다) — 여행 화면에서 시작한다.
     const page = await setup(t, scenario, BLOG_LINE_OPEN ? 'blog' : 'voyage')
     const routes = [
@@ -422,24 +428,5 @@ for (const scenario of scenarios) {
       routes.map(route => ({ path: route.path, violations: [] })),
       'details를 모두 펼친 렌더 leaf innerText에 대문자 영어 간판이 없어야 한다'
     )
-  })
-}
-
-for (const scenario of [
-  { width: 375, height: 812, theme: 'light' },
-  { width: 1440, height: 900, theme: 'dark' }
-]) {
-  test(`${scenario.width}px ${scenario.theme}: Runtime 배포 레일은 면 없는 번호 행이다`, async t => {
-    const page = await setup(t, scenario, 'runtime')
-    await page.getByRole('heading', { name: '응답 지연이 평소보다 깁니다', exact: true }).waitFor()
-    await page.locator('.tone-support-details summary').click()
-    await assertPathStepRows(page)
-    await assertNoPageOverflow(page)
-    if (process.env.TONE_TOOLS_SCREENSHOT_DIR) {
-      await page.screenshot({
-        path: `${process.env.TONE_TOOLS_SCREENSHOT_DIR}/runtime-${scenario.width}-${scenario.theme}.png`,
-        fullPage: true
-      })
-    }
   })
 }

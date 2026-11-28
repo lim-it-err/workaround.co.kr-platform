@@ -7,6 +7,7 @@ import sampleContent from '../data/sampleContent.js'
 import { vienna1900CodingMissions } from '../data/courseVienna1900.js'
 import { budapestBathsCodingMissions } from '../data/courseBudapestBaths.js'
 import MarkdownBlock from '../components/MarkdownBlock.vue'
+import ModeBadge from '../components/ModeBadge.vue'
 
 const route = useRoute()
 const store = useMissions()
@@ -141,8 +142,10 @@ const firstFixSummary = computed(() => {
 <template>
   <div v-if="mission">
     <router-link :to="{ path: `/missions/${mission.id}`, state: { from: returnSurface, fromLabel: returnName } }" class="back">← 미션으로</router-link>
+    <ModeBadge />
     <h1>리뷰 — {{ mission.title }}</h1>
     <section v-if="review" :id="`review-v${activeIndex + 1}`" class="review-lead" aria-label="리뷰 핵심">
+      <p v-if="review.source === 'practice'" class="practice-mark" data-testid="practice-mark">연습 리뷰 — LLM 아님</p>
       <div class="score-line">
         <strong :style="{ color: scoreColor(review.overall) }">{{ review.overall }}점</strong>
         <span>종합 점수</span>
@@ -512,6 +515,7 @@ h1 { font-size: 22px; margin: 12px 0 8px; }
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
+.practice-mark { margin: 0 0 8px; color: var(--fg-dim); font-size: 13px; }
 .score-line { display: flex; align-items: baseline; gap: 10px; }
 .score-line strong { font-size: 34px; font-weight: 850; letter-spacing: -.04em; }
 .score-line span { color: var(--fg-dim); font-size: 13px; }

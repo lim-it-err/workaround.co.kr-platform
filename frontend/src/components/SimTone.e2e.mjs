@@ -1,12 +1,16 @@
 import assert from 'node:assert/strict'
 import { after, before, test } from 'node:test'
 import { createRequire } from 'node:module'
-import { newSeoulContext } from '../e2eContext.mjs'
+import { isReachable, newSeoulContext } from '../e2eContext.mjs'
 import { fallbackElevatorState, fallbackHealth, fallbackRuntime, fallbackWorkBoard } from '../data/fallbacks.js'
 
 const { chromium } = createRequire(import.meta.url)('playwright')
 const base = process.env.SIM_TONE_TEST_URL || 'http://127.0.0.1:4175'
 const fixtures = { fallbackHealth, fallbackRuntime, fallbackWorkBoard, fallbackElevatorState }
+
+// 이 파일은 root-base 빌드의 preview(4175)를 기대한다(엘리베이터·택시는 정적 공개본이 아닌 서버 모드 화면).
+// 서버가 없으면 이유를 적어 skip 한다 — 전체 게이트는 `npm --prefix frontend run e2e:all` 이 4175 를 띄워 준다.
+const SKIP = (await isReachable(base)) ? false : `${base} 에 root-base preview 가 없다(e2e:all 러너가 기동)`
 
 let browser
 
@@ -85,13 +89,14 @@ async function css(page, selector, property) {
   return page.locator(selector).first().evaluate((element, key) => getComputedStyle(element)[key], property)
 }
 
+// 라이트 테마는 TKT-218(D-036)에서 없앴다 — 저장값이 light 여도 검은 화면(useTheme). 폭 두 개만 본다.
 const scenarios = [
   { width: 375, theme: 'dark' },
-  { width: 1440, theme: 'light' }
+  { width: 1440, theme: 'dark' }
 ]
 
 for (const scenario of scenarios) {
-  test(`${scenario.width}px ${scenario.theme}: 엘리베이터는 캔버스와 시각표 행으로 읽힌다`, async (t) => {
+  test(`${scenario.width}px ${scenario.theme}: 엘리베이터는 캔버스와 시각표 행으로 읽힌다`, { skip: SKIP }, async (t) => {
     const page = await setup(t, { path: 'elevator', ...scenario })
     await page.locator('.station-center').getByRole('heading', { name: '멈춘 엘리베이터', exact: true }).waitFor()
     assert.equal(await page.locator('.elevator-metrics article').count(), 4)
@@ -105,7 +110,7 @@ for (const scenario of scenarios) {
     }
   })
 
-  test(`${scenario.width}px ${scenario.theme}: 택시는 지도 캔버스와 시각표 행으로 읽힌다`, async (t) => {
+  test(`${scenario.width}px ${scenario.theme}: 택시는 지도 캔버스와 시각표 행으로 읽힌다`, { skip: SKIP }, async (t) => {
     const page = await setup(t, { path: 'taxi', ...scenario })
     await page.locator('.station-center').getByRole('heading', { name: '심야 택시', exact: true }).waitFor()
     assert.equal(await page.locator('.taxi-tone-page .eyebrow').count(), 0)
@@ -122,7 +127,7 @@ for (const scenario of scenarios) {
   })
 }
 
-test('무인 30초 동안 엘리베이터와 택시 화면이 모두 변한다', async (t) => {
+test('무인 30초 동안 엘리베이터와 택시 화면이 모두 변한다', { skip: SKIP }, async (t) => {
   const [elevatorPage, taxiPage] = await Promise.all([
     setup(t, { path: 'elevator', theme: 'dark', width: 1280, controlledClock: false }),
     setup(t, { path: 'taxi', theme: 'dark', width: 1280, controlledClock: false })

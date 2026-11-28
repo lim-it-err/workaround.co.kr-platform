@@ -32,19 +32,19 @@ case "${1:-start}" in
     echo "① 트랙 생성"
     track=$(curl -sf -X POST "$base/tracks" -H 'Content-Type: application/json' \
       -d '{"domain":"와인","difficulty":"Easy","focus":"분리"}')
-    echo "$track" | python3 -m json.tool
-    tid=$(echo "$track" | python3 -c 'import sys,json;print(json.load(sys.stdin)["id"])')
+    print -r -- "$track" | python3 -m json.tool
+    tid=$(print -r -- "$track" | python3 -c 'import sys,json;print(json.load(sys.stdin)["id"])')
 
     echo "② 미션 생성 (LLM 프로필: ${ADVISOR_PROFILE:-서버 설정})"
     mission=$(curl -sf -X POST "$base/tracks/$tid/missions" -H 'Content-Type: application/json' -d '{}')
-    mid=$(echo "$mission" | python3 -c 'import sys,json;print(json.load(sys.stdin)["id"])')
-    echo "$mission" | python3 -c 'import sys,json;m=json.load(sys.stdin);print(" ", m["id"], "|", m["title"])'
+    mid=$(print -r -- "$mission" | python3 -c 'import sys,json;print(json.load(sys.stdin)["id"])')
+    print -r -- "$mission" | python3 -c 'import sys,json;m=json.load(sys.stdin);print(" ", m["id"], "|", m["title"])'
 
     echo "③ 코드 제출"
     sub=$(curl -sf -X POST "$base/missions/$mid/submissions" -H 'Content-Type: application/json' \
       -d '{"files":[{"path":"WineRecommender.java","content":"// 데모 제출"}],"explanation":"데모 설명"}')
-    sid=$(echo "$sub" | python3 -c 'import sys,json;print(json.load(sys.stdin)["submissionId"])')
-    echo "$sub" | python3 -m json.tool
+    sid=$(print -r -- "$sub" | python3 -c 'import sys,json;print(json.load(sys.stdin)["submissionId"])')
+    print -r -- "$sub" | python3 -m json.tool
 
     echo "④ 리뷰 조회 (점수/평판/시나리오/결말)"
     curl -sf "$base/submissions/$sid/review" | python3 -c 'import sys,json;r=json.load(sys.stdin);print("  overall:",r["overall"],"| ending:",r["ending"],"| reputation:",r["reputation"]["level"])'

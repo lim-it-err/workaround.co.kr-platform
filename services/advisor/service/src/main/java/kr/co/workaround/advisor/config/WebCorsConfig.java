@@ -25,6 +25,10 @@ public class WebCorsConfig implements WebMvcConfigurer {
                 .allowedOrigins(corsProperties.resolvedAllowedOrigins().toArray(String[]::new))
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*");
+        // 프런트가 로컬/배포 모드를 판별하려고 /health 를 읽는다 (TKT-237) — 읽기 전용 GET 만.
+        registry.addMapping("/health")
+                .allowedOrigins(corsProperties.resolvedAllowedOrigins().toArray(String[]::new))
+                .allowedMethods("GET");
     }
 
     @Override

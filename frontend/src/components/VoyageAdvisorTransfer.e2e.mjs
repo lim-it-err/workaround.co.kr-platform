@@ -5,7 +5,7 @@ import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { newSeoulContext } from '../e2eContext.mjs'
+import { fileExists, newSeoulContext } from '../e2eContext.mjs'
 
 const advisorRequire = createRequire(new URL('../../../services/advisor/frontend/package.json', import.meta.url))
 const { chromium } = advisorRequire('playwright')
@@ -13,6 +13,11 @@ const publicBase = '/workaround.co.kr-platform/'
 const advisorBase = `${publicBase}advisor/`
 const distRoot = process.env.VOYAGE_ADVISOR_DIST_ROOT || fileURLToPath(new URL('../../dist/', import.meta.url))
 let base = process.env.VOYAGE_ADVISOR_TEST_URL || ''
+// Advisor 화면은 Advisor 프런트 빌드가 dist/advisor 에 합쳐져 있어야 열린다(정적 서빙에서 없으면 진입 후 빈 화면).
+// 합쳐지지 않은 dist 면 이유를 적어 skip 한다. 전체 게이트는 `npm --prefix frontend run e2e:all` 이 합쳐 준다.
+const ADVISOR_SKIP = base || (await fileExists(join(distRoot, 'advisor', 'index.html')))
+  ? false
+  : 'dist/advisor 가 없다(Advisor 빌드 미포함) — e2e:all 로 실행'
 let browser
 let server
 
@@ -56,11 +61,12 @@ async function serveStaticBuild(request, response) {
   response.end(await readFile(filePath))
 }
 
+// 라이트 테마는 TKT-218(D-036)에서 없앴다(저장값이 light 여도 검은 화면). 폭 두 개만 본다.
 for (const scenario of [
   { width: 375, height: 812, theme: 'dark' },
-  { width: 1440, height: 900, theme: 'light' }
+  { width: 1440, height: 900, theme: 'dark' }
 ]) {
-  test(`${scenario.width}px ${scenario.theme}: 벨베데레와 Advisor 미션을 왕복한다`, async t => {
+  test(`${scenario.width}px ${scenario.theme}: 벨베데레와 Advisor 미션을 왕복한다`, { skip: ADVISOR_SKIP }, async t => {
     const context = await newSeoulContext(browser, {
       viewport: { width: scenario.width, height: scenario.height },
       reducedMotion: 'reduce'
@@ -72,6 +78,9 @@ for (const scenario of [
       if (['error', 'warning'].includes(message.type())) errors.push(message.text())
     })
     await page.addInitScript(theme => localStorage.setItem('workaround-theme', theme), scenario.theme)
+    // TKT-237: Advisor 가 모드 배지용으로 localhost:8080/health 를 조회한다. 백엔드 없는 테스트에서 연결 거부가
+    // 콘솔 오류로 남지 않게 막아 둔다(배지 문구는 이 테스트의 대상이 아니다).
+    await page.route('http://localhost:8080/**', route => route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }))
     t.after(async () => {
       await context.close()
       assert.deepEqual(errors, [], '왕복 중 브라우저 오류나 경고가 없어야 한다')

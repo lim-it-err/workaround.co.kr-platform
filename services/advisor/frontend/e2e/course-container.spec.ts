@@ -11,7 +11,7 @@ test('배우기에서 기본·비엔나 코스를 보고 12개 형식 시각표�
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto('/learn#courses')
 
-  await expect(page.locator('[data-course-id="foundations"]')).toContainText('39개')
+  await expect(page.locator('[data-course-id="foundations"]')).toContainText('40개')
   await page.locator('[data-course-id="vienna-1900"]').click()
   await expect(page).toHaveURL(/\/courses\/vienna-1900$/)
   await expect(page.getByRole('heading', { name: '비엔나 1900' })).toBeVisible()

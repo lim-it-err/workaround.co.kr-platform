@@ -71,6 +71,16 @@
 
 ## Finished
 
+- `TKT-239` `[FE]` Advisor 공개 페이지 localhost 조회 제거 — r1 통과 (2026-11-28, v0.9.3, Sonnet 5.5)
+
+- `TKT-235` `[QA]` 낡은 e2e 17건 정리 — r2 통과 (2026-11-28, v0.9.3, Sonnet 5.5) · 게이트 = `e2e:all`
+
+- `TKT-237` `[FE/BE]` Advisor 로컬 모드 · 배포 버전 구분 — r1 통과 (2026-11-28, v0.9.3, Sonnet 5.5)
+
+- `TKT-238` `[FE]` Advisor 코드 zip 에 빌드 파일 — r1 통과 (2026-11-28, v0.9.3, Haiku 5.5)
+
+- `TKT-236` `[FE]` Advisor 미션 코드 내려받기·올리기 — r2 통과 (2026-11-28, v0.9.3, Sonnet 5.5)
+
 - `TKT-234` `[FE]` lite 틀 손질 — r1 통과 (2026-11-22, v0.9.2, Haiku 5.5)
 
 - `TKT-229` `[FE]` lite 여행 — r2 통과 (2026-11-22, v0.9.2, Sonnet 5.5)
