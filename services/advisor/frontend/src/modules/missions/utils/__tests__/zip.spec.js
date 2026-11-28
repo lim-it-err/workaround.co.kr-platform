@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildMissionEntries, buildZip, crc32, safeZipPath } from '../zip.js'
+import { buildMissionEntries, buildPomXml, buildZip, crc32, safeZipPath, toArtifactId } from '../zip.js'
 
 // 무압축 ZIP 을 중앙 디렉터리부터 직접 파싱한다.
 function parse(bytes) {
@@ -49,13 +49,35 @@ describe('zip', () => {
     expect(safeZipPath('C:\\x', 3)).toBe('files/4.txt')
     expect(safeZipPath('a\\b.java', 4)).toBe('a/b.java')
   })
-  it('미션 묶음: README 맨 위', () => {
+  it('미션 묶음: pom.xml 맨 위, README 다음', () => {
     const e = buildMissionEntries({
-      title: 'T', requirements: ['가', '나'],
+      id: 'm-1', title: 'T', requirements: ['가', '나'],
       legacyFiles: [{ path: 'a.java', content: 'x' }], providedFiles: [{ path: 'b.java', content: 'y' }],
     })
-    expect(e.map((x) => x.path)).toEqual(['README.md', 'a.java', 'b.java'])
-    expect(e[0].content).toContain('1. 가')
-    expect(e[0].content).toContain('제공 코드는 수정하지 않는다.')
+    expect(e.map((x) => x.path)).toEqual(['pom.xml', 'README.md', 'a.java', 'b.java'])
+    const readme = e[1].content
+    expect(readme).toContain('1. 가')
+    expect(readme).toContain('제공 코드는 수정하지 않는다.')
+    expect(readme).toContain('IntelliJ')
+    expect(readme).toContain('`mvn -q test`')
+  })
+  it('pom.xml: groupId·artifactId 정리·Java 21·JUnit 5.10.2·surefire 3.2.5', () => {
+    const pom = buildPomXml({ id: 'Budapest Bath_2/Ω' })
+    expect(pom).toContain('<groupId>kr.workaround.advisor</groupId>')
+    expect(pom).toContain('<artifactId>budapest-bath-2</artifactId>')
+    expect(pom).toContain('<maven.compiler.release>21</maven.compiler.release>')
+    expect(pom).toContain('<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>')
+    expect(pom).toContain('<version>5.10.2</version>')
+    expect(pom).toContain('<scope>test</scope>')
+    expect(pom).toContain('<version>3.2.5</version>')
+    expect(toArtifactId('')).toBe('mission')
+    expect(toArtifactId('---')).toBe('mission')
+  })
+  it('미션에 빌드 파일이 있으면 pom.xml 을 넣지 않는다', () => {
+    for (const name of ['pom.xml', 'build.gradle', 'build.gradle.kts']) {
+      const e = buildMissionEntries({ id: 'x', title: 'T', legacyFiles: [{ path: name, content: 'mine' }] })
+      expect(e.map((x) => x.path)).toEqual(['README.md', name])
+      expect(e[1].content).toBe('mine')
+    }
   })
 })

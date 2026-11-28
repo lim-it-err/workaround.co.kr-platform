@@ -87,14 +87,72 @@ export function buildZip(entries) {
   return out
 }
 
-// 미션 한 개의 받을 파일 묶음: README.md + legacyFiles + providedFiles.
+// 미션 artifactId: 영문·숫자·하이픈만 남긴다. 비면 'mission'.
+export function toArtifactId(id) {
+  const s = String(id ?? '')
+    .replace(/[^A-Za-z0-9-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase()
+  return s || 'mission'
+}
+
+// 미션 zip 루트에 넣는 Maven 빌드 파일. IntelliJ 가 폴더를 Maven 프로젝트로 인식한다.
+export function buildPomXml(mission) {
+  const artifactId = toArtifactId(mission.id)
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>kr.workaround.advisor</groupId>
+  <artifactId>${artifactId}</artifactId>
+  <version>1.0.0</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.10.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+`
+}
+
+const BUILD_FILE_NAMES = ['pom.xml', 'build.gradle', 'build.gradle.kts']
+
+// 미션 한 개의 받을 파일 묶음: pom.xml(미션에 빌드 파일이 없을 때만) + README.md + legacyFiles + providedFiles.
 export function buildMissionEntries(mission) {
   const reqs = (mission.requirements ?? []).map((r, i) => `${i + 1}. ${r}`).join('\n')
-  const readme = `# ${mission.title}\n\n## 요구사항\n\n${reqs}\n\n제공 코드는 수정하지 않는다.\n`
+  const readme =
+    `# ${mission.title}\n\n## 요구사항\n\n${reqs}\n\n제공 코드는 수정하지 않는다.\n\n` +
+    `1. 압축을 푼다.\n` +
+    `2. IntelliJ 에서 푼 폴더를 연다 (Maven 자동 인식).\n` +
+    `3. \`mvn -q test\` 로 확인한다.\n`
+  const files = [...(mission.legacyFiles ?? []), ...(mission.providedFiles ?? [])]
+  const hasBuildFile = files.some((f) => BUILD_FILE_NAMES.includes(safeZipPath(f.path, 0)))
   return [
+    ...(hasBuildFile ? [] : [{ path: 'pom.xml', content: buildPomXml(mission) }]),
     { path: 'README.md', content: readme },
-    ...(mission.legacyFiles ?? []),
-    ...(mission.providedFiles ?? []),
+    ...files,
   ]
 }
 
