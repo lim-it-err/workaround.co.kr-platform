@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { detectMode, healthUrl, modeFromHealth } from '../advisorMode.js'
+import { canContactBackend, detectMode, healthUrl, modeFromHealth } from '../advisorMode.js'
 
 const ok = (body) => async () => ({ ok: true, json: async () => body })
 
@@ -43,5 +43,31 @@ describe('advisorMode — /health 로 모드 판별', () => {
     const pending = detectMode({ fetchImpl: hanging, timeoutMs: 1500 })
     await vi.advanceTimersByTimeAsync(1500)
     expect((await pending).kind).toBe('deploy-practice')
+  })
+})
+
+describe('canContactBackend — 공개 호스트는 localhost 를 부르지 않는다 (TKT-239)', () => {
+  it.each([
+    ['localhost', undefined, true],
+    ['127.0.0.1', undefined, true],
+    ['[::1]', undefined, true],
+    ['lim-it-err.github.io', undefined, false],
+    ['lim-it-err.github.io', 'https://api.example.test/api/advisor', true],
+    ['lim-it-err.github.io', '', false],
+  ])('호스트 %s · env %s → %s', (hostname, explicit, expected) => {
+    expect(canContactBackend({ hostname, explicit })).toBe(expected)
+  })
+
+  it('불가면 fetch 를 한 번도 부르지 않고 배포 · 연습', async () => {
+    const fetchImpl = vi.fn()
+    const mode = await detectMode({ fetchImpl, allowed: false })
+    expect(fetchImpl).not.toHaveBeenCalled()
+    expect(mode).toMatchObject({ kind: 'deploy-practice', local: false })
+  })
+
+  it('가능하면 조회한다', async () => {
+    const fetchImpl = vi.fn(ok({ profile: 'claude' }))
+    await detectMode({ fetchImpl, allowed: true })
+    expect(fetchImpl).toHaveBeenCalledTimes(1)
   })
 })

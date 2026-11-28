@@ -18,7 +18,7 @@ import {
 } from './seasonStats.js'
 import { createCourseCatalog, findCourse } from './courseCatalog.js'
 import { syncLearnerNickname } from './learnerIdentity.js'
-import { API_BASE, currentReviewSource, refreshMode } from './advisorMode.js'
+import { API_BASE, canContactBackend, currentReviewSource, refreshMode } from './advisorMode.js'
 
 let fullSample = { sampleReviews: {}, sampleExplainFeedback: {}, sampleReputation: {} }
 let courseCodingMissions = []
@@ -34,6 +34,11 @@ const CHAT_TIMEOUT_MS = 30_000
 const REVIEW_TIMEOUT_MS = 120_000
 const RECORD_TIMEOUT_MS = 5_000
 
+// 공개 호스트에서는 백엔드를 시도하지 않는다 — throw 하면 호출부가 기존 mock 폴백 경로를 탄다(TKT-239).
+function assertBackendReachable() {
+  if (!canContactBackend()) throw new Error('backend not contacted on public host')
+}
+
 function backendHeaders({ json = false } = {}) {
   const headers = {}
   if (json) headers['Content-Type'] = 'application/json'
@@ -46,6 +51,7 @@ function learnerPath(nickname, suffix = '') {
 }
 
 async function requestRecord(path, { method = 'GET', body } = {}) {
+  assertBackendReachable()
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), RECORD_TIMEOUT_MS)
   try {
@@ -69,6 +75,7 @@ function fireAndForget(promise) {
 
 // POST /chat/preview — 실패(네트워크/타임아웃/비정상 응답)는 전부 throw, 호출부에서 폴백.
 async function requestChatPreview(context, history, text) {
+  assertBackendReachable()
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), CHAT_TIMEOUT_MS)
   try {
@@ -92,6 +99,7 @@ async function requestChatPreview(context, history, text) {
 // POST /review/preview — 실패(네트워크/타임아웃/비정상 응답)는 전부 throw, 호출부는 가짜 리뷰를 만들지 않고 조용히 포기한다.
 // 응답에는 overall이 없다 — items[].score 합으로 클라이언트에서 계산한다.
 async function requestReviewPreview(payload) {
+  assertBackendReachable()
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), REVIEW_TIMEOUT_MS)
   try {

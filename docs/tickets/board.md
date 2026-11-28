@@ -43,7 +43,6 @@
 
 ## Ready
 
-- `TKT-239` `P1` `v0.9.3` `진행 가능` [FE] Advisor 공개 페이지는 방문자의 localhost 를 부르지 않는다
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
@@ -71,6 +70,8 @@
 
 
 ## Finished
+
+- `TKT-239` `[FE]` Advisor 공개 페이지 localhost 조회 제거 — r1 통과 (2026-11-28, v0.9.3, Sonnet 5.5)
 
 - `TKT-235` `[QA]` 낡은 e2e 17건 정리 — r2 통과 (2026-11-28, v0.9.3, Sonnet 5.5) · 게이트 = `e2e:all`
 

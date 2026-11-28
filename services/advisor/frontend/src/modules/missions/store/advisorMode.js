@@ -3,6 +3,18 @@
 import { reactive } from 'vue'
 
 export const API_BASE = import.meta.env.VITE_ADVISOR_API ?? 'http://localhost:8080/api/advisor'
+const LOCAL_HOSTS = ['localhost', '127.0.0.1', '[::1]', '::1']
+
+// TKT-239 — 백엔드(API_BASE)를 불러도 되는가. VITE_ADVISOR_API 를 명시했거나, 화면이 이 PC 의 localhost 에서 열렸을 때만 true.
+// 공개 Pages 방문자의 PC localhost 를 부르면 연결 거부 로그·「로컬 네트워크 접근」 권한 창이 뜬다.
+export function canContactBackend({
+  explicit = import.meta.env.VITE_ADVISOR_API,
+  hostname = typeof location !== 'undefined' ? location.hostname : '',
+} = {}) {
+  if (explicit !== undefined && explicit !== null && explicit !== '') return true
+  return LOCAL_HOSTS.includes(String(hostname).toLowerCase())
+}
+
 export const HEALTH_TIMEOUT_MS = 1_500
 export const POLL_INTERVAL_MS = 60_000
 export const LOCAL_COMMAND = './local.sh claude'
@@ -31,7 +43,8 @@ export function modeFromHealth(data) {
   return { ...MODES['local-practice'], profile: profile || null }
 }
 
-export async function detectMode({ fetchImpl, timeoutMs = HEALTH_TIMEOUT_MS, apiBase = API_BASE } = {}) {
+export async function detectMode({ fetchImpl, timeoutMs = HEALTH_TIMEOUT_MS, apiBase = API_BASE, allowed } = {}) {
+  if (!(allowed ?? canContactBackend())) return { ...MODES['deploy-practice'], profile: null }
   const doFetch = fetchImpl ?? (typeof fetch === 'function' ? fetch.bind(globalThis) : null)
   const url = healthUrl(apiBase)
   if (!doFetch || !url) return { ...MODES['deploy-practice'], profile: null }

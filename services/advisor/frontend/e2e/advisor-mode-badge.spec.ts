@@ -55,3 +55,17 @@ test('claude 백엔드 — 로컬 · Claude 리뷰, LLM 리뷰에는 연습 표�
   await expect(badge(page)).toHaveText('로컬 · Claude 리뷰')
   await expect(page.getByTestId('practice-mark')).toHaveCount(0)
 })
+
+// TKT-239 — 로컬 호스트(127.0.0.1)에서는 지금처럼 /health 를 조회한다. 공개 호스트에서 조회 0 은 단위 테스트(advisorMode.spec.js)로 갈음:
+// Playwright 는 baseURL 의 호스트명을 바꿔 열 수 없고, 가짜 호스트는 dev 서버에 닿지 않는다.
+test('로컬 호스트에서는 /health 를 조회한다', async ({ page }) => {
+  await seed(page)
+  let hits = 0
+  await page.route('http://localhost:8080/health', (route) => {
+    hits += 1
+    return route.fulfill({ json: { status: 'ok', profile: 'mock' }, headers: { 'access-control-allow-origin': '*' } })
+  })
+  await page.goto(`/missions/${MISSION_ID}`)
+  await expect(badge(page)).toHaveText('로컬 · 연습 리뷰')
+  expect(hits).toBeGreaterThan(0)
+})
