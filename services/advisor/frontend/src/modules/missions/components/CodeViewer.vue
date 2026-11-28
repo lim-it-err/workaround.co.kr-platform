@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { downloadText } from '../utils/zip.js'
 
 const props = defineProps({
   files: { type: Array, required: true }, // [{ path, content }]
@@ -26,6 +27,13 @@ async function copyActive() {
   clearTimeout(copiedTimer)
   copiedTimer = setTimeout(() => (copied.value = false), 1600)
 }
+
+function downloadActive() {
+  const f = props.files[active.value]
+  if (!f) return
+  const name = String(f.path || '').split(/[\\/]/).filter(Boolean).pop() || 'file.txt'
+  downloadText(f.content ?? '', name)
+}
 </script>
 
 <template>
@@ -45,6 +53,7 @@ async function copyActive() {
       <button class="copy" :class="{ ok: copied }" @click="copyActive">
         {{ copied ? '✓ 복사됨' : '📋 복사' }}
       </button>
+      <button class="copy save" aria-label="현재 파일 내려받기" @click="downloadActive">⬇ 받기</button>
     </div>
     <pre class="code mono"><code>{{ files[active]?.content }}</code></pre>
   </div>
@@ -86,6 +95,7 @@ async function copyActive() {
 .copy {
   flex-shrink: 0;
   margin: 0 4px 6px 8px;
+  min-height: 40px;
   border: 1px solid var(--border);
   background: none;
   color: var(--fg-dim);
@@ -94,6 +104,7 @@ async function copyActive() {
   border-radius: 7px;
   white-space: nowrap;
 }
+.copy.save { margin-left: 0; }
 .copy:hover { color: var(--fg); border-color: var(--accent); }
 .copy.ok { color: var(--good); border-color: var(--good); }
 .code {
@@ -111,10 +122,11 @@ async function copyActive() {
   .bar { padding: 6px 6px 0; }
   .tab { font-size: 12px; padding: 6px 10px; }
   .copy {
-    position: sticky;
-    right: 0;
     background: var(--bg-soft);
   }
+  .bar { flex-wrap: wrap; }
+  .tabs { flex-basis: 100%; }
+  .copy { margin-bottom: 6px; }
   .code {
     font-size: 12px;
     padding: 12px;

@@ -9,6 +9,7 @@ import { clearDraftThrough, readDraft, writeDraft } from '../store/drafts.js'
 import MarkdownBlock from '../components/MarkdownBlock.vue'
 import CodeViewer from '../components/CodeViewer.vue'
 import FileSubmitEditor from '../components/FileSubmitEditor.vue'
+import { downloadMissionZip } from '../utils/zip.js'
 import FindingsBuilder from '../components/FindingsBuilder.vue'
 import RubricList from '../components/RubricList.vue'
 import ChatPanel from '../components/ChatPanel.vue'
@@ -439,7 +440,10 @@ function submitExplanation() {
       </div>
 
       <div class="card block">
-        <h2 class="panel-title">{{ isDomainLogic ? '구현할 뼈대' : '물려받은 코드' }}</h2>
+        <div class="code-head">
+          <h2 class="panel-title">{{ isDomainLogic ? '구현할 뼈대' : '물려받은 코드' }}</h2>
+          <button class="btn zip-btn" @click="downloadMissionZip(mission)">⬇ 코드 전체 받기 (.zip)</button>
+        </div>
         <p class="dim">
           {{ isDomainLogic
             ? '이 뼈대를 로컬 IDE로 옮겨서 채워 넣으세요. 계층과 인터페이스 경계는 스스로 결정합니다.'
@@ -500,7 +504,7 @@ function submitExplanation() {
       </template>
       <template v-else>
         <p class="dim">
-          로컬에서 작업한 결과 파일들을 붙여넣으세요. 파일 여러 개 제출 가능합니다.
+          IDE 에서 작업한 파일을 올리거나 붙여넣으세요. 파일 여러 개 제출 가능합니다.
           제출하면 리뷰 에이전트가 평가 기준에 따라 검토합니다.
         </p>
         <FileSubmitEditor v-model="files" />
@@ -560,6 +564,9 @@ function submitExplanation() {
 </template>
 
 <style scoped>
+.code-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.code-head .panel-title { margin: 0; }
+.zip-btn { min-height: 40px; }
 .back { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; font-size: 13px; text-decoration: none; color: var(--fg-dim); }
 .endings-sub { color: var(--fg-dim); font-size: 12.5px; font-weight: 400; }
 .ending-rows { display: flex; flex-direction: column; gap: 8px; }
