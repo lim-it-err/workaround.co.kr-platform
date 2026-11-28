@@ -172,6 +172,105 @@ public class WineRecommender {
 }`,
       },
     ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/welfare/WineRecommenderTest.java',
+        content: `package com.daehan.welfare;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 — 현재 동작을 고정한 그물(특성 테스트).
+ * 받은 직후 이미 전부 초록입니다. 구조를 바꾸는 내내 초록을 유지하세요.
+ * 공개 진입점 new WineRecommender().recommend(String) 만 씁니다 — 내부 클래스는 마음대로 나누세요.
+ */
+class WineRecommenderTest {
+
+    private final WineRecommender recommender = new WineRecommender();
+
+    private static String result(String name, String grape, int score, String priceLine) {
+        return "[추천 와인] " + name + "\\n"
+                + "품종: " + grape + "\\n"
+                + "적합도 점수: " + score + "점\\n"
+                + priceLine;
+    }
+
+    @Test
+    @DisplayName("명절 기본 손님 — GOLD 10% 할인")
+    void goldMemberWithPork() {
+        assertEquals(result("몽테 발롱 피노", "피노 누아", 55, "정가: 62000원 -> 할인가: 55800원"),
+                recommender.recommend("바디=3;당도=2;예산=60000;음식=삼겹살;등급=GOLD"));
+    }
+
+    @Test
+    @DisplayName("VIP 고가 와인 — 15% 할인 뒤 쿠폰 5000원")
+    void vipCouponOnExpensiveWine() {
+        assertEquals(result("카시야스 리제르바", "카베르네 소비뇽", 95, "정가: 88000원 -> 할인가: 69800원"),
+                recommender.recommend("바디=5;당도=1;예산=90000;음식=스테이크;등급=VIP"));
+    }
+
+    @Test
+    @DisplayName("VIP 쿠폰은 예산을 조금 넘긴 고가 와인에도 붙는다")
+    void vipCouponWhenSlightlyOverBudget() {
+        assertEquals(result("카시야스 리제르바", "카베르네 소비뇽", 80, "정가: 88000원 -> 할인가: 69800원"),
+                recommender.recommend("바디=5;당도=1;예산=80000;음식=삼겹살;등급=VIP"));
+    }
+
+    @Test
+    @DisplayName("NORMAL 등급은 할인 문구가 없다")
+    void normalMemberHasNoDiscountLine() {
+        assertEquals(result("루카스 리슬링 카비네트", "리슬링", 95, "정가: 45000원"),
+                recommender.recommend("바디=2;당도=3;예산=50000;음식=떡볶이;등급=NORMAL"));
+    }
+
+    @Test
+    @DisplayName("등급을 빼면 NORMAL")
+    void missingGradeMeansNormal() {
+        assertEquals(result("돌체 로쏘 프리잔테", "람브루스코", 75, "정가: 32000원"),
+                recommender.recommend("바디=2;당도=4;예산=30000;음식=매운탕"));
+    }
+
+    @Test
+    @DisplayName("예산 1만 원 이내 초과는 후보에 남는다 — VIP")
+    void slightlyOverBudgetStaysVip() {
+        assertEquals(result("샤블리 프리미에 크뤼", "샤르도네", 80, "정가: 71000원 -> 할인가: 60350원"),
+                recommender.recommend("바디=3;당도=1;예산=65000;음식=회;등급=VIP"));
+    }
+
+    @Test
+    @DisplayName("예산 1만 원 이내 초과는 후보에 남는다 — GOLD, 굴")
+    void slightlyOverBudgetStaysGold() {
+        assertEquals(result("샤블리 프리미에 크뤼", "샤르도네", 80, "정가: 71000원 -> 할인가: 63900원"),
+                recommender.recommend("바디=3;당도=1;예산=61000;음식=굴;등급=GOLD"));
+    }
+
+    @Test
+    @DisplayName("페어링 규칙이 없는 음식은 가산점 0")
+    void unknownFoodGetsNoPairingBonus() {
+        assertEquals(result("몽테 발롱 피노", "피노 누아", 45, "정가: 62000원"),
+                recommender.recommend("바디=4;당도=2;예산=80000;음식=치킨"));
+    }
+
+    @Test
+    @DisplayName("전부 맞지 않아도 가장 덜 나쁜 와인을 고른다 (음수 점수)")
+    void negativeScoreStillRecommends() {
+        assertEquals(result("돌체 로쏘 프리잔테", "람브루스코", -25, "정가: 32000원"),
+                recommender.recommend("바디=1;당도=5;예산=20000"));
+    }
+
+    @Test
+    @DisplayName("동점이면 목록에서 먼저 나온 와인 — 알 수 없는 등급은 할인 없음")
+    void tieGoesToFirstWineInList() {
+        assertEquals(result("카시야스 리제르바", "카베르네 소비뇽", 20, "정가: 88000원"),
+                recommender.recommend("예산=100000;등급=SILVER"));
+    }
+}`,
+      },
+    ],
     requirements: [
       '추천 결과(문구·점수·가격)는 리팩토링 전과 완전히 동일해야 합니다.',
       '운영팀이 와인 목록을 곧 DB로 옮길 예정이므로, 와인 데이터가 어디서 오는지 바뀌어도 추천 로직은 손대지 않게 해 주세요.',
@@ -2285,6 +2384,193 @@ public class TrainOps {
         System.out.println("P-2077 -> FRONT: " + gate.mayPass("P-2077", "FRONT"));
         System.out.println("P-2101 -> FRONT: " + gate.mayPass("P-2101", "FRONT"));
         System.out.println("P-1031 -> MID: " + gate.mayPass("P-1031", "MID"));
+    }
+}`,
+      },
+    ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/com/train/gate/GateControl.java',
+        content: `package com.train.gate;
+
+import com.train.ration.RationService;
+import com.train.registry.PassengerRegistry;
+
+/** 통행 승인 시스템. 명부와 배급의 사정을 전부 직접 안다. */
+public class GateControl {
+
+    private final RationService rationService = new RationService();
+
+    /** targetSection으로의 통행을 승인할 수 있는가. */
+    public boolean mayPass(String passengerId, String targetSection) {
+        String[] p = PassengerRegistry.PASSENGERS.get(passengerId);
+
+        // 꼬리칸은 앞으로 갈 수 없다
+        if (p[1].equals("TAIL") && !targetSection.equals("TAIL")) {
+            return false;
+        }
+        // 중간칸 -> 엔진칸(FRONT)은 심사 대상
+        if (p[1].equals("MID") && targetSection.equals("FRONT")) {
+            // 배급 정지자 통행 금지 (배급팀 내부 상태를 직접 확인)
+            if (p[4].equals("SUSPENDED")) {
+                return false;
+            }
+            // 배급량이 적은 승객은 위험 승객으로 간주한다 (2021년 임시 조치)
+            if (rationService.dailyRationOf(passengerId) < 400) {
+                return false;
+            }
+            return true;
+        }
+        return p[1].equals(targetSection);
+    }
+
+    /**
+     * 신규 — 작업 통행. hour 는 0~23 (06시 이상 10시 미만이 작업 시간대).
+     * 이지 모드 계약: 이 시그니처를 그대로 두고 구현하세요. 정비조 명단을 어디에 둘지는 당신의 설계입니다.
+     */
+    public boolean mayPass(String passengerId, String targetSection, int hour) {
+        throw new UnsupportedOperationException("작업 통행 — 아직 구현 안 됨");
+    }
+
+    /** 무단 통행 적발 — 위험 등급을 올리고 배급을 정지시킨다. */
+    public void reportViolation(String passengerId) {
+        PassengerRegistry.PASSENGERS.get(passengerId)[3] = "HIGH";
+        rationService.suspend(passengerId);
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/train/MorningRollCallTest.java',
+        content: `package com.train;
+
+import com.train.gate.GateControl;
+import com.train.ration.RationService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * 이지 모드 — 아침 점호(동작 보존) 그물. 받은 직후 이미 초록입니다.
+ * 벽을 다시 세우는 내내 초록을 유지하세요. 진입점은 new RationService() / new GateControl() 입니다.
+ */
+class MorningRollCallTest {
+
+    private final RationService ration = new RationService();
+    private final GateControl gate = new GateControl();
+
+    @Test
+    @DisplayName("배급량 — 등급 C 300g, B 450g")
+    void dailyRationByGrade() {
+        assertEquals(300, ration.dailyRationOf("P-1031"));
+        assertEquals(450, ration.dailyRationOf("P-2044"));
+        assertEquals(300, ration.dailyRationOf("P-2101"));
+    }
+
+    @Test
+    @DisplayName("배급 정지자는 0g")
+    void suspendedGetsNothing() {
+        assertEquals(0, ration.dailyRationOf("P-2077"));
+    }
+
+    @Test
+    @DisplayName("엔진칸 승객 — 등급 A 600g")
+    void frontPassengerGradeA() {
+        assertEquals(600, ration.dailyRationOf("P-3001"));
+    }
+
+    @Test
+    @DisplayName("중간칸 B 등급은 엔진칸 통행 허용")
+    void midGradeBMayGoFront() {
+        assertTrue(gate.mayPass("P-2044", "FRONT"));
+    }
+
+    @Test
+    @DisplayName("배급 정지자는 엔진칸 통행 거부")
+    void suspendedMayNotGoFront() {
+        assertFalse(gate.mayPass("P-2077", "FRONT"));
+    }
+
+    @Test
+    @DisplayName("배급 300g 승객은 엔진칸 통행 거부 (2021년 임시 조치의 결과)")
+    void lowRationMayNotGoFront() {
+        assertFalse(gate.mayPass("P-2101", "FRONT"));
+    }
+
+    @Test
+    @DisplayName("꼬리칸은 앞으로 갈 수 없다")
+    void tailMayNotMoveForward() {
+        assertFalse(gate.mayPass("P-1031", "MID"));
+        assertFalse(gate.mayPass("P-1031", "FRONT"));
+        assertTrue(gate.mayPass("P-1031", "TAIL"));
+    }
+
+    @Test
+    @DisplayName("자기 칸 안에서는 통행 허용, 뒤로 가는 건 거부")
+    void sameSectionOnly() {
+        assertTrue(gate.mayPass("P-2044", "MID"));
+        assertFalse(gate.mayPass("P-2044", "TAIL"));
+        assertTrue(gate.mayPass("P-3001", "FRONT"));
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/train/gate/WorkPassTest.java',
+        content: `package com.train.gate;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * 이지 모드 — 신규 「작업 통행」. 받은 직후에는 빨강입니다(아직 구현 안 됨).
+ * 정비조: 노들(P-2101). 작업 시간대: 06시 이상 10시 미만.
+ * "정비조라도 위험한 승객"을 어떻게 거를지는 일부러 테스트하지 않았습니다 — 설명란에 당신의 판단을 적으세요.
+ */
+class WorkPassTest {
+
+    private final GateControl gate = new GateControl();
+
+    @Test
+    @DisplayName("정비조는 작업 시간대에 엔진칸 통행 허용")
+    void crewMayGoFrontDuringShift() {
+        assertTrue(gate.mayPass("P-2101", "FRONT", 8));
+    }
+
+    @Test
+    @DisplayName("작업 시간대 경계 — 06시는 포함, 10시는 제외")
+    void shiftBoundaries() {
+        assertTrue(gate.mayPass("P-2101", "FRONT", 6));
+        assertTrue(gate.mayPass("P-2101", "FRONT", 9));
+        assertFalse(gate.mayPass("P-2101", "FRONT", 5));
+        assertFalse(gate.mayPass("P-2101", "FRONT", 10));
+    }
+
+    @Test
+    @DisplayName("작업 시간대 밖에는 기존 규칙 그대로 — 12시 거부")
+    void outsideShiftFallsBackToOldRule() {
+        assertFalse(gate.mayPass("P-2101", "FRONT", 12));
+    }
+
+    @Test
+    @DisplayName("정비조가 아닌 승객은 시간과 무관하게 기존 규칙")
+    void nonCrewUnchanged() {
+        assertTrue(gate.mayPass("P-2044", "FRONT", 8));
+        assertTrue(gate.mayPass("P-2044", "FRONT", 12));
+        assertFalse(gate.mayPass("P-2077", "FRONT", 8));
+        assertFalse(gate.mayPass("P-1031", "FRONT", 8));
+    }
+
+    @Test
+    @DisplayName("작업 통행은 엔진칸 요청에만 해당 — 다른 칸 요청은 기존 규칙")
+    void workPassOnlyForFront() {
+        assertTrue(gate.mayPass("P-2101", "MID", 8));
+        assertFalse(gate.mayPass("P-2101", "TAIL", 8));
     }
 }`,
       },
@@ -6272,6 +6558,159 @@ public class ScoutOps {
         // 기대 출력 (동작 보존 기준):
         // 박정확: 타율 .275 홈런 12 -> 보통
         // 강스윙: 타율 .300 홈런 28 -> 특급 (거포)
+    }
+}`,
+      },
+    ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/com/phoenix/scout/Sabermetrics.java',
+        content: `package com.phoenix.scout;
+
+/**
+ * 새 지표 계산 (이지 모드 계약 — 이 이름과 시그니처로 구현하세요).
+ * 반환값은 반올림 전 실수입니다. 표기(.390)는 리포트 쪽 일입니다.
+ */
+public final class Sabermetrics {
+
+    private Sabermetrics() {
+    }
+
+    /** 출루율 OBP = (안타+볼넷+몸에 맞는 공) ÷ (타수+볼넷+몸에 맞는 공+희생플라이) */
+    public static double obp(PlayerStat p) {
+        throw new UnsupportedOperationException("OBP — 아직 구현 안 됨");
+    }
+
+    /** 장타율 SLG = 총루타 ÷ 타수 */
+    public static double slg(PlayerStat p) {
+        throw new UnsupportedOperationException("SLG — 아직 구현 안 됨");
+    }
+
+    /** OPS = OBP + SLG */
+    public static double ops(PlayerStat p) {
+        throw new UnsupportedOperationException("OPS — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/phoenix/scout/ScoutReportLineTest.java',
+        content: `package com.phoenix.scout;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 — 옛 리포트 line() 의 특성 테스트. 받은 직후 이미 초록입니다.
+ * 문서고의 옛 리포트와 한 글자도 달라지면 안 됩니다. 새 지표를 넣는 내내 초록을 유지하세요.
+ */
+class ScoutReportLineTest {
+
+    /** 타율·홈런만 의미 있는 시험용 선수 (타수 1000 이라 타율 = 안타/1000). */
+    private static PlayerStat batter(int hits, int homeRuns) {
+        return new PlayerStat("시험", 1000, hits, 0, 0, homeRuns, 0, 0, 0);
+    }
+
+    @Test
+    @DisplayName("검증 선수 박정확 — 보통")
+    void parkJeonghwak() {
+        PlayerStat a = new PlayerStat("박정확", 480, 132, 25, 3, 12, 88, 6, 5);
+        assertEquals("박정확: 타율 .275 홈런 12 -> 보통", ScoutReport.line(a));
+    }
+
+    @Test
+    @DisplayName("검증 선수 강스윙 — 특급 (거포)")
+    void kangSwing() {
+        PlayerStat b = new PlayerStat("강스윙", 510, 153, 30, 2, 28, 20, 2, 6);
+        assertEquals("강스윙: 타율 .300 홈런 28 -> 특급 (거포)", ScoutReport.line(b));
+    }
+
+    @Test
+    @DisplayName("등급 경계 .300 — 이상이면 특급, 바로 아래는 우수")
+    void boundary300() {
+        assertEquals("시험: 타율 .300 홈런 0 -> 특급", ScoutReport.line(batter(300, 0)));
+        assertEquals("시험: 타율 .299 홈런 0 -> 우수", ScoutReport.line(batter(299, 0)));
+    }
+
+    @Test
+    @DisplayName("등급 경계 .280 — 이상이면 우수, 바로 아래는 보통")
+    void boundary280() {
+        assertEquals("시험: 타율 .280 홈런 0 -> 우수", ScoutReport.line(batter(280, 0)));
+        assertEquals("시험: 타율 .279 홈런 0 -> 보통", ScoutReport.line(batter(279, 0)));
+    }
+
+    @Test
+    @DisplayName("등급 경계 .250 — 이상이면 보통, 바로 아래는 관망")
+    void boundary250() {
+        assertEquals("시험: 타율 .250 홈런 0 -> 보통", ScoutReport.line(batter(250, 0)));
+        assertEquals("시험: 타율 .249 홈런 0 -> 관망", ScoutReport.line(batter(249, 0)));
+    }
+
+    @Test
+    @DisplayName("거포 태그 — 홈런 25 부터")
+    void sluggerTag() {
+        assertEquals("시험: 타율 .260 홈런 25 -> 보통 (거포)", ScoutReport.line(batter(260, 25)));
+        assertEquals("시험: 타율 .260 홈런 24 -> 보통", ScoutReport.line(batter(260, 24)));
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/phoenix/scout/SabermetricsTest.java',
+        content: `package com.phoenix.scout;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * 이지 모드 — 새 지표. 받은 직후에는 빨강입니다(아직 구현 안 됨).
+ * 소수 셋째 자리 반올림 값과 ±0.0005 안에서 맞으면 통과합니다.
+ * 리포트 한 줄(sabermetricLine 등)의 형식은 일부러 테스트하지 않았습니다 — 당신이 정하세요.
+ */
+class SabermetricsTest {
+
+    private static final double HALF = 0.0005;
+    private final PlayerStat park = new PlayerStat("박정확", 480, 132, 25, 3, 12, 88, 6, 5);
+    private final PlayerStat kang = new PlayerStat("강스윙", 510, 153, 30, 2, 28, 20, 2, 6);
+
+    @Test
+    @DisplayName("박정확 — OBP .390 · SLG .415 · OPS .805")
+    void parkNumbers() {
+        assertEquals(0.390, Sabermetrics.obp(park), HALF);
+        assertEquals(0.415, Sabermetrics.slg(park), HALF);
+        assertEquals(0.805, Sabermetrics.ops(park), HALF);
+    }
+
+    @Test
+    @DisplayName("강스윙 — OBP .325 · SLG .531 · OPS .857")
+    void kangNumbers() {
+        assertEquals(0.325, Sabermetrics.obp(kang), HALF);
+        assertEquals(0.531, Sabermetrics.slg(kang), HALF);
+        assertEquals(0.857, Sabermetrics.ops(kang), HALF);
+    }
+
+    @Test
+    @DisplayName("타율은 강스윙, 출루율은 박정확 — 순위가 뒤집힌다")
+    void rankingFlips() {
+        assertTrue((double) kang.hits() / kang.atBats() > (double) park.hits() / park.atBats());
+        assertTrue(Sabermetrics.obp(park) > Sabermetrics.obp(kang));
+    }
+
+    @Test
+    @DisplayName("단타만 친 타자의 SLG 는 타율과 같다")
+    void singlesOnlySlgEqualsAverage() {
+        PlayerStat singles = new PlayerStat("단타왕", 400, 120, 0, 0, 0, 0, 0, 0);
+        assertEquals(0.300, Sabermetrics.slg(singles), 1e-9);
+    }
+
+    @Test
+    @DisplayName("OPS 는 OBP 와 SLG 의 합")
+    void opsIsSum() {
+        assertEquals(Sabermetrics.obp(kang) + Sabermetrics.slg(kang), Sabermetrics.ops(kang), 1e-12);
     }
 }`,
       },
