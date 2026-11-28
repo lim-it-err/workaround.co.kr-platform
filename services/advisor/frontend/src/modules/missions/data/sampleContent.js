@@ -3631,6 +3631,211 @@ public class ReentryModule {
 }`,
       },
     ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/gov/space/ibm/ReentryModule.java',
+        content: `package gov.space.ibm;
+
+/**
+ * 신규 재진입 창 모듈 (IBM — 구현 대상).
+ *
+ * 이지 모드 계약 — 아래 세 메서드의 이름과 시그니처를 그대로 두고 구현하세요.
+ * 입력은 인자로만 받습니다. 이 클래스는 FlightDataBoard 를 읽지 않습니다.
+ * 게시판에서 값을 꺼내 오는 일은 경계(어댑터)의 몫입니다 — 어댑터는 자유 설계.
+ */
+public class ReentryModule {
+
+    /** 관측값 세 개로 재진입 창을 계산한다. 같은 입력이면 언제 몇 번 불러도 같은 결과. */
+    public ReentryWindow window(int vhi, int ang, int wt) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /**
+     * App.java 의 검산 노트와 글자 하나 다르지 않은 5줄 요약 (줄바꿈 \\n, 끝에 줄바꿈 없음).
+     * 예) label = "관측 카드 A"
+     */
+    public String compute(String label, int vhi, int ang, int wt) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 관제팀 요청: 창 반폭이 이 비행의 기준(minHalfWidthSec)보다 좁으면 true. 기준과 같으면 좁지 않다. */
+    public boolean isTooNarrow(ReentryWindow window, int minHalfWidthSec) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/gov/space/ibm/ReentryWindow.java',
+        content: `package gov.space.ibm;
+
+/**
+ * 재진입 창 계산 결과 (이지 모드 계약 — 값 객체는 미리 드립니다).
+ *   k = 항력 계수, t = 공칭 중심시각(초), w = 창 반폭(초), open/close = 창의 시작·끝(초)
+ */
+public record ReentryWindow(int k, int t, int w, int open, int close) {
+}`,
+      },
+      {
+        path: 'src/test/java/gov/space/ibm/ReentryModuleTest.java',
+        content: `package gov.space.ibm;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import gov.space.board.FlightDataBoard;
+import gov.space.legacy.ReentryCalc;
+import org.junit.jupiter.api.Test;
+
+/**
+ * 새 모듈 — 처음엔 빨강입니다. 다 초록이 되면 이관 끝.
+ */
+class ReentryModuleTest {
+
+    private final ReentryModule ibm = new ReentryModule();
+
+    @Test
+    void 카드A_수치() {
+        assertEquals(new ReentryWindow(94, 557, 114, 443, 671), ibm.window(259, 63, 18));
+    }
+
+    @Test
+    void 카드B_수치() {
+        assertEquals(new ReentryWindow(100, 520, 140, 380, 660), ibm.window(240, 50, 20));
+    }
+
+    @Test
+    void 얕은_진입각은_반폭_60초_하한() {
+        assertEquals(new ReentryWindow(70, 630, 60, 570, 690), ibm.window(300, 100, 10));
+    }
+
+    @Test
+    void 검증_카드_전부에서_레거시와_1초도_다르지_않다() {
+        int[][] cards = {
+            {259, 63, 18}, {240, 50, 20}, {300, 100, 10}, {250, 90, 10},
+            {200, 30, 15}, {280, 120, 25}, {320, 75, 12}, {180, 95, 30},
+        };
+        for (int[] c : cards) {
+            FlightDataBoard.postCard(c[0], c[1], c[2]);
+            String legacy = ReentryCalc.run();
+            ReentryWindow w = ibm.window(c[0], c[1], c[2]);
+            assertEquals(legacy, w.open() + "," + w.close(),
+                "카드 vhi=" + c[0] + " ang=" + c[1] + " wt=" + c[2]);
+        }
+    }
+
+    @Test
+    void 게시판을_읽지_않는다() {
+        // 게시판에 엉뚱한 값이 꽂혀 있어도 인자로 받은 값만 쓴다
+        FlightDataBoard.postCard(999, 1, 1);
+        assertEquals(new ReentryWindow(94, 557, 114, 443, 671), ibm.window(259, 63, 18));
+    }
+
+    @Test
+    void 두_번_불러도_서로_간섭하지_않는다() {
+        ReentryWindow a = ibm.window(259, 63, 18);
+        ReentryWindow b = ibm.window(240, 50, 20);
+        assertEquals(new ReentryWindow(94, 557, 114, 443, 671), a);
+        assertEquals(new ReentryWindow(94, 557, 114, 443, 671), ibm.window(259, 63, 18));
+        assertEquals(380, b.open());
+    }
+
+    @Test
+    void 카드A_검산노트_5줄과_글자까지_같다() {
+        String expected = String.join("\\n",
+            "[재진입 창] 관측 카드 A",
+            "항력 계수(k): 94",
+            "공칭 중심시각(T): 557초 (09:17)",
+            "창 반폭(W): 114초",
+            "재진입 창: 443초(07:23) ~ 671초(11:11)");
+        assertEquals(expected, ibm.compute("관측 카드 A", 259, 63, 18));
+    }
+
+    @Test
+    void 카드B_검산노트_5줄과_글자까지_같다() {
+        String expected = String.join("\\n",
+            "[재진입 창] 관측 카드 B",
+            "항력 계수(k): 100",
+            "공칭 중심시각(T): 520초 (08:40)",
+            "창 반폭(W): 140초",
+            "재진입 창: 380초(06:20) ~ 660초(11:00)");
+        assertEquals(expected, ibm.compute("관측 카드 B", 240, 50, 20));
+    }
+
+    @Test
+    void 창이_비행_기준보다_좁으면_경고() {
+        ReentryWindow a = ibm.window(259, 63, 18); // 반폭 114초
+        assertTrue(ibm.isTooNarrow(a, 120));
+        assertFalse(ibm.isTooNarrow(a, 114));
+        assertFalse(ibm.isTooNarrow(a, 90));
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/gov/space/legacy/ReentryCalcNoteTest.java',
+        content: `package gov.space.legacy;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import gov.space.board.FlightDataBoard;
+import org.junit.jupiter.api.Test;
+
+/**
+ * 레거시 ReentryCalc 가 지금 내는 값을 고정하는 그물 — 받자마자 초록입니다.
+ * 이관하는 동안 레거시를 건드리지 않았다는 증거로 끝까지 초록이어야 합니다.
+ */
+class ReentryCalcNoteTest {
+
+    @Test
+    void 카드A_검산노트와_같은_창() {
+        FlightDataBoard.postCard(259, 63, 18);
+        assertEquals("443,671", ReentryCalc.run());
+        assertEquals("K94/T557/W114", ReentryCalc.note());
+    }
+
+    @Test
+    void 카드B_검산노트와_같은_창() {
+        FlightDataBoard.postCard(240, 50, 20);
+        assertEquals("380,660", ReentryCalc.run());
+        assertEquals("K100/T520/W140", ReentryCalc.note());
+    }
+
+    @Test
+    void 진입각이_얕으면_창하한_60초가_걸린다() {
+        // W = 240 - 100*2 = 40 → 하한 60
+        FlightDataBoard.postCard(300, 100, 10);
+        assertEquals("570,690", ReentryCalc.run());
+        assertEquals(1, ReentryCalc.gFloor);
+        assertEquals(60, ReentryCalc.gW);
+    }
+
+    @Test
+    void 반폭이_딱_60이면_하한_플래그는_서지_않는다() {
+        // W = 240 - 90*2 = 60
+        FlightDataBoard.postCard(250, 90, 10);
+        assertEquals("440,560", ReentryCalc.run());
+        assertEquals(0, ReentryCalc.gFloor);
+    }
+
+    @Test
+    void 레거시는_마지막에_꽂힌_카드를_읽는다() {
+        FlightDataBoard.postCard(259, 63, 18);
+        FlightDataBoard.postCard(240, 50, 20);
+        assertEquals("380,660", ReentryCalc.run());
+    }
+
+    @Test
+    void 레거시는_전역_레지스터에_중간값을_남긴다() {
+        FlightDataBoard.postCard(259, 63, 18);
+        ReentryCalc.run();
+        assertEquals(94, ReentryCalc.gK);
+        assertEquals(557, ReentryCalc.gT);
+        assertEquals(114, ReentryCalc.gW);
+    }
+}`,
+      },
+    ],
     requirements: [
       '검산 노트가 곧 스펙입니다. 카드 A(vhi=259, ang=63, wt=18)의 결과는 k=94, T=557초, W=114초, 창 443~671초여야 합니다. 계산 절차: k = wt×3 + 40, T = vhi×3 − ang×2 − k, W = 240 − ang×2(단 60 미만이면 60), 창 = [T−W, T+W]. App.java의 두 검산 노트와 정확히 일치해야 합니다.',
       '카드 B(vhi=240, ang=50, wt=20)의 결과는 k=100, T=520초, W=140초, 창 380~660초입니다. 이관 전 레거시(ReentryCalc)와 이관 후 새 모듈의 출력이 모든 검증 카드에서 1초도 달라지지 않음을 자동화된 테스트로 먼저 고정하세요.',
@@ -4178,6 +4383,254 @@ public class BaggageOps {
         Sorter.sortAll();
         CartScheduler.assignAll();
         System.out.print(Loader.manifest());
+    }
+}`,
+      },
+    ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/com/dia/system/AirlineTableSource.java',
+        content: `package com.dia.system;
+
+import java.util.List;
+
+/**
+ * 어댑터 (이지 모드 계약 — 이름 그대로 구현하세요).
+ * AirlineTicketTable.ROWS 를 읽어 Ticket 으로 바꾼다. 발권 테이블을 import 하는 곳은 여기 하나.
+ */
+public class AirlineTableSource implements TicketSource {
+
+    @Override
+    public List<Ticket> tickets() {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/dia/system/BaggageSystem.java',
+        content: `package com.dia.system;
+
+import java.util.Map;
+
+/**
+ * 새 수하물 시스템 (이지 모드 계약 — 아래 이름과 시그니처를 그대로 두고 구현하세요).
+ * 내부를 몇 개 모듈로 나눌지, 계약을 어떻게 둘지는 자유입니다. static 상태는 두지 않습니다.
+ */
+public class BaggageSystem {
+
+    /**
+     * @param source       수하물 정보 출처
+     * @param cartsPerZone 구역 → 가용 카트 수. 구역 신설은 여기에 한 줄 추가로 끝나야 한다 (예: "D", 1)
+     */
+    public BaggageSystem(TicketSource source, Map<String, Integer> cartsPerZone) {
+    }
+
+    /**
+     * 아침 점검 출력. 레거시 BaggageOps 와 같은 형식, 한 건당 한 줄, 각 줄 끝에 \\n.
+     * 배차가 멈춘 상태면 대신 "[수동 운반 지시서]\\n" 다음에 "T-100 UA1001 구역 A -> 게이트 A12\\n" 형식으로 한 건씩.
+     */
+    public String morningCheck() {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 장애 주입: 배차 모듈이 멈춘다. 체크인·분류는 계속 돈다. */
+    public void simulateDispatchOutage() {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 분류 결과 조회 — 수하물 태그의 구역. 배차가 멈춰도 답한다. */
+    public String zoneOf(String tag) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/dia/system/Ticket.java',
+        content: `package com.dia.system;
+
+/** 발권 한 건 (이지 모드 계약 — 미리 드립니다). 배열 인덱스 대신 이름 있는 값. */
+public record Ticket(String tag, String flight, String gate) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/dia/system/TicketSource.java',
+        content: `package com.dia.system;
+
+import java.util.List;
+
+/** 수하물 정보를 받아 오는 계약 (이지 모드 계약). 발권 테이블을 아는 건 이 계약의 구현 한 곳뿐. */
+public interface TicketSource {
+    List<Ticket> tickets();
+}`,
+      },
+      {
+        path: 'src/test/java/com/dia/MorningCheckTest.java',
+        content: `package com.dia;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.dia.cart.CartScheduler;
+import com.dia.checkin.CheckIn;
+import com.dia.load.Loader;
+import com.dia.sort.Sorter;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/**
+ * 레거시 아침 점검을 고정하는 그물 — 받자마자 초록입니다.
+ * 레거시는 전역(static) 상태라 테스트마다 처음 상태로 되돌린다.
+ */
+class MorningCheckTest {
+
+    @BeforeEach
+    void 아침_상태로() {
+        CheckIn.BAGS.clear();
+        CartScheduler.cartA = 2;
+        CartScheduler.cartB = 1;
+        CartScheduler.cartC = 0;
+        CartScheduler.seqA = 0;
+        CartScheduler.seqB = 0;
+        CartScheduler.seqC = 0;
+    }
+
+    private String 아침_점검() {
+        CheckIn.poll();
+        Sorter.sortAll();
+        CartScheduler.assignAll();
+        return Loader.manifest();
+    }
+
+    @Test
+    void 아침_점검_출력_세_줄() {
+        assertEquals(
+            "T-100 UA1001 게이트 A12 -> 구역 A / 카트 A-1 / 적하 완료\\n"
+                + "T-200 KE702 게이트 B03 -> 구역 B / 카트 B-1 / 적하 완료\\n"
+                + "T-300 DL155 게이트 C22 -> 구역 C / 카트 없음 / 대기\\n",
+            아침_점검());
+    }
+
+    @Test
+    void 체크인은_발권_순서대로_등록() {
+        CheckIn.poll();
+        assertEquals("[T-100, T-200, T-300]", CheckIn.BAGS.keySet().toString());
+        assertArrayEquals(new String[] {"UA1001", "A12", "", "", "REGISTERED"}, CheckIn.BAGS.get("T-100"));
+    }
+
+    @Test
+    void 두_번_폴링해도_중복_등록되지_않는다() {
+        CheckIn.poll();
+        CheckIn.poll();
+        assertEquals(3, CheckIn.BAGS.size());
+    }
+
+    @Test
+    void 분류는_게이트_첫_글자가_구역() {
+        CheckIn.poll();
+        Sorter.sortAll();
+        assertEquals("B", CheckIn.BAGS.get("T-200")[2]);
+        assertEquals("SORTED", CheckIn.BAGS.get("T-200")[4]);
+    }
+
+    @Test
+    void 카트는_반납되지_않아_두_번째_점검에서_B는_대기() {
+        아침_점검();
+        CheckIn.BAGS.clear();
+        String second = 아침_점검();
+        // A 는 카트가 하나 남아 A-2, B 는 0대라 대기
+        assertEquals(
+            "T-100 UA1001 게이트 A12 -> 구역 A / 카트 A-2 / 적하 완료\\n"
+                + "T-200 KE702 게이트 B03 -> 구역 B / 카트 없음 / 대기\\n"
+                + "T-300 DL155 게이트 C22 -> 구역 C / 카트 없음 / 대기\\n",
+            second);
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/dia/system/BaggageSystemTest.java',
+        content: `package com.dia.system;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+/** 새 시스템 — 처음엔 빨강입니다. */
+class BaggageSystemTest {
+
+    private static final String MORNING =
+        "T-100 UA1001 게이트 A12 -> 구역 A / 카트 A-1 / 적하 완료\\n"
+            + "T-200 KE702 게이트 B03 -> 구역 B / 카트 B-1 / 적하 완료\\n"
+            + "T-300 DL155 게이트 C22 -> 구역 C / 카트 없음 / 대기\\n";
+
+    private static Map<String, Integer> 현재_구역() {
+        Map<String, Integer> carts = new LinkedHashMap<>();
+        carts.put("A", 2);
+        carts.put("B", 1);
+        carts.put("C", 0);
+        return carts;
+    }
+
+    private static TicketSource 오늘_발권() {
+        return () -> List.of(
+            new Ticket("T-100", "UA1001", "A12"),
+            new Ticket("T-200", "KE702", "B03"),
+            new Ticket("T-300", "DL155", "C22"));
+    }
+
+    @Test
+    void 레거시와_같은_아침_점검() {
+        assertEquals(MORNING, new BaggageSystem(오늘_발권(), 현재_구역()).morningCheck());
+    }
+
+    @Test
+    void 어댑터로_발권_테이블을_읽어도_같다() {
+        assertEquals(MORNING, new BaggageSystem(new AirlineTableSource(), 현재_구역()).morningCheck());
+    }
+
+    @Test
+    void 시스템끼리_상태를_나눠_쓰지_않는다() {
+        new BaggageSystem(오늘_발권(), 현재_구역()).morningCheck();
+        // 다른 인스턴스는 카트가 줄어든 걸 모른다 (static 카운터 없음)
+        assertEquals(MORNING, new BaggageSystem(오늘_발권(), 현재_구역()).morningCheck());
+    }
+
+    @Test
+    void 배차가_멈추면_수동_운반_지시서() {
+        BaggageSystem system = new BaggageSystem(오늘_발권(), 현재_구역());
+        system.simulateDispatchOutage();
+        assertEquals(
+            "[수동 운반 지시서]\\n"
+                + "T-100 UA1001 구역 A -> 게이트 A12\\n"
+                + "T-200 KE702 구역 B -> 게이트 B03\\n"
+                + "T-300 DL155 구역 C -> 게이트 C22\\n",
+            system.morningCheck());
+    }
+
+    @Test
+    void 배차가_멈춰도_체크인과_분류는_돈다() {
+        BaggageSystem system = new BaggageSystem(오늘_발권(), 현재_구역());
+        system.simulateDispatchOutage();
+        assertDoesNotThrow(system::morningCheck);
+        assertEquals("B", system.zoneOf("T-200"));
+        assertEquals("C", system.zoneOf("T-300"));
+    }
+
+    @Test
+    void D_구역은_설정_한_줄로_개통() {
+        Map<String, Integer> carts = 현재_구역();
+        carts.put("D", 1);
+        TicketSource withD = () -> List.of(
+            new Ticket("T-100", "UA1001", "A12"),
+            new Ticket("T-400", "OZ204", "D05"));
+        assertEquals(
+            "T-100 UA1001 게이트 A12 -> 구역 A / 카트 A-1 / 적하 완료\\n"
+                + "T-400 OZ204 게이트 D05 -> 구역 D / 카트 D-1 / 적하 완료\\n",
+            new BaggageSystem(withD, carts).morningCheck());
     }
 }`,
       },
@@ -5331,6 +5784,222 @@ public class TicketOps {
 }`,
       },
     ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/com/getticket/seat/SeatReservations.java',
+        content: `package com.getticket.seat;
+
+import java.time.Clock;
+import java.time.Duration;
+
+/**
+ * 새 좌석 선점 (이지 모드 계약 — 아래 이름과 시그니처를 그대로 두고 구현하세요).
+ * 상태는 이 객체 안에만 둡니다 (public static 금지). 여러 스레드가 동시에 불러도 안전해야 합니다.
+ */
+public class SeatReservations {
+
+    /**
+     * @param clock 지금 시각은 반드시 이 시계로만 읽는다 (테스트가 시간을 돌린다)
+     * @param hold  선점 후 결제 없이 버틸 수 있는 시간. 선점 시각 + hold 가 되는 순간 풀린다
+     */
+    public SeatReservations(Clock clock, Duration hold) {
+    }
+
+    /** 레거시와 같은 응답: "선점 완료 A-01" / "이미 선점된 좌석". 같은 사람이 다시 부르면 "선점 완료 A-01". */
+    public String reserve(String seatId, String userId) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 레거시와 같은 응답: "선점 해제 A-01" / "해제 대상 아님". */
+    public String cancel(String seatId, String userId) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 결제 확정: 홀드 중인 주인이면 "결제 완료 A-01" (이후 만료 없음), 아니면 "결제 대상 아님". */
+    public String confirm(String seatId, String userId) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 지금 좌석 주인. 비었거나 홀드가 만료됐으면 null. */
+    public String ownerOf(String seatId) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 지금 주인이 있는 좌석 수 (홀드 중 + 결제 완료). 만료된 홀드는 세지 않는다. */
+    public int soldCount() {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/getticket/ReserveServiceFlowTest.java',
+        content: `package com.getticket;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/**
+ * 레거시 단일 흐름을 고정하는 그물 — 받자마자 초록입니다.
+ * (동시 요청 문제는 여기서 재현하지 않습니다. 한 줄씩 차례로 부르면 레거시도 맞게 동작합니다.)
+ */
+class ReserveServiceFlowTest {
+
+    private final ReserveService svc = new ReserveService();
+
+    @BeforeEach
+    void 빈_공연장() {
+        SeatMap.SEATS.clear();
+        SeatMap.soldCount = 0;
+    }
+
+    @Test
+    void 운영_점검_네_줄() {
+        assertEquals("선점 완료 A-01", svc.reserve("A-01", "user-kim"));
+        assertEquals("이미 선점된 좌석", svc.reserve("A-01", "user-lee"));
+        assertEquals("선점 해제 A-01", svc.cancel("A-01", "user-kim"));
+        assertEquals("선점 완료 A-01", svc.reserve("A-01", "user-lee"));
+    }
+
+    @Test
+    void 같은_사람이_다시_누르면_통과하고_카운터는_그대로() {
+        svc.reserve("A-01", "user-kim");
+        assertEquals("선점 완료 A-01", svc.reserve("A-01", "user-kim"));
+        assertEquals(1, SeatMap.soldCount);
+    }
+
+    @Test
+    void 남의_좌석은_해제할_수_없다() {
+        svc.reserve("A-01", "user-kim");
+        assertEquals("해제 대상 아님", svc.cancel("A-01", "user-lee"));
+        assertEquals("user-kim", SeatMap.SEATS.get("A-01"));
+    }
+
+    @Test
+    void 빈_좌석_해제는_해제_대상_아님() {
+        assertEquals("해제 대상 아님", svc.cancel("B-02", "user-kim"));
+        assertEquals(0, SeatMap.soldCount);
+    }
+
+    @Test
+    void 판매_카운터는_선점에_더하고_해제에_뺀다() {
+        svc.reserve("A-01", "user-kim");
+        svc.reserve("A-02", "user-lee");
+        svc.cancel("A-01", "user-kim");
+        assertEquals(1, SeatMap.soldCount);
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/getticket/seat/SeatReservationsTest.java',
+        content: `package com.getticket.seat;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import org.junit.jupiter.api.Test;
+
+/** 새 선점 — 처음엔 빨강입니다. */
+class SeatReservationsTest {
+
+    /** 테스트가 손으로 돌리는 시계. */
+    static final class HandClock extends Clock {
+        private Instant now = Instant.parse("2026-03-01T10:00:00Z");
+        void advance(Duration d) { now = now.plus(d); }
+        @Override public Instant instant() { return now; }
+        @Override public ZoneId getZone() { return ZoneId.of("UTC"); }
+        @Override public Clock withZone(ZoneId zone) { return this; }
+    }
+
+    private final HandClock clock = new HandClock();
+    private final SeatReservations seats = new SeatReservations(clock, Duration.ofMinutes(5));
+
+    @Test
+    void 운영_점검_네_줄은_그대로() {
+        assertEquals("선점 완료 A-01", seats.reserve("A-01", "user-kim"));
+        assertEquals("이미 선점된 좌석", seats.reserve("A-01", "user-lee"));
+        assertEquals("선점 해제 A-01", seats.cancel("A-01", "user-kim"));
+        assertEquals("선점 완료 A-01", seats.reserve("A-01", "user-lee"));
+    }
+
+    @Test
+    void 동시에_눌러도_선점_완료는_딱_한_명() throws Exception {
+        ExecutorService pool = Executors.newFixedThreadPool(8);
+        try {
+            for (int round = 0; round < 200; round++) {
+                SeatReservations fresh = new SeatReservations(clock, Duration.ofMinutes(5));
+                CountDownLatch start = new CountDownLatch(1);
+                List<Future<String>> results = new ArrayList<>();
+                for (int u = 0; u < 8; u++) {
+                    String user = "user-" + u;
+                    results.add(pool.submit(() -> { start.await(); return fresh.reserve("A-01", user); }));
+                }
+                start.countDown();
+                int winners = 0;
+                for (Future<String> f : results) if (f.get().startsWith("선점 완료")) winners++;
+                assertEquals(1, winners, round + "번째 판");
+                assertEquals(1, fresh.soldCount(), round + "번째 판 카운터");
+            }
+        } finally {
+            pool.shutdownNow();
+        }
+    }
+
+    @Test
+    void 결제_없이_홀드가_지나면_좌석이_풀린다() {
+        seats.reserve("A-01", "user-kim");
+        clock.advance(Duration.ofMinutes(4).plusSeconds(59));
+        assertEquals("이미 선점된 좌석", seats.reserve("A-01", "user-lee"));
+        clock.advance(Duration.ofSeconds(1)); // 정확히 5분
+        assertNull(seats.ownerOf("A-01"));
+        assertEquals(0, seats.soldCount());
+        assertEquals("선점 완료 A-01", seats.reserve("A-01", "user-lee"));
+    }
+
+    @Test
+    void 결제하면_홀드가_지나도_안_풀린다() {
+        seats.reserve("A-01", "user-kim");
+        assertEquals("결제 완료 A-01", seats.confirm("A-01", "user-kim"));
+        clock.advance(Duration.ofHours(1));
+        assertEquals("user-kim", seats.ownerOf("A-01"));
+        assertEquals("이미 선점된 좌석", seats.reserve("A-01", "user-lee"));
+    }
+
+    @Test
+    void 만료된_뒤에는_결제할_수_없다() {
+        seats.reserve("A-01", "user-kim");
+        clock.advance(Duration.ofMinutes(5));
+        assertEquals("결제 대상 아님", seats.confirm("A-01", "user-kim"));
+    }
+
+    @Test
+    void 남의_좌석은_결제도_해제도_안_된다() {
+        seats.reserve("A-01", "user-kim");
+        assertEquals("결제 대상 아님", seats.confirm("A-01", "user-lee"));
+        assertEquals("해제 대상 아님", seats.cancel("A-01", "user-lee"));
+    }
+
+    @Test
+    void 공연장마다_상태가_따로다() {
+        SeatReservations other = new SeatReservations(clock, Duration.ofMinutes(5));
+        seats.reserve("A-01", "user-kim");
+        assertEquals("선점 완료 A-01", other.reserve("A-01", "user-lee"));
+    }
+}`,
+      },
+    ],
     requirements: [
       '레이스 읽기(제출물의 일부): 레거시에서 두 요청이 동시에 들어왔을 때 잘못된 결과가 나는 지점을 전부 찾아, 해당 줄에 "// RACE:" 주석으로 어떤 인터리빙에서 무엇이 깨지는지 표시하세요. 최소 세 곳입니다 — 확인과 배정 사이, 통계 카운터의 갱신, 취소와 선점의 교차.',
       '검증 시나리오(인터리빙 표): 두 사용자 kim과 lee가 A-01에 동시 요청. T1(kim): 확인 → 비었음 / T2(lee): 확인 → 비었음 / T1: 배정 성공 / T2: 배정 성공(kim을 덮어씀) → 티켓 두 장, 좌석 주인은 lee, soldCount는 2. 개선 후에는 같은 인터리빙에서 정확히 한 명만 "선점 완료"를 받아야 하고, 이를 판단 근거와 함께 리뷰 노트로 설명해야 합니다.',
@@ -5631,6 +6300,295 @@ public class StoreOps {
         // 기대 출력 (동작 보존 기준):
         // TS-001 원장 8 / 캐시 8 / 배지 판매중
         // MUG-002 원장 0 / 캐시 0 / 배지 품절
+    }
+}`,
+      },
+    ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/com/daol/store/BadgeView.java',
+        content: `package com.daol.store;
+
+import com.daol.infra.EventLog;
+import java.util.Map;
+
+/**
+ * 파생 사본 (이지 모드 계약 — 이름과 시그니처를 그대로 두고 구현하세요).
+ * 원장의 내부를 읽지 않는다. 시작값을 받고, 그다음부터는 이벤트만 보고 자기 값을 고친다.
+ * 연결: log.subscribe(view::onEvent)
+ */
+public class BadgeView {
+
+    public BadgeView(Map<String, Integer> initialStock) {
+    }
+
+    /** 이벤트 한 건 적용. 이미 적용한 순번(seq ≤ lastSeq)은 무시한다. 일시 중단 중이면 받지 않는다(놓친다). */
+    public void onEvent(EventLog.Event event) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 마지막으로 적용한 이벤트 순번. 처음엔 0. */
+    public long lastSeq() {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 구독 일시 중단 (장애 재현용). */
+    public void pause() {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 재동기화: lastSeq 이후 이벤트를 log.replayFrom 으로 받아 순서대로 적용하고, 중단을 푼다. */
+    public void catchUp(EventLog log) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 검색 배지 — 재고 1 이상이면 "판매중", 0 이면 "품절" */
+    public String badge(String sku) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daol/store/Ledger.java',
+        content: `package com.daol.store;
+
+import com.daol.infra.EventLog;
+import java.util.Map;
+
+/**
+ * 새 재고 원장 (이지 모드 계약 — 이름과 시그니처를 그대로 두고 구현하세요).
+ * 재고 증감은 여기서만 일어나고, 일어날 때마다 EventLog 에 한 건 남긴다:
+ *   주문 → append("placed", sku, -1) / 취소 → append("canceled", sku, +1). 품절로 거절한 주문은 이벤트 없음.
+ */
+public class Ledger {
+
+    public Ledger(EventLog log, Map<String, Integer> initialStock) {
+    }
+
+    /** "주문 완료 TS-001" 또는 "품절". */
+    public String place(String sku) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** "취소 완료 TS-001". */
+    public String cancel(String sku) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    public int qty(String sku) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daol/store/PageView.java',
+        content: `package com.daol.store;
+
+import com.daol.infra.EventLog;
+import java.util.Map;
+
+/**
+ * 파생 사본 (이지 모드 계약 — 이름과 시그니처를 그대로 두고 구현하세요).
+ * 원장의 내부를 읽지 않는다. 시작값을 받고, 그다음부터는 이벤트만 보고 자기 값을 고친다.
+ * 연결: log.subscribe(view::onEvent)
+ */
+public class PageView {
+
+    public PageView(Map<String, Integer> initialStock) {
+    }
+
+    /** 이벤트 한 건 적용. 이미 적용한 순번(seq ≤ lastSeq)은 무시한다. 일시 중단 중이면 받지 않는다(놓친다). */
+    public void onEvent(EventLog.Event event) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 마지막으로 적용한 이벤트 순번. 처음엔 0. */
+    public long lastSeq() {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 구독 일시 중단 (장애 재현용). */
+    public void pause() {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 재동기화: lastSeq 이후 이벤트를 log.replayFrom 으로 받아 순서대로 적용하고, 중단을 푼다. */
+    public void catchUp(EventLog log) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 상품 페이지에 보일 재고 수량 */
+    public int displayQty(String sku) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/daol/MorningStockTest.java',
+        content: `package com.daol;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.daol.order.OrderService;
+import com.daol.page.PageCache;
+import com.daol.search.SearchIndex;
+import com.daol.stock.StockLedger;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/**
+ * 레거시 아침 점검을 고정하는 그물 — 받자마자 초록입니다.
+ * 레거시는 static 맵이라 테스트마다 아침 재고로 되돌린다.
+ */
+class MorningStockTest {
+
+    private final OrderService svc = new OrderService();
+
+    @BeforeEach
+    void 아침_재고() {
+        StockLedger.QTY.put("TS-001", 10);
+        StockLedger.QTY.put("MUG-002", 1);
+        PageCache.DISPLAY_QTY.put("TS-001", 10);
+        PageCache.DISPLAY_QTY.put("MUG-002", 1);
+        SearchIndex.BADGE.put("TS-001", "판매중");
+        SearchIndex.BADGE.put("MUG-002", "판매중");
+    }
+
+    private static String 줄(String sku) {
+        return sku + " 원장 " + StockLedger.QTY.get(sku)
+            + " / 캐시 " + PageCache.DISPLAY_QTY.get(sku)
+            + " / 배지 " + SearchIndex.BADGE.get(sku);
+    }
+
+    @Test
+    void 아침_점검_두_줄() {
+        svc.placeOrder("TS-001");
+        svc.placeOrder("TS-001");
+        svc.placeOrder("TS-001");
+        svc.cancelOrder("TS-001");
+        svc.placeOrder("MUG-002");
+        assertEquals("TS-001 원장 8 / 캐시 8 / 배지 판매중", 줄("TS-001"));
+        assertEquals("MUG-002 원장 0 / 캐시 0 / 배지 품절", 줄("MUG-002"));
+    }
+
+    @Test
+    void 주문_응답() {
+        assertEquals("주문 완료 MUG-002", svc.placeOrder("MUG-002"));
+        assertEquals("품절", svc.placeOrder("MUG-002"));
+        assertEquals("취소 완료 TS-001", svc.cancelOrder("TS-001"));
+    }
+
+    @Test
+    void 품절_주문은_아무것도_바꾸지_않는다() {
+        svc.placeOrder("MUG-002");
+        svc.placeOrder("MUG-002");
+        assertEquals("MUG-002 원장 0 / 캐시 0 / 배지 품절", 줄("MUG-002"));
+    }
+
+    @Test
+    void 레거시_버그_기록_품절_뒤_취소해도_배지는_품절로_남는다() {
+        // 취소 경로에 인덱스 갱신이 없다 (TODO 검색팀 API 자리). 새 구조에서 사라져야 할 증상.
+        svc.placeOrder("MUG-002");
+        svc.cancelOrder("MUG-002");
+        assertEquals("MUG-002 원장 1 / 캐시 1 / 배지 품절", 줄("MUG-002"));
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/daol/store/EventDrivenStockTest.java',
+        content: `package com.daol.store;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.daol.infra.EventLog;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+
+/** 새 구조 — 처음엔 빨강입니다. */
+class EventDrivenStockTest {
+
+    private static final Map<String, Integer> 아침 = Map.of("TS-001", 10, "MUG-002", 1);
+
+    private final EventLog log = new EventLog();
+    private final Ledger ledger = new Ledger(log, 아침);
+    private final PageView page = new PageView(아침);
+    private final BadgeView badge = new BadgeView(아침);
+
+    {
+        log.subscribe(page::onEvent);
+        log.subscribe(badge::onEvent);
+    }
+
+    private String 줄(String sku) {
+        return sku + " 원장 " + ledger.qty(sku) + " / 캐시 " + page.displayQty(sku) + " / 배지 " + badge.badge(sku);
+    }
+
+    @Test
+    void 아침_점검_두_줄은_그대로() {
+        ledger.place("TS-001");
+        ledger.place("TS-001");
+        ledger.place("TS-001");
+        ledger.cancel("TS-001");
+        ledger.place("MUG-002");
+        assertEquals("TS-001 원장 8 / 캐시 8 / 배지 판매중", 줄("TS-001"));
+        assertEquals("MUG-002 원장 0 / 캐시 0 / 배지 품절", 줄("MUG-002"));
+    }
+
+    @Test
+    void 원장의_변화는_이벤트로_남는다() {
+        ledger.place("TS-001");
+        ledger.cancel("TS-001");
+        assertEquals(
+            List.of(new EventLog.Event(1, "placed", "TS-001", -1), new EventLog.Event(2, "canceled", "TS-001", 1)),
+            log.replayFrom(0));
+    }
+
+    @Test
+    void 품절로_거절한_주문은_이벤트가_없다() {
+        ledger.place("MUG-002");
+        assertEquals("품절", ledger.place("MUG-002"));
+        assertEquals(1, log.replayFrom(0).size());
+    }
+
+    @Test
+    void 품절_뒤_취소하면_배지가_판매중으로_돌아온다() {
+        ledger.place("MUG-002");
+        ledger.cancel("MUG-002");
+        assertEquals("MUG-002 원장 1 / 캐시 1 / 배지 판매중", 줄("MUG-002"));
+    }
+
+    @Test
+    void 놓친_이벤트는_재동기화로_따라잡는다() {
+        badge.pause();
+        page.pause();
+        ledger.place("TS-001");
+        ledger.place("MUG-002");
+        assertEquals("판매중", badge.badge("MUG-002")); // 늦었다 — 아직은 괜찮다
+        assertEquals(0, badge.lastSeq());
+        badge.catchUp(log);
+        page.catchUp(log);
+        assertEquals("MUG-002 원장 0 / 캐시 0 / 배지 품절", 줄("MUG-002"));
+        assertEquals(9, page.displayQty("TS-001"));
+        assertEquals(2, badge.lastSeq());
+    }
+
+    @Test
+    void 따라잡은_뒤에는_다시_실시간으로_받는다() {
+        page.pause();
+        ledger.place("TS-001");
+        page.catchUp(log);
+        ledger.place("TS-001");
+        assertEquals(8, page.displayQty("TS-001"));
+    }
+
+    @Test
+    void 같은_이벤트가_두_번_와도_한_번만_적용() {
+        ledger.place("TS-001");
+        page.onEvent(log.replayFrom(0).get(0));
+        assertEquals(9, page.displayQty("TS-001"));
+        assertEquals(1, page.lastSeq());
     }
 }`,
       },
@@ -5972,6 +6930,164 @@ public class KakaoReceiptSender implements IReceiptPrinter {
     public String print(Beverage b, int price) {
         return String.format("[알림톡] %s (%s/%s/샷%d) %,d원",
                 b.menu(), b.size(), b.temp(), b.shots(), price);
+    }
+}`,
+      },
+    ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/com/cafe/OrderProcessor.java',
+        content: `package com.cafe;
+
+/** 주문 처리 오케스트레이터. 각 단계를 순서대로 부른다. */
+public class OrderProcessor {
+
+    private final OrderNormalizer normalizer = new OrderNormalizer();
+    private final OrderValidator validator = new OrderValidator();
+    private final IBeverageFactoryProvider factoryProvider = new BeverageFactoryProviderImpl();
+
+    public String process(OrderRequest request) {
+        OrderRequest normalized = normalizer.normalize(request);
+        validator.validate(normalized);
+        Beverage beverage = factoryProvider.getFactory().create(normalized);
+        IPriceStrategy strategy = new DefaultPriceStrategy();
+        int price = strategy.price(beverage);
+        IReceiptPrinter printer = normalized.channel().equals("APP")
+                ? new KakaoReceiptSender()
+                : new ThermalReceiptPrinter();
+        return printer.print(beverage, price);
+    }
+
+    // ===== 이지 모드 계약 — 아래 두 메서드의 이름과 시그니처를 그대로 두고 구현하세요. =====
+    // 신메뉴·사이즈 추가가 코드 분기가 아니라 데이터 등록으로 끝나야 합니다.
+    // 등록한 메뉴는 이 OrderProcessor 인스턴스에만 보입니다 (static 금지).
+
+    /** 메뉴 등록. 예) addMenu("콜드브루", 4900) 뒤에는 콜드브루 주문이 된다. 샷·사이즈 추가금 규칙은 기존과 같다. */
+    public void addMenu(String name, int basePrice) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+
+    /** 사이즈 등록. 예) addSize("TRENTA", 1500) 뒤에는 TRENTA 주문이 되고 기본가에 1,500원이 붙는다. */
+    public void addSize(String size, int surcharge) {
+        throw new UnsupportedOperationException("이지 모드 계약 — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/cafe/KioskReceiptTest.java',
+        content: `package com.cafe;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+/**
+ * 지금 키오스크가 찍는 영수증을 고정하는 그물 — 받자마자 초록입니다.
+ * OrderProcessor.process 만 부르므로, 뒤쪽 파일을 얼마든지 합치고 지워도 이 테스트는 그대로 돕니다.
+ */
+class KioskReceiptTest {
+
+    private final OrderProcessor processor = new OrderProcessor();
+
+    @Test
+    void 기대_출력_세_줄() {
+        assertEquals("[영수증] 아메리카노 (GRANDE/HOT/샷1) 5,500원",
+            processor.process(new OrderRequest("아메리카노", "GRANDE", null, 1, "KIOSK")));
+        assertEquals("[영수증] 카페라떼 (TALL/ICE/샷0) 5,000원",
+            processor.process(new OrderRequest("카페라떼", "TALL", "ICE", 0, "KIOSK")));
+        assertEquals("[알림톡] 아메리카노 (TALL/ICE/샷2) 5,500원",
+            processor.process(new OrderRequest("아메리카노", "TALL", "ICE", 2, "APP")));
+    }
+
+    @Test
+    void 벤티는_천원_추가() {
+        assertEquals("[영수증] 카페라떼 (VENTI/HOT/샷0) 6,000원",
+            processor.process(new OrderRequest("카페라떼", "VENTI", "HOT", 0, "KIOSK")));
+    }
+
+    @Test
+    void 메뉴_이름_앞뒤_공백은_무시() {
+        assertEquals("[영수증] 아메리카노 (TALL/ICE/샷0) 4,500원",
+            processor.process(new OrderRequest("  아메리카노 ", "TALL", "ICE", 0, "KIOSK")));
+    }
+
+    @Test
+    void 온도를_안_고르면_HOT() {
+        assertEquals("[알림톡] 카페라떼 (TALL/HOT/샷0) 5,000원",
+            processor.process(new OrderRequest("카페라떼", "TALL", null, 0, "APP")));
+    }
+
+    @Test
+    void 모르는_사이즈는_거절() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+            () -> processor.process(new OrderRequest("아메리카노", "SHORT", "HOT", 0, "KIOSK")));
+        assertEquals("알 수 없는 사이즈: SHORT", e.getMessage());
+    }
+
+    @Test
+    void 없는_메뉴는_거절() {
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+            () -> processor.process(new OrderRequest("콜드브루", "TALL", "ICE", 0, "KIOSK")));
+        assertEquals("없는 메뉴: 콜드브루", e.getMessage());
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/cafe/MenuAsDataTest.java',
+        content: `package com.cafe;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+
+/** 메뉴·사이즈를 데이터로 — 처음엔 빨강입니다. */
+class MenuAsDataTest {
+
+    @Test
+    void 콜드브루는_등록_한_줄로() {
+        OrderProcessor processor = new OrderProcessor();
+        processor.addMenu("콜드브루", 4900);
+        assertEquals("[영수증] 콜드브루 (TALL/ICE/샷0) 4,900원",
+            processor.process(new OrderRequest("콜드브루", "TALL", "ICE", 0, "KIOSK")));
+    }
+
+    @Test
+    void 말차라떼에도_샷과_사이즈_추가금이_붙는다() {
+        OrderProcessor processor = new OrderProcessor();
+        processor.addMenu("말차라떼", 5500);
+        assertEquals("[알림톡] 말차라떼 (GRANDE/HOT/샷1) 6,500원",
+            processor.process(new OrderRequest("말차라떼", "GRANDE", "HOT", 1, "APP")));
+    }
+
+    @Test
+    void 사이즈도_등록으로() {
+        OrderProcessor processor = new OrderProcessor();
+        processor.addSize("TRENTA", 1500);
+        assertEquals("[영수증] 아메리카노 (TRENTA/ICE/샷0) 6,000원",
+            processor.process(new OrderRequest("아메리카노", "TRENTA", "ICE", 0, "KIOSK")));
+    }
+
+    @Test
+    void 등록은_그_키오스크에만() {
+        OrderProcessor store1 = new OrderProcessor();
+        OrderProcessor store2 = new OrderProcessor();
+        store1.addMenu("콜드브루", 4900);
+        assertThrows(IllegalArgumentException.class,
+            () -> store2.process(new OrderRequest("콜드브루", "TALL", "ICE", 0, "KIOSK")));
+    }
+
+    @Test
+    void 등록해도_기존_세_줄은_그대로() {
+        OrderProcessor processor = new OrderProcessor();
+        processor.addMenu("콜드브루", 4900);
+        processor.addSize("TRENTA", 1500);
+        assertEquals("[영수증] 아메리카노 (GRANDE/HOT/샷1) 5,500원",
+            processor.process(new OrderRequest("아메리카노", "GRANDE", null, 1, "KIOSK")));
+        assertEquals("[알림톡] 아메리카노 (TALL/ICE/샷2) 5,500원",
+            processor.process(new OrderRequest("아메리카노", "TALL", "ICE", 2, "APP")));
     }
 }`,
       },

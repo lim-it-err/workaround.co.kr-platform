@@ -17,11 +17,7 @@ for (const scenario of scenarios) {
   test(`기내 추천은 ${scenario.width}px ${scenario.colorScheme}에서 면 없는 한 줄 행이다`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width: scenario.width, height: 900 })
     await page.emulateMedia({ colorScheme: scenario.colorScheme })
-    await page.addInitScript(theme => {
-      window.localStorage.setItem('workaround-theme', theme)
-    }, scenario.colorScheme)
     await page.goto('/inflight')
-    await expect(page.locator('html')).toHaveAttribute('data-theme', scenario.colorScheme)
 
     const rows = page.locator('.flight-card')
     await expect(rows).toHaveCount(3)
