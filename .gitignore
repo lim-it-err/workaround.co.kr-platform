@@ -53,3 +53,6 @@ frontend/dist-base/
 
 # 집 PC 웹 (TKT-220)
 infra/home/.env
+
+# 맥 로컬 실행 pid·로그 (tools/local-start.sh)
+.local/

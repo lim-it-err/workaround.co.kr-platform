@@ -1,20 +1,21 @@
 #!/bin/bash
 # 맥 로컬 종료 명령 (TKT-241) — 이 저장소에서 띄운 workaround 로컬 서버를 한 번에 내린다.
 # 용법: tools/local-stop.sh [--dry-run]
+#   .local/*.pid (local-start.sh 가 남김)도 읽어 같은 규칙으로 내리고 지운다.
 #   내부용 옵션(services/advisor/local.sh stop 이 사용): --ports 8080,5173  --pids "123 456"  --no-docker
 # 규칙: 포트를 듣는 프로세스 중 명령줄 또는 작업 디렉터리가 이 저장소 경로 안인 것만 내린다.
 #       다른 프로젝트의 프로세스는 「건너뜀」으로 남기고 절대 건드리지 않는다.
 #       먼저 TERM, 5초 뒤에도 살아 있으면 KILL.
 ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
 PORTS="7000 7001 4173 4174 4175 5173 8080 8003"
-DRY=0; DOCKER=1; EXTRA_PIDS=""
+DRY=0; DOCKER=1; EXTRA_PIDS=""; INTERNAL=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1 ;;
     --no-docker) DOCKER=0 ;;
-    --ports) shift; PORTS="$(echo "$1" | tr ',' ' ')" ;;
-    --pids) shift; EXTRA_PIDS="$1" ;;
-    -h|--help) sed -n '2,6p' "$0"; exit 0 ;;
+    --ports) INTERNAL=1; shift; PORTS="$(echo "$1" | tr ',' ' ')" ;;
+    --pids) INTERNAL=1; shift; EXTRA_PIDS="$1" ;;
+    -h|--help) sed -n '2,8p' "$0"; exit 0 ;;
     *) echo "용법: tools/local-stop.sh [--dry-run]"; exit 1 ;;
   esac
   shift
@@ -53,6 +54,14 @@ for port in $PORTS; do
     consider "$pid" "포트 $port"
   done
 done
+# tools/local-start.sh 가 남긴 .local/*.pid (기본 호출일 때만 — local.sh stop 의 내부 호출은 자기 pid 만 쓴다)
+PIDFILES=""
+if [ "$INTERNAL" = 0 ]; then
+  for f in "$ROOT"/.local/*.pid; do
+    [ -f "$f" ] || continue
+    PIDFILES="$PIDFILES $f"; EXTRA_PIDS="$EXTRA_PIDS $(cat "$f" 2>/dev/null)"
+  done
+fi
 for pid in $EXTRA_PIDS; do
   kill -0 "$pid" 2>/dev/null && consider "$pid" "pid 파일"
 done
@@ -71,6 +80,8 @@ if [ "$DRY" = 0 ] && [ -n "$targets" ]; then
     kill -9 $alive 2>/dev/null
   fi
 fi
+
+[ "$DRY" = 0 ] && [ -n "$PIDFILES" ] && rm -f $PIDFILES
 
 # infra/home compose — compose 작업 폴더가 이 저장소의 infra/home 인 컨테이너가 있을 때만
 if [ "$DOCKER" = 1 ] && command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
