@@ -1,0 +1,92 @@
+{
+  "missionId": "s7-parcel-01",
+  "level": "easy",
+  "commit": "c7a5573cd649b422a4b021cf013f8fad905f4d57",
+  "gradedAt": "2026-11-28T07:27:10Z",
+  "compiled": true,
+  "tests": 13,
+  "passed": 0,
+  "failed": 0,
+  "errors": 13,
+  "skipped": 0,
+  "cases": [
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$AcceptanceLimits",
+      "name": "실중량_30_001g_은_불가",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$AcceptanceLimits",
+      "name": "세_변의_합_160cm_는_접수",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$AcceptanceLimits",
+      "name": "가장_긴_변_101cm_는_불가",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$AcceptanceLimits",
+      "name": "실중량_30kg_은_접수",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$AcceptanceLimits",
+      "name": "세_변의_합_161cm_는_불가",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$AcceptanceLimits",
+      "name": "가장_긴_변_100cm_는_접수",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$HalfKgRounding",
+      "name": "부피중량이_정확히_2kg_이면_올라가지_않는다_double_함정",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$HalfKgRounding",
+      "name": "실중량_정확히_2kg_은_첫_구간",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$HalfKgRounding",
+      "name": "실중량_2001g_은_2_5kg_로_올라가_다음_구간",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$Scenarios",
+      "name": "작은_상자는_실중량으로_청구되고_권역_0원은_빠진다",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$Scenarios",
+      "name": "베개는_부피중량으로_청구된다",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$Scenarios",
+      "name": "제주행_착불_이불은_할증이_둘_붙는다",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    },
+    {
+      "class": "com.daehan.parcel.domain.ShippingFeeCalculatorTest$Scenarios",
+      "name": "세_변의_합이_넘으면_접수_불가",
+      "status": "error",
+      "message": "아직 구현되지 않았습니다"
+    }
+  ]
+}
