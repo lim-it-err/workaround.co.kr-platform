@@ -65,12 +65,13 @@
 
 ## Need Review
 
-- `TKT-235` `P1` `v0.9.3` `need_review` [QA] 낡은 e2e 17건 정리 — 러너 기준 17건 해소, HallV09 2건은 러너 stage 문제(에스컬레이션)
 
 
 
 
 ## Finished
+
+- `TKT-235` `[QA]` 낡은 e2e 17건 정리 — r2 통과 (2026-11-28, v0.9.3, Sonnet 5.5) · 게이트 = `e2e:all`
 
 - `TKT-237` `[FE/BE]` Advisor 로컬 모드 · 배포 버전 구분 — r1 통과 (2026-11-28, v0.9.3, Sonnet 5.5)
 

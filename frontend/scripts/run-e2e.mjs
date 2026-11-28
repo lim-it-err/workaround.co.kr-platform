@@ -102,6 +102,7 @@ async function prepareStage() {
     await cp(join(frontend, item), join(stageFrontend, item), { recursive: true })
   }
   await symlink(await realpath(join(frontend, 'node_modules')), join(stageFrontend, 'node_modules'))
+  await cp(join(repo, 'VERSION'), join(dirs.stage, 'VERSION')) // HallV09 가 ../../../VERSION 으로 기대 버전을 읽는다(TKT-235)
   const stageAdvisor = join(dirs.stage, 'services', 'advisor', 'frontend')
   await mkdir(stageAdvisor, { recursive: true })
   await writeFile(join(stageAdvisor, 'package.json'), '{"private":true}\n')

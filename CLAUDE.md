@@ -16,6 +16,7 @@
 - **디자인·UX 가 애매하면 PM 선에서 의문을 갖고 즉시 PO 에게 올린다** (PO 2026-09-14, U-35) — 판정 보고마다 `[PM 의문]` 항목(어색한 점 + 권고). 통과와 별개.
 - **판정 1순위는 UX·가시성** (PO 2026-09-14): 게이트 그린이어도 실렌더가 원칙·목업에 어긋나면 반려. 코덱스의 `[반박]`·`[구체화 질문]` 은 다음 라운드 첫 순서로 답한다.
 - 메인 프런트 E2E(`frontend/src/**/*.e2e.mjs`)는 `createRequire` 로 playwright 를 찾는다 — PM 실행은 `NODE_PATH=services/advisor/frontend/node_modules node --test <파일>` (Pages base dist 를 먼저 빌드).
+- **전체 e2e 게이트는 `npm --prefix frontend run e2e:all`** (REV-TKT-235-r2) — 파일마다 다른 전제(root preview 4175·root dist·`dist/advisor` 합치기)를 러너가 맞춘다. `node --test *.e2e.mjs` 일괄 실행은 게이트가 아니다. Advisor 는 `services/advisor/frontend` 에서 `npx playwright test`.
 - `need_review` 티켓을 **직접 검증**으로 리뷰한다: frontend `npm --prefix frontend run build`, gateway `mvn -q package`(+ 기동·`/api/health` 응답), 컨테이너 변경 시 compose 기동.
 - UI/UX 작업 전 `design/` 기준선 문서를 읽는다. 디자이너 트랙 산출물(`design/orchestrator_review/`, `design/review_done/`)은 보존한다.
 - PM(Claude) 은 프로덕션 코드를 직접 수정하지 않는다 — 구현은 티켓을 낸 뒤 **dev 서브에이전트**(`Agent` 도구, `dev-sonnet`/`dev-haiku`)에 맡기고 결과를 판정한다(D-029 개정). 티켓 없는 1파일 이하 게이트 픽스도 서브에이전트(Haiku)로 하고 REV 에 "PM 서브에이전트 수정" 한 줄. 예외: PO 직접 지시. 디스패치 순서는 `../inbox/dev.md`, 파일이 겹치지 않는 티켓만 병렬.
