@@ -34,16 +34,19 @@ function defaultFilters(patch = {}) {
 }
 
 describe('배우기 통합 인덱스', () => {
-  it('다섯 콘텐츠 형식을 207개 단일 목록으로 정규화한다', () => {
+  it('다섯 콘텐츠 형식을 형식별 원본 개수의 합인 단일 목록으로 정규화한다', () => {
     const catalog = makeCatalog()
-    expect(catalog).toHaveLength(207)
-    expect(Object.fromEntries(summarizeLearnCatalog(catalog).map((entry) => [entry.kind, entry.count]))).toEqual({
-      course: 3,
-      mission: 40,
-      case: 10,
-      project: 1,
-      practice: 153,
-    })
+    const expectedCounts = {
+      course: createCourseCatalog(missions).length,
+      mission: missions.length,
+      case: caseData.caseFiles.length,
+      project: projectData.projects.length,
+      practice: standalonePracticeCatalog.reduce((sum, game) => sum + game.rounds.length, 0),
+    }
+    const expectedTotal = Object.values(expectedCounts).reduce((sum, count) => sum + count, 0)
+    expect(expectedTotal).toBeGreaterThan(0)
+    expect(catalog).toHaveLength(expectedTotal)
+    expect(Object.fromEntries(summarizeLearnCatalog(catalog).map((entry) => [entry.kind, entry.count]))).toEqual(expectedCounts)
   })
 
   it('시간·코드 작성·형식·완료의 네 기본 축을 함께 적용한다', () => {

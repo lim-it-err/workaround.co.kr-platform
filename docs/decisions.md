@@ -325,3 +325,27 @@
 - 경위: PO 「llm이 업데이트 되기전까지는 내 로컬에서 돌아갈 수 있게. 즉, 로컬 모드와 배포 버전을 구분하자는 거지. 물론 재활용 가능하면 좋겠어. 너의 의견을 물어볼게」 → PM 안(같은 프런트, `/health` 응답과 profile 로 모드 판별, 조용한 mock 폴백 대신 배지로 표시, `local.sh` 한 줄 실행, 나중에 Worker 주소만 바꾸면 배포도 LLM) → PO 「너 의문 그대로 해소해도 될 것 같아」.
 - 키: 로컬은 내 맥 환경 변수에만, 배포는 추후 Worker 비밀값에만. 파일·저장소에 쓰지 않는다.
 - 같은 답으로 미션 zip 에 Maven 빌드 파일을 넣는다(TKT-238). 티켓: TKT-236(완료)·237·238.
+
+## D-040 Advisor 이지/하드 = 테스트 포함 여부 · UI 연동 미션 도입 · **확정** (PO 2026-11-28)
+
+- 경위: PO 「컨텐츠도 늘려주고, UI 연동 미션도 좋을까? 그리고 난이도 이지하고 하드로 나눠서 이지는 테스트 코드를 미리 만들어주는거 어때 테스트 코드 구성하는게 시간이 너무 걸려서」.
+- 이지/하드: 미션 콘텐츠에 선택 필드 `starterTests`(PM 작성)를 더하고, 받기에서 「이지 — 테스트 포함」/「하드 — 테스트 직접」 zip 을 고른다. 기존 `difficulty`(규칙 복잡도)와 별개 축. 정적 미션 전용 필드라 백엔드 `MissionContent`(LLM 생성 미션) 계약은 그대로 — 콘텐츠 스키마 **추가만**.
+- UI 연동 미션(PM 안): 외부 의존성 없이 JDK 내장 `com.sun.net.httpserver` 엔진이 `ui/index.html` 을 같은 오리진으로 서빙하고, 학습자가 구현한 도메인·핸들러가 그 화면에 숫자를 채운다. 브라우저에서 내 코드가 움직이는 화면을 본다.
+- 이지 테스트는 PM 이 쓰고, 뼈대 상태에서 컴파일되고(실패는 OK) 정답 코드에서 전부 통과하는 것을 PM 이 mvn 으로 확인한 미션만 연다.
+
+## D-041 Advisor 온라인 리뷰(Cloudflare Worker)는 만들지 않는다 — 당분간 로컬 전용 · **확정** (PO 2026-11-28)
+
+- 경위: PM 이 「온라인에서 하기」를 LLM 리뷰(Worker)·코드 실행(Codespaces / 브라우저 JVM / 채점 서버)으로 나눠 권고 → PO 「cloudflare worker는 구성하지 않아. 일단 로컬로」.
+- 내용: LLM 리뷰는 `./local.sh claude`(또는 `tools/local-start.sh advisor --profile claude`)로 내 맥에서만. 배포 버전은 연습 리뷰 그대로(D-039 의 「나중에 Worker 주소만 바꾸면」은 보류). 공개 페이지는 방문자 localhost 를 부르지 않는다(TKT-239) — 유지.
+- 다시 열 조건: PO 지시.
+
+## D-042 Advisor 온라인 실습 = Codespaces + GitHub Actions 채점 · **확정** (PO 2026-11-28)
+
+- 경위: PO 「github action을 github io에다가 연결할수 있을 거같은데, 그럼 동적이 아니어도 되는거아닌가」 → PM: github.io 는 정적이라 DB 에 직접 못 쓰지만, **저장소를 DB 로** 쓰면 된다(push → Actions 가 채점·리뷰 → 결과 JSON 을 브랜치에 커밋 → 페이지가 읽음). ① Codespaces 버튼 ② push 채점을 권고 → PO 「0.9.5는 일단 해보자」.
+- 내용:
+  - 실습 폴더 `labs/advisor/<미션id>/` 는 **`lab/<미션id>` 브랜치에만** 둔다. main 으로 병합 금지.
+  - `tools/advisor-lab.sh <미션id> [easy|hard]` 가 화면의 zip 과 같은 파일(`buildMissionEntries` 재사용)을 그 폴더에 풀고 채점 정보 `.advisor/mission.json` 을 남긴다.
+  - `.devcontainer/advisor-lab/` = JDK 21 + Maven + Node. 미션 화면의 「Codespaces 에서 열기」 버튼이 이것을 연다.
+  - `.github/workflows/advisor-lab.yml`: `lab/**` push → 바뀐 미션 폴더마다 `mvn test` → `.grade/result.json`(+ 키가 있으면 Claude 리뷰 `.grade/review.md`) 을 같은 브랜치에 `[skip ci]` 커밋. Claude 키는 GitHub Secrets `ANTHROPIC_API_KEY`(PO 가 넣음). 없으면 리뷰 단계만 건너뛴다.
+  - 공개 Advisor 페이지는 `raw.githubusercontent.com` 의 그 결과 JSON 을 읽어 「온라인 채점 결과」를 보여 준다(없으면 숨김). 방문자 localhost 는 여전히 부르지 않는다(TKT-239).
+- 위험: 저장소가 공개라 실습 코드·결과도 공개된다. 리뷰는 저장소에 쓰기 권한이 있는 사람의 push 에서만 돈다(포크에는 시크릿이 없음).

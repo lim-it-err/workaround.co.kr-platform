@@ -172,6 +172,105 @@ public class WineRecommender {
 }`,
       },
     ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/welfare/WineRecommenderTest.java',
+        content: `package com.daehan.welfare;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 — 현재 동작을 고정한 그물(특성 테스트).
+ * 받은 직후 이미 전부 초록입니다. 구조를 바꾸는 내내 초록을 유지하세요.
+ * 공개 진입점 new WineRecommender().recommend(String) 만 씁니다 — 내부 클래스는 마음대로 나누세요.
+ */
+class WineRecommenderTest {
+
+    private final WineRecommender recommender = new WineRecommender();
+
+    private static String result(String name, String grape, int score, String priceLine) {
+        return "[추천 와인] " + name + "\\n"
+                + "품종: " + grape + "\\n"
+                + "적합도 점수: " + score + "점\\n"
+                + priceLine;
+    }
+
+    @Test
+    @DisplayName("명절 기본 손님 — GOLD 10% 할인")
+    void goldMemberWithPork() {
+        assertEquals(result("몽테 발롱 피노", "피노 누아", 55, "정가: 62000원 -> 할인가: 55800원"),
+                recommender.recommend("바디=3;당도=2;예산=60000;음식=삼겹살;등급=GOLD"));
+    }
+
+    @Test
+    @DisplayName("VIP 고가 와인 — 15% 할인 뒤 쿠폰 5000원")
+    void vipCouponOnExpensiveWine() {
+        assertEquals(result("카시야스 리제르바", "카베르네 소비뇽", 95, "정가: 88000원 -> 할인가: 69800원"),
+                recommender.recommend("바디=5;당도=1;예산=90000;음식=스테이크;등급=VIP"));
+    }
+
+    @Test
+    @DisplayName("VIP 쿠폰은 예산을 조금 넘긴 고가 와인에도 붙는다")
+    void vipCouponWhenSlightlyOverBudget() {
+        assertEquals(result("카시야스 리제르바", "카베르네 소비뇽", 80, "정가: 88000원 -> 할인가: 69800원"),
+                recommender.recommend("바디=5;당도=1;예산=80000;음식=삼겹살;등급=VIP"));
+    }
+
+    @Test
+    @DisplayName("NORMAL 등급은 할인 문구가 없다")
+    void normalMemberHasNoDiscountLine() {
+        assertEquals(result("루카스 리슬링 카비네트", "리슬링", 95, "정가: 45000원"),
+                recommender.recommend("바디=2;당도=3;예산=50000;음식=떡볶이;등급=NORMAL"));
+    }
+
+    @Test
+    @DisplayName("등급을 빼면 NORMAL")
+    void missingGradeMeansNormal() {
+        assertEquals(result("돌체 로쏘 프리잔테", "람브루스코", 75, "정가: 32000원"),
+                recommender.recommend("바디=2;당도=4;예산=30000;음식=매운탕"));
+    }
+
+    @Test
+    @DisplayName("예산 1만 원 이내 초과는 후보에 남는다 — VIP")
+    void slightlyOverBudgetStaysVip() {
+        assertEquals(result("샤블리 프리미에 크뤼", "샤르도네", 80, "정가: 71000원 -> 할인가: 60350원"),
+                recommender.recommend("바디=3;당도=1;예산=65000;음식=회;등급=VIP"));
+    }
+
+    @Test
+    @DisplayName("예산 1만 원 이내 초과는 후보에 남는다 — GOLD, 굴")
+    void slightlyOverBudgetStaysGold() {
+        assertEquals(result("샤블리 프리미에 크뤼", "샤르도네", 80, "정가: 71000원 -> 할인가: 63900원"),
+                recommender.recommend("바디=3;당도=1;예산=61000;음식=굴;등급=GOLD"));
+    }
+
+    @Test
+    @DisplayName("페어링 규칙이 없는 음식은 가산점 0")
+    void unknownFoodGetsNoPairingBonus() {
+        assertEquals(result("몽테 발롱 피노", "피노 누아", 45, "정가: 62000원"),
+                recommender.recommend("바디=4;당도=2;예산=80000;음식=치킨"));
+    }
+
+    @Test
+    @DisplayName("전부 맞지 않아도 가장 덜 나쁜 와인을 고른다 (음수 점수)")
+    void negativeScoreStillRecommends() {
+        assertEquals(result("돌체 로쏘 프리잔테", "람브루스코", -25, "정가: 32000원"),
+                recommender.recommend("바디=1;당도=5;예산=20000"));
+    }
+
+    @Test
+    @DisplayName("동점이면 목록에서 먼저 나온 와인 — 알 수 없는 등급은 할인 없음")
+    void tieGoesToFirstWineInList() {
+        assertEquals(result("카시야스 리제르바", "카베르네 소비뇽", 20, "정가: 88000원"),
+                recommender.recommend("예산=100000;등급=SILVER"));
+    }
+}`,
+      },
+    ],
     requirements: [
       '추천 결과(문구·점수·가격)는 리팩토링 전과 완전히 동일해야 합니다.',
       '운영팀이 와인 목록을 곧 DB로 옮길 예정이므로, 와인 데이터가 어디서 오는지 바뀌어도 추천 로직은 손대지 않게 해 주세요.',
@@ -1000,6 +1099,70 @@ public class MaturityService {
     public String settle(String productId) {
         // TODO 구현
         throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/fin/domain/InterestCalculatorTest.java',
+        content: `package com.daehan.fin.domain;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 채점 테스트 — 미리 들어 있습니다. 이 파일은 고치지 말고, 전부 초록이 되게 구현하세요.
+ * 이 테스트는 MapDb 없이 돈다 — InterestCalculator 가 저장 기술을 몰라야 통과하는 구조라는 뜻입니다.
+ * (MaturityService 의 경계 설계와 그 테스트는 이지에서도 직접 합니다 — 생성자 모양이 여러분의 설계이기 때문입니다.)
+ */
+class InterestCalculatorTest {
+
+    private final InterestCalculator calc = new InterestCalculator();
+
+    private static SavingsProduct product(int monthly, int months, double rate, boolean exempt) {
+        return new SavingsProduct("t", "테스트 적금", monthly, months, rate, exempt);
+    }
+
+    @Test
+    void 시나리오1_월30만원_12개월_연3_6퍼센트_단리는_70200원() {
+        assertEquals(70_200L, calc.simplePreTaxInterest(product(300_000, 12, 0.036, false)));
+    }
+
+    @Test
+    void 시나리오1_월복리였다면_70978원() {
+        assertEquals(70_978L, calc.compoundPreTaxInterest(product(300_000, 12, 0.036, false)));
+    }
+
+    @Test
+    void 시나리오2_월50만원_24개월_연4_2퍼센트_단리는_525000원() {
+        assertEquals(525_000L, calc.simplePreTaxInterest(product(500_000, 24, 0.042, true)));
+    }
+
+    @Test
+    void 시나리오2_월복리였다면_539362원() {
+        assertEquals(539_362L, calc.compoundPreTaxInterest(product(500_000, 24, 0.042, true)));
+    }
+
+    @Test
+    void 한_달짜리는_한_달치_이자만_붙는다() {
+        // 100,000 × 0.036 × 1/12 = 300원
+        assertEquals(300L, calc.simplePreTaxInterest(product(100_000, 1, 0.036, false)));
+    }
+
+    @Test
+    void 단리는_합산한_뒤_원단위로_절사한다() {
+        // 12,345 × 0.031 × (3+2+1)/12 = 191.3475 → 191원
+        // (회차마다 먼저 버리면 95 + 63 + 31 = 189원 — 2원이 사라진다)
+        assertEquals(191L, calc.simplePreTaxInterest(product(12_345, 3, 0.031, false)));
+    }
+
+    @Test
+    void 비과세여부는_세전이자에_영향이_없다() {
+        assertEquals(
+                calc.simplePreTaxInterest(product(300_000, 12, 0.036, false)),
+                calc.simplePreTaxInterest(product(300_000, 12, 0.036, true)));
     }
 }`,
       },
@@ -2221,6 +2384,193 @@ public class TrainOps {
         System.out.println("P-2077 -> FRONT: " + gate.mayPass("P-2077", "FRONT"));
         System.out.println("P-2101 -> FRONT: " + gate.mayPass("P-2101", "FRONT"));
         System.out.println("P-1031 -> MID: " + gate.mayPass("P-1031", "MID"));
+    }
+}`,
+      },
+    ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/com/train/gate/GateControl.java',
+        content: `package com.train.gate;
+
+import com.train.ration.RationService;
+import com.train.registry.PassengerRegistry;
+
+/** 통행 승인 시스템. 명부와 배급의 사정을 전부 직접 안다. */
+public class GateControl {
+
+    private final RationService rationService = new RationService();
+
+    /** targetSection으로의 통행을 승인할 수 있는가. */
+    public boolean mayPass(String passengerId, String targetSection) {
+        String[] p = PassengerRegistry.PASSENGERS.get(passengerId);
+
+        // 꼬리칸은 앞으로 갈 수 없다
+        if (p[1].equals("TAIL") && !targetSection.equals("TAIL")) {
+            return false;
+        }
+        // 중간칸 -> 엔진칸(FRONT)은 심사 대상
+        if (p[1].equals("MID") && targetSection.equals("FRONT")) {
+            // 배급 정지자 통행 금지 (배급팀 내부 상태를 직접 확인)
+            if (p[4].equals("SUSPENDED")) {
+                return false;
+            }
+            // 배급량이 적은 승객은 위험 승객으로 간주한다 (2021년 임시 조치)
+            if (rationService.dailyRationOf(passengerId) < 400) {
+                return false;
+            }
+            return true;
+        }
+        return p[1].equals(targetSection);
+    }
+
+    /**
+     * 신규 — 작업 통행. hour 는 0~23 (06시 이상 10시 미만이 작업 시간대).
+     * 이지 모드 계약: 이 시그니처를 그대로 두고 구현하세요. 정비조 명단을 어디에 둘지는 당신의 설계입니다.
+     */
+    public boolean mayPass(String passengerId, String targetSection, int hour) {
+        throw new UnsupportedOperationException("작업 통행 — 아직 구현 안 됨");
+    }
+
+    /** 무단 통행 적발 — 위험 등급을 올리고 배급을 정지시킨다. */
+    public void reportViolation(String passengerId) {
+        PassengerRegistry.PASSENGERS.get(passengerId)[3] = "HIGH";
+        rationService.suspend(passengerId);
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/train/MorningRollCallTest.java',
+        content: `package com.train;
+
+import com.train.gate.GateControl;
+import com.train.ration.RationService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * 이지 모드 — 아침 점호(동작 보존) 그물. 받은 직후 이미 초록입니다.
+ * 벽을 다시 세우는 내내 초록을 유지하세요. 진입점은 new RationService() / new GateControl() 입니다.
+ */
+class MorningRollCallTest {
+
+    private final RationService ration = new RationService();
+    private final GateControl gate = new GateControl();
+
+    @Test
+    @DisplayName("배급량 — 등급 C 300g, B 450g")
+    void dailyRationByGrade() {
+        assertEquals(300, ration.dailyRationOf("P-1031"));
+        assertEquals(450, ration.dailyRationOf("P-2044"));
+        assertEquals(300, ration.dailyRationOf("P-2101"));
+    }
+
+    @Test
+    @DisplayName("배급 정지자는 0g")
+    void suspendedGetsNothing() {
+        assertEquals(0, ration.dailyRationOf("P-2077"));
+    }
+
+    @Test
+    @DisplayName("엔진칸 승객 — 등급 A 600g")
+    void frontPassengerGradeA() {
+        assertEquals(600, ration.dailyRationOf("P-3001"));
+    }
+
+    @Test
+    @DisplayName("중간칸 B 등급은 엔진칸 통행 허용")
+    void midGradeBMayGoFront() {
+        assertTrue(gate.mayPass("P-2044", "FRONT"));
+    }
+
+    @Test
+    @DisplayName("배급 정지자는 엔진칸 통행 거부")
+    void suspendedMayNotGoFront() {
+        assertFalse(gate.mayPass("P-2077", "FRONT"));
+    }
+
+    @Test
+    @DisplayName("배급 300g 승객은 엔진칸 통행 거부 (2021년 임시 조치의 결과)")
+    void lowRationMayNotGoFront() {
+        assertFalse(gate.mayPass("P-2101", "FRONT"));
+    }
+
+    @Test
+    @DisplayName("꼬리칸은 앞으로 갈 수 없다")
+    void tailMayNotMoveForward() {
+        assertFalse(gate.mayPass("P-1031", "MID"));
+        assertFalse(gate.mayPass("P-1031", "FRONT"));
+        assertTrue(gate.mayPass("P-1031", "TAIL"));
+    }
+
+    @Test
+    @DisplayName("자기 칸 안에서는 통행 허용, 뒤로 가는 건 거부")
+    void sameSectionOnly() {
+        assertTrue(gate.mayPass("P-2044", "MID"));
+        assertFalse(gate.mayPass("P-2044", "TAIL"));
+        assertTrue(gate.mayPass("P-3001", "FRONT"));
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/train/gate/WorkPassTest.java',
+        content: `package com.train.gate;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * 이지 모드 — 신규 「작업 통행」. 받은 직후에는 빨강입니다(아직 구현 안 됨).
+ * 정비조: 노들(P-2101). 작업 시간대: 06시 이상 10시 미만.
+ * "정비조라도 위험한 승객"을 어떻게 거를지는 일부러 테스트하지 않았습니다 — 설명란에 당신의 판단을 적으세요.
+ */
+class WorkPassTest {
+
+    private final GateControl gate = new GateControl();
+
+    @Test
+    @DisplayName("정비조는 작업 시간대에 엔진칸 통행 허용")
+    void crewMayGoFrontDuringShift() {
+        assertTrue(gate.mayPass("P-2101", "FRONT", 8));
+    }
+
+    @Test
+    @DisplayName("작업 시간대 경계 — 06시는 포함, 10시는 제외")
+    void shiftBoundaries() {
+        assertTrue(gate.mayPass("P-2101", "FRONT", 6));
+        assertTrue(gate.mayPass("P-2101", "FRONT", 9));
+        assertFalse(gate.mayPass("P-2101", "FRONT", 5));
+        assertFalse(gate.mayPass("P-2101", "FRONT", 10));
+    }
+
+    @Test
+    @DisplayName("작업 시간대 밖에는 기존 규칙 그대로 — 12시 거부")
+    void outsideShiftFallsBackToOldRule() {
+        assertFalse(gate.mayPass("P-2101", "FRONT", 12));
+    }
+
+    @Test
+    @DisplayName("정비조가 아닌 승객은 시간과 무관하게 기존 규칙")
+    void nonCrewUnchanged() {
+        assertTrue(gate.mayPass("P-2044", "FRONT", 8));
+        assertTrue(gate.mayPass("P-2044", "FRONT", 12));
+        assertFalse(gate.mayPass("P-2077", "FRONT", 8));
+        assertFalse(gate.mayPass("P-1031", "FRONT", 8));
+    }
+
+    @Test
+    @DisplayName("작업 통행은 엔진칸 요청에만 해당 — 다른 칸 요청은 기존 규칙")
+    void workPassOnlyForFront() {
+        assertTrue(gate.mayPass("P-2101", "MID", 8));
+        assertFalse(gate.mayPass("P-2101", "TAIL", 8));
     }
 }`,
       },
@@ -3801,10 +4151,10 @@ public class Loader {
             if (b[4].equals("CARTED")) {
                 sb.append(e.getKey()).append(" ").append(b[0]).append(" 게이트 ").append(b[1])
                         .append(" -> 구역 ").append(b[2]).append(" / 카트 ").append(b[3])
-                        .append(" / 적하 완료\n");
+                        .append(" / 적하 완료\\n");
             } else {
                 sb.append(e.getKey()).append(" ").append(b[0]).append(" 게이트 ").append(b[1])
-                        .append(" -> 구역 ").append(b[2]).append(" / 카트 없음 / 대기\n");
+                        .append(" -> 구역 ").append(b[2]).append(" / 카트 없음 / 대기\\n");
             }
         }
         return sb.toString();
@@ -4426,6 +4776,66 @@ public class TariffCalculator {
     public int monthlyBill(int usageKwh, int billingMonth) {
         // TODO 구현 — 단, 테스트가 먼저입니다.
         throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/tariff/TariffCalculatorTest.java',
+        content: `package com.daehan.tariff;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 채점 테스트 — 미리 들어 있습니다. 이 파일은 고치지 말고, 전부 초록이 되게 구현하세요.
+ *
+ * 테스트 리스트 (이 순서대로 하나씩 초록으로 만들면 됩니다)
+ *  1. 비하계 350kWh = 51,600원 (검증 예제 1)
+ *  2. 하계 8월 350kWh = 41,600원 (검증 예제 1)
+ *  3. 비하계 500kWh = 97,300원 (검증 예제 2)
+ *  4. 하계 500kWh = 82,300원 (검증 예제 2)
+ *  5. 0kWh 는 1구간 기본요금만
+ *  6. 비하계 정확히 200kWh 는 1구간
+ *  7. 비하계 201kWh 부터 2구간 기본요금
+ *  8. 비하계 정확히 400kWh 는 2구간
+ *  9. 비하계 401kWh 부터 3구간 기본요금
+ * 10. 하계 정확히 300kWh 는 1구간
+ * 11. 하계 정확히 450kWh 는 2구간
+ * 12. 하계 451kWh 부터 3구간
+ * 13. 6월은 비하계, 7월은 하계 (같은 300kWh)
+ * 14. 8월은 하계, 9월은 비하계 (같은 300kWh)
+ */
+class TariffCalculatorTest {
+
+    private final TariffCalculator calc = new TariffCalculator();
+
+    @Test void 비하계_350kWh는_51600원이다() { assertEquals(51_600, calc.monthlyBill(350, 6)); }
+    @Test void 하계_8월_350kWh는_41600원이다() { assertEquals(41_600, calc.monthlyBill(350, 8)); }
+    @Test void 비하계_500kWh는_97300원이다() { assertEquals(97_300, calc.monthlyBill(500, 3)); }
+    @Test void 하계_500kWh는_82300원이다() { assertEquals(82_300, calc.monthlyBill(500, 7)); }
+
+    @Test void 사용량_0kWh는_1구간_기본요금만_낸다() { assertEquals(900, calc.monthlyBill(0, 5)); }
+
+    @Test void 비하계_정확히_200kWh는_1구간이다() { assertEquals(20_900, calc.monthlyBill(200, 10)); }
+    @Test void 비하계_201kWh부터_2구간_기본요금을_적용한다() { assertEquals(21_800, calc.monthlyBill(201, 10)); }
+    @Test void 비하계_정확히_400kWh는_2구간이다() { assertEquals(61_600, calc.monthlyBill(400, 10)); }
+    @Test void 비하계_401kWh부터_3구간_기본요금을_적용한다() { assertEquals(67_600, calc.monthlyBill(401, 10)); }
+
+    @Test void 하계_정확히_300kWh는_1구간이다() { assertEquals(30_900, calc.monthlyBill(300, 7)); }
+    @Test void 하계_정확히_450kWh는_2구간이다() { assertEquals(61_600, calc.monthlyBill(450, 8)); }
+    @Test void 하계_451kWh부터_3구간이다() { assertEquals(67_600, calc.monthlyBill(451, 8)); }
+
+    @Test void 같은_300kWh라도_6월은_비하계_7월은_하계다() {
+        assertEquals(41_600, calc.monthlyBill(300, 6));
+        assertEquals(30_900, calc.monthlyBill(300, 7));
+    }
+
+    @Test void 같은_300kWh라도_8월은_하계_9월은_비하계다() {
+        assertEquals(30_900, calc.monthlyBill(300, 8));
+        assertEquals(41_600, calc.monthlyBill(300, 9));
     }
 }`,
       },
@@ -6152,6 +6562,159 @@ public class ScoutOps {
 }`,
       },
     ],
+    // 이지 모드(D-040) — 리팩토링 미션: 현재 동작을 고정한 그물(받자마자 초록) + 새 요구만 빨강.
+    starterTests: [
+      {
+        path: 'src/main/java/com/phoenix/scout/Sabermetrics.java',
+        content: `package com.phoenix.scout;
+
+/**
+ * 새 지표 계산 (이지 모드 계약 — 이 이름과 시그니처로 구현하세요).
+ * 반환값은 반올림 전 실수입니다. 표기(.390)는 리포트 쪽 일입니다.
+ */
+public final class Sabermetrics {
+
+    private Sabermetrics() {
+    }
+
+    /** 출루율 OBP = (안타+볼넷+몸에 맞는 공) ÷ (타수+볼넷+몸에 맞는 공+희생플라이) */
+    public static double obp(PlayerStat p) {
+        throw new UnsupportedOperationException("OBP — 아직 구현 안 됨");
+    }
+
+    /** 장타율 SLG = 총루타 ÷ 타수 */
+    public static double slg(PlayerStat p) {
+        throw new UnsupportedOperationException("SLG — 아직 구현 안 됨");
+    }
+
+    /** OPS = OBP + SLG */
+    public static double ops(PlayerStat p) {
+        throw new UnsupportedOperationException("OPS — 아직 구현 안 됨");
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/phoenix/scout/ScoutReportLineTest.java',
+        content: `package com.phoenix.scout;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 — 옛 리포트 line() 의 특성 테스트. 받은 직후 이미 초록입니다.
+ * 문서고의 옛 리포트와 한 글자도 달라지면 안 됩니다. 새 지표를 넣는 내내 초록을 유지하세요.
+ */
+class ScoutReportLineTest {
+
+    /** 타율·홈런만 의미 있는 시험용 선수 (타수 1000 이라 타율 = 안타/1000). */
+    private static PlayerStat batter(int hits, int homeRuns) {
+        return new PlayerStat("시험", 1000, hits, 0, 0, homeRuns, 0, 0, 0);
+    }
+
+    @Test
+    @DisplayName("검증 선수 박정확 — 보통")
+    void parkJeonghwak() {
+        PlayerStat a = new PlayerStat("박정확", 480, 132, 25, 3, 12, 88, 6, 5);
+        assertEquals("박정확: 타율 .275 홈런 12 -> 보통", ScoutReport.line(a));
+    }
+
+    @Test
+    @DisplayName("검증 선수 강스윙 — 특급 (거포)")
+    void kangSwing() {
+        PlayerStat b = new PlayerStat("강스윙", 510, 153, 30, 2, 28, 20, 2, 6);
+        assertEquals("강스윙: 타율 .300 홈런 28 -> 특급 (거포)", ScoutReport.line(b));
+    }
+
+    @Test
+    @DisplayName("등급 경계 .300 — 이상이면 특급, 바로 아래는 우수")
+    void boundary300() {
+        assertEquals("시험: 타율 .300 홈런 0 -> 특급", ScoutReport.line(batter(300, 0)));
+        assertEquals("시험: 타율 .299 홈런 0 -> 우수", ScoutReport.line(batter(299, 0)));
+    }
+
+    @Test
+    @DisplayName("등급 경계 .280 — 이상이면 우수, 바로 아래는 보통")
+    void boundary280() {
+        assertEquals("시험: 타율 .280 홈런 0 -> 우수", ScoutReport.line(batter(280, 0)));
+        assertEquals("시험: 타율 .279 홈런 0 -> 보통", ScoutReport.line(batter(279, 0)));
+    }
+
+    @Test
+    @DisplayName("등급 경계 .250 — 이상이면 보통, 바로 아래는 관망")
+    void boundary250() {
+        assertEquals("시험: 타율 .250 홈런 0 -> 보통", ScoutReport.line(batter(250, 0)));
+        assertEquals("시험: 타율 .249 홈런 0 -> 관망", ScoutReport.line(batter(249, 0)));
+    }
+
+    @Test
+    @DisplayName("거포 태그 — 홈런 25 부터")
+    void sluggerTag() {
+        assertEquals("시험: 타율 .260 홈런 25 -> 보통 (거포)", ScoutReport.line(batter(260, 25)));
+        assertEquals("시험: 타율 .260 홈런 24 -> 보통", ScoutReport.line(batter(260, 24)));
+    }
+}`,
+      },
+      {
+        path: 'src/test/java/com/phoenix/scout/SabermetricsTest.java',
+        content: `package com.phoenix.scout;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * 이지 모드 — 새 지표. 받은 직후에는 빨강입니다(아직 구현 안 됨).
+ * 소수 셋째 자리 반올림 값과 ±0.0005 안에서 맞으면 통과합니다.
+ * 리포트 한 줄(sabermetricLine 등)의 형식은 일부러 테스트하지 않았습니다 — 당신이 정하세요.
+ */
+class SabermetricsTest {
+
+    private static final double HALF = 0.0005;
+    private final PlayerStat park = new PlayerStat("박정확", 480, 132, 25, 3, 12, 88, 6, 5);
+    private final PlayerStat kang = new PlayerStat("강스윙", 510, 153, 30, 2, 28, 20, 2, 6);
+
+    @Test
+    @DisplayName("박정확 — OBP .390 · SLG .415 · OPS .805")
+    void parkNumbers() {
+        assertEquals(0.390, Sabermetrics.obp(park), HALF);
+        assertEquals(0.415, Sabermetrics.slg(park), HALF);
+        assertEquals(0.805, Sabermetrics.ops(park), HALF);
+    }
+
+    @Test
+    @DisplayName("강스윙 — OBP .325 · SLG .531 · OPS .857")
+    void kangNumbers() {
+        assertEquals(0.325, Sabermetrics.obp(kang), HALF);
+        assertEquals(0.531, Sabermetrics.slg(kang), HALF);
+        assertEquals(0.857, Sabermetrics.ops(kang), HALF);
+    }
+
+    @Test
+    @DisplayName("타율은 강스윙, 출루율은 박정확 — 순위가 뒤집힌다")
+    void rankingFlips() {
+        assertTrue((double) kang.hits() / kang.atBats() > (double) park.hits() / park.atBats());
+        assertTrue(Sabermetrics.obp(park) > Sabermetrics.obp(kang));
+    }
+
+    @Test
+    @DisplayName("단타만 친 타자의 SLG 는 타율과 같다")
+    void singlesOnlySlgEqualsAverage() {
+        PlayerStat singles = new PlayerStat("단타왕", 400, 120, 0, 0, 0, 0, 0, 0);
+        assertEquals(0.300, Sabermetrics.slg(singles), 1e-9);
+    }
+
+    @Test
+    @DisplayName("OPS 는 OBP 와 SLG 의 합")
+    void opsIsSum() {
+        assertEquals(Sabermetrics.obp(kang) + Sabermetrics.slg(kang), Sabermetrics.ops(kang), 1e-12);
+    }
+}`,
+      },
+    ],
     requirements: [
       '기존 리포트의 출력(형식·등급·태그)은 한 글자도 달라지면 안 됩니다. 수정 전에 두 검증 선수("박정확: 타율 .275 홈런 12 -> 보통", "강스윙: 타율 .300 홈런 28 -> 특급 (거포)")와 등급 경계(.300, .280, .250, 홈런 25)를 특성화 테스트로 먼저 고정하세요.',
       '새 지표 체계를 별도 단위로 추가합니다: OBP = (안타+볼넷+몸에 맞는 공) ÷ (타수+볼넷+몸에 맞는 공+희생플라이), SLG = 총루타 ÷ 타수 (총루타 = 단타 + 2×2루타 + 3×3루타 + 4×홈런, 단타 = 안타−2루타−3루타−홈런), OPS = OBP + SLG. 표기는 기존 리포트와 같은 .390 형식(소수 셋째 자리 반올림)입니다.',
@@ -6800,7 +7363,7 @@ public class DividendCalc {
                                     LocalDate auctionStart, List<Claim> claims) {
         long fund = salePrice - cost;   // 0단계: 경매비용 공제
         StringBuilder sheet = new StringBuilder();
-        sheet.append("[배당표] 재원 ").append(fund).append("원\n");
+        sheet.append("[배당표] 재원 ").append(fund).append("원\\n");
 
         // 1단계: 소액임차인 최우선변제
         long cap = smallCapOf(auctionStart);
@@ -6810,7 +7373,7 @@ public class DividendCalc {
                 long pay = Math.min(priorityAmt, Math.min(c.remaining(), fund));
                 c.paid += pay;
                 fund -= pay;
-                sheet.append("1순위 최우선변제 ").append(c.name).append(" ").append(pay).append("원\n");
+                sheet.append("1순위 최우선변제 ").append(c.name).append(" ").append(pay).append("원\\n");
             }
         }
 
@@ -6818,7 +7381,7 @@ public class DividendCalc {
         long taxPay = Math.min(taxDue, fund);
         fund -= taxPay;
         if (taxPay > 0) {
-            sheet.append("2순위 당해세 ").append(taxPay).append("원\n");
+            sheet.append("2순위 당해세 ").append(taxPay).append("원\\n");
         }
 
         // 3단계: 설정일·확정일자 순위 배당
@@ -6832,10 +7395,10 @@ public class DividendCalc {
             c.paid += pay;
             fund -= pay;
             sheet.append("순위배당(").append(c.rankDate).append(") ")
-                    .append(c.name).append(" ").append(pay).append("원\n");
+                    .append(c.name).append(" ").append(pay).append("원\\n");
         }
 
-        sheet.append("잔여 ").append(fund).append("원 (소유자 귀속)\n");
+        sheet.append("잔여 ").append(fund).append("원 (소유자 귀속)\\n");
         return sheet.toString();
     }
 }`,
@@ -8152,11 +8715,138 @@ class ShippingFeeCalculatorTest {
 }`,
       },
     ],
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/parcel/domain/ShippingFeeCalculatorTest.java',
+        content: `package com.daehan.parcel.domain;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * 이지 모드 채점 테스트 — 미리 들어 있습니다. 이 파일은 고치지 말고, 전부 초록이 되게 구현하세요.
+ * 처음 mvn -q test 를 돌리면 UnsupportedOperationException 으로 빨갛게 실패하는 게 정상입니다.
+ */
+class ShippingFeeCalculatorTest {
+
+    private final ShippingFeeCalculator calculator = new ShippingFeeCalculator();
+
+    private String quote(String name, int w, int d, int h, int grams, String zone, boolean remote, boolean cod) {
+        return calculator.quote(new Parcel(name, w, d, h, grams, zone, remote, cod));
+    }
+
+    @Nested
+    @DisplayName("App.java 기대 출력 네 건")
+    class Scenarios {
+
+        @Test
+        void 베개는_부피중량으로_청구된다() {
+            assertEquals(
+                    "[메모리폼 베개] 부피중량 4.0kg / 실중량 1.2kg → 청구중량 4.0kg\\n"
+                            + "기본 5,000원 + 권역 1,000원 = 6,000원",
+                    quote("메모리폼 베개", 40, 30, 20, 1200, "OTHER", false, false));
+        }
+
+        @Test
+        void 제주행_착불_이불은_할증이_둘_붙는다() {
+            assertEquals(
+                    "[겨울 이불] 부피중량 13.4kg / 실중량 9.0kg → 청구중량 13.5kg\\n"
+                            + "기본 8,000원 + 권역 3,000원 + 착불 500원 = 11,500원",
+                    quote("겨울 이불", 50, 40, 40, 9000, "JEJU", false, true));
+        }
+
+        @Test
+        void 작은_상자는_실중량으로_청구되고_권역_0원은_빠진다() {
+            assertEquals(
+                    "[문구 세트] 부피중량 0.5kg / 실중량 2.0kg → 청구중량 2.0kg\\n"
+                            + "기본 4,000원 + 도서산간 5,000원 = 9,000원",
+                    quote("문구 세트", 25, 20, 5, 2000, "SAME", true, false));
+        }
+
+        @Test
+        void 세_변의_합이_넘으면_접수_불가() {
+            assertEquals(
+                    "[접이식 책상] 접수 불가: 세 변의 합 170cm 가 160cm 를 넘습니다",
+                    quote("접이식 책상", 80, 50, 40, 12000, "OTHER", false, false));
+        }
+    }
+
+    @Nested
+    @DisplayName("0.5kg 올림 경계")
+    class HalfKgRounding {
+
+        @Test
+        void 실중량_정확히_2kg_은_첫_구간() {
+            assertTrue(quote("경계 A", 10, 10, 10, 2000, "SAME", false, false).endsWith("= 4,000원"));
+        }
+
+        @Test
+        void 실중량_2001g_은_2_5kg_로_올라가_다음_구간() {
+            String q = quote("경계 B", 10, 10, 10, 2001, "SAME", false, false);
+            assertTrue(q.contains("청구중량 2.5kg"), q);
+            assertTrue(q.endsWith("= 5,000원"), q);
+        }
+
+        @Test
+        void 부피중량이_정확히_2kg_이면_올라가지_않는다_double_함정() {
+            // 30 × 20 × 20 = 12,000cm³ → 12,000 × 1000 ÷ 6000 = 정확히 2,000g
+            String q = quote("경계 C", 30, 20, 20, 500, "SAME", false, false);
+            assertTrue(q.contains("청구중량 2.0kg"), q);
+            assertTrue(q.endsWith("= 4,000원"), q);
+        }
+    }
+
+    @Nested
+    @DisplayName("접수 가능 경계")
+    class AcceptanceLimits {
+
+        @Test
+        void 세_변의_합_160cm_는_접수() {
+            assertTrue(quote("합 160", 60, 50, 50, 1000, "SAME", false, false).endsWith("= 10,000원"));
+        }
+
+        @Test
+        void 세_변의_합_161cm_는_불가() {
+            assertEquals("[합 161] 접수 불가: 세 변의 합 161cm 가 160cm 를 넘습니다",
+                    quote("합 161", 61, 50, 50, 1000, "SAME", false, false));
+        }
+
+        @Test
+        void 가장_긴_변_100cm_는_접수() {
+            assertTrue(quote("변 100", 100, 30, 30, 1000, "SAME", false, false).endsWith("= 8,000원"));
+        }
+
+        @Test
+        void 가장_긴_변_101cm_는_불가() {
+            String q = quote("변 101", 101, 30, 29, 1000, "SAME", false, false);
+            assertTrue(q.startsWith("[변 101] 접수 불가"), q);
+            assertTrue(q.contains("100cm"), q);
+        }
+
+        @Test
+        void 실중량_30kg_은_접수() {
+            assertTrue(quote("30kg", 20, 20, 20, 30000, "SAME", false, false).endsWith("= 10,000원"));
+        }
+
+        @Test
+        void 실중량_30_001g_은_불가() {
+            String q = quote("30kg 초과", 20, 20, 20, 30001, "SAME", false, false);
+            assertTrue(q.startsWith("[30kg 초과] 접수 불가"), q);
+            assertTrue(q.contains("30kg"), q);
+        }
+    }
+}`,
+      },
+    ],
     requirements: [
       '부피중량(g) = 가로 × 세로 × 높이(cm³) × 1000 ÷ 6000. 청구중량 = max(실중량, 부피중량)을 0.5kg(500g) 단위로 올림합니다. 검증: 소포 1 은 24,000cm³ → 4,000g → 청구 4.0kg, 소포 2 는 80,000cm³ → 13,333.3g → 청구 13.5kg.',
       '기본 운임은 RateTable.baseFee(청구중량의 0.5kg 단위 개수)로 구합니다. 2.0kg 이하 4,000원, 5.0kg 이하 5,000원, 10.0kg 이하 6,500원, 20.0kg 이하 8,000원, 30.0kg 이하 10,000원.',
       '총운임 = 기본 운임 + 권역 할증(SAME 0원, OTHER 1,000원, JEJU 3,000원) + 도서산간이면 5,000원 + 착불이면 500원. 할증이 0원인 항목은 출력에서 빼고, 있는 항목만 「 + 」로 잇습니다(App.java 기대 출력 그대로).',
-      '접수 불가 조건: 세 변의 합이 160cm 초과, 가장 긴 변이 100cm 초과, 실중량이 30kg(30,000g) 초과. 하나라도 걸리면 운임 대신 이유 한 줄을 돌려줍니다(여러 개면 위 순서의 첫 번째). 소포 4 는 「접수 불가: 세 변의 합 170cm 가 160cm 를 넘습니다」.',
+      '접수 불가 조건: 세 변의 합이 160cm 초과, 가장 긴 변이 100cm 초과, 실중량이 30kg(30,000g) 초과. 하나라도 걸리면 운임 대신 「[이름] 접수 불가: 이유」 한 줄을 돌려줍니다(여러 개면 위 순서의 첫 번째, 이유에는 넘은 기준값 160cm·100cm·30kg 을 넣습니다). 소포 4 는 「접수 불가: 세 변의 합 170cm 가 160cm 를 넘습니다」.',
       '출력의 부피중량과 실중량은 kg 소수 첫째 자리까지, 둘째 자리에서 올림해 표시합니다(13,333.3g → 13.4kg). 계산에는 표시값이 아니라 g 정수와 0.5kg 단위 개수를 씁니다.',
       '다음 달에 착불 수수료가 조정될 예정이고, 사장님은 "부피 기준이 6,000 에서 5,000 으로 바뀔 수도 있다"는 공지를 받았습니다. 아직 확정된 숫자는 없습니다.',
     ],
@@ -8246,6 +8936,542 @@ class ShippingFeeCalculatorTest {
         grade: 'dawn',
         title: '제주행 이불 마흔 채',
         teaser: '겨울 이불 기획전이 터진 밤, 제주 할증과 착불이 같이 붙는 경로에서 계산이 어긋난다. 차액 정산표를 들고 새벽까지 택배사와 통화하는 사람은 당신이다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말을 여는 열쇠는 아직 아무도 회수하지 못했습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
+  // =========================================================================
+  // Mission 35 — Stage 2 "인터페이스는 계약" / 버스 도착 안내판 / 도메인 로직 구현 / 여러 파일 / UI 연동
+  // =========================================================================
+  {
+    id: 's2-busboard-01',
+    stage: 2,
+    stageTitle: '인터페이스는 계약',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '버스 · 도착 안내 (UI 연동)',
+    domainEmoji: '🚏',
+    title: '"곧 도착"은 몇 초부터인가 — 정류장 안내판을 내 코드로 켜라',
+    estimatedMinutes: 120,
+    briefing: {
+      title: '정류장 안내판이 거짓말을 하지 않으려면',
+      content: `### 59초와 60초 사이
+
+정류장 안내판의 "곧 도착"은 생각보다 엄격한 약속입니다. 버스가 1분 넘게 남았는데 "곧 도착"이 뜨면 사람들은 뛰어오다 멈추고, 30초 남았는데 "1분 후"가 뜨면 버스를 놓칩니다. 그래서 버스정보시스템(BIS)의 표시 규칙은 몇 초부터 무엇을 보여 줄지 숫자로 정해져 있습니다. 이 미션의 도시(가상)는 **60초 미만 = "곧 도착"**, 그 이상은 **"N분 후"**(초를 분으로 바꿀 때 버림)로 약속했습니다.
+
+### 도착 예정 시간은 거리 ÷ 속도
+
+버스는 1분마다 위치를 보냅니다. 정류장까지 **남은 거리(m)** 와 최근 구간의 **평균 속도(km/h)** 가 있으면 도착 예정 시간이 나옵니다. 18km/h 는 초속 5m 이니, 300m 남은 버스는 정확히 60초 뒤에 옵니다. 300.5m 라면? 사람을 기다리게 하는 쪽보다 미리 나와 있게 하는 쪽이 낫기에 **초는 올림**합니다.
+
+### 몇 번째 전, 막차, 혼잡도
+
+"6분 후 (3번째 전)"의 괄호는 정류장 수입니다 — 정체로 시간 예측이 틀어져도 정류장 수는 거짓말을 하지 않습니다. 오늘의 마지막 차에는 **"· 막차"** 가 붙습니다. 오른쪽 끝의 **여유·보통·혼잡** 은 재차 인원 ÷ 정원으로, 50% 미만이 여유, 80% 미만이 보통, 그 이상이 혼잡입니다.
+
+### 이번 미션의 특별한 점 — 화면이 있다
+
+이번에는 숫자만 출력하고 끝나지 않습니다. 제공된 엔진(UiServer)이 **브라우저 안내판 화면**을 띄우고, 화면은 오직 **BoardSource 라는 인터페이스**만 압니다. 여러분이 그 계약을 지키는 BoardService 를 만들면, 화면이 저절로 여러분의 코드로 채워집니다. 계약이 지켜지는 한 화면 쪽은 여러분의 구현을 한 줄도 몰라도 됩니다 — 이것이 "인터페이스는 계약"입니다.`,
+    },
+    scenario: `시청 앞 정류장의 안내판 업체가 바뀌었습니다. 새 업체는 화면(HTML)과 화면 서버를 납품했고, **"BoardSource 인터페이스만 구현해 주면 화면은 알아서 그립니다"** 라고 했습니다. 버스 위치 수신기(BusFeed)도 이미 붙어 있습니다. 여러분은 그 사이 — 위치를 받아 안내판 문구로 바꾸는 규칙 — 을 맡았습니다. 개통식에서 시장이 안내판 앞에 섭니다. "곧 도착"이 뜬 버스가 2분 뒤에 오면 그 장면이 저녁 뉴스에 나갑니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/daehan/bus/engine/BoardSource.java',
+        content: `package com.daehan.bus.engine;
+
+import java.util.List;
+
+/**
+ * 안내판 화면(UiServer)이 기대하는 계약. 화면은 이 인터페이스만 안다.
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public interface BoardSource {
+
+    /** 정류장 id 의 안내판 줄들. 위에서부터 화면에 그대로 그린다. */
+    List<BoardRow> rows(String stopId);
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/engine/BoardRow.java',
+        content: `package com.daehan.bus.engine;
+
+/**
+ * 안내판 한 줄. UiServer 가 이 값을 JSON 으로 바꿔 화면에 보낸다.
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public record BoardRow(String route, String message, String crowd) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/engine/BusPosition.java',
+        content: `package com.daehan.bus.engine;
+
+/**
+ * 버스 한 대의 실시간 위치 (BIS 수신 데이터).
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public record BusPosition(
+        String route,          // 노선 번호
+        String busId,          // 차량 번호
+        int remainingStops,    // 이 정류장까지 남은 정류장 수 (0 = 바로 전 정류장을 떠남)
+        int distanceMeters,    // 이 정류장까지 남은 거리(m)
+        int speedKmh,          // 최근 구간 평균 속도(km/h). 0 이면 정체·정차 중
+        int passengers,        // 현재 재차 인원
+        int capacity,          // 정원
+        boolean lastBus        // 오늘의 막차인가
+) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/engine/BusFeed.java',
+        content: `package com.daehan.bus.engine;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * BIS(버스정보시스템) 수신기 흉내. 실제로는 1분마다 바뀌지만, 연습을 위해 한 순간을 고정해 둔다.
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public class BusFeed {
+
+    private static final Map<String, List<String>> ROUTES = Map.of(
+            "S1", List.of("101", "702", "9401", "N26"));
+
+    private static final Map<String, List<BusPosition>> POSITIONS = Map.of(
+            "S1", List.of(
+                    new BusPosition("101", "서울70사1101", 0, 300, 18, 20, 45, false),
+                    new BusPosition("101", "서울70사1102", 3, 2400, 24, 30, 45, false),
+                    new BusPosition("101", "서울70사1103", 7, 4800, 20, 12, 45, false),
+                    new BusPosition("702", "서울74사7021", 1, 450, 30, 40, 45, false),
+                    new BusPosition("9401", "경기70바9401", 5, 5200, 40, 10, 45, true)));
+
+    /** 정류장을 지나는 노선 목록 (버스가 없어도 노선은 있다). */
+    public List<String> routesAt(String stopId) {
+        return ROUTES.getOrDefault(stopId, List.of());
+    }
+
+    /** 정류장으로 오고 있는 버스들 (순서 보장 없음). */
+    public List<BusPosition> approaching(String stopId) {
+        return POSITIONS.getOrDefault(stopId, List.of());
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/engine/UiServer.java',
+        content: `package com.daehan.bus.engine;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * 안내판 화면 서버 (JDK 내장 HTTP 서버, 외부 라이브러리 없음).
+ *   GET /                → ui/index.html
+ *   GET /api/board?stop= → BoardSource.rows(stop) 를 JSON 으로
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public final class UiServer {
+
+    public static final int PORT = 8081;
+
+    private UiServer() {
+    }
+
+    public static void start(BoardSource source) throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", PORT), 0);
+        server.createContext("/api/board", ex -> {
+            String stop = query(ex, "stop");
+            try {
+                send(ex, 200, "application/json; charset=utf-8", toJson(source.rows(stop)));
+            } catch (RuntimeException e) {
+                send(ex, 500, "application/json; charset=utf-8",
+                        "{\\"error\\":" + quote(e.getClass().getSimpleName() + ": " + e.getMessage()) + "}");
+            }
+        });
+        server.createContext("/", ex -> {
+            Path page = Path.of("ui", "index.html");
+            if (!Files.exists(page)) {
+                send(ex, 404, "text/plain; charset=utf-8", "ui/index.html 이 없습니다. 프로젝트 폴더에서 실행하세요.");
+                return;
+            }
+            send(ex, 200, "text/html; charset=utf-8", Files.readString(page));
+        });
+        server.start();
+        System.out.println("안내판: http://127.0.0.1:" + PORT + "/  (종료 Ctrl-C)");
+    }
+
+    private static String query(HttpExchange ex, String key) {
+        String q = ex.getRequestURI().getRawQuery();
+        if (q == null) return "";
+        for (String pair : q.split("&")) {
+            String[] kv = pair.split("=", 2);
+            if (kv[0].equals(key)) return URLDecoder.decode(kv.length > 1 ? kv[1] : "", StandardCharsets.UTF_8);
+        }
+        return "";
+    }
+
+    static String toJson(List<BoardRow> rows) {
+        return rows.stream()
+                .map(r -> "{\\"route\\":" + quote(r.route()) + ",\\"message\\":" + quote(r.message())
+                        + ",\\"crowd\\":" + quote(r.crowd()) + "}")
+                .collect(Collectors.joining(",", "[", "]"));
+    }
+
+    private static String quote(String s) {
+        if (s == null) return "null";
+        return "\\"" + s.replace("\\\\", "\\\\\\\\").replace("\\"", "\\\\\\"") + "\\"";
+    }
+
+    private static void send(HttpExchange ex, int status, String type, String body) throws IOException {
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+        ex.getResponseHeaders().set("Content-Type", type);
+        ex.sendResponseHeaders(status, bytes.length);
+        try (OutputStream out = ex.getResponseBody()) {
+            out.write(bytes);
+        }
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/App.java',
+        content: `package com.daehan.bus;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ *
+ * 실행: IntelliJ 에서 이 main 을 실행하거나
+ *   mvn -q compile && java -cp target/classes com.daehan.bus.App
+ * 그다음 브라우저에서 http://127.0.0.1:8081/ 을 엽니다.
+ */
+public class App {
+
+    public static void main(String[] args) throws Exception {
+        // TODO(학습자): BoardService 를 만들어 화면 서버에 연결하세요.
+        // UiServer.start(new BoardService(new BusFeed()));
+
+        // ===== 기대 화면 (정류장 S1 · 시청앞) =====
+        // 702   곧 도착                    혼잡
+        // 101   1분 후                     여유
+        // 101   6분 후 (3번째 전)          보통
+        // 9401  7분 후 (5번째 전) · 막차   여유
+        // N26   도착 정보 없음
+    }
+}`,
+      },
+      {
+        path: 'ui/index.html',
+        content: `<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시청앞 정류장 안내판</title>
+<style>
+  /* 이 파일은 엔진입니다. 그대로 사용하세요. 화면은 /api/board 의 결과를 그대로 그릴 뿐입니다. */
+  body { margin: 0; background: #0b0d10; color: #ffb547; font: 18px/1.4 ui-monospace, "SF Mono", Menlo, monospace; }
+  main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 18px; color: #e8e8e8; margin: 0 0 4px; }
+  .sub { color: #8a8f98; font-size: 13px; margin: 0 0 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 12px 8px; border-bottom: 1px dashed #2a2f36; }
+  td.route { width: 5ch; color: #fff; font-weight: 700; }
+  td.crowd { width: 4ch; text-align: right; color: #8a8f98; }
+  td.crowd.혼잡 { color: #ff6b6b; }
+  td.crowd.보통 { color: #ffd166; }
+  td.crowd.여유 { color: #6bd18b; }
+  .err { color: #ff6b6b; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>시청앞 (S1)</h1>
+  <p class="sub" id="sub">불러오는 중…</p>
+  <table><tbody id="rows"></tbody></table>
+  <p class="err" id="err"></p>
+</main>
+<script>
+async function load() {
+  const err = document.getElementById('err');
+  try {
+    const res = await fetch('/api/board?stop=S1', { cache: 'no-store' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || res.status);
+    document.getElementById('rows').innerHTML = data.map(r =>
+      '<tr><td class="route"></td><td class="msg"></td><td class="crowd"></td></tr>').join('');
+    document.querySelectorAll('#rows tr').forEach((tr, i) => {
+      tr.children[0].textContent = data[i].route;
+      tr.children[1].textContent = data[i].message;
+      tr.children[2].textContent = data[i].crowd || '';
+      if (data[i].crowd) tr.children[2].classList.add(data[i].crowd);
+    });
+    err.textContent = '';
+    document.getElementById('sub').textContent = '갱신 ' + new Date().toLocaleTimeString('ko-KR');
+  } catch (e) {
+    err.textContent = '안내판을 채우지 못했습니다 — ' + e.message + '\\nBoardService 를 구현했는지, App 이 UiServer 를 시작했는지 보세요.';
+  }
+}
+load();
+setInterval(load, 5000);
+</script>
+</body>
+</html>`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/bus/domain/BoardService.java',
+        content: `package com.daehan.bus.domain;
+
+import com.daehan.bus.engine.BoardRow;
+import com.daehan.bus.engine.BoardSource;
+import com.daehan.bus.engine.BusFeed;
+
+import java.util.List;
+
+/**
+ * 정류장 안내판 서비스 (구현 대상).
+ * 화면은 BoardSource 계약만 안다 — 이 클래스가 그 계약을 지키면 화면이 저절로 채워진다.
+ */
+public class BoardService implements BoardSource {
+
+    private final BusFeed feed;
+
+    public BoardService(BusFeed feed) {
+        this.feed = feed;
+    }
+
+    @Override
+    public List<BoardRow> rows(String stopId) {
+        // TODO 구현 — 규칙은 요구사항 참조
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/bus/domain/BoardServiceTest.java',
+        content: `package com.daehan.bus.domain;
+
+import com.daehan.bus.engine.BoardRow;
+import com.daehan.bus.engine.BusFeed;
+import com.daehan.bus.engine.BusPosition;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 채점 테스트 — 미리 들어 있습니다. 이 파일은 고치지 말고, 전부 초록이 되게 구현하세요.
+ * 화면(ui/index.html)이 보여 주는 것은 이 테스트가 검사하는 rows() 결과 그대로입니다.
+ */
+class BoardServiceTest {
+
+    /** 테스트용 가짜 수신기 — BusFeed 를 상속해 원하는 순간을 만든다. */
+    private static BusFeed feed(List<String> routes, BusPosition... buses) {
+        return new BusFeed() {
+            @Override public List<String> routesAt(String stopId) { return routes; }
+            @Override public List<BusPosition> approaching(String stopId) { return List.of(buses); }
+        };
+    }
+
+    private static BusPosition bus(String route, int stops, int meters, int kmh, int pax, boolean last) {
+        return new BusPosition(route, route + "-" + meters, stops, meters, kmh, pax, 45, last);
+    }
+
+    private static String only(BusFeed f) {
+        List<BoardRow> rows = new BoardService(f).rows("T");
+        return rows.get(0).message();
+    }
+
+    @Test
+    void 시청앞_안내판은_App_기대_화면과_같다() {
+        List<BoardRow> rows = new BoardService(new BusFeed()).rows("S1");
+        assertEquals(List.of(
+                new BoardRow("702", "곧 도착", "혼잡"),
+                new BoardRow("101", "1분 후", "여유"),
+                new BoardRow("101", "6분 후 (3번째 전)", "보통"),
+                new BoardRow("9401", "7분 후 (5번째 전) · 막차", "여유"),
+                new BoardRow("N26", "도착 정보 없음", "")
+        ), rows);
+    }
+
+    @Test
+    void 정확히_육십초면_곧_도착이_아니라_1분_후다() {
+        // 300m ÷ 18km/h(=5m/s) = 60초
+        assertEquals("1분 후", only(feed(List.of("A"), bus("A", 0, 300, 18, 1, false))));
+    }
+
+    @Test
+    void 오십구초면_곧_도착이다() {
+        // 295m ÷ 5m/s = 59초
+        assertEquals("곧 도착", only(feed(List.of("A"), bus("A", 0, 295, 18, 1, false))));
+    }
+
+    @Test
+    void 초는_올림한다() {
+        // 301m ÷ 5m/s = 60.2초 → 61초 → 1분 후
+        assertEquals("1분 후", only(feed(List.of("A"), bus("A", 0, 301, 18, 1, false))));
+    }
+
+    @Test
+    void 분은_버린다() {
+        // 595m ÷ 5m/s = 119초 → 1분 후 (2분이 아니다)
+        assertEquals("1분 후", only(feed(List.of("A"), bus("A", 0, 595, 18, 1, false))));
+    }
+
+    @Test
+    void 남은_정류장이_있으면_몇번째_전인지_붙인다() {
+        assertEquals("2분 후 (1번째 전)", only(feed(List.of("A"), bus("A", 1, 600, 18, 1, false))));
+    }
+
+    @Test
+    void 곧_도착에는_정류장_수를_붙이지_않는다() {
+        assertEquals("곧 도착", only(feed(List.of("A"), bus("A", 2, 100, 18, 1, false))));
+    }
+
+    @Test
+    void 막차는_끝에_표시한다() {
+        assertEquals("곧 도착 · 막차", only(feed(List.of("A"), bus("A", 0, 100, 18, 1, true))));
+    }
+
+    @Test
+    void 혼잡도_경계는_50퍼센트_미만_여유_80퍼센트_미만_보통() {
+        Map<Integer, String> expected = Map.of(22, "여유", 23, "보통", 35, "보통", 36, "혼잡");
+        // 정원 45: 22명=48.9% 여유, 23명=51.1% 보통, 35명=77.8% 보통, 36명=80.0% 혼잡
+        expected.forEach((pax, crowd) -> {
+            List<BoardRow> rows = new BoardService(feed(List.of("A"), bus("A", 0, 100, 18, pax, false))).rows("T");
+            assertEquals(crowd, rows.get(0).crowd(), pax + "명");
+        });
+    }
+
+    @Test
+    void 노선당_가장_빠른_두_대까지만_보인다() {
+        List<BoardRow> rows = new BoardService(feed(List.of("A"),
+                bus("A", 3, 3000, 18, 1, false),
+                bus("A", 0, 100, 18, 1, false),
+                bus("A", 1, 1000, 18, 1, false))).rows("T");
+        assertEquals(List.of("곧 도착", "3분 후 (1번째 전)"), rows.stream().map(BoardRow::message).toList());
+    }
+
+    @Test
+    void 버스가_없는_노선은_맨_아래에_도착_정보_없음() {
+        List<BoardRow> rows = new BoardService(feed(List.of("Z", "A"), bus("A", 0, 100, 18, 1, false))).rows("T");
+        assertEquals(new BoardRow("Z", "도착 정보 없음", ""), rows.get(1));
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '도착 예정(초) = 남은 거리(m) ÷ 속도(m/s) 를 **올림**한 정수. 속도는 km/h 로 오므로 초 = ⌈거리 × 3600 ÷ (속도 × 1000)⌉. 정수로만 계산합니다(301m, 18km/h → 60.2초 → 61초).',
+      '문구: 60초 미만 「곧 도착」, 60초 이상 「N분 후」(N = 초 ÷ 60 버림). 「N분 후」이고 남은 정류장이 1 이상이면 뒤에 「 (k번째 전)」. 막차면 맨 끝에 「 · 막차」. 「곧 도착」에는 정류장 수를 붙이지 않습니다.',
+      '혼잡도: 재차 ÷ 정원이 50% 미만 「여유」, 80% 미만 「보통」, 그 이상 「혼잡」. 경계는 정수로 비교합니다(정원 45 에 36명 = 80.0% → 혼잡).',
+      '정렬과 개수: 노선마다 가장 빨리 오는 2대까지만 보이고, 보이는 줄 전체를 도착 예정 시간 순으로 정렬합니다. 버스가 한 대도 없는 노선은 맨 아래에 「도착 정보 없음」(혼잡도 빈 문자열), BusFeed.routesAt 순서대로.',
+      '화면 확인: App.java 의 TODO 한 줄을 풀고 실행한 뒤 http://127.0.0.1:8081/ 을 열면 기대 화면(App.java 주석)과 같은 안내판이 보여야 합니다. 프로젝트 폴더(ui/ 가 있는 곳)에서 실행하세요.',
+      '업체 공지: "다음 달부터 저상버스 표시와 2층 버스 혼잡도(정원 70)가 추가됩니다. 화면 쪽 필드는 아직 협의 중입니다."',
+    ],
+    constraints: [
+      'engine 패키지와 App.java, ui/index.html 은 납품받은 코드입니다. 수정 금지(App.java 의 TODO 한 줄 풀기만 허용).',
+      '외부 라이브러리 없이 순수 Java 17 이상. 테스트는 JUnit 5.',
+      '시간·비율 계산에 float·double 을 쓰지 않습니다.',
+      '화면(UiServer·index.html)은 BoardSource 만 압니다. BoardService 의 공개 메서드는 계약(rows) 하나로 충분해야 합니다.',
+    ],
+    learningGoals: [
+      '납품받은 인터페이스(BoardSource)를 구현해, 상대 쪽(화면)을 한 줄도 고치지 않고 연동하는 경험',
+      '경계값(59초/60초, 50%/80%)을 정수 연산으로 정확히 다루기',
+      '「노선당 2대 → 전체 정렬 → 빈 노선 덧붙이기」처럼 순서가 있는 규칙을 작은 함수로 나눠 각자 검증하기',
+      '내 코드가 실제 화면을 움직이는 것을 눈으로 확인하는 연동 테스트 습관',
+    ],
+    hints: [
+      '이지 모드라면 테스트 이름만 위에서부터 읽어도 규칙이 전부 나옵니다. 하나씩 초록으로 만드세요. 맨 위의 「시청앞 안내판은 App 기대 화면과 같다」는 마지막에 저절로 초록이 됩니다.',
+      '올림 나눗셈은 정수로: (a + b - 1) / b. 거리 × 3600 이 int 를 넘을 수 있는지도 생각해 보세요(5,200m × 3600 = 18,720,000 은 괜찮지만, 노선 길이가 수백 km 라면?).',
+      'rows() 안에서 다 하지 말고 「한 대 → 초」「한 대 → 문구」「한 대 → 혼잡도」를 따로 두면, 테스트가 실패했을 때 어느 규칙이 틀렸는지 바로 보입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '속도 0 — 정체 구간',
+        description:
+          '평균 속도가 0 인 버스(신호 대기·사고 정체)가 오면 나눗셈이 0 으로 나눠져 ArithmeticException 이 나고, 화면에는 「안내판을 채우지 못했습니다」가 뜹니다 — 버스 한 대 때문에 정류장 전체가 꺼집니다. 좋은 방어: 속도 0 은 시간 대신 「정체 · 갱신 중」(+ 정류장 수)으로 보여 주고 다른 줄은 정상으로 그립니다.',
+      },
+      {
+        title: '정원 0 인 차량',
+        description:
+          '차량 정보가 아직 등록되지 않은 신차는 정원이 0 으로 올 수 있습니다. 혼잡도 계산이 0 으로 나눠지거나 모든 비교가 「혼잡」으로 빠집니다. 좋은 방어: 정원이 0 이하이면 혼잡도를 비워 둡니다(모르는 것은 모른다고).',
+      },
+      {
+        title: '같은 버스가 두 번',
+        description:
+          'BIS 수신이 겹치면 같은 차량 번호가 두 번 들어와, 노선당 2대 자리를 같은 버스가 둘 다 차지합니다. 안내판에는 같은 시간이 두 줄 뜹니다. 좋은 방어: busId 로 중복을 걸러낸 뒤 고릅니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '표시 규칙 정확성',
+        description: '시청앞 기대 화면과 같은가. 초 올림·분 버림·「곧 도착」 경계·정류장 수·막차·혼잡도 경계가 맞는가.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '계약 준수와 연동',
+        description: '화면 쪽(engine·index.html)을 고치지 않고 BoardSource 구현만으로 실제 안내판이 채워지는가. 공개 표면이 계약 이상으로 넓지 않은가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '규칙 분리',
+        description: '초·문구·혼잡도·정렬/개수 규칙이 나뉘어 각각 검증 가능한가. 다음 달 추가 항목(저상·2층 버스)을 어디에 넣을지 보이는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '하드: 경계값 테스트를 직접 썼는가. 이지: 제공 테스트를 고치지 않고 통과했는가, 그리고 숨은 사례(속도 0 등)를 위한 테스트를 하나라도 더했는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '엔진 코드 오용 여부',
+        description: 'engine 패키지·화면 파일을 수정하지 않았는가. BusFeed 의 고정 데이터를 BoardService 에 복사해 하드코딩하지 않았는가.',
+        weight: 5,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '구청 교통행정과 주무관 (안내판 민원 담당, 개발은 모름)',
+      prompt:
+        '주무관이 "어제 「곧 도착」 뜬 버스가 1분 넘게 안 왔다는 민원이 들어왔는데, 기준이 뭐예요?" 라고 묻습니다. 설명할 것: (1) 「곧 도착」과 「1분 후」를 가르는 60초 기준과, 거리·속도로 시간을 계산할 때 초를 올림하는 이유, (2) 시간 예측이 틀어져도 「몇 번째 전」이 함께 있으면 왜 민원이 줄어드는지, (3) 안내판 화면 업체와 계산 규칙이 "약속된 칸(인터페이스)"으로만 연결돼 있어서, 기준을 바꾸면 화면 업체를 부르지 않고 계산 쪽만 고치면 된다는 것 — 생활 비유 하나로. 표 없이 말로만.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '개통식 사진에 찍힌 「곧 도착」',
+        teaser: '시장이 안내판 앞에 선 순간 702번이 「곧 도착」에서 정말로 들어온다. 다음 달 저상버스 표시는 함수 하나 추가로 끝나고, 화면 업체에는 전화할 일이 없다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '1분과 곧 사이',
+        teaser: '대부분 맞는다. 다만 딱 60초 남은 버스만 가끔 「곧 도착」으로 뜨고, 민원 게시판에 "안내판이 성급하다"는 글이 한 달에 두 번 올라온다.',
+      },
+      {
+        grade: 'dawn',
+        title: '정체 구간의 검은 화면',
+        teaser: '퇴근길 사고 정체로 속도 0 인 버스가 들어온 순간 안내판 전체가 꺼진다. 「안내판 고장」 사진이 지역 커뮤니티에 올라온 밤, 원인을 찾는 사람은 당신이다.',
       },
       {
         grade: 'hidden',

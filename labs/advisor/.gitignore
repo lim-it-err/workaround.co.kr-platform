@@ -1,0 +1,2 @@
+# 빌드 산출물만 제외 — .advisor/·.grade/ 는 커밋 대상
+**/target/

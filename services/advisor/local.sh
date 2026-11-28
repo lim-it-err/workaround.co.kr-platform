@@ -1,14 +1,25 @@
 #!/bin/zsh
 # Advisor 로컬 모드 — 내 맥에서 백엔드 + 프런트를 한 번에 띄운다 (TKT-237, D-039).
 # 용법: ./local.sh [mock|claude|ollama]   (기본 mock)
+#       ./local.sh stop   — 다른 터미널·백그라운드로 떠 있는 백엔드·프런트를 내린다 (TKT-241)
 #   claude 는 환경 변수 ANTHROPIC_API_KEY 가 필요하다. 키를 묻거나 저장하지 않는다.
 #   Ctrl-C 로 백엔드·프런트가 함께 내려간다. 상세 로그: $TMPDIR/advisor-local/*.log
 setopt NO_NOTIFY NO_MONITOR 2>/dev/null
 root="$(cd "$(dirname "$0")" && pwd)"
 profile="${1:-mock}"
+pids_dir="$root/.local"   # 기동 때 남기는 pid 파일 (gitignore)
+
+if [[ "$profile" == "stop" ]]; then
+  # pid 파일의 pid(자식 포함) + 포트 8080·5173 을 저장소 안 프로세스만 정리한다. 규칙 본체는 tools/local-stop.sh.
+  pids=""
+  for f in "$pids_dir"/*.pid(N); do pids="$pids $(<"$f")"; done
+  "$root/../../tools/local-stop.sh" --no-docker --ports 8080,5173 --pids "$pids"
+  rm -f "$pids_dir"/*.pid(N)
+  exit 0
+fi
 case "$profile" in
   mock|claude|ollama) ;;
-  *) echo "용법: ./local.sh [mock|claude|ollama]"; exit 1 ;;
+  *) echo "용법: ./local.sh [mock|claude|ollama|stop]"; exit 1 ;;
 esac
 
 if ! /usr/libexec/java_home -v 21 >/dev/null 2>&1; then
@@ -44,12 +55,14 @@ cleanup() {
   stop_tree "$back_pid"
   [[ -n "$back_pid$front_pid" ]] && echo "\n■ 로컬 모드를 종료했습니다."
   back_pid=""; front_pid=""
+  rm -f "$pids_dir"/backend.pid "$pids_dir"/frontend.pid
   exit 0
 }
 trap cleanup INT TERM EXIT
 
 (cd "$root/service" && exec ./run.sh start "$profile") >"$logs/backend.log" 2>&1 &
 back_pid=$!
+mkdir -p "$pids_dir"; echo "$back_pid" >"$pids_dir/backend.pid"
 
 for i in {1..90}; do
   curl -s -m 1 "http://localhost:8080/health" 2>/dev/null | grep -q '"status"' && break
@@ -64,6 +77,7 @@ fi
 
 (cd "$root/frontend" && exec npm run dev -- --host 127.0.0.1 --port 5173 --strictPort) >"$logs/frontend.log" 2>&1 &
 front_pid=$!
+echo "$front_pid" >"$pids_dir/frontend.pid"
 for i in {1..30}; do
   curl -s -m 1 -o /dev/null "http://127.0.0.1:5173/" && break
   if ! kill -0 "$front_pid" 2>/dev/null; then
@@ -72,5 +86,5 @@ for i in {1..30}; do
   sleep 1
 done
 
-echo "열 주소: http://127.0.0.1:5173  (${profile} · 종료 Ctrl-C)"
+echo "열 주소: http://127.0.0.1:5173  (${profile} · 종료 Ctrl-C 또는 ./local.sh stop)"
 wait

@@ -71,6 +71,7 @@ cd services/advisor
 ./local.sh              # mock — 키 불필요
 export ANTHROPIC_API_KEY=...   # 이 터미널에서만. 파일에 저장하지 않는다
 ./local.sh claude       # 실제 Claude 리뷰. Ctrl-C 로 백엔드·프런트 함께 종료
+./local.sh stop         # 터미널을 닫았거나 백그라운드로 띄웠을 때 — 다른 셸에서 백엔드·프런트 정리
 ```
 
 판별은 화면 진입 시 `VITE_ADVISOR_API` 오리진의 `/health`(`profile`: mock|claude|ollama)를 1.5초 안에 조회한 결과다(이후 탭이 보일 때 60초마다). 나중에 Cloudflare Worker 가 생기면 배포 빌드의 `VITE_ADVISOR_API` 만 그 주소로 바꾸면 배포 버전도 LLM 모드가 된다(별도 티켓).

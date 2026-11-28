@@ -285,6 +285,10 @@ npm --prefix frontend run preview -- --base=/workaround.co.kr-platform/ --port 4
 
 `tools/start-local-preview.ps1` 는 `frontend:7000`, `gateway:8080`, `elevator-service:8003` 를 함께 올린다. 엘리베이터 서비스는 로컬 Python 실행을 먼저 시도하고, 실패하면 Docker container fallback 으로 `8003` 을 복구한다.
 
+맥에서 로컬 서버를 백그라운드로 띄우려면 `tools/local-start.sh [main|advisor|all] [--profile mock|claude|ollama]` (기본 `main`·`mock`). 실제 주소를 출력하고, 이미 떠 있으면 「이미 실행 중」으로 끝낸다. 로그·pid 는 `.local/` (gitignore). `node_modules` 가 없으면 설치 안내만 하고 실패한다. `claude` 는 환경 변수 `ANTHROPIC_API_KEY` 가 필요하다.
+
+맥에서 떠 있는 로컬 서버(7000·7001·4173~4175·5173·8080·8003 과 `infra/home` compose)를 한 번에 내리려면 `tools/local-stop.sh` (`--dry-run` 은 대상만 출력). 이 저장소 경로에서 띄운 프로세스만 내리고 다른 프로젝트의 것은 「건너뜀」으로 남긴다. Advisor 만은 `services/advisor/local.sh stop`. Windows 는 `tools/stop-local-preview.ps1`.
+
 ## 로컬 Node / npm 기준
 
 - 프런트엔드의 정식 로컬 기준선은 Windows x64 `Node.js 22 LTS` 와 함께 설치되는 `npm`, `npx` 가 PATH 에 잡힌 상태다.

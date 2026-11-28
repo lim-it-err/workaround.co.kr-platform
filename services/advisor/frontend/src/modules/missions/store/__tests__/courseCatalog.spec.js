@@ -13,9 +13,10 @@ const baseMissions = [...sample.missions, ...extraMissions]
 const courses = createCourseCatalog(baseMissions)
 
 describe('Advisor 코스 카탈로그', () => {
-  it('기존 40개 미션을 기본 코스에 그대로 묶고 여행 코스 둘을 함께 노출한다', () => {
+  it('기존 미션 전부를 기본 코스에 그대로 묶고 여행 코스 둘을 함께 노출한다', () => {
+    expect(baseMissions.length).toBeGreaterThan(0)
     expect(courses.map((course) => course.id)).toEqual(['foundations', 'vienna-1900', 'budapest-baths'])
-    expect(courses[0].missions).toHaveLength(40)
+    expect(courses[0].missions).toHaveLength(baseMissions.length)
     expect(courses[0].missions.map((mission) => mission.id)).toEqual(baseMissions.map((mission) => mission.id))
   })
 

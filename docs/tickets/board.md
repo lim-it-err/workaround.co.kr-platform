@@ -44,6 +44,7 @@
 ## Ready
 
 
+
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 
 - `TKT-191` `P1` `llm` `ready` `[INFRA]` LLM 게이트 Worker 골격 — DRY_RUN·실키 없음 (D-032 확정 뒤 디스패치)
@@ -70,6 +71,20 @@
 
 
 ## Finished
+
+- `TKT-246` `[FE]` 온라인 채점 결과 카드 — r1 통과 (2026-11-28, v0.9.5, Sonnet 5.5)
+
+- `TKT-245` `[INFRA]` 실습 push 채점 워크플로 — r2 통과 (2026-11-28, v0.9.5, Sonnet 5.5)
+
+- `TKT-244` `[INFRA]` 실습 폴더 tools/advisor-lab.sh + devcontainer — r1 통과 (2026-11-28, v0.9.5, Sonnet 5.5)
+
+- `TKT-243` `[FE]` Advisor 미션 탭 맨 위 받기·Codespaces 줄 — r1 통과 (2026-11-28, v0.9.5, Sonnet 5.5)
+
+- `TKT-242` `[INFRA]` 맥 로컬 시작 명령 — r1 통과 (2026-11-28, v0.9.4, Sonnet 5.5)
+
+- `TKT-241` `[INFRA]` 맥 로컬 종료 명령 — r1 통과 (2026-11-28, v0.9.4, Sonnet 5.5)
+
+- `TKT-240` `[FE]` Advisor 코드 받기 이지/하드 — r1 통과 (2026-11-28, v0.9.4, Sonnet 5.5)
 
 - `TKT-239` `[FE]` Advisor 공개 페이지 localhost 조회 제거 — r1 통과 (2026-11-28, v0.9.3, Sonnet 5.5)
 

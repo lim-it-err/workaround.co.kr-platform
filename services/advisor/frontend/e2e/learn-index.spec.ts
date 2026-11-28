@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { learnKindCounts } from './support/missionCounts'
 
 async function readTotal(page: Page): Promise<number> {
   const text = await page.getByRole('button', { name: /^전체 \d+개 보기$/ }).textContent()
@@ -51,11 +52,11 @@ test('전체 보기를 누르면 통합 인덱스를 30개씩 연다', async ({ 
   await page.getByRole('button', { name: /^전체 \d+개 보기$/ }).click()
   await expect(page.getByRole('button', { name: '전체 목록 접기' })).toHaveAttribute('aria-expanded', 'true')
   await expect(page.locator('[data-content-index]')).toBeVisible()
-  await expect(page.getByText('코스 3')).toBeVisible()
-  await expect(page.getByText('미션 40')).toBeVisible()
-  await expect(page.getByText('사건 파일 10')).toBeVisible()
-  await expect(page.getByText('프로젝트 1')).toBeVisible()
-  await expect(page.getByText('연습 153')).toBeVisible()
+  await expect(page.getByText(`코스 ${learnKindCounts.course}`)).toBeVisible()
+  await expect(page.getByText(`미션 ${learnKindCounts.mission}`)).toBeVisible()
+  await expect(page.getByText(`사건 파일 ${learnKindCounts.case}`)).toBeVisible()
+  await expect(page.getByText(`프로젝트 ${learnKindCounts.project}`)).toBeVisible()
+  await expect(page.getByText(`연습 ${learnKindCounts.practice}`)).toBeVisible()
   await expect(page.getByText(`${total}개`, { exact: true })).toBeVisible()
   await expect(page.locator('.index-row')).toHaveCount(30)
   expect(await page.locator('input:not([type="hidden"]), select, textarea').evaluateAll(elements => (

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import fs from 'node:fs'
 
 const MISSION = '/missions/s1-wine-01'
@@ -22,6 +22,8 @@ function parseZip(buf: Buffer) {
   return out
 }
 
+const bar = (page: Page) => page.getByTestId('transfer-bar').first()
+
 test.beforeEach(async ({ page }) => {
   await page.route('http://localhost:8080/**', (route) => route.abort())
   await page.goto(MISSION)
@@ -32,15 +34,41 @@ test.beforeEach(async ({ page }) => {
 test('코드 전체 받기: zip 에 legacyFiles 경로가 모두 들어 있다', async ({ page }) => {
   const paths = await page.locator('.viewer').last().locator('.tab').allTextContents()
   expect(paths.length).toBeGreaterThan(0)
+  // starterTests 가 생기면 단일 버튼 대신 하드 받기(테스트 없는 쪽)로 같은 경로 검증.
+  const hasSingle = (await bar(page).getByRole('button', { name: '⬇ 코드 전체 받기 (.zip)' }).count()) > 0
   const [dl] = await Promise.all([
     page.waitForEvent('download'),
-    page.getByRole('button', { name: '⬇ 코드 전체 받기 (.zip)' }).click(),
+    bar(page).getByRole('button', { name: hasSingle ? '⬇ 코드 전체 받기 (.zip)' : '⬇ 하드 — 테스트 직접' }).click(),
   ])
-  expect(dl.suggestedFilename()).toBe('s1-wine-01.zip')
+  expect(dl.suggestedFilename()).toBe(hasSingle ? 's1-wine-01.zip' : 's1-wine-01-hard.zip')
   const files = parseZip(fs.readFileSync(await dl.path()))
   expect(Object.keys(files)[0]).toBe('pom.xml')
   expect(files['README.md']).toContain('제공 코드는 수정하지 않는다.')
   for (const p of paths) expect(Object.keys(files)).toContain(p.trim())
+})
+
+test('받기 버튼: starterTests 가 있으면 이지·하드 둘, 없으면 하나', async ({ page }) => {
+  const easyBtn = bar(page).getByRole('button', { name: '⬇ 이지 — 테스트 포함' })
+  if ((await easyBtn.count()) === 0) {
+    // starterTests 없는 미션 — 단일 버튼만 있어야 한다(starterTests 반영 후엔 아래 분기가 검증).
+    await expect(bar(page).getByRole('button', { name: '⬇ 코드 전체 받기 (.zip)' })).toBeVisible()
+    await expect(bar(page).getByRole('button', { name: '⬇ 하드 — 테스트 직접' })).toHaveCount(0)
+    return
+  }
+  await expect(bar(page).getByRole('button', { name: '⬇ 코드 전체 받기 (.zip)' })).toHaveCount(0)
+  const [easy] = await Promise.all([page.waitForEvent('download'), easyBtn.click()])
+  expect(easy.suggestedFilename()).toBe('s1-wine-01-easy.zip')
+  const easyFiles = parseZip(fs.readFileSync(await easy.path()))
+  expect(easyFiles['README.md']).toContain('테스트가 미리 들어 있습니다')
+  const [hard] = await Promise.all([
+    page.waitForEvent('download'),
+    bar(page).getByRole('button', { name: '⬇ 하드 — 테스트 직접' }).click(),
+  ])
+  expect(hard.suggestedFilename()).toBe('s1-wine-01-hard.zip')
+  const hardFiles = parseZip(fs.readFileSync(await hard.path()))
+  expect(hardFiles['README.md']).toContain('테스트는 직접 씁니다')
+  const onlyEasy = Object.keys(easyFiles).filter((k) => !(k in hardFiles))
+  expect(onlyEasy.length).toBeGreaterThan(0)
 })
 
 test('파일 하나 받기: 파일명은 경로의 마지막 조각', async ({ page }) => {
@@ -93,14 +121,34 @@ test('폴더 올리기: target/ 아래는 무시', async ({ page }) => {
   fs.rmSync(dir, { recursive: true, force: true })
 })
 
+test('받기 줄: 미션 탭 첫 화면 안, Codespaces 링크·안내 펼침, 뼈대 카드에도 같은 줄', async ({ page }) => {
+  const first = bar(page)
+  const vp = page.viewportSize()!
+  const box = (await first.boundingBox())!
+  expect(box.y + box.height).toBeLessThanOrEqual(vp.height)
+  const link = first.getByRole('link', { name: '☁ Codespaces 에서 열기' })
+  await expect(link).toHaveAttribute('href', 'https://codespaces.new/lim-it-err/workaround.co.kr-platform?quickstart=1&devcontainer_path=.devcontainer%2Fadvisor-lab%2Fdevcontainer.json')
+  await expect(link).toHaveAttribute('target', '_blank')
+  await expect(link).toHaveAttribute('rel', /noopener/)
+  expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+  // 새 탭 이동은 막고 펼침만 확인
+  await page.context().route('https://codespaces.new/**', (r) => r.fulfill({ body: 'x' }))
+  await link.click()
+  const guide = first.getByRole('region', { name: 'Codespaces 안내' })
+  await expect(guide).toContainText('git push')
+  await expect(guide.locator('code').first()).toContainText(/tools\/advisor-lab\.sh s1-wine-01 (easy|hard)/)
+  await guide.getByRole('button', { name: '복사' }).click()
+  await expect(guide.getByRole('status')).toBeVisible()
+  await expect(page.getByTestId('transfer-bar')).toHaveCount(2)
+})
+
 for (const [w, h, tag] of [[375, 812, '375'], [1440, 900, '1440']] as const) {
   test(`캡처 ${tag}`, async ({ page }) => {
     await page.setViewportSize({ width: w, height: h })
-    await page.locator('.code-head').last().scrollIntoViewIfNeeded()
-    await page.screenshot({ path: `../../../docs/tickets/captures/TKT-236/mission-${tag}.png` })
+    await page.screenshot({ path: `../../../docs/tickets/captures/TKT-243/top-${tag}.png` })
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)
     expect(overflow).toBe(false)
-    await page.getByRole('button', { name: '제출', exact: true }).click()
-    await page.screenshot({ path: `../../../docs/tickets/captures/TKT-236/submit-${tag}.png` })
+    await bar(page).getByRole('link', { name: '☁ Codespaces 에서 열기' }).click()
+    await page.screenshot({ path: `../../../docs/tickets/captures/TKT-243/guide-${tag}.png` })
   })
 }

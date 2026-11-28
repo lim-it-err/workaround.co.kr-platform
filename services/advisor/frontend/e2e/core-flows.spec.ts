@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { missionCount } from './support/missionCounts'
 
 let total = 0
 
@@ -59,13 +60,13 @@ test('필터: 난이도와 검색을 조합하고 초기화한다', async ({ pag
   const missionCards = page.locator('.mission-card')
   await page.getByLabel('형식').selectOption('mission')
   await page.getByRole('button', { name: /더 보기/ }).click()
-  await expect(missionCards).toHaveCount(40)
+  await expect(missionCards).toHaveCount(missionCount)
 
   await page.getByText('고급 필터').click()
   await page.getByRole('button', { name: '쉬움', exact: true }).click()
   const easyCount = await missionCards.count()
   expect(easyCount).toBeGreaterThan(0)
-  expect(easyCount).toBeLessThan(39)
+  expect(easyCount).toBeLessThan(missionCount)
 
   await page.getByPlaceholder('제목·도메인으로 찾기').fill('와인')
   await expect(missionCards).toHaveCount(1)

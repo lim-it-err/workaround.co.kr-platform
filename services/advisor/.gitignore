@@ -31,3 +31,6 @@ target/
 .env
 .env.*
 .claude/settings.local.json
+
+# local.sh 기동 pid 파일 (TKT-241)
+.local/

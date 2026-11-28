@@ -80,4 +80,52 @@ describe('zip', () => {
       expect(e[1].content).toBe('mine')
     }
   })
+  describe('이지/하드 (starterTests)', () => {
+    const m = {
+      id: 'x-1', title: 'T', requirements: ['가'],
+      legacyFiles: [
+        { path: 'src/main/java/A.java', content: 'a' },
+        { path: 'src/test/java/ATest.java', content: 'skeleton' },
+      ],
+      starterTests: [
+        { path: 'src/test/java/ATest.java', content: 'real test' },
+        { path: 'src/test/java/BTest.java', content: 'b test' },
+      ],
+    }
+    it('easy: starterTests 포함, 같은 경로는 대체(중복 없음)', () => {
+      const e = buildMissionEntries(m, { level: 'easy' })
+      const paths = e.map((x) => x.path)
+      expect(paths).toEqual(['pom.xml', 'README.md', 'src/main/java/A.java', 'src/test/java/ATest.java', 'src/test/java/BTest.java'])
+      expect(new Set(paths).size).toBe(paths.length)
+      expect(e.find((x) => x.path === 'src/test/java/ATest.java').content).toBe('real test')
+    })
+    it('hard(기본): starterTests 제외, 뼈대 유지', () => {
+      for (const e of [buildMissionEntries(m), buildMissionEntries(m, { level: 'hard' })]) {
+        const paths = e.map((x) => x.path)
+        expect(paths).not.toContain('src/test/java/BTest.java')
+        expect(e.find((x) => x.path === 'src/test/java/ATest.java').content).toBe('skeleton')
+      }
+    })
+    it('README 문구', () => {
+      const easy = buildMissionEntries(m, { level: 'easy' })[1].content
+      const hard = buildMissionEntries(m, { level: 'hard' })[1].content
+      expect(easy).toContain('테스트가 미리 들어 있습니다')
+      expect(easy).toContain('테스트 파일은 고치지 않습니다.')
+      expect(easy).not.toContain('테스트는 직접 씁니다')
+      expect(hard).toContain('테스트는 직접 씁니다 — 채점 기준의 테스트 항목을 보세요.')
+      expect(hard).not.toContain('미리 들어 있습니다')
+    })
+    it('리팩토링 미션 이지 README 는 현재 동작 고정 문구', () => {
+      const r = buildMissionEntries({ ...m, missionType: '리팩토링' }, { level: 'easy' })[1].content
+      expect(r).toContain('지금 동작을 고정한 그물이라 받자마자 대부분 초록입니다.')
+      expect(r).toContain('`이지 모드 계약` 주석이 달린 메서드는 이름과 시그니처를 그대로 두고 구현합니다.')
+      expect(r).toContain('테스트 파일은 고치지 않습니다.')
+      expect(r).not.toContain('전부 초록이 되게 구현하세요')
+    })
+    it('starterTests 없는 미션 README 는 기존과 같다', () => {
+      const r = buildMissionEntries({ id: 'y', title: 'T', requirements: [] })[1].content
+      expect(r).not.toContain('테스트는 직접 씁니다')
+      expect(r).not.toContain('미리 들어 있습니다')
+    })
+  })
 })

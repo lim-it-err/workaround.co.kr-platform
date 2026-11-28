@@ -37,3 +37,6 @@
 - 2026-08-16 claude 이전 세션 잔여 배경 프로세스 4종 종료 — vite/esbuild/outbox 감시 루프/브랜치 자동커밋 대기 스크립트. 저장소 이동 준비였으나 PO 지시로 이동 취소. 파일 무변경, 워킹트리는 agent/codex/probe-game 체크아웃 상태로 남음 (환경 조치)
 - 2026-08-16 claude 검증 점검 — service ./run.sh test 통과, frontend npx vite build **실패**(vite 5.4.21 이 node>=20.12 의 util.styleText 요구, 이 머신은 node 20.10.0) (환경 조치)
 - 2026-11-28 claude 미션 s7-parcel-01(택배 운임·부피중량, 7단계, 여러 파일+테스트 뼈대) 추가 — 정답 코드로 기대 출력 일치·mvn test 확인, 개수 고정 테스트 39→40·206→207 은 PM 서브에이전트 수정 (codex/v0.9.3)
+- 2026-11-28 claude 이지 테스트(starterTests) 3건 — s7-parcel-01(13)·s7-tariff-01(14)·s3-interest-01(7), 뼈대 컴파일·정답 통과 mvn 확인. s4-jeonse-01·s5-denver-01 Java 문자열 \n 이 템플릿에서 줄바꿈으로 깨져 내려받은 코드가 컴파일 안 되던 것 수정 (codex/v0.9.4)
+- 2026-11-28 claude UI 연동 미션 s2-busboard-01(정류장 안내판, JDK 내장 HTTP 서버 + ui/index.html, 이지 테스트 11) 추가 — 뼈대 컴파일·정답 11/11·실제 안내판 화면 확인(캡처 docs/tickets/captures/content/). 개수 고정 테스트를 데이터 계산식으로 바꿈 — PM 서브에이전트 수정 (codex/v0.9.4)
+- 2026-11-28 claude 리팩토링 미션 이지 테스트 3건 — s1-wine-01(특성 10), s5-snowpiercer-01(점호 8 + 작업 통행 5, GateControl 계약 스텁), s4-saber-01(line 6 + 새 지표 5, Sabermetrics 계약 스텁). 원본 초록·새 요구 빨강·정답 초록을 mvn 으로 확인 (codex/v0.9.5)
