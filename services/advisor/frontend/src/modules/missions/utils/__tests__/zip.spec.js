@@ -115,6 +115,13 @@ describe('zip', () => {
       expect(hard).toContain('테스트는 직접 씁니다 — 채점 기준의 테스트 항목을 보세요.')
       expect(hard).not.toContain('미리 들어 있습니다')
     })
+    it('리팩토링 미션 이지 README 는 현재 동작 고정 문구', () => {
+      const r = buildMissionEntries({ ...m, missionType: '리팩토링' }, { level: 'easy' })[1].content
+      expect(r).toContain('지금 동작을 고정한 그물이라 받자마자 대부분 초록입니다.')
+      expect(r).toContain('`이지 모드 계약` 주석이 달린 메서드는 이름과 시그니처를 그대로 두고 구현합니다.')
+      expect(r).toContain('테스트 파일은 고치지 않습니다.')
+      expect(r).not.toContain('전부 초록이 되게 구현하세요')
+    })
     it('starterTests 없는 미션 README 는 기존과 같다', () => {
       const r = buildMissionEntries({ id: 'y', title: 'T', requirements: [] })[1].content
       expect(r).not.toContain('테스트는 직접 씁니다')

@@ -141,6 +141,8 @@ const BUILD_FILE_NAMES = ['pom.xml', 'build.gradle', 'build.gradle.kts']
 
 const README_EASY =
   '테스트가 미리 들어 있습니다 — `mvn -q test` 를 돌리면 처음엔 실패합니다. 전부 초록이 되게 구현하세요. 테스트 파일은 고치지 않습니다.'
+const README_EASY_REFACTOR =
+  '테스트가 미리 들어 있습니다 — 지금 동작을 고정한 그물이라 받자마자 대부분 초록입니다. 새 요구를 다루는 테스트만 빨강입니다. 구조를 바꾸는 내내 초록을 유지하고, 마지막에 전부 초록이 되게 하세요. `이지 모드 계약` 주석이 달린 메서드는 이름과 시그니처를 그대로 두고 구현합니다. 테스트 파일은 고치지 않습니다.'
 const README_HARD = '테스트는 직접 씁니다 — 채점 기준의 테스트 항목을 보세요.'
 
 // 미션 한 개의 받을 파일 묶음: pom.xml(미션에 빌드 파일이 없을 때만) + README.md + legacyFiles + providedFiles.
@@ -150,7 +152,8 @@ export function buildMissionEntries(mission, { level = 'hard' } = {}) {
   const starter = easy ? (mission.starterTests ?? []) : []
   const hasStarterContent = (mission.starterTests ?? []).length > 0
   const reqs = (mission.requirements ?? []).map((r, i) => `${i + 1}. ${r}`).join('\n')
-  const levelNote = easy ? `${README_EASY}\n\n` : hasStarterContent ? `${README_HARD}\n\n` : ''
+  const easyText = mission.missionType === '리팩토링' ? README_EASY_REFACTOR : README_EASY
+  const levelNote = easy ? `${easyText}\n\n` : hasStarterContent ? `${README_HARD}\n\n` : ''
   const readme =
     `# ${mission.title}\n\n## 요구사항\n\n${reqs}\n\n제공 코드는 수정하지 않는다.\n\n${levelNote}` +
     `1. 압축을 푼다.\n` +
