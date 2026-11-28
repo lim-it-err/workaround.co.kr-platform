@@ -34,12 +34,12 @@ function defaultFilters(patch = {}) {
 }
 
 describe('배우기 통합 인덱스', () => {
-  it('다섯 콘텐츠 형식을 206개 단일 목록으로 정규화한다', () => {
+  it('다섯 콘텐츠 형식을 207개 단일 목록으로 정규화한다', () => {
     const catalog = makeCatalog()
-    expect(catalog).toHaveLength(206)
+    expect(catalog).toHaveLength(207)
     expect(Object.fromEntries(summarizeLearnCatalog(catalog).map((entry) => [entry.kind, entry.count]))).toEqual({
       course: 3,
-      mission: 39,
+      mission: 40,
       case: 10,
       project: 1,
       practice: 153,
