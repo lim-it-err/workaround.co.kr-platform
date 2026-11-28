@@ -69,7 +69,8 @@ jobs:
         env:
           SHA: ${{ github.sha }}
         run: |
-          set -uo pipefail
+          set +e -uo pipefail
+          # GitHub 기본 shell 은 bash -e — mvn 실패(테스트 빨강)가 정상 경로라 -e 를 끈다
           {
             echo "## Advisor 실습 채점"
             echo
