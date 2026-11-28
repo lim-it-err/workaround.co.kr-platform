@@ -316,7 +316,7 @@ input, select { box-sizing: border-box; min-height: 42px; width: 100%; padding: 
 .filter-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
 .advanced-filters { margin-top: 14px; }
 .advanced-filters summary { min-height: 42px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 750; }
-.advanced-filters summary span { display: grid; place-items: center; min-width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: white; font-size: 11px; }
+.advanced-filters summary span { display: grid; place-items: center; min-width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 11px; }
 .advanced-group { display: grid; grid-template-columns: 90px 1fr; gap: 12px; align-items: start; margin-top: 12px; }
 .advanced-group > strong { padding-top: 11px; color: var(--fg-dim); font-size: 12px; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 8px; }

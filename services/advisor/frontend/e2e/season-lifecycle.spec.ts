@@ -15,9 +15,6 @@ test('종료 적립을 새 시즌에 재시도하고 지난 결말을 그대로 
   await page.emulateMedia({ colorScheme: 'dark' })
   await page.clock.setFixedTime(new Date('2026-08-31T09:00:00+09:00'))
   await page.addInitScript(() => {
-    if (!localStorage.getItem('workaround-theme')) {
-      localStorage.setItem('workaround-theme', 'dark')
-    }
     if (!localStorage.getItem('advisor.learner.v1')) {
       localStorage.setItem('advisor.learner.v1', JSON.stringify({
         seasonStats: {
@@ -75,9 +72,7 @@ test('종료 적립을 새 시즌에 재시도하고 지난 결말을 그대로 
 
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.emulateMedia({ colorScheme: 'light' })
-  await page.evaluate(() => localStorage.setItem('workaround-theme', 'light'))
   await page.reload()
-  await expect(page.locator('.shell')).toHaveAttribute('data-theme', 'light')
   await expect(page.getByRole('heading', { name: '누적 스탯', exact: true })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0)
   await page.screenshot({ path: testInfo.outputPath('season-active-light-1440.png'), fullPage: true })

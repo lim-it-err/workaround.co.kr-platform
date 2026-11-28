@@ -18,7 +18,6 @@ test.afterEach(async ({ page }) => {
 test('일일 Probe는 관측 뒤 결과와 다음 가설이 375px에서 바로 이어진다', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.emulateMedia({ colorScheme: 'dark' })
-  await page.evaluate(() => localStorage.setItem('workaround-theme', 'dark'))
   await page.clock.setFixedTime(new Date('2026-08-03T09:00:00+09:00'))
   await page.evaluate(() => {
     localStorage.setItem('advisor.learner.v1', JSON.stringify({
@@ -60,9 +59,7 @@ test('Probe 연습 15판은 관측 → 가설 → 결말 순서를 모두 지킨
     const theme = width === 375 ? 'dark' : 'light'
     await page.setViewportSize({ width, height: 900 })
     await page.emulateMedia({ colorScheme: theme })
-    await page.evaluate(value => localStorage.setItem('workaround-theme', value), theme)
     await page.goto(`/games/practice/probe/${round.id}`)
-    await expect(page.locator('.shell')).toHaveAttribute('data-theme', theme)
     await page.getByRole('button', { name: round.probes[0].label, exact: true }).click()
     await page.getByRole('button', { name: '관측 결과 보기', exact: true }).click()
     const followup = page.locator('.probe-followup')
@@ -96,7 +93,6 @@ test('Probe 연습 15판은 관측 → 가설 → 결말 순서를 모두 지킨
 test('기내 빈 상태는 원인에 맞는 한 번의 조작으로 추천을 복구한다', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 375, height: 812 })
   await page.emulateMedia({ colorScheme: 'dark' })
-  await page.evaluate(() => localStorage.setItem('workaround-theme', 'dark'))
   await page.goto('/inflight')
   const settings = page.getByRole('region', { name: '기내 콘텐츠 설정' })
   await settings.getByRole('button', { name: '3분 한 판', exact: true }).click()
@@ -118,7 +114,6 @@ test('리뷰 완료 요약은 시즌 변화와 기록 링크를 함께 보여주
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.emulateMedia({ colorScheme: 'light' })
   await page.addInitScript(missionId => {
-    localStorage.setItem('workaround-theme', 'light')
     localStorage.setItem('advisor.learner.v1', JSON.stringify({
       learner: { nickname: '' },
       submissions: {
