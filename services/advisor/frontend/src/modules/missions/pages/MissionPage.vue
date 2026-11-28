@@ -16,6 +16,7 @@ import ChatPanel from '../components/ChatPanel.vue'
 import PlannerMeetingPanel from '../components/PlannerMeetingPanel.vue'
 import PlannerReviewPanel from '../components/PlannerReviewPanel.vue'
 import NicknamePrompt from '../components/NicknamePrompt.vue'
+import ModeBadge from '../components/ModeBadge.vue'
 import { platformHomePath } from '../../../app/platformNavigation.js'
 
 const route = useRoute()
@@ -317,6 +318,7 @@ function submitExplanation() {
   <div v-if="mission">
     <router-link :to="returnSurface" class="back">← {{ returnLabel }}</router-link>
 
+    <ModeBadge />
     <div class="head">
       <div class="head-meta">
         <span class="chip">S{{ mission.stage }} · {{ mission.stageTitle }}</span>

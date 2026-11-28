@@ -32,7 +32,16 @@ class ControllerSliceTest {
         mockMvc.perform(get("/health"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("ok"))
-                .andExpect(jsonPath("$.service").value("advisor"));
+                .andExpect(jsonPath("$.service").value("advisor"))
+                .andExpect(jsonPath("$.profile").value("mock"));
+    }
+
+    @Test
+    void healthAllowsFrontendOriginForModeDetection() throws Exception {
+        mockMvc.perform(get("/health").header("Origin", "http://localhost:5173"))
+                .andExpect(status().isOk())
+                .andExpect(org.springframework.test.web.servlet.result.MockMvcResultMatchers.header()
+                        .string("Access-Control-Allow-Origin", "http://localhost:5173"));
     }
 
     @Test

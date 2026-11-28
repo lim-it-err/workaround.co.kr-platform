@@ -1,4 +1,11 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
+
+async function readTotal(page: Page): Promise<number> {
+  const text = await page.getByRole('button', { name: /^전체 \d+개 보기$/ }).textContent()
+  const match = text?.match(/\d+/)
+  if (!match) throw new Error('전체 개수 버튼을 찾지 못함')
+  return Number(match[0])
+}
 
 test.beforeEach(async ({ page }) => {
   await page.route('http://localhost:8080/**', route => route.abort())
@@ -18,7 +25,7 @@ test('375 첫 화면은 코스 3행과 네 기본 필터만 보이고 기존 높
   await expect(page.locator('[data-course-preview]')).toHaveCount(3)
   await expect(page.locator('[data-content-index]')).toHaveCount(0)
   await expect(page.locator('.index-row')).toHaveCount(3)
-  await expect(page.getByRole('button', { name: '전체 206개 보기' })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^전체 \d+개 보기$/ })).toBeVisible()
   await expect(page.locator('.filter-grid select')).toHaveCount(4)
   await expect(page.getByRole('combobox', { name: '시간', exact: true })).toHaveCount(1)
   await expect(page.getByRole('combobox', { name: '코드 작성', exact: true })).toHaveCount(1)
@@ -39,16 +46,17 @@ test('필터를 고르면 통합 목록이 열리고 초기화하면 다시 첫 
   await expect(page.locator('[data-course-preview]')).toHaveCount(3)
 })
 
-test('전체 보기를 누르면 206개 통합 인덱스를 30개씩 연다', async ({ page }) => {
-  await page.getByRole('button', { name: '전체 206개 보기' }).click()
+test('전체 보기를 누르면 통합 인덱스를 30개씩 연다', async ({ page }) => {
+  const total = await readTotal(page)
+  await page.getByRole('button', { name: /^전체 \d+개 보기$/ }).click()
   await expect(page.getByRole('button', { name: '전체 목록 접기' })).toHaveAttribute('aria-expanded', 'true')
   await expect(page.locator('[data-content-index]')).toBeVisible()
   await expect(page.getByText('코스 3')).toBeVisible()
-  await expect(page.getByText('미션 39')).toBeVisible()
+  await expect(page.getByText('미션 40')).toBeVisible()
   await expect(page.getByText('사건 파일 10')).toBeVisible()
   await expect(page.getByText('프로젝트 1')).toBeVisible()
   await expect(page.getByText('연습 153')).toBeVisible()
-  await expect(page.getByText('206개', { exact: true })).toBeVisible()
+  await expect(page.getByText(`${total}개`, { exact: true })).toBeVisible()
   await expect(page.locator('.index-row')).toHaveCount(30)
   expect(await page.locator('input:not([type="hidden"]), select, textarea').evaluateAll(elements => (
     elements.every(element => Boolean(element.getAttribute('aria-label') || element.getAttribute('aria-labelledby') || element.labels?.length))

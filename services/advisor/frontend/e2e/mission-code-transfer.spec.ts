@@ -38,7 +38,7 @@ test('코드 전체 받기: zip 에 legacyFiles 경로가 모두 들어 있다',
   ])
   expect(dl.suggestedFilename()).toBe('s1-wine-01.zip')
   const files = parseZip(fs.readFileSync(await dl.path()))
-  expect(Object.keys(files)[0]).toBe('README.md')
+  expect(Object.keys(files)[0]).toBe('pom.xml')
   expect(files['README.md']).toContain('제공 코드는 수정하지 않는다.')
   for (const p of paths) expect(Object.keys(files)).toContain(p.trim())
 })

@@ -18,6 +18,7 @@ import {
 } from './seasonStats.js'
 import { createCourseCatalog, findCourse } from './courseCatalog.js'
 import { syncLearnerNickname } from './learnerIdentity.js'
+import { API_BASE, currentReviewSource, refreshMode } from './advisorMode.js'
 
 let fullSample = { sampleReviews: {}, sampleExplainFeedback: {}, sampleReputation: {} }
 let courseCodingMissions = []
@@ -27,8 +28,7 @@ let boundaryAssets = null
 const STORAGE_KEY = 'advisor.learner.v1'
 const baseMissions = [...sampleCatalog.missions, ...extraMissions]
 
-// 백엔드 채팅 프리뷰 API. 백엔드가 죽어 있으면 아래 mock 응답으로 조용히 폴백한다.
-const API_BASE = import.meta.env.VITE_ADVISOR_API ?? 'http://localhost:8080/api/advisor'
+// 백엔드 채팅 프리뷰 API(API_BASE 는 advisorMode.js). 백엔드가 죽어 있으면 mock 응답으로 폴백하고, 화면 배지가 그 사실을 알린다.
 const CHAT_TIMEOUT_MS = 30_000
 // 실제 리뷰는 코드를 읽고 루브릭 기준으로 채점하므로 30~90초가 걸린다.
 const REVIEW_TIMEOUT_MS = 120_000
@@ -1427,7 +1427,8 @@ export function useMissions() {
         const overall = clampScore((content.items ?? []).reduce((sum, it) => sum + (Number(it.score) || 0), 0))
 
         const reviews = (state.reviews[missionId] ??= [])
-        const reviewEntry = { content, overall, reviewedAt: new Date().toISOString() }
+        await refreshMode() // 응답이 온 시점의 백엔드 프로필로 출처 표시
+        const reviewEntry = { content, overall, reviewedAt: new Date().toISOString(), source: currentReviewSource() }
         reviews.push(reviewEntry)
         persist()
         queueReviewWrite(nickname, missionId, submissionSync, reviewEntry)
@@ -1455,7 +1456,7 @@ export function useMissions() {
 
     // 저장된 실제 리뷰 버전 전체(최신순 아님 — 제출 순). 재제출 이력 셀렉터용.
     getReviews(missionId) {
-      return reviewVersions(missionId).map((r) => ({ ...r.content, overall: r.overall, reviewedAt: r.reviewedAt }))
+      return reviewVersions(missionId).map((r) => ({ ...r.content, overall: r.overall, reviewedAt: r.reviewedAt, source: r.source ?? (r.reviewedAt ? null : 'practice') }))
     },
 
     // index 미지정 시 최신 리뷰. 실제 저장된 리뷰가 있으면 그것을, 없으면(s1-wine-01 한정) 샘플로 폴백, 그마저 없으면 null.
@@ -1463,7 +1464,7 @@ export function useMissions() {
       const list = reviewVersions(missionId)
       if (!list.length) return null
       const r = index != null && list[index] ? list[index] : list[list.length - 1]
-      return { ...r.content, overall: r.overall, reviewedAt: r.reviewedAt }
+      return { ...r.content, overall: r.overall, reviewedAt: r.reviewedAt, source: r.source ?? (r.reviewedAt ? null : 'practice') }
     },
 
     getExplainFeedback(missionId) {
