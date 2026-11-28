@@ -38,3 +38,4 @@
 - 2026-08-16 claude 검증 점검 — service ./run.sh test 통과, frontend npx vite build **실패**(vite 5.4.21 이 node>=20.12 의 util.styleText 요구, 이 머신은 node 20.10.0) (환경 조치)
 - 2026-11-28 claude 미션 s7-parcel-01(택배 운임·부피중량, 7단계, 여러 파일+테스트 뼈대) 추가 — 정답 코드로 기대 출력 일치·mvn test 확인, 개수 고정 테스트 39→40·206→207 은 PM 서브에이전트 수정 (codex/v0.9.3)
 - 2026-11-28 claude 이지 테스트(starterTests) 3건 — s7-parcel-01(13)·s7-tariff-01(14)·s3-interest-01(7), 뼈대 컴파일·정답 통과 mvn 확인. s4-jeonse-01·s5-denver-01 Java 문자열 \n 이 템플릿에서 줄바꿈으로 깨져 내려받은 코드가 컴파일 안 되던 것 수정 (codex/v0.9.4)
+- 2026-11-28 claude UI 연동 미션 s2-busboard-01(정류장 안내판, JDK 내장 HTTP 서버 + ui/index.html, 이지 테스트 11) 추가 — 뼈대 컴파일·정답 11/11·실제 안내판 화면 확인(캡처 docs/tickets/captures/content/). 개수 고정 테스트를 데이터 계산식으로 바꿈 — PM 서브에이전트 수정 (codex/v0.9.4)

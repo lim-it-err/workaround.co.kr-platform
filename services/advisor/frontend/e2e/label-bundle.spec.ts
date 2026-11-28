@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { foundationTimeText, missionCount } from './support/missionCounts'
 
 test.beforeEach(async ({ page }) => {
   await page.route('http://localhost:8080/**', route => route.abort())
@@ -20,7 +21,7 @@ test('코스 행은 다음 회차 시간을 먼저, 전체 시간을 뒤에 보�
 
   const foundations = page.locator('[data-course-preview][data-course-id="foundations"]')
   await expect(foundations.locator('.row-meta')).toContainText('다음 1시간 30분')
-  await expect(foundations.locator('.row-meta')).toContainText('전체 약 78시간')
+  await expect(foundations.locator('.row-meta')).toContainText(foundationTimeText)
 
   const vienna = page.locator('[data-course-preview][data-course-id="vienna-1900"]')
   await expect(vienna.locator('.row-meta')).toContainText('다음 20분')
@@ -32,16 +33,16 @@ test('코스 행은 다음 회차 시간을 먼저, 전체 시간을 뒤에 보�
   await page.emulateMedia({ colorScheme: 'light' })
   await page.evaluate(() => localStorage.setItem('workaround-theme', 'light'))
   await page.reload()
-  await expect(foundations.locator('.row-meta')).toContainText('전체 약 78시간')
+  await expect(foundations.locator('.row-meta')).toContainText(foundationTimeText)
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0)
   await page.screenshot({ path: testInfo.outputPath('course-times-light-1440.png'), fullPage: true })
 
   await page.goto('/courses')
   await expect(page.locator('[data-course-id="foundations"] .course-time')).toContainText('다음 1시간 30분')
-  await expect(page.locator('[data-course-id="foundations"] .course-time')).toContainText('전체 약 78시간')
+  await expect(page.locator('[data-course-id="foundations"] .course-time')).toContainText(foundationTimeText)
 
   await page.goto('/courses/foundations')
-  await expect(page.getByText('40개 · 전체 약 78시간', { exact: true })).toBeVisible()
+  await expect(page.getByText(`${missionCount}개 · ${foundationTimeText}`, { exact: true })).toBeVisible()
 })
 
 test('첫 시즌과 0기록 시즌은 다음 행동 하나만 또렷하게 안내한다', async ({ page }, testInfo) => {

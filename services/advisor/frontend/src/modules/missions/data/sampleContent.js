@@ -8505,6 +8505,542 @@ class ShippingFeeCalculatorTest {
       },
     ],
   },
+  // =========================================================================
+  // Mission 35 — Stage 2 "인터페이스는 계약" / 버스 도착 안내판 / 도메인 로직 구현 / 여러 파일 / UI 연동
+  // =========================================================================
+  {
+    id: 's2-busboard-01',
+    stage: 2,
+    stageTitle: '인터페이스는 계약',
+    missionType: '도메인 로직 구현',
+    difficulty: 'Normal',
+    scope: '여러 파일',
+    modes: ['developer'],
+    domain: '버스 · 도착 안내 (UI 연동)',
+    domainEmoji: '🚏',
+    title: '"곧 도착"은 몇 초부터인가 — 정류장 안내판을 내 코드로 켜라',
+    estimatedMinutes: 120,
+    briefing: {
+      title: '정류장 안내판이 거짓말을 하지 않으려면',
+      content: `### 59초와 60초 사이
+
+정류장 안내판의 "곧 도착"은 생각보다 엄격한 약속입니다. 버스가 1분 넘게 남았는데 "곧 도착"이 뜨면 사람들은 뛰어오다 멈추고, 30초 남았는데 "1분 후"가 뜨면 버스를 놓칩니다. 그래서 버스정보시스템(BIS)의 표시 규칙은 몇 초부터 무엇을 보여 줄지 숫자로 정해져 있습니다. 이 미션의 도시(가상)는 **60초 미만 = "곧 도착"**, 그 이상은 **"N분 후"**(초를 분으로 바꿀 때 버림)로 약속했습니다.
+
+### 도착 예정 시간은 거리 ÷ 속도
+
+버스는 1분마다 위치를 보냅니다. 정류장까지 **남은 거리(m)** 와 최근 구간의 **평균 속도(km/h)** 가 있으면 도착 예정 시간이 나옵니다. 18km/h 는 초속 5m 이니, 300m 남은 버스는 정확히 60초 뒤에 옵니다. 300.5m 라면? 사람을 기다리게 하는 쪽보다 미리 나와 있게 하는 쪽이 낫기에 **초는 올림**합니다.
+
+### 몇 번째 전, 막차, 혼잡도
+
+"6분 후 (3번째 전)"의 괄호는 정류장 수입니다 — 정체로 시간 예측이 틀어져도 정류장 수는 거짓말을 하지 않습니다. 오늘의 마지막 차에는 **"· 막차"** 가 붙습니다. 오른쪽 끝의 **여유·보통·혼잡** 은 재차 인원 ÷ 정원으로, 50% 미만이 여유, 80% 미만이 보통, 그 이상이 혼잡입니다.
+
+### 이번 미션의 특별한 점 — 화면이 있다
+
+이번에는 숫자만 출력하고 끝나지 않습니다. 제공된 엔진(UiServer)이 **브라우저 안내판 화면**을 띄우고, 화면은 오직 **BoardSource 라는 인터페이스**만 압니다. 여러분이 그 계약을 지키는 BoardService 를 만들면, 화면이 저절로 여러분의 코드로 채워집니다. 계약이 지켜지는 한 화면 쪽은 여러분의 구현을 한 줄도 몰라도 됩니다 — 이것이 "인터페이스는 계약"입니다.`,
+    },
+    scenario: `시청 앞 정류장의 안내판 업체가 바뀌었습니다. 새 업체는 화면(HTML)과 화면 서버를 납품했고, **"BoardSource 인터페이스만 구현해 주면 화면은 알아서 그립니다"** 라고 했습니다. 버스 위치 수신기(BusFeed)도 이미 붙어 있습니다. 여러분은 그 사이 — 위치를 받아 안내판 문구로 바꾸는 규칙 — 을 맡았습니다. 개통식에서 시장이 안내판 앞에 섭니다. "곧 도착"이 뜬 버스가 2분 뒤에 오면 그 장면이 저녁 뉴스에 나갑니다.`,
+    providedFiles: [
+      {
+        path: 'src/main/java/com/daehan/bus/engine/BoardSource.java',
+        content: `package com.daehan.bus.engine;
+
+import java.util.List;
+
+/**
+ * 안내판 화면(UiServer)이 기대하는 계약. 화면은 이 인터페이스만 안다.
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public interface BoardSource {
+
+    /** 정류장 id 의 안내판 줄들. 위에서부터 화면에 그대로 그린다. */
+    List<BoardRow> rows(String stopId);
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/engine/BoardRow.java',
+        content: `package com.daehan.bus.engine;
+
+/**
+ * 안내판 한 줄. UiServer 가 이 값을 JSON 으로 바꿔 화면에 보낸다.
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public record BoardRow(String route, String message, String crowd) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/engine/BusPosition.java',
+        content: `package com.daehan.bus.engine;
+
+/**
+ * 버스 한 대의 실시간 위치 (BIS 수신 데이터).
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public record BusPosition(
+        String route,          // 노선 번호
+        String busId,          // 차량 번호
+        int remainingStops,    // 이 정류장까지 남은 정류장 수 (0 = 바로 전 정류장을 떠남)
+        int distanceMeters,    // 이 정류장까지 남은 거리(m)
+        int speedKmh,          // 최근 구간 평균 속도(km/h). 0 이면 정체·정차 중
+        int passengers,        // 현재 재차 인원
+        int capacity,          // 정원
+        boolean lastBus        // 오늘의 막차인가
+) {
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/engine/BusFeed.java',
+        content: `package com.daehan.bus.engine;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * BIS(버스정보시스템) 수신기 흉내. 실제로는 1분마다 바뀌지만, 연습을 위해 한 순간을 고정해 둔다.
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public class BusFeed {
+
+    private static final Map<String, List<String>> ROUTES = Map.of(
+            "S1", List.of("101", "702", "9401", "N26"));
+
+    private static final Map<String, List<BusPosition>> POSITIONS = Map.of(
+            "S1", List.of(
+                    new BusPosition("101", "서울70사1101", 0, 300, 18, 20, 45, false),
+                    new BusPosition("101", "서울70사1102", 3, 2400, 24, 30, 45, false),
+                    new BusPosition("101", "서울70사1103", 7, 4800, 20, 12, 45, false),
+                    new BusPosition("702", "서울74사7021", 1, 450, 30, 40, 45, false),
+                    new BusPosition("9401", "경기70바9401", 5, 5200, 40, 10, 45, true)));
+
+    /** 정류장을 지나는 노선 목록 (버스가 없어도 노선은 있다). */
+    public List<String> routesAt(String stopId) {
+        return ROUTES.getOrDefault(stopId, List.of());
+    }
+
+    /** 정류장으로 오고 있는 버스들 (순서 보장 없음). */
+    public List<BusPosition> approaching(String stopId) {
+        return POSITIONS.getOrDefault(stopId, List.of());
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/engine/UiServer.java',
+        content: `package com.daehan.bus.engine;
+
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * 안내판 화면 서버 (JDK 내장 HTTP 서버, 외부 라이브러리 없음).
+ *   GET /                → ui/index.html
+ *   GET /api/board?stop= → BoardSource.rows(stop) 를 JSON 으로
+ * 이 파일은 엔진입니다. 그대로 사용하세요.
+ */
+public final class UiServer {
+
+    public static final int PORT = 8081;
+
+    private UiServer() {
+    }
+
+    public static void start(BoardSource source) throws IOException {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", PORT), 0);
+        server.createContext("/api/board", ex -> {
+            String stop = query(ex, "stop");
+            try {
+                send(ex, 200, "application/json; charset=utf-8", toJson(source.rows(stop)));
+            } catch (RuntimeException e) {
+                send(ex, 500, "application/json; charset=utf-8",
+                        "{\\"error\\":" + quote(e.getClass().getSimpleName() + ": " + e.getMessage()) + "}");
+            }
+        });
+        server.createContext("/", ex -> {
+            Path page = Path.of("ui", "index.html");
+            if (!Files.exists(page)) {
+                send(ex, 404, "text/plain; charset=utf-8", "ui/index.html 이 없습니다. 프로젝트 폴더에서 실행하세요.");
+                return;
+            }
+            send(ex, 200, "text/html; charset=utf-8", Files.readString(page));
+        });
+        server.start();
+        System.out.println("안내판: http://127.0.0.1:" + PORT + "/  (종료 Ctrl-C)");
+    }
+
+    private static String query(HttpExchange ex, String key) {
+        String q = ex.getRequestURI().getRawQuery();
+        if (q == null) return "";
+        for (String pair : q.split("&")) {
+            String[] kv = pair.split("=", 2);
+            if (kv[0].equals(key)) return URLDecoder.decode(kv.length > 1 ? kv[1] : "", StandardCharsets.UTF_8);
+        }
+        return "";
+    }
+
+    static String toJson(List<BoardRow> rows) {
+        return rows.stream()
+                .map(r -> "{\\"route\\":" + quote(r.route()) + ",\\"message\\":" + quote(r.message())
+                        + ",\\"crowd\\":" + quote(r.crowd()) + "}")
+                .collect(Collectors.joining(",", "[", "]"));
+    }
+
+    private static String quote(String s) {
+        if (s == null) return "null";
+        return "\\"" + s.replace("\\\\", "\\\\\\\\").replace("\\"", "\\\\\\"") + "\\"";
+    }
+
+    private static void send(HttpExchange ex, int status, String type, String body) throws IOException {
+        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
+        ex.getResponseHeaders().set("Content-Type", type);
+        ex.sendResponseHeaders(status, bytes.length);
+        try (OutputStream out = ex.getResponseBody()) {
+            out.write(bytes);
+        }
+    }
+}`,
+      },
+      {
+        path: 'src/main/java/com/daehan/bus/App.java',
+        content: `package com.daehan.bus;
+
+/**
+ * 실행 진입점. 이 파일은 엔진입니다. 그대로 사용하세요.
+ *
+ * 실행: IntelliJ 에서 이 main 을 실행하거나
+ *   mvn -q compile && java -cp target/classes com.daehan.bus.App
+ * 그다음 브라우저에서 http://127.0.0.1:8081/ 을 엽니다.
+ */
+public class App {
+
+    public static void main(String[] args) throws Exception {
+        // TODO(학습자): BoardService 를 만들어 화면 서버에 연결하세요.
+        // UiServer.start(new BoardService(new BusFeed()));
+
+        // ===== 기대 화면 (정류장 S1 · 시청앞) =====
+        // 702   곧 도착                    혼잡
+        // 101   1분 후                     여유
+        // 101   6분 후 (3번째 전)          보통
+        // 9401  7분 후 (5번째 전) · 막차   여유
+        // N26   도착 정보 없음
+    }
+}`,
+      },
+      {
+        path: 'ui/index.html',
+        content: `<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>시청앞 정류장 안내판</title>
+<style>
+  /* 이 파일은 엔진입니다. 그대로 사용하세요. 화면은 /api/board 의 결과를 그대로 그릴 뿐입니다. */
+  body { margin: 0; background: #0b0d10; color: #ffb547; font: 18px/1.4 ui-monospace, "SF Mono", Menlo, monospace; }
+  main { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 18px; color: #e8e8e8; margin: 0 0 4px; }
+  .sub { color: #8a8f98; font-size: 13px; margin: 0 0 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 12px 8px; border-bottom: 1px dashed #2a2f36; }
+  td.route { width: 5ch; color: #fff; font-weight: 700; }
+  td.crowd { width: 4ch; text-align: right; color: #8a8f98; }
+  td.crowd.혼잡 { color: #ff6b6b; }
+  td.crowd.보통 { color: #ffd166; }
+  td.crowd.여유 { color: #6bd18b; }
+  .err { color: #ff6b6b; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>시청앞 (S1)</h1>
+  <p class="sub" id="sub">불러오는 중…</p>
+  <table><tbody id="rows"></tbody></table>
+  <p class="err" id="err"></p>
+</main>
+<script>
+async function load() {
+  const err = document.getElementById('err');
+  try {
+    const res = await fetch('/api/board?stop=S1', { cache: 'no-store' });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || res.status);
+    document.getElementById('rows').innerHTML = data.map(r =>
+      '<tr><td class="route"></td><td class="msg"></td><td class="crowd"></td></tr>').join('');
+    document.querySelectorAll('#rows tr').forEach((tr, i) => {
+      tr.children[0].textContent = data[i].route;
+      tr.children[1].textContent = data[i].message;
+      tr.children[2].textContent = data[i].crowd || '';
+      if (data[i].crowd) tr.children[2].classList.add(data[i].crowd);
+    });
+    err.textContent = '';
+    document.getElementById('sub').textContent = '갱신 ' + new Date().toLocaleTimeString('ko-KR');
+  } catch (e) {
+    err.textContent = '안내판을 채우지 못했습니다 — ' + e.message + '\\nBoardService 를 구현했는지, App 이 UiServer 를 시작했는지 보세요.';
+  }
+}
+load();
+setInterval(load, 5000);
+</script>
+</body>
+</html>`,
+      },
+    ],
+    legacyFiles: [
+      {
+        path: 'src/main/java/com/daehan/bus/domain/BoardService.java',
+        content: `package com.daehan.bus.domain;
+
+import com.daehan.bus.engine.BoardRow;
+import com.daehan.bus.engine.BoardSource;
+import com.daehan.bus.engine.BusFeed;
+
+import java.util.List;
+
+/**
+ * 정류장 안내판 서비스 (구현 대상).
+ * 화면은 BoardSource 계약만 안다 — 이 클래스가 그 계약을 지키면 화면이 저절로 채워진다.
+ */
+public class BoardService implements BoardSource {
+
+    private final BusFeed feed;
+
+    public BoardService(BusFeed feed) {
+        this.feed = feed;
+    }
+
+    @Override
+    public List<BoardRow> rows(String stopId) {
+        // TODO 구현 — 규칙은 요구사항 참조
+        throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/bus/domain/BoardServiceTest.java',
+        content: `package com.daehan.bus.domain;
+
+import com.daehan.bus.engine.BoardRow;
+import com.daehan.bus.engine.BusFeed;
+import com.daehan.bus.engine.BusPosition;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 채점 테스트 — 미리 들어 있습니다. 이 파일은 고치지 말고, 전부 초록이 되게 구현하세요.
+ * 화면(ui/index.html)이 보여 주는 것은 이 테스트가 검사하는 rows() 결과 그대로입니다.
+ */
+class BoardServiceTest {
+
+    /** 테스트용 가짜 수신기 — BusFeed 를 상속해 원하는 순간을 만든다. */
+    private static BusFeed feed(List<String> routes, BusPosition... buses) {
+        return new BusFeed() {
+            @Override public List<String> routesAt(String stopId) { return routes; }
+            @Override public List<BusPosition> approaching(String stopId) { return List.of(buses); }
+        };
+    }
+
+    private static BusPosition bus(String route, int stops, int meters, int kmh, int pax, boolean last) {
+        return new BusPosition(route, route + "-" + meters, stops, meters, kmh, pax, 45, last);
+    }
+
+    private static String only(BusFeed f) {
+        List<BoardRow> rows = new BoardService(f).rows("T");
+        return rows.get(0).message();
+    }
+
+    @Test
+    void 시청앞_안내판은_App_기대_화면과_같다() {
+        List<BoardRow> rows = new BoardService(new BusFeed()).rows("S1");
+        assertEquals(List.of(
+                new BoardRow("702", "곧 도착", "혼잡"),
+                new BoardRow("101", "1분 후", "여유"),
+                new BoardRow("101", "6분 후 (3번째 전)", "보통"),
+                new BoardRow("9401", "7분 후 (5번째 전) · 막차", "여유"),
+                new BoardRow("N26", "도착 정보 없음", "")
+        ), rows);
+    }
+
+    @Test
+    void 정확히_육십초면_곧_도착이_아니라_1분_후다() {
+        // 300m ÷ 18km/h(=5m/s) = 60초
+        assertEquals("1분 후", only(feed(List.of("A"), bus("A", 0, 300, 18, 1, false))));
+    }
+
+    @Test
+    void 오십구초면_곧_도착이다() {
+        // 295m ÷ 5m/s = 59초
+        assertEquals("곧 도착", only(feed(List.of("A"), bus("A", 0, 295, 18, 1, false))));
+    }
+
+    @Test
+    void 초는_올림한다() {
+        // 301m ÷ 5m/s = 60.2초 → 61초 → 1분 후
+        assertEquals("1분 후", only(feed(List.of("A"), bus("A", 0, 301, 18, 1, false))));
+    }
+
+    @Test
+    void 분은_버린다() {
+        // 595m ÷ 5m/s = 119초 → 1분 후 (2분이 아니다)
+        assertEquals("1분 후", only(feed(List.of("A"), bus("A", 0, 595, 18, 1, false))));
+    }
+
+    @Test
+    void 남은_정류장이_있으면_몇번째_전인지_붙인다() {
+        assertEquals("2분 후 (1번째 전)", only(feed(List.of("A"), bus("A", 1, 600, 18, 1, false))));
+    }
+
+    @Test
+    void 곧_도착에는_정류장_수를_붙이지_않는다() {
+        assertEquals("곧 도착", only(feed(List.of("A"), bus("A", 2, 100, 18, 1, false))));
+    }
+
+    @Test
+    void 막차는_끝에_표시한다() {
+        assertEquals("곧 도착 · 막차", only(feed(List.of("A"), bus("A", 0, 100, 18, 1, true))));
+    }
+
+    @Test
+    void 혼잡도_경계는_50퍼센트_미만_여유_80퍼센트_미만_보통() {
+        Map<Integer, String> expected = Map.of(22, "여유", 23, "보통", 35, "보통", 36, "혼잡");
+        // 정원 45: 22명=48.9% 여유, 23명=51.1% 보통, 35명=77.8% 보통, 36명=80.0% 혼잡
+        expected.forEach((pax, crowd) -> {
+            List<BoardRow> rows = new BoardService(feed(List.of("A"), bus("A", 0, 100, 18, pax, false))).rows("T");
+            assertEquals(crowd, rows.get(0).crowd(), pax + "명");
+        });
+    }
+
+    @Test
+    void 노선당_가장_빠른_두_대까지만_보인다() {
+        List<BoardRow> rows = new BoardService(feed(List.of("A"),
+                bus("A", 3, 3000, 18, 1, false),
+                bus("A", 0, 100, 18, 1, false),
+                bus("A", 1, 1000, 18, 1, false))).rows("T");
+        assertEquals(List.of("곧 도착", "3분 후 (1번째 전)"), rows.stream().map(BoardRow::message).toList());
+    }
+
+    @Test
+    void 버스가_없는_노선은_맨_아래에_도착_정보_없음() {
+        List<BoardRow> rows = new BoardService(feed(List.of("Z", "A"), bus("A", 0, 100, 18, 1, false))).rows("T");
+        assertEquals(new BoardRow("Z", "도착 정보 없음", ""), rows.get(1));
+    }
+}`,
+      },
+    ],
+    requirements: [
+      '도착 예정(초) = 남은 거리(m) ÷ 속도(m/s) 를 **올림**한 정수. 속도는 km/h 로 오므로 초 = ⌈거리 × 3600 ÷ (속도 × 1000)⌉. 정수로만 계산합니다(301m, 18km/h → 60.2초 → 61초).',
+      '문구: 60초 미만 「곧 도착」, 60초 이상 「N분 후」(N = 초 ÷ 60 버림). 「N분 후」이고 남은 정류장이 1 이상이면 뒤에 「 (k번째 전)」. 막차면 맨 끝에 「 · 막차」. 「곧 도착」에는 정류장 수를 붙이지 않습니다.',
+      '혼잡도: 재차 ÷ 정원이 50% 미만 「여유」, 80% 미만 「보통」, 그 이상 「혼잡」. 경계는 정수로 비교합니다(정원 45 에 36명 = 80.0% → 혼잡).',
+      '정렬과 개수: 노선마다 가장 빨리 오는 2대까지만 보이고, 보이는 줄 전체를 도착 예정 시간 순으로 정렬합니다. 버스가 한 대도 없는 노선은 맨 아래에 「도착 정보 없음」(혼잡도 빈 문자열), BusFeed.routesAt 순서대로.',
+      '화면 확인: App.java 의 TODO 한 줄을 풀고 실행한 뒤 http://127.0.0.1:8081/ 을 열면 기대 화면(App.java 주석)과 같은 안내판이 보여야 합니다. 프로젝트 폴더(ui/ 가 있는 곳)에서 실행하세요.',
+      '업체 공지: "다음 달부터 저상버스 표시와 2층 버스 혼잡도(정원 70)가 추가됩니다. 화면 쪽 필드는 아직 협의 중입니다."',
+    ],
+    constraints: [
+      'engine 패키지와 App.java, ui/index.html 은 납품받은 코드입니다. 수정 금지(App.java 의 TODO 한 줄 풀기만 허용).',
+      '외부 라이브러리 없이 순수 Java 17 이상. 테스트는 JUnit 5.',
+      '시간·비율 계산에 float·double 을 쓰지 않습니다.',
+      '화면(UiServer·index.html)은 BoardSource 만 압니다. BoardService 의 공개 메서드는 계약(rows) 하나로 충분해야 합니다.',
+    ],
+    learningGoals: [
+      '납품받은 인터페이스(BoardSource)를 구현해, 상대 쪽(화면)을 한 줄도 고치지 않고 연동하는 경험',
+      '경계값(59초/60초, 50%/80%)을 정수 연산으로 정확히 다루기',
+      '「노선당 2대 → 전체 정렬 → 빈 노선 덧붙이기」처럼 순서가 있는 규칙을 작은 함수로 나눠 각자 검증하기',
+      '내 코드가 실제 화면을 움직이는 것을 눈으로 확인하는 연동 테스트 습관',
+    ],
+    hints: [
+      '이지 모드라면 테스트 이름만 위에서부터 읽어도 규칙이 전부 나옵니다. 하나씩 초록으로 만드세요. 맨 위의 「시청앞 안내판은 App 기대 화면과 같다」는 마지막에 저절로 초록이 됩니다.',
+      '올림 나눗셈은 정수로: (a + b - 1) / b. 거리 × 3600 이 int 를 넘을 수 있는지도 생각해 보세요(5,200m × 3600 = 18,720,000 은 괜찮지만, 노선 길이가 수백 km 라면?).',
+      'rows() 안에서 다 하지 말고 「한 대 → 초」「한 대 → 문구」「한 대 → 혼잡도」를 따로 두면, 테스트가 실패했을 때 어느 규칙이 틀렸는지 바로 보입니다.',
+    ],
+    hiddenCases: [
+      {
+        title: '속도 0 — 정체 구간',
+        description:
+          '평균 속도가 0 인 버스(신호 대기·사고 정체)가 오면 나눗셈이 0 으로 나눠져 ArithmeticException 이 나고, 화면에는 「안내판을 채우지 못했습니다」가 뜹니다 — 버스 한 대 때문에 정류장 전체가 꺼집니다. 좋은 방어: 속도 0 은 시간 대신 「정체 · 갱신 중」(+ 정류장 수)으로 보여 주고 다른 줄은 정상으로 그립니다.',
+      },
+      {
+        title: '정원 0 인 차량',
+        description:
+          '차량 정보가 아직 등록되지 않은 신차는 정원이 0 으로 올 수 있습니다. 혼잡도 계산이 0 으로 나눠지거나 모든 비교가 「혼잡」으로 빠집니다. 좋은 방어: 정원이 0 이하이면 혼잡도를 비워 둡니다(모르는 것은 모른다고).',
+      },
+      {
+        title: '같은 버스가 두 번',
+        description:
+          'BIS 수신이 겹치면 같은 차량 번호가 두 번 들어와, 노선당 2대 자리를 같은 버스가 둘 다 차지합니다. 안내판에는 같은 시간이 두 줄 뜹니다. 좋은 방어: busId 로 중복을 걸러낸 뒤 고릅니다.',
+      },
+    ],
+    rubric: [
+      {
+        name: '표시 규칙 정확성',
+        description: '시청앞 기대 화면과 같은가. 초 올림·분 버림·「곧 도착」 경계·정류장 수·막차·혼잡도 경계가 맞는가.',
+        weight: 35,
+        visibleToLearner: true,
+      },
+      {
+        name: '계약 준수와 연동',
+        description: '화면 쪽(engine·index.html)을 고치지 않고 BoardSource 구현만으로 실제 안내판이 채워지는가. 공개 표면이 계약 이상으로 넓지 않은가.',
+        weight: 25,
+        visibleToLearner: true,
+      },
+      {
+        name: '규칙 분리',
+        description: '초·문구·혼잡도·정렬/개수 규칙이 나뉘어 각각 검증 가능한가. 다음 달 추가 항목(저상·2층 버스)을 어디에 넣을지 보이는가.',
+        weight: 20,
+        visibleToLearner: true,
+      },
+      {
+        name: '테스트',
+        description: '하드: 경계값 테스트를 직접 썼는가. 이지: 제공 테스트를 고치지 않고 통과했는가, 그리고 숨은 사례(속도 0 등)를 위한 테스트를 하나라도 더했는가.',
+        weight: 15,
+        visibleToLearner: true,
+      },
+      {
+        name: '엔진 코드 오용 여부',
+        description: 'engine 패키지·화면 파일을 수정하지 않았는가. BusFeed 의 고정 데이터를 BoardService 에 복사해 하드코딩하지 않았는가.',
+        weight: 5,
+        visibleToLearner: false,
+      },
+    ],
+    explainTask: {
+      audience: '구청 교통행정과 주무관 (안내판 민원 담당, 개발은 모름)',
+      prompt:
+        '주무관이 "어제 「곧 도착」 뜬 버스가 1분 넘게 안 왔다는 민원이 들어왔는데, 기준이 뭐예요?" 라고 묻습니다. 설명할 것: (1) 「곧 도착」과 「1분 후」를 가르는 60초 기준과, 거리·속도로 시간을 계산할 때 초를 올림하는 이유, (2) 시간 예측이 틀어져도 「몇 번째 전」이 함께 있으면 왜 민원이 줄어드는지, (3) 안내판 화면 업체와 계산 규칙이 "약속된 칸(인터페이스)"으로만 연결돼 있어서, 기준을 바꾸면 화면 업체를 부르지 않고 계산 쪽만 고치면 된다는 것 — 생활 비유 하나로. 표 없이 말로만.',
+    },
+    endings: [
+      {
+        grade: 'calm',
+        title: '개통식 사진에 찍힌 「곧 도착」',
+        teaser: '시장이 안내판 앞에 선 순간 702번이 「곧 도착」에서 정말로 들어온다. 다음 달 저상버스 표시는 함수 하나 추가로 끝나고, 화면 업체에는 전화할 일이 없다.',
+      },
+      {
+        grade: 'hotfix',
+        title: '1분과 곧 사이',
+        teaser: '대부분 맞는다. 다만 딱 60초 남은 버스만 가끔 「곧 도착」으로 뜨고, 민원 게시판에 "안내판이 성급하다"는 글이 한 달에 두 번 올라온다.',
+      },
+      {
+        grade: 'dawn',
+        title: '정체 구간의 검은 화면',
+        teaser: '퇴근길 사고 정체로 속도 0 인 버스가 들어온 순간 안내판 전체가 꺼진다. 「안내판 고장」 사진이 지역 커뮤니티에 올라온 밤, 원인을 찾는 사람은 당신이다.',
+      },
+      {
+        grade: 'hidden',
+        title: '???',
+        teaser: '이 결말을 여는 열쇠는 아직 아무도 회수하지 못했습니다. 조건은 비공개입니다.',
+      },
+    ],
+  },
 ];
 
 const sampleReviews = {
