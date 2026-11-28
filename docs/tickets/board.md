@@ -43,6 +43,11 @@
 
 ## Ready
 
+- `TKT-243` `P1` `v0.9.5` `ready` `[FE]` Advisor 미션 탭 맨 위 받기·Codespaces 줄
+- `TKT-244` `P1` `v0.9.5` `ready` `[INFRA]` 실습 폴더 만들기 tools/advisor-lab.sh + devcontainer
+- `TKT-245` `P1` `v0.9.5` `ready` `[INFRA]` 실습 push 채점 워크플로 (의존 244)
+- `TKT-246` `P2` `v0.9.5` `ready` `[FE]` 온라인 채점 결과 카드 (의존 243·245)
+
 
 > **브랜치 안내 (D-002 개정·D-027, 2026-09-28)**: 트렁크 = `main`(v0.7.0 승격 완료). 작업 브랜치 = **`codex/v0.8.0-live`**. `codex/v0.7.0-tone`·`codex/v0.6.0-line` 은 동결.
 

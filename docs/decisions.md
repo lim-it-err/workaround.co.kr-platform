@@ -338,3 +338,14 @@
 - 경위: PM 이 「온라인에서 하기」를 LLM 리뷰(Worker)·코드 실행(Codespaces / 브라우저 JVM / 채점 서버)으로 나눠 권고 → PO 「cloudflare worker는 구성하지 않아. 일단 로컬로」.
 - 내용: LLM 리뷰는 `./local.sh claude`(또는 `tools/local-start.sh advisor --profile claude`)로 내 맥에서만. 배포 버전은 연습 리뷰 그대로(D-039 의 「나중에 Worker 주소만 바꾸면」은 보류). 공개 페이지는 방문자 localhost 를 부르지 않는다(TKT-239) — 유지.
 - 다시 열 조건: PO 지시.
+
+## D-042 Advisor 온라인 실습 = Codespaces + GitHub Actions 채점 · **확정** (PO 2026-11-28)
+
+- 경위: PO 「github action을 github io에다가 연결할수 있을 거같은데, 그럼 동적이 아니어도 되는거아닌가」 → PM: github.io 는 정적이라 DB 에 직접 못 쓰지만, **저장소를 DB 로** 쓰면 된다(push → Actions 가 채점·리뷰 → 결과 JSON 을 브랜치에 커밋 → 페이지가 읽음). ① Codespaces 버튼 ② push 채점을 권고 → PO 「0.9.5는 일단 해보자」.
+- 내용:
+  - 실습 폴더 `labs/advisor/<미션id>/` 는 **`lab/<미션id>` 브랜치에만** 둔다. main 으로 병합 금지.
+  - `tools/advisor-lab.sh <미션id> [easy|hard]` 가 화면의 zip 과 같은 파일(`buildMissionEntries` 재사용)을 그 폴더에 풀고 채점 정보 `.advisor/mission.json` 을 남긴다.
+  - `.devcontainer/advisor-lab/` = JDK 21 + Maven + Node. 미션 화면의 「Codespaces 에서 열기」 버튼이 이것을 연다.
+  - `.github/workflows/advisor-lab.yml`: `lab/**` push → 바뀐 미션 폴더마다 `mvn test` → `.grade/result.json`(+ 키가 있으면 Claude 리뷰 `.grade/review.md`) 을 같은 브랜치에 `[skip ci]` 커밋. Claude 키는 GitHub Secrets `ANTHROPIC_API_KEY`(PO 가 넣음). 없으면 리뷰 단계만 건너뛴다.
+  - 공개 Advisor 페이지는 `raw.githubusercontent.com` 의 그 결과 JSON 을 읽어 「온라인 채점 결과」를 보여 준다(없으면 숨김). 방문자 localhost 는 여전히 부르지 않는다(TKT-239).
+- 위험: 저장소가 공개라 실습 코드·결과도 공개된다. 리뷰는 저장소에 쓰기 권한이 있는 사람의 push 에서만 돈다(포크에는 시크릿이 없음).
