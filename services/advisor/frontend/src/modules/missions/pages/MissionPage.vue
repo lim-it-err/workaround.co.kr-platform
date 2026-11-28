@@ -41,6 +41,7 @@ const voyageStopHref = computed(() => {
 })
 
 const mission = computed(() => store.getMission(route.params.id))
+const hasStarterTests = computed(() => (mission.value?.starterTests?.length ?? 0) > 0)
 const isDomainLogic = computed(() => mission.value?.missionType === '도메인 로직 구현')
 // 코드 판독/설계 리뷰 — 실행 없이 읽고 판정만 하는 미션. 제출을 구조화 빌더(findings.md)로 유도한다.
 const isNoCodeMission = computed(() => ['코드 판독', '설계 리뷰'].includes(mission.value?.missionType))
@@ -444,8 +445,13 @@ function submitExplanation() {
       <div class="card block">
         <div class="code-head">
           <h2 class="panel-title">{{ isDomainLogic ? '구현할 뼈대' : '물려받은 코드' }}</h2>
-          <button class="btn zip-btn" @click="downloadMissionZip(mission)">⬇ 코드 전체 받기 (.zip)</button>
+          <div v-if="hasStarterTests" class="zip-levels">
+            <button class="btn primary zip-btn" @click="downloadMissionZip(mission, 'easy')">⬇ 이지 — 테스트 포함</button>
+            <button class="btn zip-btn" @click="downloadMissionZip(mission, 'hard')">⬇ 하드 — 테스트 직접</button>
+          </div>
+          <button v-else class="btn zip-btn" @click="downloadMissionZip(mission)">⬇ 코드 전체 받기 (.zip)</button>
         </div>
+        <p v-if="hasStarterTests" class="dim zip-note">이지는 채점용 테스트가 들어 있어 구현에만 집중합니다.</p>
         <p class="dim">
           {{ isDomainLogic
             ? '이 뼈대를 로컬 IDE로 옮겨서 채워 넣으세요. 계층과 인터페이스 경계는 스스로 결정합니다.'
@@ -569,6 +575,13 @@ function submitExplanation() {
 .code-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
 .code-head .panel-title { margin: 0; }
 .zip-btn { min-height: 40px; }
+.zip-levels { display: flex; gap: 8px; flex-wrap: wrap; }
+.zip-levels .zip-btn, .zip-levels .btn.primary.zip-btn { min-height: 44px; }
+.zip-note { margin: 6px 0 0; font-size: 12.5px; }
+@media (max-width: 480px) {
+  .zip-levels { flex-direction: column; width: 100%; }
+  .zip-levels .zip-btn { width: 100%; flex: none; }
+}
 .back { display: inline-flex; min-width: 40px; min-height: 40px; align-items: center; font-size: 13px; text-decoration: none; color: var(--fg-dim); }
 .endings-sub { color: var(--fg-dim); font-size: 12.5px; font-weight: 400; }
 .ending-rows { display: flex; flex-direction: column; gap: 8px; }

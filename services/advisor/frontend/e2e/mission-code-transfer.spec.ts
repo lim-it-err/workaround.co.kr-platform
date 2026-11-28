@@ -43,6 +43,30 @@ test('코드 전체 받기: zip 에 legacyFiles 경로가 모두 들어 있다',
   for (const p of paths) expect(Object.keys(files)).toContain(p.trim())
 })
 
+test('받기 버튼: starterTests 가 있으면 이지·하드 둘, 없으면 하나', async ({ page }) => {
+  const easyBtn = page.getByRole('button', { name: '⬇ 이지 — 테스트 포함' })
+  if ((await easyBtn.count()) === 0) {
+    // starterTests 없는 미션 — 단일 버튼만 있어야 한다(starterTests 반영 후엔 아래 분기가 검증).
+    await expect(page.getByRole('button', { name: '⬇ 코드 전체 받기 (.zip)' })).toBeVisible()
+    await expect(page.getByRole('button', { name: '⬇ 하드 — 테스트 직접' })).toHaveCount(0)
+    return
+  }
+  await expect(page.getByRole('button', { name: '⬇ 코드 전체 받기 (.zip)' })).toHaveCount(0)
+  const [easy] = await Promise.all([page.waitForEvent('download'), easyBtn.click()])
+  expect(easy.suggestedFilename()).toBe('s1-wine-01-easy.zip')
+  const easyFiles = parseZip(fs.readFileSync(await easy.path()))
+  expect(easyFiles['README.md']).toContain('테스트가 미리 들어 있습니다')
+  const [hard] = await Promise.all([
+    page.waitForEvent('download'),
+    page.getByRole('button', { name: '⬇ 하드 — 테스트 직접' }).click(),
+  ])
+  expect(hard.suggestedFilename()).toBe('s1-wine-01-hard.zip')
+  const hardFiles = parseZip(fs.readFileSync(await hard.path()))
+  expect(hardFiles['README.md']).toContain('테스트는 직접 씁니다')
+  const onlyEasy = Object.keys(easyFiles).filter((k) => !(k in hardFiles))
+  expect(onlyEasy.length).toBeGreaterThan(0)
+})
+
 test('파일 하나 받기: 파일명은 경로의 마지막 조각', async ({ page }) => {
   const first = (await page.locator('.viewer').last().locator('.tab').first().textContent())!.trim()
   const [dl] = await Promise.all([

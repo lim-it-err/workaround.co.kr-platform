@@ -1004,6 +1004,70 @@ public class MaturityService {
 }`,
       },
     ],
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/fin/domain/InterestCalculatorTest.java',
+        content: `package com.daehan.fin.domain;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 채점 테스트 — 미리 들어 있습니다. 이 파일은 고치지 말고, 전부 초록이 되게 구현하세요.
+ * 이 테스트는 MapDb 없이 돈다 — InterestCalculator 가 저장 기술을 몰라야 통과하는 구조라는 뜻입니다.
+ * (MaturityService 의 경계 설계와 그 테스트는 이지에서도 직접 합니다 — 생성자 모양이 여러분의 설계이기 때문입니다.)
+ */
+class InterestCalculatorTest {
+
+    private final InterestCalculator calc = new InterestCalculator();
+
+    private static SavingsProduct product(int monthly, int months, double rate, boolean exempt) {
+        return new SavingsProduct("t", "테스트 적금", monthly, months, rate, exempt);
+    }
+
+    @Test
+    void 시나리오1_월30만원_12개월_연3_6퍼센트_단리는_70200원() {
+        assertEquals(70_200L, calc.simplePreTaxInterest(product(300_000, 12, 0.036, false)));
+    }
+
+    @Test
+    void 시나리오1_월복리였다면_70978원() {
+        assertEquals(70_978L, calc.compoundPreTaxInterest(product(300_000, 12, 0.036, false)));
+    }
+
+    @Test
+    void 시나리오2_월50만원_24개월_연4_2퍼센트_단리는_525000원() {
+        assertEquals(525_000L, calc.simplePreTaxInterest(product(500_000, 24, 0.042, true)));
+    }
+
+    @Test
+    void 시나리오2_월복리였다면_539362원() {
+        assertEquals(539_362L, calc.compoundPreTaxInterest(product(500_000, 24, 0.042, true)));
+    }
+
+    @Test
+    void 한_달짜리는_한_달치_이자만_붙는다() {
+        // 100,000 × 0.036 × 1/12 = 300원
+        assertEquals(300L, calc.simplePreTaxInterest(product(100_000, 1, 0.036, false)));
+    }
+
+    @Test
+    void 단리는_합산한_뒤_원단위로_절사한다() {
+        // 12,345 × 0.031 × (3+2+1)/12 = 191.3475 → 191원
+        // (회차마다 먼저 버리면 95 + 63 + 31 = 189원 — 2원이 사라진다)
+        assertEquals(191L, calc.simplePreTaxInterest(product(12_345, 3, 0.031, false)));
+    }
+
+    @Test
+    void 비과세여부는_세전이자에_영향이_없다() {
+        assertEquals(
+                calc.simplePreTaxInterest(product(300_000, 12, 0.036, false)),
+                calc.simplePreTaxInterest(product(300_000, 12, 0.036, true)));
+    }
+}`,
+      },
+    ],
     requirements: [
       '검증 시나리오 1(일반과세): 월 300,000원 × 12개월, 연 3.60% 단리. 세전이자 = 300,000 × 0.036 × (12+11+…+1)/12 = 300,000 × 0.036 × 78/12 = 70,200원. 소득세 = 70,200 × 14% = 9,828원, 지방소득세 = 70,200 × 1.4% = 982.8 → 982원(절사). 총세금 10,810원, 세후이자 59,390원, 만기수령액 3,659,390원. App.java의 기대 출력과 정확히 일치해야 합니다.',
       '고객 안내용으로 월복리였다면 얼마였을지 참고치를 함께 보여 줍니다. 계산: 회차별 월납입액 × ((1 + 연이율/12)^남은개월 − 1)을 합산한 뒤 원단위 절사. 시나리오 1은 70,978원, 시나리오 2는 539,362원이 나와야 합니다.',
@@ -3801,10 +3865,10 @@ public class Loader {
             if (b[4].equals("CARTED")) {
                 sb.append(e.getKey()).append(" ").append(b[0]).append(" 게이트 ").append(b[1])
                         .append(" -> 구역 ").append(b[2]).append(" / 카트 ").append(b[3])
-                        .append(" / 적하 완료\n");
+                        .append(" / 적하 완료\\n");
             } else {
                 sb.append(e.getKey()).append(" ").append(b[0]).append(" 게이트 ").append(b[1])
-                        .append(" -> 구역 ").append(b[2]).append(" / 카트 없음 / 대기\n");
+                        .append(" -> 구역 ").append(b[2]).append(" / 카트 없음 / 대기\\n");
             }
         }
         return sb.toString();
@@ -4426,6 +4490,66 @@ public class TariffCalculator {
     public int monthlyBill(int usageKwh, int billingMonth) {
         // TODO 구현 — 단, 테스트가 먼저입니다.
         throw new UnsupportedOperationException("아직 구현되지 않았습니다");
+    }
+}`,
+      },
+    ],
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/tariff/TariffCalculatorTest.java',
+        content: `package com.daehan.tariff;
+
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+/**
+ * 이지 모드 채점 테스트 — 미리 들어 있습니다. 이 파일은 고치지 말고, 전부 초록이 되게 구현하세요.
+ *
+ * 테스트 리스트 (이 순서대로 하나씩 초록으로 만들면 됩니다)
+ *  1. 비하계 350kWh = 51,600원 (검증 예제 1)
+ *  2. 하계 8월 350kWh = 41,600원 (검증 예제 1)
+ *  3. 비하계 500kWh = 97,300원 (검증 예제 2)
+ *  4. 하계 500kWh = 82,300원 (검증 예제 2)
+ *  5. 0kWh 는 1구간 기본요금만
+ *  6. 비하계 정확히 200kWh 는 1구간
+ *  7. 비하계 201kWh 부터 2구간 기본요금
+ *  8. 비하계 정확히 400kWh 는 2구간
+ *  9. 비하계 401kWh 부터 3구간 기본요금
+ * 10. 하계 정확히 300kWh 는 1구간
+ * 11. 하계 정확히 450kWh 는 2구간
+ * 12. 하계 451kWh 부터 3구간
+ * 13. 6월은 비하계, 7월은 하계 (같은 300kWh)
+ * 14. 8월은 하계, 9월은 비하계 (같은 300kWh)
+ */
+class TariffCalculatorTest {
+
+    private final TariffCalculator calc = new TariffCalculator();
+
+    @Test void 비하계_350kWh는_51600원이다() { assertEquals(51_600, calc.monthlyBill(350, 6)); }
+    @Test void 하계_8월_350kWh는_41600원이다() { assertEquals(41_600, calc.monthlyBill(350, 8)); }
+    @Test void 비하계_500kWh는_97300원이다() { assertEquals(97_300, calc.monthlyBill(500, 3)); }
+    @Test void 하계_500kWh는_82300원이다() { assertEquals(82_300, calc.monthlyBill(500, 7)); }
+
+    @Test void 사용량_0kWh는_1구간_기본요금만_낸다() { assertEquals(900, calc.monthlyBill(0, 5)); }
+
+    @Test void 비하계_정확히_200kWh는_1구간이다() { assertEquals(20_900, calc.monthlyBill(200, 10)); }
+    @Test void 비하계_201kWh부터_2구간_기본요금을_적용한다() { assertEquals(21_800, calc.monthlyBill(201, 10)); }
+    @Test void 비하계_정확히_400kWh는_2구간이다() { assertEquals(61_600, calc.monthlyBill(400, 10)); }
+    @Test void 비하계_401kWh부터_3구간_기본요금을_적용한다() { assertEquals(67_600, calc.monthlyBill(401, 10)); }
+
+    @Test void 하계_정확히_300kWh는_1구간이다() { assertEquals(30_900, calc.monthlyBill(300, 7)); }
+    @Test void 하계_정확히_450kWh는_2구간이다() { assertEquals(61_600, calc.monthlyBill(450, 8)); }
+    @Test void 하계_451kWh부터_3구간이다() { assertEquals(67_600, calc.monthlyBill(451, 8)); }
+
+    @Test void 같은_300kWh라도_6월은_비하계_7월은_하계다() {
+        assertEquals(41_600, calc.monthlyBill(300, 6));
+        assertEquals(30_900, calc.monthlyBill(300, 7));
+    }
+
+    @Test void 같은_300kWh라도_8월은_하계_9월은_비하계다() {
+        assertEquals(30_900, calc.monthlyBill(300, 8));
+        assertEquals(41_600, calc.monthlyBill(300, 9));
     }
 }`,
       },
@@ -6800,7 +6924,7 @@ public class DividendCalc {
                                     LocalDate auctionStart, List<Claim> claims) {
         long fund = salePrice - cost;   // 0단계: 경매비용 공제
         StringBuilder sheet = new StringBuilder();
-        sheet.append("[배당표] 재원 ").append(fund).append("원\n");
+        sheet.append("[배당표] 재원 ").append(fund).append("원\\n");
 
         // 1단계: 소액임차인 최우선변제
         long cap = smallCapOf(auctionStart);
@@ -6810,7 +6934,7 @@ public class DividendCalc {
                 long pay = Math.min(priorityAmt, Math.min(c.remaining(), fund));
                 c.paid += pay;
                 fund -= pay;
-                sheet.append("1순위 최우선변제 ").append(c.name).append(" ").append(pay).append("원\n");
+                sheet.append("1순위 최우선변제 ").append(c.name).append(" ").append(pay).append("원\\n");
             }
         }
 
@@ -6818,7 +6942,7 @@ public class DividendCalc {
         long taxPay = Math.min(taxDue, fund);
         fund -= taxPay;
         if (taxPay > 0) {
-            sheet.append("2순위 당해세 ").append(taxPay).append("원\n");
+            sheet.append("2순위 당해세 ").append(taxPay).append("원\\n");
         }
 
         // 3단계: 설정일·확정일자 순위 배당
@@ -6832,10 +6956,10 @@ public class DividendCalc {
             c.paid += pay;
             fund -= pay;
             sheet.append("순위배당(").append(c.rankDate).append(") ")
-                    .append(c.name).append(" ").append(pay).append("원\n");
+                    .append(c.name).append(" ").append(pay).append("원\\n");
         }
 
-        sheet.append("잔여 ").append(fund).append("원 (소유자 귀속)\n");
+        sheet.append("잔여 ").append(fund).append("원 (소유자 귀속)\\n");
         return sheet.toString();
     }
 }`,
@@ -8152,11 +8276,138 @@ class ShippingFeeCalculatorTest {
 }`,
       },
     ],
+    starterTests: [
+      {
+        path: 'src/test/java/com/daehan/parcel/domain/ShippingFeeCalculatorTest.java',
+        content: `package com.daehan.parcel.domain;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * 이지 모드 채점 테스트 — 미리 들어 있습니다. 이 파일은 고치지 말고, 전부 초록이 되게 구현하세요.
+ * 처음 mvn -q test 를 돌리면 UnsupportedOperationException 으로 빨갛게 실패하는 게 정상입니다.
+ */
+class ShippingFeeCalculatorTest {
+
+    private final ShippingFeeCalculator calculator = new ShippingFeeCalculator();
+
+    private String quote(String name, int w, int d, int h, int grams, String zone, boolean remote, boolean cod) {
+        return calculator.quote(new Parcel(name, w, d, h, grams, zone, remote, cod));
+    }
+
+    @Nested
+    @DisplayName("App.java 기대 출력 네 건")
+    class Scenarios {
+
+        @Test
+        void 베개는_부피중량으로_청구된다() {
+            assertEquals(
+                    "[메모리폼 베개] 부피중량 4.0kg / 실중량 1.2kg → 청구중량 4.0kg\\n"
+                            + "기본 5,000원 + 권역 1,000원 = 6,000원",
+                    quote("메모리폼 베개", 40, 30, 20, 1200, "OTHER", false, false));
+        }
+
+        @Test
+        void 제주행_착불_이불은_할증이_둘_붙는다() {
+            assertEquals(
+                    "[겨울 이불] 부피중량 13.4kg / 실중량 9.0kg → 청구중량 13.5kg\\n"
+                            + "기본 8,000원 + 권역 3,000원 + 착불 500원 = 11,500원",
+                    quote("겨울 이불", 50, 40, 40, 9000, "JEJU", false, true));
+        }
+
+        @Test
+        void 작은_상자는_실중량으로_청구되고_권역_0원은_빠진다() {
+            assertEquals(
+                    "[문구 세트] 부피중량 0.5kg / 실중량 2.0kg → 청구중량 2.0kg\\n"
+                            + "기본 4,000원 + 도서산간 5,000원 = 9,000원",
+                    quote("문구 세트", 25, 20, 5, 2000, "SAME", true, false));
+        }
+
+        @Test
+        void 세_변의_합이_넘으면_접수_불가() {
+            assertEquals(
+                    "[접이식 책상] 접수 불가: 세 변의 합 170cm 가 160cm 를 넘습니다",
+                    quote("접이식 책상", 80, 50, 40, 12000, "OTHER", false, false));
+        }
+    }
+
+    @Nested
+    @DisplayName("0.5kg 올림 경계")
+    class HalfKgRounding {
+
+        @Test
+        void 실중량_정확히_2kg_은_첫_구간() {
+            assertTrue(quote("경계 A", 10, 10, 10, 2000, "SAME", false, false).endsWith("= 4,000원"));
+        }
+
+        @Test
+        void 실중량_2001g_은_2_5kg_로_올라가_다음_구간() {
+            String q = quote("경계 B", 10, 10, 10, 2001, "SAME", false, false);
+            assertTrue(q.contains("청구중량 2.5kg"), q);
+            assertTrue(q.endsWith("= 5,000원"), q);
+        }
+
+        @Test
+        void 부피중량이_정확히_2kg_이면_올라가지_않는다_double_함정() {
+            // 30 × 20 × 20 = 12,000cm³ → 12,000 × 1000 ÷ 6000 = 정확히 2,000g
+            String q = quote("경계 C", 30, 20, 20, 500, "SAME", false, false);
+            assertTrue(q.contains("청구중량 2.0kg"), q);
+            assertTrue(q.endsWith("= 4,000원"), q);
+        }
+    }
+
+    @Nested
+    @DisplayName("접수 가능 경계")
+    class AcceptanceLimits {
+
+        @Test
+        void 세_변의_합_160cm_는_접수() {
+            assertTrue(quote("합 160", 60, 50, 50, 1000, "SAME", false, false).endsWith("= 10,000원"));
+        }
+
+        @Test
+        void 세_변의_합_161cm_는_불가() {
+            assertEquals("[합 161] 접수 불가: 세 변의 합 161cm 가 160cm 를 넘습니다",
+                    quote("합 161", 61, 50, 50, 1000, "SAME", false, false));
+        }
+
+        @Test
+        void 가장_긴_변_100cm_는_접수() {
+            assertTrue(quote("변 100", 100, 30, 30, 1000, "SAME", false, false).endsWith("= 8,000원"));
+        }
+
+        @Test
+        void 가장_긴_변_101cm_는_불가() {
+            String q = quote("변 101", 101, 30, 29, 1000, "SAME", false, false);
+            assertTrue(q.startsWith("[변 101] 접수 불가"), q);
+            assertTrue(q.contains("100cm"), q);
+        }
+
+        @Test
+        void 실중량_30kg_은_접수() {
+            assertTrue(quote("30kg", 20, 20, 20, 30000, "SAME", false, false).endsWith("= 10,000원"));
+        }
+
+        @Test
+        void 실중량_30_001g_은_불가() {
+            String q = quote("30kg 초과", 20, 20, 20, 30001, "SAME", false, false);
+            assertTrue(q.startsWith("[30kg 초과] 접수 불가"), q);
+            assertTrue(q.contains("30kg"), q);
+        }
+    }
+}`,
+      },
+    ],
     requirements: [
       '부피중량(g) = 가로 × 세로 × 높이(cm³) × 1000 ÷ 6000. 청구중량 = max(실중량, 부피중량)을 0.5kg(500g) 단위로 올림합니다. 검증: 소포 1 은 24,000cm³ → 4,000g → 청구 4.0kg, 소포 2 는 80,000cm³ → 13,333.3g → 청구 13.5kg.',
       '기본 운임은 RateTable.baseFee(청구중량의 0.5kg 단위 개수)로 구합니다. 2.0kg 이하 4,000원, 5.0kg 이하 5,000원, 10.0kg 이하 6,500원, 20.0kg 이하 8,000원, 30.0kg 이하 10,000원.',
       '총운임 = 기본 운임 + 권역 할증(SAME 0원, OTHER 1,000원, JEJU 3,000원) + 도서산간이면 5,000원 + 착불이면 500원. 할증이 0원인 항목은 출력에서 빼고, 있는 항목만 「 + 」로 잇습니다(App.java 기대 출력 그대로).',
-      '접수 불가 조건: 세 변의 합이 160cm 초과, 가장 긴 변이 100cm 초과, 실중량이 30kg(30,000g) 초과. 하나라도 걸리면 운임 대신 이유 한 줄을 돌려줍니다(여러 개면 위 순서의 첫 번째). 소포 4 는 「접수 불가: 세 변의 합 170cm 가 160cm 를 넘습니다」.',
+      '접수 불가 조건: 세 변의 합이 160cm 초과, 가장 긴 변이 100cm 초과, 실중량이 30kg(30,000g) 초과. 하나라도 걸리면 운임 대신 「[이름] 접수 불가: 이유」 한 줄을 돌려줍니다(여러 개면 위 순서의 첫 번째, 이유에는 넘은 기준값 160cm·100cm·30kg 을 넣습니다). 소포 4 는 「접수 불가: 세 변의 합 170cm 가 160cm 를 넘습니다」.',
       '출력의 부피중량과 실중량은 kg 소수 첫째 자리까지, 둘째 자리에서 올림해 표시합니다(13,333.3g → 13.4kg). 계산에는 표시값이 아니라 g 정수와 0.5kg 단위 개수를 씁니다.',
       '다음 달에 착불 수수료가 조정될 예정이고, 사장님은 "부피 기준이 6,000 에서 5,000 으로 바뀔 수도 있다"는 공지를 받았습니다. 아직 확정된 숫자는 없습니다.',
     ],

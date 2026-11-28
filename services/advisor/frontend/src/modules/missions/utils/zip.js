@@ -139,15 +139,27 @@ export function buildPomXml(mission) {
 
 const BUILD_FILE_NAMES = ['pom.xml', 'build.gradle', 'build.gradle.kts']
 
+const README_EASY =
+  '테스트가 미리 들어 있습니다 — `mvn -q test` 를 돌리면 처음엔 실패합니다. 전부 초록이 되게 구현하세요. 테스트 파일은 고치지 않습니다.'
+const README_HARD = '테스트는 직접 씁니다 — 채점 기준의 테스트 항목을 보세요.'
+
 // 미션 한 개의 받을 파일 묶음: pom.xml(미션에 빌드 파일이 없을 때만) + README.md + legacyFiles + providedFiles.
-export function buildMissionEntries(mission) {
+// level: 'easy' 면 starterTests 를 같은 경로의 기존 파일 자리에 대체해 넣고, 'hard'(기본)는 넣지 않는다.
+export function buildMissionEntries(mission, { level = 'hard' } = {}) {
+  const easy = level === 'easy'
+  const starter = easy ? (mission.starterTests ?? []) : []
+  const hasStarterContent = (mission.starterTests ?? []).length > 0
   const reqs = (mission.requirements ?? []).map((r, i) => `${i + 1}. ${r}`).join('\n')
+  const levelNote = easy ? `${README_EASY}\n\n` : hasStarterContent ? `${README_HARD}\n\n` : ''
   const readme =
-    `# ${mission.title}\n\n## 요구사항\n\n${reqs}\n\n제공 코드는 수정하지 않는다.\n\n` +
+    `# ${mission.title}\n\n## 요구사항\n\n${reqs}\n\n제공 코드는 수정하지 않는다.\n\n${levelNote}` +
     `1. 압축을 푼다.\n` +
     `2. IntelliJ 에서 푼 폴더를 연다 (Maven 자동 인식).\n` +
     `3. \`mvn -q test\` 로 확인한다.\n`
-  const files = [...(mission.legacyFiles ?? []), ...(mission.providedFiles ?? [])]
+  const norm = (f, i) => safeZipPath(f.path, i)
+  const starterPaths = new Set(starter.map(norm))
+  const base = [...(mission.legacyFiles ?? []), ...(mission.providedFiles ?? [])]
+  const files = [...base.filter((f, i) => !starterPaths.has(norm(f, i))), ...starter]
   const hasBuildFile = files.some((f) => BUILD_FILE_NAMES.includes(safeZipPath(f.path, 0)))
   return [
     ...(hasBuildFile ? [] : [{ path: 'pom.xml', content: buildPomXml(mission) }]),
@@ -171,7 +183,8 @@ export function downloadText(content, filename) {
   downloadBlob(new Blob([content ?? ''], { type: 'text/plain;charset=utf-8' }), filename)
 }
 
-export function downloadMissionZip(mission) {
-  const bytes = buildZip(buildMissionEntries(mission))
-  downloadBlob(new Blob([bytes], { type: 'application/zip' }), `${mission.id}.zip`)
+// level 을 주면 `<id>-easy.zip` / `<id>-hard.zip`, 안 주면 `<id>.zip`.
+export function downloadMissionZip(mission, level) {
+  const bytes = buildZip(buildMissionEntries(mission, level ? { level } : {}))
+  downloadBlob(new Blob([bytes], { type: 'application/zip' }), `${mission.id}${level ? `-${level}` : ''}.zip`)
 }
